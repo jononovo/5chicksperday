@@ -5,6 +5,8 @@ import { SearchStorage } from './search';
 import { CampaignStorage } from './campaigns';
 import { TemplateStorage } from './templates';
 import { db } from '../db';
+import type { PgDatabase } from 'drizzle-orm/pg-core';
+import * as schema from '@shared/schema';
 
 export class DatabaseStorage implements IStorage {
   private readonly companyStorage: CompanyStorage;
@@ -14,11 +16,13 @@ export class DatabaseStorage implements IStorage {
   private readonly templateStorage: TemplateStorage;
 
   constructor() {
-    this.companyStorage = new CompanyStorage(db);
-    this.contactStorage = new ContactStorage(db);
-    this.searchStorage = new SearchStorage(db);
-    this.campaignStorage = new CampaignStorage(db);
-    this.templateStorage = new TemplateStorage(db);
+    // Cast db to correct type to resolve type mismatch
+    const typedDb = db as PgDatabase<typeof schema>;
+    this.companyStorage = new CompanyStorage(typedDb);
+    this.contactStorage = new ContactStorage(typedDb);
+    this.searchStorage = new SearchStorage(typedDb);
+    this.campaignStorage = new CompanyStorage(typedDb);
+    this.templateStorage = new TemplateStorage(typedDb);
   }
 
   // Lists (delegated to CompanyStorage)
@@ -73,20 +77,26 @@ export class DatabaseStorage implements IStorage {
   createEmailTemplate = (template: any) => this.templateStorage.createEmailTemplate(template);
   updateEmailTemplate = (id: number, template: any) => this.templateStorage.updateEmailTemplate(id, template);
   deleteEmailTemplate = (id: number) => this.templateStorage.deleteEmailTemplate(id);
+
+  // Initialize default data (made public to fix access issues)
+  async initializeDefaultData() {
+    const [approaches, templates] = await Promise.all([
+      this.listSearchApproaches(),
+      this.listEmailTemplates()
+    ]);
+
+    if (approaches.length === 0) {
+      await this.searchStorage.initializeDefaultSearchApproaches();
+    }
+
+    if (templates.length === 0) {
+      await this.templateStorage.initializeDefaultEmailTemplates();
+    }
+  }
 }
 
 // Create and export a single instance
 export const storage = new DatabaseStorage();
 
-// Initialize default data
-storage.listSearchApproaches().then(async (approaches) => {
-  if (approaches.length === 0) {
-    await storage.searchStorage.initializeDefaultSearchApproaches();
-  }
-}).catch(console.error);
-
-storage.listEmailTemplates().then(async (templates) => {
-  if (templates.length === 0) {
-    await storage.templateStorage.initializeDefaultEmailTemplates();
-  }
-}).catch(console.error);
+// Initialize default data using the public method
+storage.initializeDefaultData().catch(console.error);
