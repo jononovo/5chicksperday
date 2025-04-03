@@ -21,7 +21,7 @@ export class DatabaseStorage implements IStorage {
     this.companyStorage = new CompanyStorage(typedDb);
     this.contactStorage = new ContactStorage(typedDb);
     this.searchStorage = new SearchStorage(typedDb);
-    this.campaignStorage = new CompanyStorage(typedDb);
+    this.campaignStorage = new CampaignStorage(typedDb);
     this.templateStorage = new TemplateStorage(typedDb);
   }
 
