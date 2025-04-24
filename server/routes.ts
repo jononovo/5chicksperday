@@ -292,13 +292,11 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Rabbit provider with development endpoint for testing
-      // Development URL from Lead-Gen Rabbit response for enhanced logging and debugging
-      const endpoint = "https://358f51b5-fd9b-4fb9-82f8-7cf56a3f18d6-00-161sbihgzmt13.worf.replit.dev/api/webhooks/workflow/6/node/webhook_trigger-1";
+      // Use the production endpoint as specified in the instructions
+      const endpoint = "https://lead-rabbit.replit.app/api/search";
       
-      // Production URL (will be used after successful testing)
-      // const endpoint = "https://lead-rabbit.replit.app/api/webhooks/workflow/6/node/webhook_trigger-1";
-      const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
+      // Use the provided API key
+      const apiKey = "LGR-API-ff82c91d7184d5eeb3f3a142";
       
       if (!apiKey) {
         return res.status(500).json({
@@ -568,17 +566,20 @@ app.post("/api/lists", async (req, res) => {
   }
 });
 
-// Companies
-app.get("/api/companies", async (_req, res) => {
-  const companies = await storage.listCompanies();
-  res.json(companies);
-});
+// Companies endpoints
 
-// Add a new endpoint to get recent companies from external providers
+// Note: Place specific routes BEFORE parameterized routes
+// Add endpoint to get recent companies from external providers
 app.get("/api/companies/recent", async (_req, res) => {
   try {
-    // Fetch the most recent companies (limit to 10)
+    // Fetch all companies
     const companies = await storage.listCompanies();
+    console.log(`Found ${companies.length} companies, returning the most recent 10`);
+    
+    // Return an empty array if no companies found
+    if (!companies || companies.length === 0) {
+      return res.json([]);
+    }
     
     // Sort by most recently created and limit to 10
     const recentCompanies = companies
@@ -589,19 +590,18 @@ app.get("/api/companies/recent", async (_req, res) => {
       })
       .slice(0, 10);
     
-    // For each company, get its contacts
-    const companiesWithContacts = await Promise.all(
-      recentCompanies.map(async (company) => {
-        const contacts = await storage.listContactsByCompany(company.id);
-        return { ...company, contacts };
-      })
-    );
-    
-    res.json(companiesWithContacts);
+    // Return the companies without attempting to fetch contacts
+    res.json(recentCompanies);
   } catch (error) {
     console.error("Error fetching recent companies:", error);
     res.status(500).json({ message: "Failed to fetch recent companies" });
   }
+});
+
+// Get all companies
+app.get("/api/companies", async (_req, res) => {
+  const companies = await storage.listCompanies();
+  res.json(companies);
 });
 
 app.get("/api/companies/:id", async (req, res) => {
