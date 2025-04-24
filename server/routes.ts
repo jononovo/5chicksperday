@@ -55,7 +55,8 @@ export function registerRoutes(app: Express) {
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
-      console.log("Received webhook from external provider:");
+      console.log("============ WEBHOOK RECEIVED ============");
+      console.log("Received webhook from external provider at " + new Date().toISOString());
       console.log("Headers:", req.headers);
       console.log("Body:", JSON.stringify(req.body, null, 2));
       
@@ -292,10 +293,15 @@ export function registerRoutes(app: Express) {
       
       console.log(`Received search request for query: "${query}"`);
       
-      // Generate callback URL - use actual server host
-      const protocol = req.headers['x-forwarded-proto'] || 'http';
-      const host = req.headers.host || 'localhost:5000';
-      const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
+      // Use the deployed URL for the webhook callback
+      // This ensures Lead-Gen Rabbit can consistently reach our webhook endpoint
+      const deployedUrl = "https://Bear-App.replit.app";
+      const callbackUrl = `${deployedUrl}/api/external-workflow/webhook`;
+      
+      // Fallback for local development if needed
+      // const protocol = req.headers['x-forwarded-proto'] || 'http';
+      // const host = req.headers.host || 'localhost:5000';
+      // const localCallbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
       // Use the actual Lead-Gen Rabbit API as specified in the instructions
       const rabbitEndpoint = "https://lead-rabbit.replit.app/api/search";
