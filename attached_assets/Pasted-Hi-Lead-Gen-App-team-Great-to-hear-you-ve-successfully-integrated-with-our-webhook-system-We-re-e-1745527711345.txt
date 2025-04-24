@@ -1,0 +1,68 @@
+Hi Lead-Gen-App team,
+
+Great to hear you've successfully integrated with our webhook system! We're excited to see the integration working smoothly.
+
+Here's a sample of the exact JSON format we send in our final 100% completion webhook:
+
+{
+  "searchId": "rabbit_search_1745527473922",
+  "status": "completed",
+  "progress": 100,
+  "results": {
+    "companies": [
+      {
+        "name": "AI Solutions Inc",
+        "website": "https://aisolutions.com",
+        "industry": "Technology",
+        "location": "San Francisco, CA",
+        "description": "Leading AI development company specializing in machine learning solutions",
+        "employeeCount": 120,
+        "foundedYear": 2016,
+        "revenue": "$10M-$50M",
+        "headquarters": "San Francisco, CA"
+      },
+      {
+        "name": "Neural Technologies",
+        "website": "https://neuraltechnologies.io",
+        "industry": "Artificial Intelligence",
+        "location": "San Francisco, CA",
+        "description": "Boutique AI consulting firm with expertise in neural networks",
+        "employeeCount": 45,
+        "foundedYear": 2018,
+        "revenue": "$1M-$10M",
+        "headquarters": "San Francisco, CA"
+      },
+      {
+        "name": "Cognitive Systems",
+        "website": "https://cognitivesystems.tech",
+        "industry": "Software Development",
+        "location": "San Francisco, CA",
+        "description": "Enterprise AI solutions for Fortune 500 companies",
+        "employeeCount": 75,
+        "foundedYear": 2015,
+        "revenue": "$10M-$50M",
+        "headquarters": "San Francisco, CA"
+      }
+    ],
+    "metadata": {
+      "moduleType": "COMPANY_OVERVIEW",
+      "validationScores": {
+        "companyScore": 87
+      },
+      "queryDetails": {
+        "original": "software engineering firms in San Francisco specializing in AI",
+        "refined": "AI software engineering companies San Francisco"
+      }
+    }
+  }
+}
+The most important fields are:
+
+searchId: A unique identifier for this search (we use this to track progress)
+status: "completed" for final webhooks (or "in_progress" for progress updates)
+progress: 100 for final webhooks (or 10, 35, 70, etc. for progress updates)
+results.companies: An array of company objects with the required fields
+results.metadata: Additional information about the search and validation scores
+For data storage, focus on the company objects within the results.companies array. Each object includes both required fields (name, website, industry) and optional fields (location, description, employeeCount, etc.) that provide additional context.
+
+Is there anything specific about our webhook format that you'd like us to clarify further?

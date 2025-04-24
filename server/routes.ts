@@ -166,6 +166,11 @@ export function registerRoutes(app: Express) {
         if (results.metadata?.validationScores) {
           console.log("Validation scores:", results.metadata.validationScores);
         }
+        
+        // Log query details if provided
+        if (results.metadata?.queryDetails) {
+          console.log("Query details:", results.metadata.queryDetails);
+        }
       }
       
       // Respond to the webhook with success
