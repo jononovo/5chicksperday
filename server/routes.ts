@@ -128,53 +128,30 @@ export function registerRoutes(app: Express) {
     try {
       logWithStorage("============ WEBHOOK RECEIVED ============");
       logWithStorage("Received webhook from external provider at " + new Date().toISOString());
-      logWithStorage("Headers: " + JSON.stringify(req.headers, null, 2));
-      logWithStorage("Body: " + JSON.stringify(req.body, null, 2));
       
-      // Enhanced debugging for webhook payload
-      logWithStorage("Request IP: " + req.ip);
-      logWithStorage("User-Agent: " + req.headers['user-agent']);
-      
-      // Handle various payload formats
-      // Some webhook providers might wrap the entire payload in a "data" or "payload" field
+      // Extract the basic payload info for logging
       const payload = req.body.data || req.body.payload || req.body;
-      console.log("Extracted payload:", JSON.stringify(payload, null, 2));
       
-      // Super enhanced debugging for every possible place the searchId might be
-      logWithStorage("Checking all possible locations for searchId:");
-      logWithStorage(`Direct payload.searchId: ${payload.searchId}`);
-      logWithStorage(`req.body.searchId: ${req.body.searchId}`);
-      logWithStorage(`req.query.searchId: ${req.query.searchId}`);
-      logWithStorage(`req.params.searchId: ${req.params.searchId}`);
-      if (payload.data) logWithStorage(`payload.data.searchId: ${payload.data.searchId}`);
-      if (req.body.data) logWithStorage(`req.body.data.searchId: ${req.body.data.searchId}`);
+      // IMMEDIATE ACKNOWLEDGMENT - We respond to the webhook immediately to prevent timeout
+      // This is critical for providers like Lead-Gen Rabbit that have a 30-second timeout
       
-      // Try to find searchId in various places
-      let searchId = payload.searchId;
+      // Find searchId in various places
+      let searchId = payload.searchId || req.body.searchId || req.query.searchId as string;
       
-      // If not found directly, check URL parameters
-      if (!searchId && req.query.searchId) {
-        searchId = req.query.searchId as string;
-        logWithStorage(`Using searchId from query parameter: ${searchId}`);
-      }
-      
-      // If still not found, check if it's nested in results
+      // Check additional places if still not found
       if (!searchId && payload.results && payload.results.searchId) {
         searchId = payload.results.searchId;
-        logWithStorage(`Using searchId from nested results: ${searchId}`);
       }
       
-      const { status, results, error } = payload as ExternalSearchResult;
-      
       if (!searchId) {
-        logWithStorage("ERROR: No searchId found in any expected location");
         return res.status(400).json({
           success: false,
           message: "Missing required searchId parameter"
         });
       }
       
-      // Validate status field
+      // Basic validation of status field
+      const status = payload.status;
       if (!['in_progress', 'completed', 'failed'].includes(status)) {
         return res.status(400).json({
           success: false,
@@ -182,52 +159,109 @@ export function registerRoutes(app: Express) {
         });
       }
       
-      // Process all stages of results
-      if (results) {
-        let source = 'External Provider';
-        
-        // Update source information if available
-        if (results.metadata?.moduleType) {
-          source = `Lead-Gen Rabbit: ${results.metadata.moduleType}`;
-        }
-        
-        const isInProgress = status === 'in_progress';
-        const stage = (results as any).stage || 'unknown';
-        const progress = (results as any).progress || 0;
-        
-        // Log progress information
-        if (isInProgress) {
-          console.log(`Search ${searchId} in progress: Stage ${stage}, Progress ${progress}%`);
-        }
-        
-        // Store companies in the database
-        if (results.companies && Array.isArray(results.companies)) {
-          for (const companyData of results.companies) {
-            try {
-              // Check if this is a partial or complete result
-              const isPartial = isInProgress || stage !== 'EMAIL_DISCOVERY';
-              
-              // Create company record
-              const company = await storage.createCompany({
-                name: companyData.name,
-                website: companyData.website || null,
-                industry: companyData.industry || null,
-                location: companyData.location || null,
-                description: companyData.description || null,
-                employeeCount: companyData.employeeCount || null,
-                foundedYear: companyData.foundedYear || null,
-                revenue: companyData.revenue || null,
-                socialProfiles: companyData.socialProfiles || null,
-                technologiesUsed: companyData.technologiesUsed || null,
-                productOfferings: companyData.productOfferings || null,
-                headquarters: companyData.headquarters || null
-              });
-              
-              // Process contacts if available
-              if (companyData.contacts && Array.isArray(companyData.contacts)) {
-                for (const contactData of companyData.contacts) {
+      // CRITICAL: Acknowledge receipt BEFORE processing data
+      // This ensures we respond quickly before the provider times out
+      res.status(200).json({
+        success: true,
+        message: `Webhook received for searchId: ${searchId}`,
+        status
+      });
+      
+      // Now process the data asynchronously AFTER sending the response
+      // This way, even if processing takes longer than 30 seconds, the webhook sender
+      // has already received an acknowledgment and won't time out
+      setTimeout(async () => {
+        try {
+          logWithStorage("Starting asynchronous processing of webhook data");
+          
+          // More detailed logging after we've already responded
+          logWithStorage("Headers: " + JSON.stringify(req.headers, null, 2));
+          logWithStorage("Body: " + JSON.stringify(req.body, null, 2));
+          logWithStorage("Request IP: " + req.ip);
+          logWithStorage("User-Agent: " + req.headers['user-agent']);
+          
+          const results = payload.results;
+          if (!results) {
+            logWithStorage("No results found in payload");
+            return;
+          }
+          
+          let source = 'External Provider';
+          
+          // Update source information if available
+          if (results.metadata?.moduleType) {
+            source = `Lead-Gen Rabbit: ${results.metadata.moduleType}`;
+          }
+          
+          const isInProgress = status === 'in_progress';
+          const stage = (results as any).stage || 'unknown';
+          const progress = (results as any).progress || 0;
+          
+          // Log progress information
+          if (isInProgress) {
+            console.log(`Search ${searchId} in progress: Stage ${stage}, Progress ${progress}%`);
+          }
+          
+          // Store companies in the database
+          if (results.companies && Array.isArray(results.companies)) {
+            for (const companyData of results.companies) {
+              try {
+                // Check if this is a partial or complete result
+                const isPartial = isInProgress || stage !== 'EMAIL_DISCOVERY';
+                
+                // Create company record
+                const company = await storage.createCompany({
+                  name: companyData.name,
+                  website: companyData.website || null,
+                  industry: companyData.industry || null,
+                  location: companyData.location || null,
+                  description: companyData.description || null,
+                  employeeCount: companyData.employeeCount || null,
+                  foundedYear: companyData.foundedYear || null,
+                  revenue: companyData.revenue || null,
+                  socialProfiles: companyData.socialProfiles || null,
+                  technologiesUsed: companyData.technologiesUsed || null,
+                  productOfferings: companyData.productOfferings || null,
+                  headquarters: companyData.headquarters || null
+                });
+                
+                // Process contacts if available
+                if (companyData.contacts && Array.isArray(companyData.contacts)) {
+                  for (const contactData of companyData.contacts) {
+                    await storage.createContact({
+                      companyId: company.id,
+                      name: contactData.name,
+                      role: contactData.role || null,
+                      email: contactData.email || null,
+                      probability: contactData.probability || null,
+                      linkedinUrl: contactData.linkedinUrl || null,
+                      twitterHandle: contactData.twitterHandle || null,
+                      phoneNumber: contactData.phoneNumber || null,
+                      department: contactData.department || null,
+                      location: contactData.location || null,
+                      verificationSource: source,
+                      nameConfidenceScore: contactData.nameConfidenceScore || null,
+                      userFeedbackScore: null,
+                      feedbackCount: 0
+                    });
+                  }
+                }
+                
+                logWithStorage(`Processed company: ${companyData.name} with ${companyData.contacts?.length || 0} contacts`);
+              } catch (error) {
+                console.error("Error processing external provider company:", error);
+              }
+            }
+          }
+          
+          // Store standalone contacts if provided
+          if (results.contacts && Array.isArray(results.contacts)) {
+            for (const contactData of results.contacts) {
+              // Only process contacts that have a companyId
+              if (contactData.companyId) {
+                try {
                   await storage.createContact({
-                    companyId: company.id,
+                    companyId: contactData.companyId,
                     name: contactData.name,
                     role: contactData.role || null,
                     email: contactData.email || null,
@@ -242,65 +276,21 @@ export function registerRoutes(app: Express) {
                     userFeedbackScore: null,
                     feedbackCount: 0
                   });
+                } catch (error) {
+                  console.error("Error processing external provider contact:", error);
                 }
               }
-              
-              console.log(`Processed company: ${companyData.name} with ${companyData.contacts?.length || 0} contacts`);
-            } catch (error) {
-              console.error("Error processing external provider company:", error);
             }
           }
+          
+          logWithStorage(`Completed asynchronous processing of webhook data for ${searchId}`);
+        } catch (error) {
+          console.error("Error in asynchronous webhook processing:", error);
         }
-        
-        // Store standalone contacts if provided
-        if (results.contacts && Array.isArray(results.contacts)) {
-          for (const contactData of results.contacts) {
-            // Only process contacts that have a companyId
-            if (contactData.companyId) {
-              try {
-                await storage.createContact({
-                  companyId: contactData.companyId,
-                  name: contactData.name,
-                  role: contactData.role || null,
-                  email: contactData.email || null,
-                  probability: contactData.probability || null,
-                  linkedinUrl: contactData.linkedinUrl || null,
-                  twitterHandle: contactData.twitterHandle || null,
-                  phoneNumber: contactData.phoneNumber || null,
-                  department: contactData.department || null,
-                  location: contactData.location || null,
-                  verificationSource: source,
-                  nameConfidenceScore: contactData.nameConfidenceScore || null,
-                  userFeedbackScore: null,
-                  feedbackCount: 0
-                });
-              } catch (error) {
-                console.error("Error processing external provider contact:", error);
-              }
-            }
-          }
-        }
-        
-        // Store validation metadata if available
-        if (results.metadata?.validationScores) {
-          console.log("Validation scores:", results.metadata.validationScores);
-        }
-        
-        // Log query details if provided
-        if (results.metadata?.queryDetails) {
-          console.log("Query details:", results.metadata.queryDetails);
-        }
-      }
-      
-      // Respond to the webhook with success
-      return res.status(200).json({
-        success: true,
-        message: `Successfully processed webhook for searchId: ${searchId}`,
-        status
-      });
+      }, 0); // Process immediately but asynchronously
       
     } catch (error) {
-      console.error("Error processing external provider webhook:", error);
+      console.error("Error receiving external provider webhook:", error);
       return res.status(500).json({
         success: false,
         message: "Internal server error processing webhook",
