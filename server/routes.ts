@@ -383,9 +383,13 @@ export function registerRoutes(app: Express) {
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
       // Configuration for Donkey provider (test environment)
-      // Will be updated with the final endpoint once Donkey completes their API standardization
+      // Using the test environment with limited data and rate limits (100 requests/day)
+      // Will be updated to production endpoint with a PROD key when ready for production
+      const isProduction = process.env.NODE_ENV === "production";
+      
+      // For now, we're using the test endpoint and test API key
       const endpoint = "https://api.leadgendonkey.example.com/v1";
-      const apiKey = process.env.LEAD_GEN_DONKEY_API_KEY; // LGD-TEST-1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT
+      const apiKey = process.env.LEAD_GEN_DONKEY_API_KEY; // Test key: LGD-TEST-1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT
       
       if (!apiKey) {
         return res.status(500).json({
@@ -433,12 +437,31 @@ export function registerRoutes(app: Express) {
         body: JSON.stringify(requestBody)
       });
       
+      // Handle rate limiting (100 requests/day for test environment)
+      if (response.status === 429) {
+        // Get the retry-after header if available or default to 10 seconds
+        const retryAfter = parseInt(response.headers.get('retry-after') || '10', 10);
+        console.log(`Rate limit hit. Retrying after ${retryAfter} seconds.`);
+        
+        // Return a 429 response to the client
+        return res.status(429).json({
+          success: false,
+          message: "Rate limit exceeded. Please try again later.",
+          retryAfter
+        });
+      }
+      
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Donkey API error (${response.status}): ${errorText}`);
       }
       
-      const result = await response.json();
+      // Log the raw response for debugging
+      const responseText = await response.text();
+      console.log("Raw response from Donkey:", responseText);
+      
+      // Parse the response back to JSON for further processing
+      const result = responseText ? JSON.parse(responseText) : {};
       
       return res.status(200).json({
         success: true,
