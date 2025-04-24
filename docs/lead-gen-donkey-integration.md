@@ -26,7 +26,7 @@ This document outlines the integration with Lead-Gen Donkey, a third-party servi
 - Base URL: `https://api.leadgendonkey.example.com/v1`
 
 ### Production Environment
-- Base URL: `https://api.leadgendonkey.com/v1`
+- Base URL: `https://b45e11fa-5450-41c3-9aae-b0c5d9ba4636-00-2t2y9b3rc04rn.kirk.replit.dev/api/lead-gen/search`
 
 ## Integration Timeline
 - Test API key received: April 24, 2025
@@ -46,6 +46,20 @@ To switch between test and production environments:
    - This is useful for testing production API in development environment
 
 ## Request Format
+
+### Production Environment
+The production API expects a simplified request format:
+
+```json
+{
+  "query": "software engineering firms in San Francisco specializing in AI",
+  "callbackUrl": "https://example.com/api/external-workflow/webhook"
+}
+```
+
+### Test Environment
+The test environment uses our original standardized format:
+
 ```json
 {
   "searchId": "donkey_search_1745525142977",

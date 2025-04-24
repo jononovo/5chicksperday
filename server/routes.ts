@@ -391,7 +391,7 @@ export function registerRoutes(app: Express) {
       
       if (useProductionApi || isProduction) {
         // Production configuration - Premium tier: 10,000 requests/day
-        endpoint = "https://api.leadgendonkey.com/v1"; // Production endpoint
+        endpoint = "https://b45e11fa-5450-41c3-9aae-b0c5d9ba4636-00-2t2y9b3rc04rn.kirk.replit.dev/api/lead-gen/search";
         apiKey = process.env.LEAD_GEN_DONKEY_PROD_API_KEY;
         console.log("Using Lead-Gen Donkey PRODUCTION API");
       } else {
@@ -414,26 +414,33 @@ export function registerRoutes(app: Express) {
         callbackUrl
       });
       
-      // Build the request payload according to our standardized format
-      // This format will be supported once Donkey updates their API (within 48 hours)
-      const requestBody = {
-        searchId: `donkey_search_${Date.now()}`,
-        query,
-        moduleTypes: ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
-        configuration: {
-          incrementalUpdates: true,
-          validationThresholds: {
-            companyScore: 60,
-            contactScore: 70,
-            emailScore: 65
-          },
-          filterCriteria: {
-            // Can be customized based on user input in the future
-            companySize: { min: 10, max: 500 }
+      // Build the request payload based on Lead-Gen Donkey's specified format
+      // The production endpoint expects a simplified format
+      const requestBody = useProductionApi || isProduction
+        ? {
+            // Production format (as specified by Donkey)
+            query,
+            callbackUrl
           }
-        },
-        callbackUrl
-      };
+        : {
+            // Original standardized format for test environment
+            searchId: `donkey_search_${Date.now()}`,
+            query,
+            moduleTypes: ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
+            configuration: {
+              incrementalUpdates: true,
+              validationThresholds: {
+                companyScore: 60,
+                contactScore: 70,
+                emailScore: 65
+              },
+              filterCriteria: {
+                // Can be customized based on user input in the future
+                companySize: { min: 10, max: 500 }
+              }
+            },
+            callbackUrl
+          };
       
       console.log("Request body:", JSON.stringify(requestBody, null, 2));
       
