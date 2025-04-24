@@ -15,8 +15,9 @@ async function testRabbitIntegration() {
   console.log("Rabbit Endpoint:", rabbitEndpoint);
   console.log("Our Webhook URL:", ourWebhookEndpoint);
   
-  // Test query
-  const query = "software engineering firms in San Francisco specializing in AI";
+  // Get query from command line args or use default
+  const query = process.argv[2] || "software engineering firms in San Francisco specializing in AI";
+  console.log("Using query:", query);
   
   // Build the request payload according to Rabbit's requirements
   const requestBody = {

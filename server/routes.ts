@@ -33,6 +33,10 @@ interface ExternalSearchResult {
       moduleType?: string;
       completedSearches?: string[];
       validationScores?: Record<string, number>;
+      queryDetails?: {
+        original?: string;
+        refined?: string;
+      };
     };
   };
   error?: string;
