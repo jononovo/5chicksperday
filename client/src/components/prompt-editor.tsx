@@ -211,9 +211,6 @@ export default function PromptEditor({
         </div>
         
         <div className="flex gap-2">
-          <div className="text-xs text-muted-foreground mt-1 mb-1">
-            External Search Providers:
-          </div>
           <Button 
             variant="outline" 
             size="sm"
@@ -224,7 +221,7 @@ export default function PromptEditor({
               <Loader2 className="mr-1 h-3 w-3 animate-spin" />
             )}
             <Cat className="mr-1 h-3 w-3" />
-            Lead-Gen Lion
+            Lion
           </Button>
           <Button 
             variant="outline" 
@@ -236,7 +233,7 @@ export default function PromptEditor({
               <Loader2 className="mr-1 h-3 w-3 animate-spin" />
             )}
             <Rabbit className="mr-1 h-3 w-3" />
-            Lead-Gen Rabbit
+            Rabbit
           </Button>
           <Button 
             variant="outline" 
@@ -248,7 +245,7 @@ export default function PromptEditor({
               <Loader2 className="mr-1 h-3 w-3 animate-spin" />
             )}
             <Anchor className="mr-1 h-3 w-3" />
-            Lead-Gen Donkey
+            Donkey
           </Button>
         </div>
       </div>
