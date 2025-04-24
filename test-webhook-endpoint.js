@@ -10,11 +10,12 @@ async function testWebhookEndpoint() {
     
     console.log("Webhook URL:", webhookUrl);
     
-    // Create a test payload similar to what Rabbit would send
+    // Create a test payload but wrapped in a 'data' field like some providers might do
     const mockPayload = {
-      searchId: `test_direct_call_${Date.now()}`,
-      status: "completed",
-      results: {
+      data: {
+        searchId: `test_nested_payload_${Date.now()}`,
+        status: "completed",
+        results: {
         companies: [
           {
             name: "TestAI Boston",
@@ -57,6 +58,7 @@ async function testWebhookEndpoint() {
             refined: "Artificial Intelligence startups in Boston, Massachusetts"
           }
         }
+      }
       }
     };
     

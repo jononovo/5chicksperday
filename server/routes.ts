@@ -50,7 +50,12 @@ export function registerRoutes(app: Express) {
       console.log("Headers:", req.headers);
       console.log("Body:", JSON.stringify(req.body, null, 2));
       
-      const { searchId, status, results, error } = req.body as ExternalSearchResult;
+      // Handle various payload formats
+      // Some webhook providers might wrap the entire payload in a "data" or "payload" field
+      const payload = req.body.data || req.body.payload || req.body;
+      console.log("Extracted payload:", JSON.stringify(payload, null, 2));
+      
+      const { searchId, status, results, error } = payload as ExternalSearchResult;
       
       if (!searchId) {
         return res.status(400).json({
