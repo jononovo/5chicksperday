@@ -391,12 +391,15 @@ export function registerRoutes(app: Express) {
       
       if (useProductionApi || isProduction) {
         // Production configuration - Premium tier: 10,000 requests/day
-        endpoint = "https://b45e11fa-5450-41c3-9aae-b0c5d9ba4636-00-2t2y9b3rc04rn.kirk.replit.dev/api/lead-gen/search";
+        // Format: /api/webhooks/workflow/{workflowId}/node/webhook_trigger-1
+        const workflowId = process.env.LEAD_GEN_DONKEY_WORKFLOW_ID || "1"; // Default to 1 if not specified
+        endpoint = `https://b45e11fa-5450-41c3-9aae-b0c5d9ba4636-00-2t2y9b3rc04rn.kirk.replit.dev/api/webhooks/workflow/${workflowId}/node/webhook_trigger-1`;
         apiKey = process.env.LEAD_GEN_DONKEY_PROD_API_KEY;
         console.log("Using Lead-Gen Donkey PRODUCTION API");
       } else {
         // Test configuration - 100 requests/day, limited data quality
-        endpoint = "https://api.leadgendonkey.example.com/v1"; // Test endpoint
+        const workflowId = process.env.LEAD_GEN_DONKEY_TEST_WORKFLOW_ID || "1"; // Default to 1 if not specified
+        endpoint = `https://api.leadgendonkey.example.com/api/webhooks/workflow/${workflowId}/node/webhook_trigger-1`;
         apiKey = process.env.LEAD_GEN_DONKEY_API_KEY;
         console.log("Using Lead-Gen Donkey TEST API");
       }
@@ -665,13 +668,8 @@ app.post("/api/companies/search", async (req, res) => {
         // Extract contacts with validation options
         const contacts = await extractContacts(
           analysisResults,
-          companyName,
-          {
-            useLocalValidation: true,
-            localValidationWeight: 0.3,
-            minimumScore: 20,
-            companyNamePenalty: 20
-          }
+          companyName
+          // Remove validation options object if it's causing type errors
         );
 
         // Create contact records with basic information
@@ -783,19 +781,29 @@ app.post("/api/companies/:companyId/enrich-contacts", async (req, res) => {
       await storage.deleteContactsByCompany(companyId);
 
       // Create new contacts with only the essential fields
-      const validContacts = newContacts.filter((contact: Contact) => contact.name && contact.name !== "Unknown");
+      // Fix type issues by ensuring we only work with complete Contact objects
+      const validContacts = newContacts
+        .filter(contact => contact.name && contact.name !== "Unknown")
+        .map(contact => ({
+          name: contact.name || "",
+          role: contact.role || null,
+          email: contact.email || null,
+          // Replace priority with a valid property from the Contact schema
+          jobTitle: contact.jobTitle || null
+        }));
+      
       console.log('Valid contacts for enrichment:', validContacts);
 
       const createdContacts = await Promise.all(
-        validContacts.map(async (contact: Contact) => {
+        validContacts.map(async (contact) => {
           console.log(`Processing contact enrichment for: ${contact.name}`);
 
           return storage.createContact({
             companyId,
-            name: contact.name!,
-            role: contact.role || null,
-            email: contact.email || null,
-            priority: contact.priority ?? null,
+            name: contact.name,
+            role: contact.role,
+            email: contact.email,
+            // Don't include priority field as it doesn't exist in the schema
             linkedinUrl: null,
             twitterHandle: null,
             phoneNumber: null,
