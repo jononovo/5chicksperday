@@ -42,7 +42,9 @@ export function registerRoutes(app: Express) {
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
-      console.log("Received webhook from external provider:", req.body);
+      console.log("Received webhook from external provider:");
+      console.log("Headers:", req.headers);
+      console.log("Body:", JSON.stringify(req.body, null, 2));
       
       const { searchId, status, results, error } = req.body as ExternalSearchResult;
       
@@ -241,8 +243,8 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Rabbit provider
-      const endpoint = process.env.LEAD_GEN_RABBIT_ENDPOINT || "https://api.leadgenrabbit.example.com/api/search";
+      // Configuration for Rabbit provider (from provided integration details)
+      const endpoint = "https://leadgen-rabbit.example.com/api/webhooks/workflow/6/node/webhook_trigger-1";
       const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
       
       if (!apiKey) {
@@ -251,6 +253,12 @@ export function registerRoutes(app: Express) {
           message: "Rabbit API key not configured"
         });
       }
+      
+      console.log("Sending request to Lead-Gen Rabbit:", {
+        endpoint,
+        query,
+        callbackUrl
+      });
       
       // Make API request to Rabbit provider
       const response = await fetch(endpoint, {
