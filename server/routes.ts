@@ -14,31 +14,10 @@ import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 
 // Define interfaces for external workflow interactions
-interface ExternalSearchResult {
-  searchId: string;
-  status: 'in_progress' | 'completed' | 'failed';
-  results?: {
-    companies?: any[];
-    contacts?: any[];
-  };
-  error?: string;
-}
-
-// Define interfaces for external workflow interactions
 interface ExternalSearchRequest {
-  searchId?: string;
   query: string;
-  moduleTypes?: string[];
-  configuration?: {
-    incrementalUpdates?: boolean;
-    validationThresholds?: {
-      companyScore?: number;
-      contactScore?: number;
-      emailScore?: number;
-    };
-    filterCriteria?: Record<string, any>;
-  };
-  callbackUrl?: string;
+  callbackUrl: string;
+  additionalParams?: Record<string, any>;
 }
 
 interface ExternalSearchResult {
@@ -46,7 +25,7 @@ interface ExternalSearchResult {
   status: 'in_progress' | 'completed' | 'failed';
   stage?: string;
   progress?: number;
-  timestamp: string;
+  timestamp?: string;
   results?: {
     companies?: any[];
     contacts?: any[];
@@ -60,6 +39,321 @@ interface ExternalSearchResult {
 }
 
 export function registerRoutes(app: Express) {
+  // External Provider Webhook Endpoint
+  app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
+    try {
+      console.log("Received webhook from external provider:", req.body);
+      
+      const { searchId, status, results, error } = req.body as ExternalSearchResult;
+      
+      if (!searchId) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required searchId parameter"
+        });
+      }
+      
+      // Validate status field
+      if (!['in_progress', 'completed', 'failed'].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status. Must be one of: in_progress, completed, failed"
+        });
+      }
+      
+      // Process results if status is completed
+      if (status === 'completed' && results) {
+        // Store companies in the database
+        if (results.companies && Array.isArray(results.companies)) {
+          for (const companyData of results.companies) {
+            try {
+              // Create company record
+              const company = await storage.createCompany({
+                name: companyData.name,
+                website: companyData.website || null,
+                industry: companyData.industry || null,
+                location: companyData.location || null,
+                description: companyData.description || null,
+                employeeCount: companyData.employeeCount || null,
+                foundedYear: companyData.foundedYear || null,
+                revenue: companyData.revenue || null,
+                socialProfiles: companyData.socialProfiles || null,
+                technologiesUsed: companyData.technologiesUsed || null,
+                productOfferings: companyData.productOfferings || null,
+                headquarters: companyData.headquarters || null
+              });
+              
+              // Process contacts if available
+              if (companyData.contacts && Array.isArray(companyData.contacts)) {
+                for (const contactData of companyData.contacts) {
+                  await storage.createContact({
+                    companyId: company.id,
+                    name: contactData.name,
+                    role: contactData.role || null,
+                    email: contactData.email || null,
+                    probability: contactData.probability || null,
+                    linkedinUrl: contactData.linkedinUrl || null,
+                    twitterHandle: contactData.twitterHandle || null,
+                    phoneNumber: contactData.phoneNumber || null,
+                    department: contactData.department || null,
+                    location: contactData.location || null,
+                    verificationSource: 'External Provider',
+                    nameConfidenceScore: contactData.nameConfidenceScore || null,
+                    userFeedbackScore: null,
+                    feedbackCount: 0
+                  });
+                }
+              }
+            } catch (error) {
+              console.error("Error processing external provider company:", error);
+            }
+          }
+        }
+        
+        // Store standalone contacts if provided
+        if (results.contacts && Array.isArray(results.contacts)) {
+          for (const contactData of results.contacts) {
+            // Only process contacts that have a companyId
+            if (contactData.companyId) {
+              try {
+                await storage.createContact({
+                  companyId: contactData.companyId,
+                  name: contactData.name,
+                  role: contactData.role || null,
+                  email: contactData.email || null,
+                  probability: contactData.probability || null,
+                  linkedinUrl: contactData.linkedinUrl || null,
+                  twitterHandle: contactData.twitterHandle || null,
+                  phoneNumber: contactData.phoneNumber || null,
+                  department: contactData.department || null,
+                  location: contactData.location || null,
+                  verificationSource: 'External Provider',
+                  nameConfidenceScore: contactData.nameConfidenceScore || null,
+                  userFeedbackScore: null,
+                  feedbackCount: 0
+                });
+              } catch (error) {
+                console.error("Error processing external provider contact:", error);
+              }
+            }
+          }
+        }
+      }
+      
+      // Respond to the webhook with success
+      return res.status(200).json({
+        success: true,
+        message: `Successfully processed webhook for searchId: ${searchId}`,
+        status
+      });
+      
+    } catch (error) {
+      console.error("Error processing external provider webhook:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error processing webhook",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
+  // External Provider API Routes
+  
+  // Lion Provider Endpoint
+  app.post("/api/external-provider/lion", async (req: Request, res: Response) => {
+    try {
+      const { query } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required parameter: query"
+        });
+      }
+      
+      // Generate callback URL - use actual server host in production
+      const protocol = req.headers['x-forwarded-proto'] || 'http';
+      const host = req.headers.host || 'localhost:5000';
+      const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
+      
+      // Configuration for Lion provider
+      const endpoint = process.env.LEAD_GEN_LION_ENDPOINT || "https://api.leadgenlion.example.com/api/search";
+      const apiKey = process.env.LEAD_GEN_LION_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(500).json({
+          success: false,
+          message: "Lion API key not configured"
+        });
+      }
+      
+      // Make API request to Lion provider
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({ 
+          query, 
+          callbackUrl 
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lion API error (${response.status}): ${errorText}`);
+      }
+      
+      const result = await response.json();
+      
+      return res.status(200).json({
+        success: true,
+        message: "Search request sent to Lead-Gen Lion",
+        searchId: result.searchId,
+        status: result.status
+      });
+      
+    } catch (error) {
+      console.error("Error initiating Lion search:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to initiate Lead-Gen Lion search",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
+  // Rabbit Provider Endpoint
+  app.post("/api/external-provider/rabbit", async (req: Request, res: Response) => {
+    try {
+      const { query } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required parameter: query"
+        });
+      }
+      
+      // Generate callback URL - use actual server host in production
+      const protocol = req.headers['x-forwarded-proto'] || 'http';
+      const host = req.headers.host || 'localhost:5000';
+      const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
+      
+      // Configuration for Rabbit provider
+      const endpoint = process.env.LEAD_GEN_RABBIT_ENDPOINT || "https://api.leadgenrabbit.example.com/api/search";
+      const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(500).json({
+          success: false,
+          message: "Rabbit API key not configured"
+        });
+      }
+      
+      // Make API request to Rabbit provider
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({ 
+          query, 
+          callbackUrl 
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Rabbit API error (${response.status}): ${errorText}`);
+      }
+      
+      const result = await response.json();
+      
+      return res.status(200).json({
+        success: true,
+        message: "Search request sent to Lead-Gen Rabbit",
+        searchId: result.searchId,
+        status: result.status
+      });
+      
+    } catch (error) {
+      console.error("Error initiating Rabbit search:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to initiate Lead-Gen Rabbit search",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+  
+  // Donkey Provider Endpoint
+  app.post("/api/external-provider/donkey", async (req: Request, res: Response) => {
+    try {
+      const { query } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required parameter: query"
+        });
+      }
+      
+      // Generate callback URL - use actual server host in production
+      const protocol = req.headers['x-forwarded-proto'] || 'http';
+      const host = req.headers.host || 'localhost:5000';
+      const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
+      
+      // Configuration for Donkey provider
+      const endpoint = process.env.LEAD_GEN_DONKEY_ENDPOINT || "https://api.leadgendonkey.example.com/api/search";
+      const apiKey = process.env.LEAD_GEN_DONKEY_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(500).json({
+          success: false,
+          message: "Donkey API key not configured"
+        });
+      }
+      
+      // Make API request to Donkey provider
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({ 
+          query, 
+          callbackUrl 
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Donkey API error (${response.status}): ${errorText}`);
+      }
+      
+      const result = await response.json();
+      
+      return res.status(200).json({
+        success: true,
+        message: "Search request sent to Lead-Gen Donkey",
+        searchId: result.searchId,
+        status: result.status
+      });
+      
+    } catch (error) {
+      console.error("Error initiating Donkey search:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to initiate Lead-Gen Donkey search",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
   // New route for enriching multiple contacts
   app.post("/api/enrich-contacts", async (req, res) => {
     try {
