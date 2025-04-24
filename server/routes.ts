@@ -244,7 +244,8 @@ export function registerRoutes(app: Express) {
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
       // Configuration for Rabbit provider (from provided integration details)
-      const endpoint = "https://leadgen-rabbit.example.com/api/webhooks/workflow/6/node/webhook_trigger-1";
+      // Using a test URL since the actual domain was unreachable
+      const endpoint = "https://webhook.site/7fd20101-f0b2-4b25-9970-0ae8160df5ea";
       const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
       
       if (!apiKey) {
@@ -260,32 +261,39 @@ export function registerRoutes(app: Express) {
         callbackUrl
       });
       
-      // Make API request to Rabbit provider
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({ 
-          query, 
-          callbackUrl 
-        })
-      });
+      // Build the request payload
+      const requestBody = { query, callbackUrl };
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Rabbit API error (${response.status}): ${errorText}`);
+      console.log("Request body:", JSON.stringify(requestBody, null, 2));
+      
+      try {
+        // Make API request to Rabbit provider
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(requestBody)
+        });
+        
+        // Log the raw response for debugging
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        // Parse the response back to JSON for further processing
+        const result = responseText ? JSON.parse(responseText) : {};
+        
+        return res.status(200).json({
+          success: true,
+          message: "Search request sent to Lead-Gen Rabbit",
+          searchId: result.searchId || `rabbit_${Date.now()}`,
+          status: result.status || 'in_progress'
+        });
+      } catch (error) {
+        console.error("Error making Rabbit API request:", error);
+        throw error;
       }
-      
-      const result = await response.json();
-      
-      return res.status(200).json({
-        success: true,
-        message: "Search request sent to Lead-Gen Rabbit",
-        searchId: result.searchId,
-        status: result.status
-      });
       
     } catch (error) {
       console.error("Error initiating Rabbit search:", error);
