@@ -500,6 +500,25 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+          
+          {/* External Companies Section */}
+          {recentCompanies.length > 0 && (
+            <Card className="w-full">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>External Provider Results</CardTitle>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Latest results from Lead-Gen Rabbit and other providers
+                </p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <CompanyTable companies={recentCompanies} />
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Search Flow Section - 3 columns */}

@@ -574,6 +574,36 @@ app.get("/api/companies", async (_req, res) => {
   res.json(companies);
 });
 
+// Add a new endpoint to get recent companies from external providers
+app.get("/api/companies/recent", async (_req, res) => {
+  try {
+    // Fetch the most recent companies (limit to 10)
+    const companies = await storage.listCompanies();
+    
+    // Sort by most recently created and limit to 10
+    const recentCompanies = companies
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      })
+      .slice(0, 10);
+    
+    // For each company, get its contacts
+    const companiesWithContacts = await Promise.all(
+      recentCompanies.map(async (company) => {
+        const contacts = await storage.listContactsByCompany(company.id);
+        return { ...company, contacts };
+      })
+    );
+    
+    res.json(companiesWithContacts);
+  } catch (error) {
+    console.error("Error fetching recent companies:", error);
+    res.status(500).json({ message: "Failed to fetch recent companies" });
+  }
+});
+
 app.get("/api/companies/:id", async (req, res) => {
   const id = Number(req.params.id);
   
