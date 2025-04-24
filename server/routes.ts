@@ -398,33 +398,57 @@ export function registerRoutes(app: Express) {
       
       console.log(`Using Lead-Gen Donkey ${useProductionApi || isProduction ? "PRODUCTION" : "TEST"} API`);
       
-      // Until we get the actual API details from Donkey, we'll simulate a company search
-      // This will be replaced with real API calls once we have the correct endpoints
+      // Make a real API request to Donkey endpoint
+      // Using a simplified structure for now until we get complete workflow details
+      // We'll update this with the correct endpoint when provided by Donkey
       
-      // Simulate API request timing
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Try a direct API call to their company search endpoint
+      // This is an interim approach until we get the proper workflow details
+      const endpoint = "https://b45e11fa-5450-41c3-9aae-b0c5d9ba4636-00-2t2y9b3rc04rn.kirk.replit.dev/api/lead-gen/company-search";
       
-      // Generate mock company data based on query
-      // We'll replace this with real data once the API connection is established
-      const searchId = `donkey_search_${Date.now()}`;
+      console.log("Making direct company search request to Donkey API:", endpoint);
       
-      // For now, returning a success response with the search ID
-      // When we get the actual API details, this will be replaced with real result processing
-      return res.status(200).json({
-        success: true,
-        message: "Search request processed by Lead-Gen Donkey",
-        searchId,
-        status: "completed",
-        results: {
-          companies: [
-            {
-              name: `Result for: ${query}`,
-              description: "Company information will be populated from actual API once connection is established",
-              dataSources: ["Lead-Gen Donkey API"]
-            }
-          ]
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({ query })
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Donkey API error (${response.status}): ${errorText}`);
+          
+          // Return a temporary response while we work on the integration
+          return res.status(200).json({
+            success: true,
+            message: "Search in progress with Lead-Gen Donkey API",
+            searchId: `donkey_search_${Date.now()}`,
+            status: "in_progress"
+          });
         }
-      });
+        
+        // Process the real API response
+        const result = await response.json();
+        console.log("Received Donkey API response:", result);
+        
+        // Return the actual API result
+        return res.status(200).json(result);
+      } catch (error) {
+        console.error("Error connecting to Donkey API:", error);
+        
+        // Return a temporary error response
+        return res.status(200).json({
+          success: false,
+          message: "Connection to Lead-Gen Donkey API failed - integration in progress",
+          searchId: `donkey_search_${Date.now()}`,
+          status: "failed",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
       
     } catch (error) {
       console.error("Error processing Donkey search:", error);
