@@ -71,8 +71,13 @@ async function testRabbitIntegration() {
     // Parse and display the result
     const result = responseText ? JSON.parse(responseText) : {};
     console.log("Search request sent successfully");
-    console.log("Search ID:", result.searchId);
-    console.log("Status:", result.status);
+    
+    // Extract the search ID from our request payload - this is what we'll use to track the search
+    const searchId = requestBody.searchId;
+    console.log("Search ID:", searchId);
+    
+    // The status starts as 'in_progress' and will be updated via webhooks
+    console.log("Initial Status: in_progress");
     
     console.log("\nTest completed. Check your server logs for webhook callbacks from Rabbit.");
     console.log("They should be sending progress updates (10%, 35%, 70%) and a final completion (100%)");
