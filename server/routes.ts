@@ -269,12 +269,9 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Rabbit provider (from integration documentation)
-      // For testing purposes, use a webhook.site URL that will capture the request format
-      // In production, this would be the real Lead-Gen Rabbit API endpoint
-      // const workflowId = "6"; // Based on the documentation
-      // const endpoint = `https://api.leadgenrabbit.com/api/webhooks/workflow/${workflowId}/node/webhook_trigger-1`;
-      const endpoint = "https://webhook.site/7fd20101-f0b2-4b25-9970-0ae8160df5ea";
+      // Configuration for Rabbit provider with confirmed production endpoint
+      // Production URL from Lead-Gen Rabbit response
+      const endpoint = "https://lead-rabbit.replit.app/api/webhooks/workflow/6/node/webhook_trigger-1";
       const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
       
       if (!apiKey) {
@@ -322,6 +319,20 @@ export function registerRoutes(app: Express) {
           },
           body: JSON.stringify(requestBody)
         });
+        
+        // Handle rate limiting - if 429 status code, wait and retry
+        if (response.status === 429) {
+          // Get the retry-after header if available or default to 10 seconds
+          const retryAfter = parseInt(response.headers.get('retry-after') || '10', 10);
+          console.log(`Rate limit hit. Retrying after ${retryAfter} seconds.`);
+          
+          // Return a 429 response to the client
+          return res.status(429).json({
+            success: false,
+            message: "Rate limit exceeded. Please try again later.",
+            retryAfter
+          });
+        }
         
         // Log the raw response for debugging
         const responseText = await response.text();
