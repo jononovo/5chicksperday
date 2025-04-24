@@ -2,79 +2,83 @@ import fetch from 'node-fetch';
 
 async function sendExactRabbitPayload() {
   try {
-    // This mirrors the exact payload structure from Rabbit's webhook
+    // This is an exact copy of the JSON payload as reported by Lead-Gen Rabbit
     const payload = {
-      searchId: "rabbit_search_manual_test",
-      status: "completed",
-      progress: 100,
-      results: {
-        companies: [
+      "searchId": "rabbit_search_1745532088419",
+      "status": "completed",
+      "progress": 100,
+      "results": {
+        "companies": [
           {
-            name: "Munley Law",
-            website: "https://munley.com",
-            industry: "Legal Services",
-            location: "Scranton, PA",
-            description: "Personal injury law firm specializing in truck accidents, car accidents, and workers' compensation in Scranton, PA",
-            employeeCount: 32,
-            foundedYear: 1959,
-            headquarters: "Scranton, PA"
+            "name": "Munley Law",
+            "website": "https://www.munley.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Personal injury law firm specializing in truck accidents, workers' compensation and product liability",
+            "employeeCount": 47,
+            "foundedYear": 1959,
+            "headquarters": "Scranton, PA"
           },
           {
-            name: "Scanlon Law",
-            website: "https://scanlonlawfirm.com",
-            industry: "Legal Services",
-            location: "Scranton, PA",
-            description: "Full-service law firm focusing on personal injury, medical malpractice, and estate planning in Scranton",
-            employeeCount: 15,
-            foundedYear: 1985,
-            headquarters: "Scranton, PA"
+            "name": "Mazzoni Karam Petorak & Valvano",
+            "website": "https://www.mkkpvlaw.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Full-service law firm handling criminal defense, personal injury, and business law",
+            "employeeCount": 18,
+            "foundedYear": 1962,
+            "headquarters": "Scranton, PA"
           },
           {
-            name: "Cognetti & Cimini",
-            website: "https://cognetti-law.com",
-            industry: "Legal Services",
-            location: "Scranton, PA",
-            description: "Law firm specializing in family law, divorce, custody, and domestic relations cases in Scranton",
-            employeeCount: 8,
-            foundedYear: 1992,
-            headquarters: "Scranton, PA"
+            "name": "O'Malley & Langan Law Offices",
+            "website": "https://www.omalleylangan.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Workers' compensation and personal injury law firm serving northeastern Pennsylvania",
+            "employeeCount": 23,
+            "foundedYear": 1990,
+            "headquarters": "Scranton, PA"
+          },
+          {
+            "name": "Schwartz Law Firm LLC",
+            "website": "https://www.schwartzlawfirmllc.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "General practice law firm focusing on family law, estate planning, and real estate",
+            "employeeCount": 12,
+            "foundedYear": 2003,
+            "headquarters": "Scranton, PA"
+          },
+          {
+            "name": "Cognetti & Cimini",
+            "website": "https://www.cognetti-law.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Law firm specializing in family law, divorce, and custody matters",
+            "employeeCount": 14,
+            "foundedYear": 1995,
+            "headquarters": "Scranton, PA"
           }
         ],
-        metadata: {
-          moduleType: "COMPANY_SEARCH",
-          validationScores: {
-            companyScore: 95
+        "metadata": {
+          "moduleType": "COMPANY_SEARCH",
+          "validationScores": {
+            "companyScore": 95
           },
-          queryDetails: {
-            original: "lawyers in scranton",
-            refined: "legal services scranton pennsylvania law firms"
+          "queryDetails": {
+            "original": "lawyers in scranton",
+            "refined": "scranton pennsylvania law firms"
           }
         }
       }
     };
 
-    // Send the webhook directly to our endpoint
-    console.log("Sending test webhook payload for Scranton lawyers...");
-    const response = await fetch("https://bear-app.replit.app/api/external-workflow/webhook", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      console.error(`Error: ${response.status} ${response.statusText}`);
-      const errorText = await response.text();
-      console.error("Response:", errorText);
-      return;
-    }
-
-    const data = await response.json();
-    console.log("Webhook response:", data);
+    // Test with the exact same headers and parameters as Rabbit is using
+    console.log("=== Testing with exact Rabbit headers and configuration ===");
+    await testWebhookWithExactRabbitConfig(payload);
     
     // Now check if the companies were added to the database
-    console.log("\nChecking for recent companies after webhook...");
+    console.log("\nChecking for companies after webhook...");
     await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
     
     const companiesResponse = await fetch("https://bear-app.replit.app/api/companies/recent");
@@ -86,7 +90,48 @@ async function sendExactRabbitPayload() {
     });
     
   } catch (error) {
-    console.error("Error sending test webhook:", error.message);
+    console.error("Error in test:", error.message);
+  }
+}
+
+async function testWebhookWithExactRabbitConfig(payload) {
+  const url = "https://Bear-App.replit.app/api/external-workflow/webhook";
+  
+  try {
+    console.log(`Testing webhook at ${url} with exact Rabbit configuration`);
+    
+    // Use the EXACT same headers reported by Rabbit
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-LGR-Search-ID': 'rabbit_search_1745532088419',
+        'X-LGR-Webhook-Type': 'progress_update',
+        'User-Agent': 'LeadGenRabbit/1.0',
+        'Accept': 'application/json',
+        'Connection': 'keep-alive'
+      },
+      body: JSON.stringify(payload),
+      // Add a timeout to mimic Rabbit's behavior
+      timeout: 30000
+    });
+    
+    console.log(`Response status: ${response.status} ${response.statusText}`);
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Response data:", data);
+    } else {
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
+    }
+  } catch (error) {
+    console.error(`Failed to test webhook at ${url}:`, error.message);
+    
+    // This is likely the same error Rabbit is encountering
+    if (error.type === 'request-timeout' || error.message.includes('timeout')) {
+      console.error('\nTIMEOUT ERROR - This matches the error reported by Rabbit');
+      console.error('The webhook is not responding within the expected timeframe (30 seconds)');
+    }
   }
 }
 

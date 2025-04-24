@@ -140,9 +140,34 @@ export function registerRoutes(app: Express) {
       const payload = req.body.data || req.body.payload || req.body;
       console.log("Extracted payload:", JSON.stringify(payload, null, 2));
       
-      const { searchId, status, results, error } = payload as ExternalSearchResult;
+      // Super enhanced debugging for every possible place the searchId might be
+      logWithStorage("Checking all possible locations for searchId:");
+      logWithStorage(`Direct payload.searchId: ${payload.searchId}`);
+      logWithStorage(`req.body.searchId: ${req.body.searchId}`);
+      logWithStorage(`req.query.searchId: ${req.query.searchId}`);
+      logWithStorage(`req.params.searchId: ${req.params.searchId}`);
+      if (payload.data) logWithStorage(`payload.data.searchId: ${payload.data.searchId}`);
+      if (req.body.data) logWithStorage(`req.body.data.searchId: ${req.body.data.searchId}`);
+      
+      // Try to find searchId in various places
+      let searchId = payload.searchId;
+      
+      // If not found directly, check URL parameters
+      if (!searchId && req.query.searchId) {
+        searchId = req.query.searchId as string;
+        logWithStorage(`Using searchId from query parameter: ${searchId}`);
+      }
+      
+      // If still not found, check if it's nested in results
+      if (!searchId && payload.results && payload.results.searchId) {
+        searchId = payload.results.searchId;
+        logWithStorage(`Using searchId from nested results: ${searchId}`);
+      }
+      
+      const { status, results, error } = payload as ExternalSearchResult;
       
       if (!searchId) {
+        logWithStorage("ERROR: No searchId found in any expected location");
         return res.status(400).json({
           success: false,
           message: "Missing required searchId parameter"

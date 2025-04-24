@@ -2,110 +2,111 @@ import fetch from 'node-fetch';
 
 async function simulateRabbitPlumbersWebhook() {
   try {
-    console.log("Simulating Rabbit webhook for plumbers in Seattle...");
-    
-    // Use our local webhook URL
-    const webhookUrl = "http://localhost:5000/api/external-workflow/webhook";
-    
-    console.log("Local webhook URL:", webhookUrl);
-    
-    // The exact payload from Rabbit
-    const plumbersPayload = {
-      "searchId": "rabbit_search_1745531869507",
+    // This is an exact copy of the JSON format from the Rabbit response for "lawyers in Scranton"
+    const payload = {
+      "searchId": "rabbit_search_1745532088419",
       "status": "completed",
       "progress": 100,
       "results": {
         "companies": [
           {
-            "name": "Bob Oates Sewer & Rooter",
-            "website": "https://www.boboates.com",
-            "industry": "Plumbing Services",
-            "location": "Seattle, WA",
-            "description": "Full-service plumbing and sewer repair company serving residential and commercial clients in Seattle",
-            "employeeCount": 38,
-            "foundedYear": 1995,
-            "headquarters": "Seattle, WA"
-          },
-          {
-            "name": "Fischer Plumbing",
-            "website": "https://www.fischerplumbing.com",
-            "industry": "Plumbing Services",
-            "location": "Seattle, WA",
-            "description": "Family-owned plumbing services company specializing in residential and commercial plumbing repairs and installations",
-            "employeeCount": 45,
-            "foundedYear": 1979,
-            "headquarters": "Seattle, WA"
-          },
-          {
-            "name": "Best Plumbing",
-            "website": "https://www.bestplumbing.com",
-            "industry": "Plumbing Services",
-            "location": "Seattle, WA",
-            "description": "Full-service plumbing contractor serving Seattle area homes and businesses since 1968",
-            "employeeCount": 52,
-            "foundedYear": 1968,
-            "headquarters": "Seattle, WA"
-          },
-          {
-            "name": "Fox Plumbing & Heating",
-            "website": "https://www.foxplumbing.com",
-            "industry": "Plumbing & HVAC",
-            "location": "Seattle, WA",
-            "description": "Combined plumbing and heating services for residential and commercial customers throughout the Seattle area",
+            "name": "Munley Law",
+            "website": "https://www.munley.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Personal injury law firm specializing in truck accidents, workers' compensation and product liability",
             "employeeCount": 47,
-            "foundedYear": 1964,
-            "headquarters": "Seattle, WA"
+            "foundedYear": 1959,
+            "headquarters": "Scranton, PA"
           },
           {
-            "name": "South West Plumbing",
-            "website": "https://www.southwestplumbing.biz",
-            "industry": "Plumbing Services",
-            "location": "Seattle, WA",
-            "description": "Family-owned plumbing company providing drain cleaning, water heater installation, and plumbing repairs",
-            "employeeCount": 40,
-            "foundedYear": 1982,
-            "headquarters": "Seattle, WA"
+            "name": "Mazzoni Karam Petorak & Valvano",
+            "website": "https://www.mkkpvlaw.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Full-service law firm handling criminal defense, personal injury, and business law",
+            "employeeCount": 18,
+            "foundedYear": 1962,
+            "headquarters": "Scranton, PA"
+          },
+          {
+            "name": "O'Malley & Langan Law Offices",
+            "website": "https://www.omalleylangan.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Workers' compensation and personal injury law firm serving northeastern Pennsylvania",
+            "employeeCount": 23,
+            "foundedYear": 1990,
+            "headquarters": "Scranton, PA"
+          },
+          {
+            "name": "Schwartz Law Firm LLC",
+            "website": "https://www.schwartzlawfirmllc.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "General practice law firm focusing on family law, estate planning, and real estate",
+            "employeeCount": 12,
+            "foundedYear": 2003,
+            "headquarters": "Scranton, PA"
+          },
+          {
+            "name": "Cognetti & Cimini",
+            "website": "https://www.cognetti-law.com",
+            "industry": "Legal Services",
+            "location": "Scranton, PA",
+            "description": "Law firm specializing in family law, divorce, and custody matters",
+            "employeeCount": 14,
+            "foundedYear": 1995,
+            "headquarters": "Scranton, PA"
           }
         ],
         "metadata": {
           "moduleType": "COMPANY_SEARCH",
           "validationScores": {
-            "companyScore": 91
+            "companyScore": 95
           },
           "queryDetails": {
-            "original": "mid-sized plumbers in seattle",
-            "refined": "seattle plumbing companies 30-60 employees"
+            "original": "lawyers in scranton",
+            "refined": "scranton pennsylvania law firms"
           }
         }
       }
     };
-    
-    console.log("Sending Rabbit's plumbers payload to local webhook...");
-    
-    const response = await fetch(webhookUrl, {
+
+    // Send to both the local and deployed webhook endpoints for testing
+    console.log("Sending test webhook payload to deployed endpoint...");
+    const response = await fetch("https://bear-app.replit.app/api/external-workflow/webhook", {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(plumbersPayload)
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      console.error(`Error: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error("Response:", errorText);
+      return;
+    }
+
+    const data = await response.json();
+    console.log("Webhook response:", data);
+    
+    // Now check if the companies were added to the database
+    console.log("\nChecking for companies after webhook...");
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    
+    const companiesResponse = await fetch("https://bear-app.replit.app/api/companies/recent");
+    const companies = await companiesResponse.json();
+    
+    console.log(`Found ${companies.length} recent companies:`);
+    companies.forEach((company, index) => {
+      console.log(`${index + 1}. ${company.name} (ID: ${company.id})`);
     });
     
-    console.log("Response status:", response.status);
-    const responseText = await response.text();
-    console.log("Response body:", responseText);
-    
-    if (response.ok) {
-      console.log("\n✅ Test completed successfully. Check your server logs to verify data processing.");
-      console.log("You should now see these companies in your companies list:");
-      console.log("- Bob Oates Sewer & Rooter");
-      console.log("- Fischer Plumbing");
-      console.log("- Best Plumbing");
-      console.log("- Fox Plumbing & Heating");
-      console.log("- South West Plumbing");
-    } else {
-      console.error("\n❌ Error testing webhook endpoint. See response details above.");
-    }
-    
   } catch (error) {
-    console.error("Error during test:", error.message);
+    console.error("Error sending test webhook:", error.message);
   }
 }
 
