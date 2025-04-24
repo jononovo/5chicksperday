@@ -45,6 +45,8 @@ export default function Home() {
   const [isSaved, setIsSaved] = useState(false);
   const [pendingContactId, setPendingContactId] = useState<number | null>(null);
   const [isSearchFlowExpanded, setIsSearchFlowExpanded] = useState(true);
+  const [showExternalResults, setShowExternalResults] = useState(false);
+  const [externalCompanies, setExternalCompanies] = useState<CompanyWithContacts[]>([]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -70,6 +72,12 @@ export default function Home() {
 
   const { data: searchApproaches = [] } = useQuery<SearchApproach[]>({
     queryKey: ["/api/search-approaches"],
+  });
+  
+  // Query to fetch the most recent companies (from external providers like Rabbit)
+  const { data: recentCompanies = [], refetch: refetchRecentCompanies } = useQuery<CompanyWithContacts[]>({
+    queryKey: ["/api/companies/recent"],
+    refetchInterval: 5000, // Poll every 5 seconds for new companies
   });
 
   const saveMutation = useMutation({

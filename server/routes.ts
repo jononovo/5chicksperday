@@ -13,6 +13,15 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 
+// Helper function to safely parse an ID parameter
+function parseIdParam(idParam: string): number | null {
+  const id = Number(idParam);
+  if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
+    return null;
+  }
+  return id;
+}
+
 // Define interfaces for external workflow interactions
 interface ExternalSearchRequest {
   query: string;
@@ -566,7 +575,14 @@ app.get("/api/companies", async (_req, res) => {
 });
 
 app.get("/api/companies/:id", async (req, res) => {
-  const company = await storage.getCompany(parseInt(req.params.id));
+  const id = Number(req.params.id);
+  
+  if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
+    res.status(400).json({ message: "Invalid company ID" });
+    return;
+  }
+  
+  const company = await storage.getCompany(id);
   if (!company) {
     res.status(404).json({ message: "Company not found" });
     return;
@@ -708,13 +724,27 @@ app.post("/api/companies/search", async (req, res) => {
 
 // Contacts
 app.get("/api/companies/:companyId/contacts", async (req, res) => {
-  const contacts = await storage.listContactsByCompany(parseInt(req.params.companyId));
+  const id = Number(req.params.companyId);
+  
+  if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
+    res.status(400).json({ message: "Invalid company ID" });
+    return;
+  }
+  
+  const contacts = await storage.listContactsByCompany(id);
   res.json(contacts);
 });
 
 app.post("/api/companies/:companyId/enrich-contacts", async (req, res) => {
   try {
-    const companyId = parseInt(req.params.companyId);
+    const id = Number(req.params.companyId);
+    
+    if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
+      res.status(400).json({ message: "Invalid company ID" });
+      return;
+    }
+    
+    const companyId = id;
     const company = await storage.getCompany(companyId);
 
     if (!company) {
@@ -805,7 +835,14 @@ app.post("/api/companies/:companyId/enrich-contacts", async (req, res) => {
 
 // Add new route for getting a single contact
 app.get("/api/contacts/:id", async (req, res) => {
-  const contact = await storage.getContact(parseInt(req.params.id));
+  const id = Number(req.params.id);
+  
+  if (isNaN(id) || !Number.isInteger(id) || id <= 0) {
+    res.status(400).json({ message: "Invalid contact ID" });
+    return;
+  }
+  
+  const contact = await storage.getContact(id);
   if (!contact) {
     res.status(404).json({ message: "Contact not found" });
     return;
@@ -1021,7 +1058,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 // Add new route for enriching a single contact
 app.post("/api/contacts/:contactId/enrich", async (req, res) => {
   try {
-    const contactId = parseInt(req.params.contactId);
+    const contactId = Number(req.params.contactId);
+    if (isNaN(contactId) || !Number.isInteger(contactId) || contactId <= 0) {
+      return res.status(400).json({ message: "Invalid contact ID" });
+    }
     console.log('Starting enrichment for contact:', contactId);
 
     const contact = await storage.getContact(contactId);
