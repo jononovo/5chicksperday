@@ -19,15 +19,16 @@ export const externalProviders: Record<string, ExternalProvider> = {
   },
   rabbit: {
     name: "Lead-Gen Rabbit",
-    endpoint: "https://api.leadgenrabbit.example.com",
-    apiKey: process.env.LEAD_GEN_RABBIT_API_KEY || "YOUR_LEAD_GEN_RABBIT_API_KEY", // Replace with env var
-    workflowId: "rabbit-workflow-456",
+    endpoint: "https://358f51b5-fd9b-4fb9-82f8-7cf56a3f18d6-00-161sbihgzmt13.worf.replit.dev",
+    apiKey: process.env.LEAD_GEN_RABBIT_API_KEY || "LGR-API-ff82c91d7184d5eeb3f3a142", // For testing
+    workflowId: "6",
   },
   donkey: {
     name: "Lead-Gen Donkey",
-    endpoint: "https://api.leadgendonkey.example.com",
-    apiKey: process.env.LEAD_GEN_DONKEY_API_KEY || "YOUR_LEAD_GEN_DONKEY_API_KEY", // Replace with env var
-    workflowId: "donkey-workflow-789",
+    // Use our own API endpoint for Donkey - simplified direct approach
+    endpoint: "/api/external-provider/donkey", // Use relative URL to hit our own backend
+    apiKey: "",  // Not needed as our backend handles authentication
+    workflowId: "", // Not needed for simplified approach
   },
 };
 
@@ -58,29 +59,54 @@ export async function triggerExternalSearch(
   }
   
   try {
-    // Construct webhook URL with workflowId
-    const webhookUrl = `${provider.endpoint}/api/webhooks/workflow/${provider.workflowId}/node/webhook_trigger-1`;
-    
-    // Make API request to the provider
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${provider.apiKey}`
-      },
-      body: JSON.stringify({
-        query: params.query,
-        callbackUrl: params.callbackUrl,
-        ...params.additionalParams
-      })
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Provider API error (${response.status}): ${errorText}`);
+    // Special handling for Donkey - simplified direct API
+    if (providerId === 'donkey') {
+      console.log(`Triggering simplified ${provider.name} search with query:`, params.query);
+      
+      // Direct API call to our backend endpoint
+      const response = await fetch(provider.endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query: params.query
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Provider API error (${response.status}): ${errorText}`);
+      }
+      
+      return await response.json();
+    } 
+    // Standard workflow for other providers
+    else {
+      // Construct webhook URL with workflowId
+      const webhookUrl = `${provider.endpoint}/api/webhooks/workflow/${provider.workflowId}/node/webhook_trigger-1`;
+      
+      // Make API request to the provider
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${provider.apiKey}`
+        },
+        body: JSON.stringify({
+          query: params.query,
+          callbackUrl: params.callbackUrl,
+          ...params.additionalParams
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Provider API error (${response.status}): ${errorText}`);
+      }
+      
+      return await response.json();
     }
-    
-    return await response.json();
   } catch (error) {
     console.error(`Error triggering ${provider.name} search:`, error);
     throw error;
