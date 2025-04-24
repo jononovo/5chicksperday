@@ -350,163 +350,18 @@ export function registerRoutes(app: Express) {
       } catch (error) {
         console.error("Error calling Lead-Gen Rabbit API:", error);
         
-        // If the API call fails, fall back to using the test-rabbit-exact-payload.js approach
-        console.log("Falling back to test data approach...");
-        
-        // Create a webhook request to our own endpoint with test data
-        try {
-          // Use the test data webhook approach
-          console.log("Testing with rabbit-exact-payload approach...");
-          
-          // This is the same test payload used in test-rabbit-exact-payload.js
-          const testPayload = {
-            "searchId": searchId,
-            "status": "completed",
-            "progress": 100,
-            "results": {
-              "companies": [
-                {
-                  "name": "ExtraHop Networks",
-                  "website": "https://www.extrahop.com",
-                  "industry": "Cybersecurity",
-                  "location": "Seattle, WA",
-                  "description": "Cloud-native network detection and response solutions for enterprise security",
-                  "employeeCount": 450,
-                  "foundedYear": 2007,
-                  "headquarters": "Seattle, WA"
-                },
-                {
-                  "name": "Critical Insight",
-                  "website": "https://criticalinsight.com",
-                  "industry": "Cybersecurity",
-                  "location": "Seattle, WA",
-                  "description": "Managed detection and response services focusing on cloud environments",
-                  "employeeCount": 126,
-                  "foundedYear": 2011,
-                  "headquarters": "Seattle, WA"
-                },
-                {
-                  "name": "Polyverse",
-                  "website": "https://polyverse.com",
-                  "industry": "Cybersecurity",
-                  "location": "Bellevue, WA",
-                  "description": "Moving target defense and zero-trust security solutions for enterprise and cloud infrastructure",
-                  "employeeCount": 85,
-                  "foundedYear": 2015,
-                  "headquarters": "Bellevue, WA"
-                },
-                {
-                  "name": "Cyemptive Technologies",
-                  "website": "https://www.cyemptive.com",
-                  "industry": "Cybersecurity",
-                  "location": "Snohomish, WA",
-                  "description": "Advanced threat protection for cloud environments and critical infrastructure",
-                  "employeeCount": 67,
-                  "foundedYear": 2018,
-                  "headquarters": "Snohomish, WA"
-                },
-                {
-                  "name": "Auth0",
-                  "website": "https://auth0.com",
-                  "industry": "Identity Management",
-                  "location": "Bellevue, WA",
-                  "description": "Identity platform providing secure access for cloud applications",
-                  "employeeCount": 850,
-                  "foundedYear": 2013,
-                  "headquarters": "Bellevue, WA"
-                }
-              ],
-              "metadata": {
-                "moduleType": "COMPANY_SEARCH",
-                "validationScores": {
-                  "companyScore": 89
-                },
-                "queryDetails": {
-                  "original": query,
-                  "refined": query
-                }
-              }
-            }
-          };
-          
-          // Generate companies based on the actual query for Austin
-          if (query.toLowerCase().includes('austin')) {
-            testPayload.results.companies = [
-              {
-                "name": "SparkCognition",
-                "website": "https://www.sparkcognition.com",
-                "industry": "Cybersecurity",
-                "location": "Austin, TX",
-                "description": "AI-powered cyber defense solutions for critical infrastructure and enterprise security",
-                "employeeCount": 320,
-                "foundedYear": 2013,
-                "headquarters": "Austin, TX"
-              },
-              {
-                "name": "Praetorian",
-                "website": "https://www.praetorian.com",
-                "industry": "Cybersecurity",
-                "location": "Austin, TX",
-                "description": "Security engineering and offensive security testing for enterprise organizations",
-                "employeeCount": 85,
-                "foundedYear": 2010,
-                "headquarters": "Austin, TX"
-              },
-              {
-                "name": "CyberDefenses Inc",
-                "website": "https://cyberdefenses.com",
-                "industry": "Cybersecurity",
-                "location": "Round Rock, TX",
-                "description": "Managed cybersecurity services and security operations center for businesses",
-                "employeeCount": 110,
-                "foundedYear": 2001,
-                "headquarters": "Round Rock, TX"
-              },
-              {
-                "name": "Armor Defense",
-                "website": "https://www.armor.com",
-                "industry": "Cloud Security",
-                "location": "Austin, TX",
-                "description": "Secure cloud infrastructure and compliance solutions for regulated industries",
-                "employeeCount": 175,
-                "foundedYear": 2009,
-                "headquarters": "Austin, TX"
-              },
-              {
-                "name": "SailPoint",
-                "website": "https://www.sailpoint.com",
-                "industry": "Identity Security",
-                "location": "Austin, TX",
-                "description": "Enterprise identity governance and security for cloud environments",
-                "employeeCount": 1200,
-                "foundedYear": 2005,
-                "headquarters": "Austin, TX"
-              }
-            ];
-          }
-          
-          // Directly call our own webhook endpoint with this test data
-          fetch(callbackUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(testPayload)
-          }).then(() => {
-            console.log("Test data sent to webhook successfully");
-          }).catch(err => {
-            console.error("Error sending test data to webhook:", err);
-          });
-          
-          // Return success response to the client
-          return res.status(200).json({
-            success: true,
-            message: "Search request accepted (using test data)",
-            searchId,
-            status: 'in_progress'
-          });
-        } catch (fallbackError) {
-          console.error("Even fallback approach failed:", fallbackError);
-          throw error; // Throw the original error
+        // Log the errors to console for debugging
+        if (error instanceof Error) {
+          console.error(`API Error Details: ${error.message}`);
         }
+        
+        // Return a meaningful error indicating the API is not available
+        return res.status(503).json({
+          success: false,
+          message: "API not available",
+          error: error instanceof Error ? error.message : "Unknown error connecting to Lead-Gen Rabbit API",
+          searchId
+        });
       }
       
     } catch (error) {
