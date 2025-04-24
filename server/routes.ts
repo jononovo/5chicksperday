@@ -87,6 +87,42 @@ export function registerRoutes(app: Express) {
     logBuffer.length = 0;
     res.json({ success: true, message: "Logs cleared" });
   });
+  
+  // Add webhook status check endpoint for quick verification
+  app.get("/api/debug/webhook-status", async (_req, res) => {
+    try {
+      // Find logs related to webhooks
+      const webhookLogs = logBuffer.filter(log => 
+        log.message.includes("WEBHOOK RECEIVED") || 
+        log.message.includes("searchId") || 
+        log.message.includes("API")
+      );
+      
+      // Get most recently created companies
+      const companies = await storage.listCompanies();
+      const recentCompanies = companies
+        .sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        })
+        .slice(0, 5);
+      
+      return res.json({
+        webhookActivity: webhookLogs.length > 0,
+        recentWebhookHits: webhookLogs.length,
+        lastWebhookLogs: webhookLogs.slice(-10), // last 10 webhook-related logs
+        recentCompanies: recentCompanies,
+        lastChecked: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error checking webhook status:", error);
+      return res.status(500).json({ 
+        message: "Failed to check webhook status",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
