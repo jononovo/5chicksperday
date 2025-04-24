@@ -63,12 +63,31 @@ export function registerRoutes(app: Express) {
         });
       }
       
-      // Process results if status is completed
-      if (status === 'completed' && results) {
+      // Process all stages of results
+      if (results) {
+        let source = 'External Provider';
+        
+        // Update source information if available
+        if (results.metadata?.moduleType) {
+          source = `Lead-Gen Rabbit: ${results.metadata.moduleType}`;
+        }
+        
+        const isInProgress = status === 'in_progress';
+        const stage = results.stage || 'unknown';
+        const progress = results.progress || 0;
+        
+        // Log progress information
+        if (isInProgress) {
+          console.log(`Search ${searchId} in progress: Stage ${stage}, Progress ${progress}%`);
+        }
+        
         // Store companies in the database
         if (results.companies && Array.isArray(results.companies)) {
           for (const companyData of results.companies) {
             try {
+              // Check if this is a partial or complete result
+              const isPartial = isInProgress || stage !== 'EMAIL_DISCOVERY';
+              
               // Create company record
               const company = await storage.createCompany({
                 name: companyData.name,
@@ -99,13 +118,15 @@ export function registerRoutes(app: Express) {
                     phoneNumber: contactData.phoneNumber || null,
                     department: contactData.department || null,
                     location: contactData.location || null,
-                    verificationSource: 'External Provider',
+                    verificationSource: source,
                     nameConfidenceScore: contactData.nameConfidenceScore || null,
                     userFeedbackScore: null,
                     feedbackCount: 0
                   });
                 }
               }
+              
+              console.log(`Processed company: ${companyData.name} with ${companyData.contacts?.length || 0} contacts`);
             } catch (error) {
               console.error("Error processing external provider company:", error);
             }
@@ -129,7 +150,7 @@ export function registerRoutes(app: Express) {
                   phoneNumber: contactData.phoneNumber || null,
                   department: contactData.department || null,
                   location: contactData.location || null,
-                  verificationSource: 'External Provider',
+                  verificationSource: source,
                   nameConfidenceScore: contactData.nameConfidenceScore || null,
                   userFeedbackScore: null,
                   feedbackCount: 0
@@ -139,6 +160,11 @@ export function registerRoutes(app: Express) {
               }
             }
           }
+        }
+        
+        // Store validation metadata if available
+        if (results.metadata?.validationScores) {
+          console.log("Validation scores:", results.metadata.validationScores);
         }
       }
       
@@ -243,9 +269,10 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Rabbit provider (from provided integration details)
-      // Using a test URL since the actual domain was unreachable
-      const endpoint = "https://webhook.site/7fd20101-f0b2-4b25-9970-0ae8160df5ea";
+      // Configuration for Rabbit provider (from integration documentation)
+      // Use the production endpoint with a real workflowId
+      const workflowId = "6"; // Based on the documentation
+      const endpoint = `https://api.leadgenrabbit.com/api/webhooks/workflow/${workflowId}/node/webhook_trigger-1`;
       const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
       
       if (!apiKey) {
@@ -261,8 +288,25 @@ export function registerRoutes(app: Express) {
         callbackUrl
       });
       
-      // Build the request payload
-      const requestBody = { query, callbackUrl };
+      // Build the request payload according to the integration documentation
+      const requestBody = {
+        searchId: `rabbit_search_${Date.now()}`,
+        query,
+        moduleTypes: ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
+        configuration: {
+          incrementalUpdates: true,
+          validationThresholds: {
+            companyScore: 60,
+            contactScore: 70,
+            emailScore: 65
+          },
+          filterCriteria: {
+            // Can be customized based on user input in the future
+            companySize: { min: 10, max: 500 }
+          }
+        },
+        callbackUrl
+      };
       
       console.log("Request body:", JSON.stringify(requestBody, null, 2));
       
