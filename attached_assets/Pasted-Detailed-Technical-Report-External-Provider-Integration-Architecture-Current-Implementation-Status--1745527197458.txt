@@ -1,0 +1,157 @@
+Detailed Technical Report: External Provider Integration Architecture
+Current Implementation Status
+We have been implementing a multi-provider integration architecture for our business intelligence platform, focusing on three key external data providers: Lead-Gen Rabbit, Lead-Gen Donkey, and Perplexity AI. Each integration follows a standardized pattern while accommodating provider-specific requirements.
+
+Completed Work
+Core Webhook Architecture
+
+Established a standardized webhook endpoint at /api/external-workflow/webhook that can receive callbacks from all external providers
+Implemented incremental update processing with support for partial results during search operations
+Created proper data transformation layers to convert provider-specific formats into our internal data model
+Set up company and contact storage operations to handle incoming data in real-time
+Lead-Gen Rabbit Integration
+
+Successfully implemented initial API connection to Rabbit's webhook workflow system
+Set up proper authentication with Bearer token using environment variable LEAD_GEN_RABBIT_API_KEY
+Configured development endpoint at https://358f51b5-fd9b-4fb9-82f8-7cf56a3f18d6-00-161sbihgzmt13.worf.replit.dev/api/webhooks/workflow/6/node/webhook_trigger-1
+Established callback URL mechanism to receive incremental search results (10%, 35%, 70% milestones confirmed working)
+Created proper request payload format with search configuration, validation thresholds, and callback URLs
+Implemented rate limiting handling with retry-after header support
+Debugging issue with final 100% completion webhook not being received
+Lead-Gen Donkey Integration
+
+Initial API integration setup with endpoint configuration
+Authentication mechanism using either test key LEAD_GEN_DONKEY_API_KEY or production key LEAD_GEN_DONKEY_PROD_API_KEY
+Modified client-side code to support direct company search without webhook dependencies
+Implemented dynamic environment selection logic to support dev/test/prod environments
+Created /api/external-provider/donkey endpoint to handle Donkey-specific requests
+Building direct integration path for company search component
+Client-Side Integration
+
+Implemented triggerExternalSearch function in client/src/lib/externalSearchApi.ts to handle multi-provider requests
+Added provider-specific handling for Rabbit, Donkey, and future providers
+Created in-memory storage for tracking active searches and their status
+Built update mechanisms for search status progression
+Implemented error handling and reporting for failed searches
+Current Focus
+Lead-Gen Rabbit Completion Webhooks
+
+Debugging the issue with the final 100% completion webhook
+Verifying our webhook endpoint correctly processes and stores completed search results
+Ensuring we're properly handling all required fields in the company results
+Testing webhooks with proper format requirements including status, progress, and company fields
+Lead-Gen Donkey Direct API
+
+Implementing direct API integration for company search functionality
+Building step-by-step component integration for search modules
+Updated documentation on integration approach in docs/lead-gen-donkey-simplified-integration.md
+Technical Implementation Details
+Webhook Handler Architecture
+app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
+  try {
+    const { searchId, status, results, error } = req.body as ExternalSearchResult;
+    
+    // Validate request
+    if (!searchId || !['in_progress', 'completed', 'failed'].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid parameters" });
+    }
+    
+    // Process results based on status
+    if (results) {
+      let source = 'External Provider';
+      if (results.metadata?.moduleType) {
+        source = `Lead-Gen Rabbit: ${results.metadata.moduleType}`;
+      }
+      
+      // Store companies and contacts in database
+      if (results.companies && Array.isArray(results.companies)) {
+        for (const companyData of results.companies) {
+          // Store company
+          const company = await storage.createCompany({
+            name: companyData.name,
+            website: companyData.website || null,
+            industry: companyData.industry || null,
+            // Other fields...
+          });
+          
+          // Store associated contacts
+          if (companyData.contacts && Array.isArray(companyData.contacts)) {
+            for (const contactData of companyData.contacts) {
+              await storage.createContact({
+                companyId: company.id,
+                name: contactData.name,
+                // Other fields...
+              });
+            }
+          }
+        }
+      }
+    }
+    
+    return res.status(200).json({
+      success: true,
+      message: `Successfully processed webhook for searchId: ${searchId}`,
+      status
+    });
+  } catch (error) {
+    // Error handling
+  }
+});
+Provider Interface Structure
+interface ExternalProvider {
+  name: string;
+  endpoint: string;
+  apiKey: string;
+  workflowId: string;
+}
+export const externalProviders: Record<string, ExternalProvider> = {
+  'rabbit': {
+    name: 'Lead-Gen Rabbit',
+    endpoint: 'https://358f51b5-fd9b-4fb9-82f8-7cf56a3f18d6-00-161sbihgzmt13.worf.replit.dev',
+    apiKey: process.env.LEAD_GEN_RABBIT_API_KEY || '',
+    workflowId: '6'
+  },
+  'donkey': {
+    name: 'Lead-Gen Donkey',
+    endpoint: 'https://b45e11fa-5450-41c3-9aae-b0c5d9ba4636-00-2t2y9b3rc04rn.kirk.replit.dev/api/lead-gen/company-search',
+    apiKey: process.env.LEAD_GEN_DONKEY_API_KEY || '',
+    workflowId: '1'
+  }
+};
+Future Development Plan
+Component-by-Component Integration
+
+Complete integration of company search components with all providers
+Add decision-maker finder integration endpoints for each provider
+Implement email discovery API endpoints for high-quality contact data
+Create comprehensive error handling and retry mechanisms
+Webhook Protocol Standardization
+
+Finalize webhook format for all providers to ensure consistent data processing
+Implement proper validation and transformation for provider-specific data formats
+Add authentication measures for increased webhook security
+Provider-Specific Optimizations
+
+For Lead-Gen Rabbit: Complete the 100% completion webhook handling
+For Lead-Gen Donkey: Migrate from direct API to full webhook workflow once available
+Add specialized endpoints for each search component (company search, decision maker, emails)
+Client-Side UI Integration
+
+Create provider selection interface in the search UI
+Implement real-time search status reporting from webhook callbacks
+Add comprehensive result viewing and management tools
+Implement provider-specific configuration options
+Monitoring and Reliability
+
+Add logging infrastructure to track all provider interactions
+Implement retry mechanisms for failed requests
+Create alerting for rate limit issues or provider downtime
+Build dashboard for monitoring search statuses across providers
+Data Processing Pipeline Improvements
+
+Enhance company/contact data extraction from provider responses
+Implement data validation and enrichment for incomplete fields
+Add data deduplication mechanisms
+Create conflict resolution strategies for differing provider data
+This multi-provider integration architecture allows us to leverage the strengths of different data sources while maintaining a consistent interface for our users. The webhook-based approach enables asynchronous processing of long-running searches while providing real-time updates on search progress.
+
