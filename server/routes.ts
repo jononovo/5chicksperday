@@ -382,9 +382,10 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Donkey provider
-      const endpoint = process.env.LEAD_GEN_DONKEY_ENDPOINT || "https://api.leadgendonkey.example.com/api/search";
-      const apiKey = process.env.LEAD_GEN_DONKEY_API_KEY;
+      // Configuration for Donkey provider (test environment)
+      // Will be updated with the final endpoint once Donkey completes their API standardization
+      const endpoint = "https://api.leadgendonkey.example.com/v1";
+      const apiKey = process.env.LEAD_GEN_DONKEY_API_KEY; // LGD-TEST-1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT
       
       if (!apiKey) {
         return res.status(500).json({
@@ -393,6 +394,35 @@ export function registerRoutes(app: Express) {
         });
       }
       
+      console.log("Sending request to Lead-Gen Donkey:", {
+        endpoint,
+        query,
+        callbackUrl
+      });
+      
+      // Build the request payload according to our standardized format
+      // This format will be supported once Donkey updates their API (within 48 hours)
+      const requestBody = {
+        searchId: `donkey_search_${Date.now()}`,
+        query,
+        moduleTypes: ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
+        configuration: {
+          incrementalUpdates: true,
+          validationThresholds: {
+            companyScore: 60,
+            contactScore: 70,
+            emailScore: 65
+          },
+          filterCriteria: {
+            // Can be customized based on user input in the future
+            companySize: { min: 10, max: 500 }
+          }
+        },
+        callbackUrl
+      };
+      
+      console.log("Request body:", JSON.stringify(requestBody, null, 2));
+      
       // Make API request to Donkey provider
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -400,10 +430,7 @@ export function registerRoutes(app: Express) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`
         },
-        body: JSON.stringify({ 
-          query, 
-          callbackUrl 
-        })
+        body: JSON.stringify(requestBody)
       });
       
       if (!response.ok) {

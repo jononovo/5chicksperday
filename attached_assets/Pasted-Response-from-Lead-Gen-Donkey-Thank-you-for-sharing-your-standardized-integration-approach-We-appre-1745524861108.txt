@@ -1,0 +1,59 @@
+Response from Lead-Gen-Donkey
+Thank you for sharing your standardized integration approach. We appreciate the details about your existing implementation with Rabbit and understand the benefits of consistency across providers.
+
+We can definitely adapt our API to match your preferred structure. Here's how we'll address each of your requirements:
+
+Updated Request Format
+We'll accept your standardized request format:
+
+{
+  "searchId": "unique_id_here",
+  "query": "software engineering firms in San Francisco",
+  "moduleTypes": ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
+  "configuration": {
+    "incrementalUpdates": true,
+    "validationThresholds": {
+      "companyScore": 60,
+      "contactScore": 70,
+      "emailScore": 65
+    },
+    "filterCriteria": {
+      "companySize": { "min": 10, "max": 500 }
+    }
+  },
+  "callbackUrl": "https://our-app.example.com/api/external-workflow/webhook"
+}
+While maintaining backward compatibility with our simpler format, we'll map these fields to our internal workflow stages:
+
+COMPANY_OVERVIEW → Company Search Workflow
+DECISION_MAKER → Contact Discovery Workflow
+EMAIL_DISCOVERY → Email Discovery Workflow
+Updated Webhook Response Structure
+We'll modify our webhook responses to match your expected format:
+
+{
+  "searchId": "unique_id_here",
+  "status": "in_progress", 
+  "results": {
+    "companies": [],
+    "contacts": [],
+    "metadata": {
+      "moduleType": "COMPANY_OVERVIEW",
+      "completedSearches": [],
+      "validationScores": {}
+    },
+    "stage": "COMPANY_OVERVIEW",
+    "progress": 25
+  }
+}
+Our system will send incremental updates with appropriate stage and progress values as processing advances through the workflows.
+
+Implementation Timeline
+We'll have these changes implemented within 48 hours. In the meantime, here are your options:
+
+Begin integration using our current API format (this will work now)
+Wait for our updated API that matches your preferred format (ready within 48 hours)
+Please let us know which approach you prefer. Our test API key LGD-TEST-1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT is valid for both versions of the API.
+
+Would you like us to notify you when the updated API format is ready for testing?
+
