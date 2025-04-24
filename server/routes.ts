@@ -269,9 +269,12 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Rabbit provider with confirmed production endpoint
-      // Production URL from Lead-Gen Rabbit response
-      const endpoint = "https://lead-rabbit.replit.app/api/webhooks/workflow/6/node/webhook_trigger-1";
+      // Configuration for Rabbit provider with development endpoint for testing
+      // Development URL from Lead-Gen Rabbit response for enhanced logging and debugging
+      const endpoint = "https://358f51b5-fd9b-4fb9-82f8-7cf56a3f18d6-00-161sbihgzmt13.worf.replit.dev/api/webhooks/workflow/6/node/webhook_trigger-1";
+      
+      // Production URL (will be used after successful testing)
+      // const endpoint = "https://lead-rabbit.replit.app/api/webhooks/workflow/6/node/webhook_trigger-1";
       const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
       
       if (!apiKey) {
