@@ -13,6 +13,41 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 
+// Define interfaces for external workflow interactions
+interface ExternalSearchRequest {
+  searchId?: string;
+  query: string;
+  moduleTypes?: string[];
+  configuration?: {
+    incrementalUpdates?: boolean;
+    validationThresholds?: {
+      companyScore?: number;
+      contactScore?: number;
+      emailScore?: number;
+    };
+    filterCriteria?: Record<string, any>;
+  };
+  callbackUrl?: string;
+}
+
+interface ExternalSearchResult {
+  searchId: string;
+  status: 'in_progress' | 'completed' | 'failed';
+  stage?: string;
+  progress?: number;
+  timestamp: string;
+  results?: {
+    companies?: any[];
+    contacts?: any[];
+    metadata?: {
+      moduleType?: string;
+      completedSearches?: string[];
+      validationScores?: Record<string, number>;
+    };
+  };
+  error?: string;
+}
+
 export function registerRoutes(app: Express) {
   // New route for enriching multiple contacts
   app.post("/api/enrich-contacts", async (req, res) => {
