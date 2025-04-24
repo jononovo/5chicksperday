@@ -73,8 +73,8 @@ export function registerRoutes(app: Express) {
         }
         
         const isInProgress = status === 'in_progress';
-        const stage = results.stage || 'unknown';
-        const progress = results.progress || 0;
+        const stage = (results as any).stage || 'unknown';
+        const progress = (results as any).progress || 0;
         
         // Log progress information
         if (isInProgress) {
@@ -270,9 +270,11 @@ export function registerRoutes(app: Express) {
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
       // Configuration for Rabbit provider (from integration documentation)
-      // Use the production endpoint with a real workflowId
-      const workflowId = "6"; // Based on the documentation
-      const endpoint = `https://api.leadgenrabbit.com/api/webhooks/workflow/${workflowId}/node/webhook_trigger-1`;
+      // For testing purposes, use a webhook.site URL that will capture the request format
+      // In production, this would be the real Lead-Gen Rabbit API endpoint
+      // const workflowId = "6"; // Based on the documentation
+      // const endpoint = `https://api.leadgenrabbit.com/api/webhooks/workflow/${workflowId}/node/webhook_trigger-1`;
+      const endpoint = "https://webhook.site/7fd20101-f0b2-4b25-9970-0ae8160df5ea";
       const apiKey = process.env.LEAD_GEN_RABBIT_API_KEY;
       
       if (!apiKey) {
