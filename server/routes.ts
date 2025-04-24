@@ -382,14 +382,24 @@ export function registerRoutes(app: Express) {
       const host = req.headers.host || 'localhost:5000';
       const callbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Configuration for Donkey provider (test environment)
-      // Using the test environment with limited data and rate limits (100 requests/day)
-      // Will be updated to production endpoint with a PROD key when ready for production
+      // Configuration for Donkey provider - supporting both test and production environments
+      const useProductionApi = process.env.LEAD_GEN_DONKEY_USE_PRODUCTION === "true";
       const isProduction = process.env.NODE_ENV === "production";
       
-      // For now, we're using the test endpoint and test API key
-      const endpoint = "https://api.leadgendonkey.example.com/v1";
-      const apiKey = process.env.LEAD_GEN_DONKEY_API_KEY; // Test key: LGD-TEST-1aB2cD3eF4gH5iJ6kL7mN8oP9qR0sT
+      // Determine which endpoint and API key to use based on configuration
+      let endpoint, apiKey;
+      
+      if (useProductionApi || isProduction) {
+        // Production configuration - Premium tier: 10,000 requests/day
+        endpoint = "https://api.leadgendonkey.com/v1"; // Production endpoint
+        apiKey = process.env.LEAD_GEN_DONKEY_PROD_API_KEY;
+        console.log("Using Lead-Gen Donkey PRODUCTION API");
+      } else {
+        // Test configuration - 100 requests/day, limited data quality
+        endpoint = "https://api.leadgendonkey.example.com/v1"; // Test endpoint
+        apiKey = process.env.LEAD_GEN_DONKEY_API_KEY;
+        console.log("Using Lead-Gen Donkey TEST API");
+      }
       
       if (!apiKey) {
         return res.status(500).json({
