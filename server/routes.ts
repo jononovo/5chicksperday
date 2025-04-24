@@ -51,14 +51,53 @@ interface ExternalSearchResult {
   error?: string;
 }
 
+// Store recent logs for debugging
+const logBuffer: {timestamp: string, message: string, type: string}[] = [];
+const MAX_LOG_ENTRIES = 100;
+
+// Custom logger that also stores logs
+function logWithStorage(message: string, type = 'info') {
+  const timestamp = new Date().toISOString();
+  const logEntry = { timestamp, message, type };
+  
+  // Store in our buffer
+  logBuffer.push(logEntry);
+  
+  // Keep buffer at a reasonable size
+  if (logBuffer.length > MAX_LOG_ENTRIES) {
+    logBuffer.shift();
+  }
+  
+  // Also log to console
+  if (type === 'error') {
+    console.error(`[${timestamp}] ${message}`);
+  } else {
+    console.log(`[${timestamp}] ${message}`);
+  }
+}
+
 export function registerRoutes(app: Express) {
+  // Log endpoint for remote access to application logs
+  app.get("/api/debug/logs", (_req, res) => {
+    res.json({ logs: logBuffer });
+  });
+  
+  // Clear logs endpoint
+  app.post("/api/debug/logs/clear", (_req, res) => {
+    logBuffer.length = 0;
+    res.json({ success: true, message: "Logs cleared" });
+  });
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
-      console.log("============ WEBHOOK RECEIVED ============");
-      console.log("Received webhook from external provider at " + new Date().toISOString());
-      console.log("Headers:", req.headers);
-      console.log("Body:", JSON.stringify(req.body, null, 2));
+      logWithStorage("============ WEBHOOK RECEIVED ============");
+      logWithStorage("Received webhook from external provider at " + new Date().toISOString());
+      logWithStorage("Headers: " + JSON.stringify(req.headers, null, 2));
+      logWithStorage("Body: " + JSON.stringify(req.body, null, 2));
+      
+      // Enhanced debugging for webhook payload
+      logWithStorage("Request IP: " + req.ip);
+      logWithStorage("User-Agent: " + req.headers['user-agent']);
       
       // Handle various payload formats
       // Some webhook providers might wrap the entire payload in a "data" or "payload" field
@@ -297,6 +336,8 @@ export function registerRoutes(app: Express) {
       // This ensures Lead-Gen Rabbit can consistently reach our webhook endpoint
       const deployedUrl = "https://Bear-App.replit.app";
       const callbackUrl = `${deployedUrl}/api/external-workflow/webhook`;
+      
+      console.log(`Using webhook callback URL: ${callbackUrl}`); // Added for debugging
       
       // Fallback for local development if needed
       // const protocol = req.headers['x-forwarded-proto'] || 'http';
