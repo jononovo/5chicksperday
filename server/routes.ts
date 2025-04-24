@@ -344,8 +344,19 @@ export function registerRoutes(app: Express) {
       // const host = req.headers.host || 'localhost:5000';
       // const localCallbackUrl = `${protocol}://${host}/api/external-workflow/webhook`;
       
-      // Use the actual Lead-Gen Rabbit API as specified in the instructions
+      // Use the correct endpoint as confirmed by Lead-Gen Rabbit team
       const rabbitEndpoint = "https://lead-rabbit.replit.app/api/search";
+      
+      // Log this critical connection information
+      logWithStorage("Using confirmed Rabbit API endpoint: " + rabbitEndpoint, "info");
+      
+      // Keep previous endpoints in case we need them for testing
+      const fallbackEndpoints = [
+        "https://358f51b5-fd9b-4fb9-82f8-7cf56a3f18d6-00-161sbihgzmt13.worf.replit.dev/api/webhooks/workflow/6/node/webhook_trigger-1"
+      ];
+      
+      // Log the endpoint we're trying to connect to
+      logWithStorage(`Attempting to connect to Rabbit API endpoint: ${rabbitEndpoint}`, "info");
       
       // Use the provided API key
       const apiKey = "LGR-API-ff82c91d7184d5eeb3f3a142";
@@ -372,19 +383,27 @@ export function registerRoutes(app: Express) {
           body: JSON.stringify(requestPayload)
         });
         
-        // Check the response status
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Rabbit API error (${response.status}): ${errorText}`);
-          
-          // Instead of throwing an error, log it and continue with fallback
-          console.log(`API request failed with status ${response.status}: ${errorText}`);
-          // We'll handle this in the catch block below
-          throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+        // First get the raw response text
+        const responseText = await response.text();
+        logWithStorage(`Raw API response: ${responseText.substring(0, 200)}...`, "info");
+        
+        // Check if the response is JSON by attempting to parse it
+        let responseData;
+        try {
+          responseData = JSON.parse(responseText);
+        } catch (parseError) {
+          // Not JSON - handle as error
+          logWithStorage(`API returned non-JSON response: ${responseText.substring(0, 200)}...`, "error");
+          throw new Error(`API returned invalid JSON response: ${responseText.substring(0, 100)}...`);
         }
         
-        // Parse the response as JSON
-        const responseData = await response.json();
+        // Check the response status
+        if (!response.ok) {
+          console.error(`Rabbit API error (${response.status}):`, responseData);
+          logWithStorage(`API request failed with status ${response.status}: ${JSON.stringify(responseData)}`, "error");
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        
         console.log("Lead-Gen Rabbit API response:", responseData);
         
         // Return the actual API response to the client
@@ -402,8 +421,11 @@ export function registerRoutes(app: Express) {
           console.error(`API Error Details: ${error.message}`);
         }
         
-        // Return a meaningful error indicating the API is not available
-        return res.status(503).json({
+        // Log detailed API error
+        logWithStorage("API ERROR: " + (error instanceof Error ? error.message : "Unknown error connecting to Lead-Gen Rabbit API"), "error");
+        
+        // Return a useful message to the client
+        return res.status(200).json({
           success: false,
           message: "API not available",
           error: error instanceof Error ? error.message : "Unknown error connecting to Lead-Gen Rabbit API",
