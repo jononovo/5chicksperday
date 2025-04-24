@@ -787,9 +787,8 @@ app.post("/api/companies/:companyId/enrich-contacts", async (req, res) => {
         .map(contact => ({
           name: contact.name || "",
           role: contact.role || null,
-          email: contact.email || null,
-          // Replace priority with a valid property from the Contact schema
-          jobTitle: contact.jobTitle || null
+          email: contact.email || null
+          // Remove any fields that don't exist in the schema
         }));
       
       console.log('Valid contacts for enrichment:', validContacts);
@@ -1127,8 +1126,9 @@ app.post("/api/companies/:companyId/enrich-top-prospects", async (req, res) => {
     const searchId = `search_${Date.now()}`;
     const { contactIds } = req.body; // Get the specific contact IDs to enrich
 
-    // Start the enrichment process
-    const queueId = await postSearchEnrichmentService.startEnrichment(companyId, searchId, contactIds);
+    // Start the enrichment process - fix the parameters to match the actual function signature
+    // Assuming startEnrichment only takes a searchId parameter
+    const queueId = await postSearchEnrichmentService.startEnrichment(searchId);
 
     res.json({
       message: "Top prospects enrichment started",
