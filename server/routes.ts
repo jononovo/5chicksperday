@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, Request, Response } from "express";
 import { createServer } from "http";
 import { storage } from "./storage";
 import { searchCompanies, analyzeCompany } from "./lib/search-logic";
@@ -12,6 +12,17 @@ import { emailEnrichmentService } from "./lib/search-logic/email-enrichment/serv
 import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
+
+// Define interfaces for external workflow interactions
+interface ExternalSearchResult {
+  searchId: string;
+  status: 'in_progress' | 'completed' | 'failed';
+  results?: {
+    companies?: any[];
+    contacts?: any[];
+  };
+  error?: string;
+}
 
 // Define interfaces for external workflow interactions
 interface ExternalSearchRequest {

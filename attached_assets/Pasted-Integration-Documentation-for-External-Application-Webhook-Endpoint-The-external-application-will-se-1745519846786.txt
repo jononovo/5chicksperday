@@ -1,0 +1,93 @@
+Integration Documentation for External Application
+Webhook Endpoint
+The external application will send requests to our lead generation system using this webhook URL:
+
+/api/webhooks/workflow/{workflowId}/node/webhook_trigger-1
+Where {workflowId} is the ID of our Lead Generation Master Workflow.
+
+Request Format
+The external application should send POST requests with this JSON structure:
+
+{
+  "searchId": "unique-identifier-optional",
+  "query": "The search query string",
+  "moduleTypes": ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
+  "configuration": {
+    "incrementalUpdates": true,
+    "validationThresholds": {
+      "companyScore": 60,
+      "contactScore": 70,
+      "emailScore": 65
+    },
+    "filterCriteria": {
+      "industries": ["insurance", "technology"],
+      "companySize": { "min": 50, "max": 1000 },
+      "locations": ["New York", "California"]
+    }
+  },
+  "callbackUrl": "https://their-platform.example.com/api/external-workflow/webhook"
+}
+Response Flow
+Our system will:
+
+Send an initial acknowledgment with a 200 status code and basic information:
+
+{
+  "success": true,
+  "message": "Lead generation workflow started",
+  "searchId": "unique-identifier",
+  "status": "in_progress"
+}
+As the workflow progresses through the three key stages (Company Search → Contact Finding → Email Discovery), incremental updates will be sent to the callbackUrl with the following structure:
+
+{
+  "searchId": "same-identifier-from-request",
+  "status": "in_progress",
+  "stage": "COMPANY_OVERVIEW|DECISION_MAKER|EMAIL_DISCOVERY",
+  "progress": 10|35|70,
+  "timestamp": "2025-04-25T12:34:56Z",
+  "results": {
+    /* Partial results available at that stage */
+  }
+}
+Upon completion, a final response will be sent with the complete result set:
+
+{
+  "searchId": "same-identifier-from-request",
+  "status": "completed",
+  "timestamp": "2025-04-25T12:45:00Z",
+  "results": {
+    "companies": [/* array of company objects */],
+    "contacts": [/* array of contact objects */],
+    "metadata": {
+      "moduleType": "EMAIL_DISCOVERY",
+      "completedSearches": ["COMPANY_OVERVIEW", "DECISION_MAKER", "EMAIL_DISCOVERY"],
+      "validationScores": {
+        "companyValidation": 85,
+        "contactValidation": 90
+      }
+    }
+  }
+}
+Error Handling
+If errors occur, our system will send an error response:
+
+{
+  "searchId": "same-identifier-from-request",
+  "status": "failed",
+  "timestamp": "2025-04-25T12:45:00Z",
+  "error": "Detailed error message"
+}
+Authentication
+The external application should include authentication in the header:
+
+Authorization: Bearer YOUR_API_KEY
+Technical Implementation
+The implementation uses a webhook trigger node that:
+
+Processes the incoming request format from the external system
+Maps to our internal data structure
+Sends incremental updates at 10%, 35%, and 70% completion points
+Formats the final response according to the required structure
+Is there any specific aspect of the integration you'd like me to elaborate on further?
+
