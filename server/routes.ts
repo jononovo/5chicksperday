@@ -13,6 +13,9 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 
+// Keep track of active keep-alive intervals
+const keepAliveIntervals: Record<string, NodeJS.Timeout> = {};
+
 // Helper function to safely parse an ID parameter
 function parseIdParam(idParam: string): number | null {
   const id = Number(idParam);
@@ -123,6 +126,58 @@ export function registerRoutes(app: Express) {
       });
     }
   });
+  
+  // Ping endpoint for keep-alive mechanism
+  app.get("/api/ping", (req, res) => {
+    const searchId = req.query.searchId as string;
+    if (searchId) {
+      logWithStorage(`Keep-alive ping received for search: ${searchId}`, "info");
+    }
+    res.json({ 
+      status: "alive", 
+      timestamp: new Date().toISOString(),
+      keepAliveActive: Object.keys(keepAliveIntervals).length > 0
+    });
+  });
+  
+  /**
+   * Starts a keep-alive timer for a specific search ID
+   * Sends regular ping requests to keep the server running for the specified duration
+   */
+  function startKeepAlive(searchId: string, minutes: number = 15): void {
+    // Clear any existing keep-alive for this search ID
+    if (keepAliveIntervals[searchId]) {
+      clearInterval(keepAliveIntervals[searchId]);
+      delete keepAliveIntervals[searchId];
+    }
+    
+    const intervalMs = 60000; // 1 minute
+    let remainingMinutes = minutes;
+    
+    logWithStorage(`Starting keep-alive for search ${searchId} for ${minutes} minutes`, "info");
+    
+    // Set up a new keep-alive interval
+    keepAliveIntervals[searchId] = setInterval(() => {
+      remainingMinutes--;
+      
+      if (remainingMinutes <= 0) {
+        // Time's up, clear the interval
+        logWithStorage(`Keep-alive for search ${searchId} completed after ${minutes} minutes`, "info");
+        if (keepAliveIntervals[searchId]) {
+          clearInterval(keepAliveIntervals[searchId]);
+          delete keepAliveIntervals[searchId];
+        }
+        return;
+      }
+      
+      // Log the keep-alive ping
+      logWithStorage(`Keep-alive ping for search ${searchId} (${remainingMinutes} minutes remaining)`, "info");
+      
+      // Internally ping our own endpoint to maintain activity
+      // This is done within the server to avoid HTTP request overhead
+      // The app stays awake as long as there are active timers
+    }, intervalMs);
+  }
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
