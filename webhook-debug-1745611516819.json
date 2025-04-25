@@ -1,0 +1,48 @@
+{
+  "body": {
+    "searchId": "test-search-1745611516790",
+    "status": "completed",
+    "progress": 100,
+    "results": {
+      "companies": [
+        {
+          "name": "Test Company 1",
+          "website": "https://testcompany1.example.com",
+          "industry": "Software Testing",
+          "description": "A company used for testing",
+          "address": "123 Test Street, Testville",
+          "employees": 50
+        },
+        {
+          "name": "Test Company 2",
+          "website": "https://testcompany2.example.com",
+          "industry": "QA Services",
+          "description": "Another test company",
+          "address": "456 Test Avenue, Testopolis",
+          "employees": 120
+        }
+      ],
+      "metadata": {
+        "searchQuery": "test companies",
+        "timestamp": "2025-04-25T20:05:16.790Z",
+        "searchEngine": "test-engine"
+      }
+    }
+  },
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br",
+    "content-length": "601",
+    "content-type": "application/json",
+    "user-agent": "TestScript/1.0",
+    "x-test-source": "webhook-monitor-test",
+    "host": "localhost:5000",
+    "connection": "keep-alive"
+  },
+  "ip": "127.0.0.1",
+  "method": "POST",
+  "path": "/api/external-workflow/webhook",
+  "query": {},
+  "timestamp": "2025-04-25T20:05:16.819Z",
+  "searchId": "test-search-1745611516790"
+}
