@@ -460,32 +460,62 @@ export function registerRoutes(app: Express) {
           if (results.contacts && Array.isArray(results.contacts)) {
             logWithStorage(`Processing ${results.contacts.length} standalone contacts`, "info");
             
+            // Find the most recently created company from this webhook
+            let associatedCompanyId = null;
+            
+            // If we have only one company in the results, use that company for all contacts
+            if (results.companies && results.companies.length === 1) {
+              try {
+                // Find the company we just created by name
+                const recentCompanies = await storage.listCompanies();
+                // Sort by creation date descending
+                recentCompanies.sort((a, b) => {
+                  const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                  const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                  return dateB - dateA;
+                });
+                
+                // Look for a company with the same name as what we just created
+                const companyName = results.companies[0].name;
+                const matchingCompany = recentCompanies.find(c => c.name === companyName);
+                
+                if (matchingCompany) {
+                  associatedCompanyId = matchingCompany.id;
+                  logWithStorage(`Found matching company ID ${associatedCompanyId} for contacts from ${companyName}`, "info");
+                }
+              } catch (err) {
+                logWithStorage(`Error finding associated company: ${err instanceof Error ? err.message : "Unknown error"}`, "error");
+              }
+            }
+            
             for (const contactData of results.contacts) {
-              // Only process contacts that have a companyId
-              if (contactData.companyId) {
+              // Use provided companyId or the associated company we found
+              const companyId = contactData.companyId || associatedCompanyId;
+              
+              if (companyId) {
                 try {
                   if (!contactData.name) {
                     logWithStorage("Missing required contact name field, skipping standalone contact", "error");
                     continue; // Skip this contact
                   }
                   
-                  logWithStorage(`Processing standalone contact: ${contactData.name} for company ID ${contactData.companyId}`, "info");
+                  logWithStorage(`Processing contact: ${contactData.name} for company ID ${companyId}`, "info");
                   
                   // Check if the companyId exists in the database
                   try {
-                    const existingCompany = await storage.getCompany(contactData.companyId);
+                    const existingCompany = await storage.getCompany(companyId);
                     if (!existingCompany) {
-                      logWithStorage(`Company ID ${contactData.companyId} does not exist for contact ${contactData.name}`, "error");
+                      logWithStorage(`Company ID ${companyId} does not exist for contact ${contactData.name}`, "error");
                       continue; // Skip this contact
                     }
                   } catch (companyError) {
-                    logWithStorage(`Error checking company ID ${contactData.companyId}: ${companyError instanceof Error ? companyError.message : "Unknown error"}`, "error");
+                    logWithStorage(`Error checking company ID ${companyId}: ${companyError instanceof Error ? companyError.message : "Unknown error"}`, "error");
                     continue; // Skip this contact
                   }
                   
                   // Create the contact
                   const contact = await storage.createContact({
-                    companyId: contactData.companyId,
+                    companyId: companyId,
                     name: contactData.name,
                     role: contactData.role || null,
                     email: contactData.email || null,
@@ -501,15 +531,15 @@ export function registerRoutes(app: Express) {
                     feedbackCount: 0
                   });
                   
-                  logWithStorage(`Successfully created standalone contact: ${contactData.name} (ID: ${contact.id})`, "info");
+                  logWithStorage(`Successfully created contact: ${contactData.name} (ID: ${contact.id}) for company ${companyId}`, "info");
                 } catch (error) {
-                  logWithStorage(`Error processing standalone contact: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+                  logWithStorage(`Error processing contact: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
                   if (error instanceof Error && error.stack) {
                     logWithStorage(`Stack trace: ${error.stack}`, "error");
                   }
                 }
               } else {
-                logWithStorage(`Skipping contact without companyId: ${contactData.name || "unnamed"}`, "warn");
+                logWithStorage(`Cannot associate contact ${contactData.name || "unnamed"} with a company - no companyId available`, "warn");
               }
             }
           } else {
