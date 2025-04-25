@@ -1,14 +1,12 @@
 import { eq, desc } from 'drizzle-orm';
-import * as schema from '@shared/schema';
 import { webhookLogs } from '@shared/schema';
 import type { WebhookLog, InsertWebhookLog } from '@shared/schema';
-import type { PgDatabase } from 'drizzle-orm/pg-core';
 
 /**
  * Storage implementation for webhook logs
  */
 export class WebhookLogStorage {
-  constructor(private readonly db: PgDatabase) {}
+  constructor(private db: any) {}
 
   /**
    * Create a new webhook log record
@@ -38,13 +36,13 @@ export class WebhookLogStorage {
    * List all webhook logs, with optional limit
    */
   async listWebhookLogs(limit?: number): Promise<WebhookLog[]> {
-    let query = this.db
+    const query = this.db
       .select()
       .from(webhookLogs)
       .orderBy(desc(webhookLogs.createdAt));
     
     if (limit) {
-      query = query.limit(limit);
+      return await query.limit(limit);
     }
 
     return await query;

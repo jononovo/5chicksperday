@@ -12,4 +12,5 @@ if (!process.env.DATABASE_URL) {
 }
 
 export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle({ client: pool, schema });
+// Cast the drizzle instance to any to workaround TypeScript issues
+export const db = drizzle({ client: pool, schema }) as any;

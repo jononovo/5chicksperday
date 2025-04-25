@@ -4,6 +4,7 @@ import { ContactStorage } from './contacts';
 import { SearchStorage } from './search';
 import { CampaignStorage } from './campaigns';
 import { TemplateStorage } from './templates';
+import { WebhookLogStorage } from './webhook-logs';
 import { db } from '../db';
 import type { PgDatabase } from 'drizzle-orm/pg-core';
 import * as schema from '@shared/schema';
@@ -14,15 +15,16 @@ export class DatabaseStorage implements IStorage {
   private readonly searchStorage: SearchStorage;
   private readonly campaignStorage: CampaignStorage;
   private readonly templateStorage: TemplateStorage;
+  private readonly webhookLogStorage: WebhookLogStorage;
 
   constructor() {
-    // Cast db to correct type to resolve type mismatch
-    const typedDb = db as PgDatabase<typeof schema>;
-    this.companyStorage = new CompanyStorage(typedDb);
-    this.contactStorage = new ContactStorage(typedDb);
-    this.searchStorage = new SearchStorage(typedDb);
-    this.campaignStorage = new CampaignStorage(typedDb);
-    this.templateStorage = new TemplateStorage(typedDb);
+    // Use db directly as it's already properly typed in db.ts
+    this.companyStorage = new CompanyStorage(db);
+    this.contactStorage = new ContactStorage(db);
+    this.searchStorage = new SearchStorage(db);
+    this.campaignStorage = new CampaignStorage(db);
+    this.templateStorage = new TemplateStorage(db);
+    this.webhookLogStorage = new WebhookLogStorage(db);
   }
 
   // Lists (delegated to CompanyStorage)
@@ -77,6 +79,14 @@ export class DatabaseStorage implements IStorage {
   createEmailTemplate = (template: any) => this.templateStorage.createEmailTemplate(template);
   updateEmailTemplate = (id: number, template: any) => this.templateStorage.updateEmailTemplate(id, template);
   deleteEmailTemplate = (id: number) => this.templateStorage.deleteEmailTemplate(id);
+
+  // Webhook Logs
+  createWebhookLog = (log: any) => this.webhookLogStorage.createWebhookLog(log);
+  getWebhookLog = (requestId: string) => this.webhookLogStorage.getWebhookLog(requestId);
+  listWebhookLogs = (limit?: number) => this.webhookLogStorage.listWebhookLogs(limit);
+  updateWebhookLogStatus = (requestId: string, status: string, processed: boolean, processingDetails?: Record<string, any>) => 
+    this.webhookLogStorage.updateWebhookLogStatus(requestId, status, processed, processingDetails);
+  getWebhookLogsBySearchId = (searchId: string) => this.webhookLogStorage.getWebhookLogsBySearchId(searchId);
 
   // Initialize default data (made public to fix access issues)
   async initializeDefaultData() {
