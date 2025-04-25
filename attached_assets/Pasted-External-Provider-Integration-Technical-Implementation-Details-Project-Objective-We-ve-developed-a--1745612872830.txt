@@ -1,0 +1,124 @@
+External Provider Integration: Technical Implementation Details
+Project Objective
+We've developed a robust integration system for connecting with multiple lead generation data providers (Lead-Gen Rabbit, Lead-Gen Donkey, and Lead-Gen Lion) using a webhook-based approach. The system allows users to send search queries from the homepage, which are sent to the appropriate provider if their respective button is clicked (e.g., Rabbit button sends to Lead-Gen Rabbit). The external providers then process these search requests and return company and contact information via webhooks back to our application.
+
+Webhook Architecture Overview
+Search Initiation Flow
+User enters a search query on the homepage
+User clicks a provider-specific button (e.g., "Search with Rabbit")
+The application sends a request to the respective provider's API with:
+The search query
+A callback URL for receiving webhook responses
+A unique searchId to track the request
+The provider acknowledges receipt and begins processing asynchronously
+Webhook Response Handling
+External providers send webhook callbacks to our endpoint: /api/external-workflow/webhook
+The webhook handler immediately acknowledges receipt to prevent timeout issues
+Processing happens asynchronously after acknowledging
+The system parses the company and contact data based on provider-specific formats
+Data is stored in the database while maintaining a complete log of the webhook activity
+Webhook Implementation Details
+Endpoint Configuration
+Primary webhook endpoint: /api/external-workflow/webhook
+Provider-specific endpoints (for direct integration):
+/api/external-provider/rabbit
+/api/external-provider/donkey
+/api/external-provider/lion
+Webhook Payload Format (Lead-Gen Rabbit Example)
+{
+  "searchId": "rabbit_search_1745536572139",
+  "status": "completed",
+  "progress": 100,
+  "results": {
+    "companies": [
+      {
+        "name": "Example Company",
+        "location": "Miami, FL",
+        "industry": "Technology",
+        "contacts": [
+          {
+            "name": "John Doe",
+            "role": "CEO",
+            "email": "john@example.com"
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "moduleType": "company_overview",
+      "completedSearches": ["local_sources", "web_search"],
+      "validationScores": { "emailAccuracy": 85 }
+    }
+  }
+}
+Keep-Alive Mechanism
+Implemented a keep-alive system to prevent app sleep before webhook callbacks arrive
+When a search is initiated, a timer starts that keeps the application active
+For in-progress updates, the timer is extended
+Timers auto-expire after a configurable period (default: 15 minutes)
+Logging and Monitoring System
+File-Based Logging
+All incoming webhooks are logged to files in the webhook-logs directory
+Each webhook receives a unique requestId: webhook-{source}-{timestamp}
+The complete HTTP request (headers, body, IP) is saved for debugging
+Old logs are automatically pruned when exceeding the limit (150 logs)
+Database Logging (New Implementation)
+Created a new webhook_logs database table with the following schema:
+- id: serial primary key
+- requestId: unique identifier
+- searchId: reference to the originating search
+- source: provider name (rabbit, donkey, lion)
+- method: HTTP method used
+- url: endpoint that received the request
+- ip: requester's IP address
+- headers: JSON of all HTTP headers
+- body: complete webhook payload
+- timestamp: when received
+- status: processing status (received, processing, completed, failed)
+- processed: boolean flag indicating if processed
+- processingDetails: additional processing metadata
+- createdAt: creation timestamp
+Implemented WebhookLogStorage class with CRUD operations
+Added methods to query logs by searchId or requestId
+Updated the interface to enable database and file-system hybrid logging
+Monitoring Dashboard
+Webhook activity dashboard available at /api/monitor/dashboard
+Shows recent webhook hits, timestamps, and processing status
+Displays traffic patterns with hourly statistics
+Links webhook activity to resulting company and contact data
+Error Handling and Debugging Features
+Immediate request acknowledgment to prevent provider timeouts
+Asynchronous processing after acknowledgment
+Comprehensive request payload archiving with:
+Full headers and body preservation
+Timestamped debug files (webhook-debug-{timestamp}.json)
+Console logging with searchId tracking
+Global unhandled rejection handlers to capture processing errors
+Company and Contact Data Storage
+Webhook data is parsed from provider-specific formats
+Companies are stored with:
+Basic information (name, location, industry)
+Source tracking via provider-specific fields
+Additional metadata when available
+Contacts are linked to companies and stored with:
+Professional information (name, role, department)
+Contact details (email, phone, social profiles)
+Confidence scores for verification
+Deployment Considerations
+Webhook endpoints must be publicly accessible
+Implemented URL path-based routing to avoid port conflicts
+Both development and production environments share the same database
+Added monitoring endpoints to track webhook activity after deployment
+Webhook logs are duplicated in database and filesystem for redundancy
+Testing Tools
+Created multiple test scripts for webhook simulation and verification:
+test-webhook-rabbit-format.js: Tests with Lead-Gen Rabbit's format
+test-exact-rabbit-format.js: Replicates the exact documented format
+check-webhook-logs.js: Verifies logs are being created
+check-deployed-webhook-activity.js: Monitors production webhook activity
+Next Steps
+Complete the full integration of database logging for webhooks
+Update the webhook monitor dashboard to use database-stored logs
+Implement webhooks response consistency validation across providers
+Add webhook payload schema validation for improved error detection
+Create webhook activity report with success/failure statistics
