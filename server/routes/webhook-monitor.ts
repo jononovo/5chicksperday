@@ -38,10 +38,10 @@ router.get('/webhook-logs', (req: Request, res: Response) => {
 });
 
 // Get a specific webhook log
-router.get('/webhook-logs/:requestId', (req: Request, res: Response) => {
+router.get('/webhook-logs/:requestId', async (req: Request, res: Response) => {
   try {
     const { requestId } = req.params;
-    const log = getWebhookLog(requestId);
+    const log = await getWebhookLog(requestId);
     
     if (!log) {
       return res.status(404).json({
@@ -65,9 +65,9 @@ router.get('/webhook-logs/:requestId', (req: Request, res: Response) => {
 });
 
 // Get webhook log stats
-router.get('/webhook-stats', (req: Request, res: Response) => {
+router.get('/webhook-stats', async (req: Request, res: Response) => {
   try {
-    const stats = getWebhookStats();
+    const stats = await getWebhookStats();
     return res.json({
       success: true,
       ...stats
@@ -83,10 +83,10 @@ router.get('/webhook-stats', (req: Request, res: Response) => {
 });
 
 // Dashboard endpoint
-router.get('/dashboard', (req: Request, res: Response) => {
+router.get('/dashboard', async (req: Request, res: Response) => {
   try {
     const logs = getWebhookLogs();
-    const stats = getWebhookStats();
+    const stats = await getWebhookStats();
     
     // Extract IPs from the recent logs for the dashboard
     const ips = new Set<string>();
@@ -94,27 +94,34 @@ router.get('/dashboard', (req: Request, res: Response) => {
     const methods = new Set<string>();
     const urls = new Set<string>();
     
-    const recentLogs = logs.slice(0, 20).map(logInfo => {
-      const log = getWebhookLog(logInfo.requestId);
-      
-      if (log) {
-        if (log.ip) ips.add(log.ip);
-        if (log.headers && log.headers['user-agent']) userAgents.add(log.headers['user-agent'] as string);
-        if (log.method) methods.add(log.method);
-        if (log.url) urls.add(log.url);
+    // Process logs in parallel using Promise.all
+    const logPromises = logs.slice(0, 20).map(async (logInfo) => {
+      try {
+        const log = await getWebhookLog(logInfo.requestId);
         
-        return {
-          requestId: logInfo.requestId,
-          timestamp: log.timestamp,
-          method: log.method,
-          url: log.url,
-          ip: log.ip,
-          searchId: log.searchId || 'none',
-          hasBody: !!log.body
-        };
+        if (log) {
+          if (log.ip) ips.add(log.ip);
+          if (log.headers && log.headers['user-agent']) userAgents.add(log.headers['user-agent'] as string);
+          if (log.method) methods.add(log.method);
+          if (log.url) urls.add(log.url);
+          
+          return {
+            requestId: logInfo.requestId,
+            timestamp: log.timestamp,
+            method: log.method,
+            url: log.url,
+            ip: log.ip,
+            searchId: log.searchId || 'none',
+            hasBody: !!log.body
+          };
+        }
+      } catch (err) {
+        console.error(`Error processing log ${logInfo.requestId}:`, err);
       }
       return null;
-    }).filter(Boolean);
+    });
+    
+    const recentLogs = (await Promise.all(logPromises)).filter(Boolean);
     
     // Get last 24 hour activity
     const now = new Date();
