@@ -1,0 +1,64 @@
+{
+  "body": {
+    "searchId": "rabbit-search-1745613593495",
+    "status": "completed",
+    "timestamp": "2025-04-25T20:39:53.496Z",
+    "results": {
+      "companies": [
+        {
+          "name": "Test Rabbit Company",
+          "website": "https://example.com",
+          "industry": "Software Testing",
+          "location": "Testville, USA",
+          "description": "A test company created to verify webhook logging",
+          "employeeCount": 42,
+          "foundedYear": 2023,
+          "socialProfiles": {
+            "linkedin": "https://linkedin.com/company/test-rabbit"
+          }
+        }
+      ],
+      "contacts": [
+        {
+          "name": "Test Person",
+          "role": "Chief Testing Officer",
+          "email": "test@example.com",
+          "phoneNumber": "555-TEST",
+          "linkedinUrl": "https://linkedin.com/in/test-person"
+        }
+      ],
+      "metadata": {
+        "moduleType": "company_search",
+        "completedSearches": [
+          "local_sources",
+          "web_search"
+        ],
+        "validationScores": {
+          "company": 0.95,
+          "contact": 0.85
+        },
+        "queryDetails": {
+          "original": "Software testing companies in Testville",
+          "refined": "Software QA and testing providers in Testville, USA"
+        }
+      }
+    }
+  },
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br",
+    "content-length": "875",
+    "content-type": "application/json",
+    "user-agent": "Lead-Gen-Rabbit/1.0 (Test)",
+    "x-lgr-search-id": "rabbit-search-1745613593495",
+    "x-webhook-type": "lead-gen-rabbit",
+    "host": "localhost:5000",
+    "connection": "keep-alive"
+  },
+  "ip": "127.0.0.1",
+  "method": "POST",
+  "path": "/api/external-workflow/webhook",
+  "query": {},
+  "timestamp": "2025-04-25T20:39:53.517Z",
+  "searchId": "rabbit-search-1745613593495"
+}
