@@ -185,6 +185,32 @@ export function registerRoutes(app: Express) {
       logWithStorage("============ WEBHOOK RECEIVED ============");
       logWithStorage("Received webhook from external provider at " + new Date().toISOString());
       
+      // CRITICAL DEBUGGING: Save the raw webhook request to a file for analysis
+      try {
+        // Make a safe copy of the request to avoid circular references
+        const requestCopy = {
+          body: req.body,
+          headers: req.headers,
+          ip: req.ip,
+          method: req.method,
+          path: req.path,
+          query: req.query,
+          timestamp: new Date().toISOString(),
+          searchId: req.body.searchId || (req.body.data && req.body.data.searchId) || 
+                  (req.body.payload && req.body.payload.searchId) ||
+                  (req.body.results && req.body.results.searchId) ||
+                  req.query.searchId
+        };
+        
+        // Save to file with timestamp for persistent debugging
+        const debugFilename = `webhook-debug-${Date.now()}.json`;
+        fs.writeFileSync(debugFilename, JSON.stringify(requestCopy, null, 2));
+        logWithStorage(`CRITICAL DEBUG: Saved raw webhook to ${debugFilename}`, "info");
+        console.log(`Saved webhook debug data to ${debugFilename}`);
+      } catch (debugErr) {
+        console.error("Error saving webhook debug data:", debugErr);
+      }
+      
       // Extract the basic payload info for logging
       const payload = req.body.data || req.body.payload || req.body;
       
@@ -229,6 +255,7 @@ export function registerRoutes(app: Express) {
       
       // CRITICAL: Immediately log that we've received the webhook but are processing asynchronously
       console.log(`[WEBHOOK] Received webhook for search ${searchId}, status ${status} - now processing asynchronously`);
+      logWithStorage(`Webhook received for search ${searchId}, status ${status} - processing asynchronously`, "info");
       
       // Use global-level error catching to ensure any errors are properly logged
       process.on('unhandledRejection', (reason, promise) => {
@@ -239,7 +266,7 @@ export function registerRoutes(app: Express) {
       setTimeout(async () => {
         try {
           console.log(`[WEBHOOK] Starting asynchronous processing for search ${searchId}`);
-          logWithStorage("Starting asynchronous processing of webhook data");
+          logWithStorage(`Starting asynchronous processing of webhook data for search ${searchId}`, "info");
           
           // If this is a partial update (in_progress), extend the keep-alive timer for this search
           // This ensures the app stays awake for the final webhook
