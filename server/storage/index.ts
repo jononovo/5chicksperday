@@ -6,6 +6,7 @@ import { type Campaign, type InsertCampaign } from "@shared/schema";
 import { type CampaignList, type InsertCampaignList } from "@shared/schema";
 import { type EmailTemplate, type InsertEmailTemplate } from "@shared/schema";
 import { type ContactFeedback, type InsertContactFeedback } from "@shared/schema";
+import { type WebhookLog, type InsertWebhookLog } from "@shared/schema";
 
 // Base storage interface that defines all storage operations
 export interface IStorage {
@@ -65,6 +66,13 @@ export interface IStorage {
   getContactFeedback(contactId: number): Promise<ContactFeedback[]>;
   updateContactConfidenceScore(id: number, score: number): Promise<Contact | undefined>;
   updateContactValidationStatus(id: number): Promise<Contact | undefined>;
+  
+  // Webhook Logs
+  createWebhookLog(log: InsertWebhookLog): Promise<WebhookLog>;
+  getWebhookLog(requestId: string): Promise<WebhookLog | undefined>;
+  listWebhookLogs(limit?: number): Promise<WebhookLog[]>;
+  updateWebhookLogStatus(requestId: string, status: string, processed: boolean, processingDetails?: Record<string, any>): Promise<WebhookLog | undefined>;
+  getWebhookLogsBySearchId(searchId: string): Promise<WebhookLog[]>;
 }
 
 export * from './database';
