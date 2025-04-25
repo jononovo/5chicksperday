@@ -1,13 +1,14 @@
 /**
  * Webhook Monitor API
  * Provides endpoints to view webhook logs and diagnostics
+ * Simple implementation with all logs in one place
  */
 import { Router, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 
 // Import webhook logger
-import { getWebhookLogs, getWebhookLog } from '../lib/webhook-logger';
+import { getWebhookLogs, getWebhookLog, getWebhookStats } from '../lib/webhook-logger';
 
 const router = Router();
 
@@ -15,10 +16,12 @@ const router = Router();
 router.get('/webhook-logs', (req: Request, res: Response) => {
   try {
     const logs = getWebhookLogs();
+    const limit = parseInt(req.query.limit as string) || 50;
+    
     return res.json({
       success: true,
       count: logs.length,
-      logs: logs.map(log => ({
+      logs: logs.slice(0, limit).map(log => ({
         requestId: log.requestId,
         timestamp: log.timestamp,
         file: path.basename(log.file)
@@ -64,51 +67,10 @@ router.get('/webhook-logs/:requestId', (req: Request, res: Response) => {
 // Get webhook log stats
 router.get('/webhook-stats', (req: Request, res: Response) => {
   try {
-    const logs = getWebhookLogs();
-    
-    // Group logs by hour
-    const hourCounts: Record<string, number> = {};
-    const ipCounts: Record<string, number> = {};
-    const methodCounts: Record<string, number> = {};
-    
-    // Track the most recent logs
-    const recentLogs = logs.slice(0, 10).map(logInfo => {
-      const log = getWebhookLog(logInfo.requestId);
-      
-      if (log) {
-        // Count by hour
-        const hour = new Date(log.timestamp).toISOString().slice(0, 13);
-        hourCounts[hour] = (hourCounts[hour] || 0) + 1;
-        
-        // Count by IP
-        if (log.ip) {
-          ipCounts[log.ip] = (ipCounts[log.ip] || 0) + 1;
-        }
-        
-        // Count by method
-        if (log.method) {
-          methodCounts[log.method] = (methodCounts[log.method] || 0) + 1;
-        }
-        
-        return {
-          requestId: logInfo.requestId,
-          timestamp: log.timestamp,
-          method: log.method,
-          url: log.url,
-          ip: log.ip,
-          bodyKeys: log.body ? Object.keys(log.body) : []
-        };
-      }
-      return null;
-    }).filter(Boolean);
-    
+    const stats = getWebhookStats();
     return res.json({
       success: true,
-      totalLogs: logs.length,
-      hourCounts,
-      ipCounts,
-      methodCounts,
-      recentLogs
+      ...stats
     });
   } catch (error) {
     console.error('Error getting webhook stats:', error);
@@ -120,12 +82,81 @@ router.get('/webhook-stats', (req: Request, res: Response) => {
   }
 });
 
-// Testing route to confirm the monitor is working
-router.get('/webhook-monitor-test', (req: Request, res: Response) => {
+// Dashboard endpoint
+router.get('/dashboard', (req: Request, res: Response) => {
+  try {
+    const logs = getWebhookLogs();
+    const stats = getWebhookStats();
+    
+    // Extract IPs from the recent logs for the dashboard
+    const ips = new Set<string>();
+    const userAgents = new Set<string>();
+    const methods = new Set<string>();
+    const urls = new Set<string>();
+    
+    const recentLogs = logs.slice(0, 20).map(logInfo => {
+      const log = getWebhookLog(logInfo.requestId);
+      
+      if (log) {
+        if (log.ip) ips.add(log.ip);
+        if (log.headers && log.headers['user-agent']) userAgents.add(log.headers['user-agent'] as string);
+        if (log.method) methods.add(log.method);
+        if (log.url) urls.add(log.url);
+        
+        return {
+          requestId: logInfo.requestId,
+          timestamp: log.timestamp,
+          method: log.method,
+          url: log.url,
+          ip: log.ip,
+          searchId: log.searchId || 'none',
+          hasBody: !!log.body
+        };
+      }
+      return null;
+    }).filter(Boolean);
+    
+    // Get last 24 hour activity
+    const now = new Date();
+    const hourly: number[] = Array(24).fill(0);
+    
+    logs.forEach(log => {
+      const logTime = new Date(log.timestamp);
+      const hourDiff = Math.floor((now.getTime() - logTime.getTime()) / (1000 * 60 * 60));
+      
+      if (hourDiff >= 0 && hourDiff < 24) {
+        hourly[hourDiff]++;
+      }
+    });
+    
+    return res.json({
+      success: true,
+      totalLogs: logs.length,
+      uniqueIps: Array.from(ips),
+      uniqueUserAgents: Array.from(userAgents),
+      uniqueMethods: Array.from(methods),
+      uniqueUrls: Array.from(urls),
+      hourlyActivity: hourly.reverse(), // Most recent first
+      recentLogs,
+      stats
+    });
+  } catch (error) {
+    console.error('Error getting webhook dashboard:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error retrieving webhook dashboard data',
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+// Test route to confirm the monitor is working
+router.get('/test', (req: Request, res: Response) => {
   return res.json({
     success: true,
     message: 'Webhook monitor is active',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    endpoint: req.originalUrl
   });
 });
 

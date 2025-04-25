@@ -1,7 +1,7 @@
 /**
  * Webhook Logger
  * A standalone utility to log all webhook requests that hit our endpoint
- * Provides simple and efficient monitoring of webhook activity
+ * Simple implementation with all logs in one directory
  */
 import fs from 'fs';
 import path from 'path';
@@ -47,44 +47,24 @@ function safeStringify(obj: any, maxDepth = 5, depth = 0): string {
 }
 
 /**
- * Determines which provider sent the webhook based on request characteristics
+ * Helper to identify the source of a webhook for logging purposes only
  */
-function detectProvider(req: Request): { provider: string, providerDir: string } {
+function guessSource(req: Request): string {
   const url = req.originalUrl;
   const headers = req.headers;
   const body = req.body || {};
-  const userAgent = headers['user-agent'] as string || '';
   
-  // Look for indicators in headers and body
-  if (
-    url.includes('rabbit') || 
-    userAgent.includes('rabbit') || 
-    headers['x-lgr-search-id'] || 
-    (body.searchId && body.searchId.includes('rabbit'))
-  ) {
-    return { provider: 'rabbit', providerDir: PROVIDER_DIRS.RABBIT };
-  } 
-  
-  if (
-    url.includes('donkey') || 
-    userAgent.includes('donkey') || 
-    headers['x-lgd-search-id'] || 
-    (body.searchId && body.searchId.includes('donkey'))
-  ) {
-    return { provider: 'donkey', providerDir: PROVIDER_DIRS.DONKEY };
+  // Just for informational purposes in logs
+  if (url.includes('rabbit') || headers['x-lgr-search-id'] || 
+      (body.searchId && typeof body.searchId === 'string' && body.searchId.includes('rabbit'))) {
+    return 'rabbit';
+  } else if (url.includes('donkey') || headers['x-lgd-search-id']) {
+    return 'donkey';
+  } else if (url.includes('lion') || headers['x-lgl-search-id']) {
+    return 'lion';
   }
   
-  if (
-    url.includes('lion') || 
-    userAgent.includes('lion') || 
-    headers['x-lgl-search-id'] || 
-    (body.searchId && body.searchId.includes('lion'))
-  ) {
-    return { provider: 'lion', providerDir: PROVIDER_DIRS.LION };
-  }
-  
-  // If no specific provider detected, use unknown
-  return { provider: 'unknown', providerDir: PROVIDER_DIRS.UNKNOWN };
+  return 'unknown';
 }
 
 /**
@@ -94,10 +74,10 @@ export function logWebhookRequest(req: Request, logPrefix = 'webhook'): void {
   try {
     // Create a sanitized request object
     const timestamp = new Date().toISOString();
-    const { provider, providerDir } = detectProvider(req);
-    const requestId = `${logPrefix}-${provider}-${Date.now()}`;
+    const source = guessSource(req); // Use the simpler source detection
+    const requestId = `${logPrefix}-${source}-${Date.now()}`;
     
-    console.log(`[WEBHOOK-LOGGER] Received request from ${provider} at ${timestamp}, ID: ${requestId}`);
+    console.log(`[WEBHOOK-LOGGER] Received request from ${source} at ${timestamp}, ID: ${requestId}`);
     
     // Extract searchId for better organization
     const body = req.body || {};
@@ -116,7 +96,7 @@ export function logWebhookRequest(req: Request, logPrefix = 'webhook'): void {
     const sanitizedRequest = {
       timestamp,
       requestId,
-      provider,
+      source,
       searchId,
       method: req.method,
       url: req.originalUrl,
@@ -126,16 +106,12 @@ export function logWebhookRequest(req: Request, logPrefix = 'webhook'): void {
       body: req.body
     };
     
-    // Create the log file in the provider-specific directory
-    const logFile = path.join(providerDir, `${requestId}.json`);
+    // Create the log file in the log directory
+    const logFile = path.join(LOG_DIR, `${requestId}.json`);
     fs.writeFileSync(logFile, safeStringify(sanitizedRequest, 10));
     
-    // Also save to main directory for backwards compatibility
-    const mainLogFile = path.join(LOG_DIR, `${requestId}.json`);
-    fs.writeFileSync(mainLogFile, safeStringify(sanitizedRequest, 10));
-    
     // Log basic request info to console
-    console.log(`[WEBHOOK-LOGGER] Provider: ${provider}, SearchID: ${searchId || 'not found'}`);
+    console.log(`[WEBHOOK-LOGGER] SearchID: ${searchId || 'not found'}`);
     console.log(`[WEBHOOK-LOGGER] Saved request to ${logFile}`);
     console.log(`[WEBHOOK-LOGGER] Request: ${req.method} ${req.originalUrl}`);
     
@@ -164,8 +140,8 @@ export function logWebhookRequest(req: Request, logPrefix = 'webhook'): void {
  */
 function cleanupOldLogs(): void {
   try {
-    // Clean up main directory
-    let files = fs.readdirSync(LOG_DIR)
+    // Clean up the logs directory
+    const files = fs.readdirSync(LOG_DIR)
       .filter(file => file.endsWith('.json'))
       .map(file => path.join(LOG_DIR, file));
     
@@ -182,92 +158,32 @@ function cleanupOldLogs(): void {
         console.log(`[WEBHOOK-LOGGER] Deleted old log: ${file}`);
       });
     }
-    
-    // Clean up each provider directory
-    Object.values(PROVIDER_DIRS).forEach(dir => {
-      try {
-        if (fs.existsSync(dir)) {
-          files = fs.readdirSync(dir)
-            .filter(file => file.endsWith('.json'))
-            .map(file => path.join(dir, file));
-          
-          if (files.length > MAX_LOGS / 2) { // Keep fewer logs per provider
-            // Sort by modification time (oldest first)
-            const sortedFiles = files.sort((a, b) => {
-              return fs.statSync(a).mtime.getTime() - fs.statSync(b).mtime.getTime();
-            });
-            
-            // Delete oldest files
-            const filesToDelete = sortedFiles.slice(0, files.length - MAX_LOGS / 2);
-            filesToDelete.forEach(file => {
-              fs.unlinkSync(file);
-              console.log(`[WEBHOOK-LOGGER] Deleted old provider log: ${file}`);
-            });
-          }
-        }
-      } catch (err) {
-        console.error(`[WEBHOOK-LOGGER] Error cleaning up provider directory ${dir}:`, err);
-      }
-    });
   } catch (error) {
     console.error('[WEBHOOK-LOGGER] Error cleaning up old logs:', error);
   }
 }
 
 /**
- * Get provider name from directory path
+ * Utility function to get a list of all webhook logs
  */
-function getProviderFromPath(dirPath: string): string {
-  const parts = dirPath.split(path.sep);
-  return parts[parts.length - 1];
-}
-
-/**
- * Utility function to get logs from a specific directory
- */
-function getLogsFromDirectory(dir: string): Array<{file: string, timestamp: Date, requestId: string, provider: string}> {
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-  
+export function getWebhookLogs(): Array<{file: string, timestamp: Date, requestId: string}> {
   try {
-    return fs.readdirSync(dir)
+    const files = fs.readdirSync(LOG_DIR)
       .filter(file => file.endsWith('.json'))
       .map(file => {
-        const filePath = path.join(dir, file);
+        const filePath = path.join(LOG_DIR, file);
         const stat = fs.statSync(filePath);
         const requestId = file.replace('.json', '');
-        const provider = getProviderFromPath(dir);
         
         return {
           file: filePath,
           timestamp: stat.mtime,
-          requestId,
-          provider
+          requestId
         };
       })
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()); // Newest first
-  } catch (error) {
-    console.error(`[WEBHOOK-LOGGER] Error getting logs from directory ${dir}:`, error);
-    return [];
-  }
-}
-
-/**
- * Utility function to get a list of all webhook logs
- */
-export function getWebhookLogs(): Array<{file: string, timestamp: Date, requestId: string, provider: string}> {
-  try {
-    // Get logs from main directory
-    const mainLogs = getLogsFromDirectory(LOG_DIR);
     
-    // Merge with provider-specific logs
-    const providerLogs = Object.values(PROVIDER_DIRS)
-      .flatMap(dir => getLogsFromDirectory(dir));
-    
-    // Combine and sort by timestamp
-    return [...mainLogs, ...providerLogs]
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return files;
   } catch (error) {
     console.error('[WEBHOOK-LOGGER] Error getting webhook logs:', error);
     return [];
@@ -275,38 +191,15 @@ export function getWebhookLogs(): Array<{file: string, timestamp: Date, requestI
 }
 
 /**
- * Gets webhook logs from a specific provider
- */
-export function getProviderWebhookLogs(provider: string): Array<{file: string, timestamp: Date, requestId: string, provider: string}> {
-  const providerDir = provider === 'rabbit' ? PROVIDER_DIRS.RABBIT :
-                      provider === 'donkey' ? PROVIDER_DIRS.DONKEY :
-                      provider === 'lion' ? PROVIDER_DIRS.LION :
-                      PROVIDER_DIRS.UNKNOWN;
-  
-  return getLogsFromDirectory(providerDir);
-}
-
-/**
  * Get the content of a specific webhook log
  */
 export function getWebhookLog(requestId: string): any {
   try {
-    // First check main directory
-    let filePath = path.join(LOG_DIR, `${requestId}.json`);
+    const filePath = path.join(LOG_DIR, `${requestId}.json`);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, 'utf8');
       return JSON.parse(content);
     }
-    
-    // Check each provider directory
-    for (const dir of Object.values(PROVIDER_DIRS)) {
-      filePath = path.join(dir, `${requestId}.json`);
-      if (fs.existsSync(filePath)) {
-        const content = fs.readFileSync(filePath, 'utf8');
-        return JSON.parse(content);
-      }
-    }
-    
     return null;
   } catch (error) {
     console.error(`[WEBHOOK-LOGGER] Error getting webhook log ${requestId}:`, error);
@@ -322,48 +215,27 @@ export function getWebhookStats(): any {
     const allLogs = getWebhookLogs();
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
     
-    // Get counts by provider
-    const countsByProvider: Record<string, number> = {};
-    const recentByProvider: Record<string, number> = {};
-    const latestByProvider: Record<string, Date> = {};
+    // Count recent logs
+    const recentCount = allLogs.filter(log => log.timestamp > last24Hours).length;
     
-    allLogs.forEach(log => {
-      const provider = log.provider || 'unknown';
-      
-      // Count by provider
-      countsByProvider[provider] = (countsByProvider[provider] || 0) + 1;
-      
-      // Count recent by provider
-      if (log.timestamp > last24Hours) {
-        recentByProvider[provider] = (recentByProvider[provider] || 0) + 1;
-      }
-      
-      // Track latest timestamp by provider
-      if (!latestByProvider[provider] || log.timestamp > latestByProvider[provider]) {
-        latestByProvider[provider] = log.timestamp;
-      }
-    });
-    
-    // Get 5 most recent logs with content
-    const recentLogs = allLogs.slice(0, 5).map(log => {
+    // Get most recent logs with content
+    const recentLogs = allLogs.slice(0, 10).map(log => {
       const content = getWebhookLog(log.requestId);
       return {
         requestId: log.requestId,
-        provider: log.provider,
         timestamp: log.timestamp,
         searchId: content?.searchId || 'unknown',
         method: content?.method || 'unknown',
         url: content?.url || 'unknown',
         ip: content?.ip || 'unknown',
-        hasBody: !!content?.body
+        userAgent: content?.headers?.['user-agent'] || 'unknown'
       };
     });
     
     return {
       totalLogs: allLogs.length,
-      countsByProvider,
-      recentByProvider,
-      latestByProvider,
+      recentLogs24h: recentCount,
+      mostRecentTimestamp: allLogs.length > 0 ? allLogs[0].timestamp : null,
       recentLogs
     };
   } catch (error) {
