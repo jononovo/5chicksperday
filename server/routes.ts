@@ -277,72 +277,48 @@ export function registerRoutes(app: Express) {
             logWithStorage(`Webhook type: ${webhookType}`, "info");
           }
           
-          // CRITICAL DEBUGGING: Dump entire raw payload to help diagnose format issues
-          try {
-            console.log("FULL WEBHOOK PAYLOAD:", JSON.stringify(payload, null, 2));
-            fs.writeFileSync('webhook-debug.json', JSON.stringify(payload, null, 2));
-            logWithStorage("Saved full webhook payload to webhook-debug.json", "info");
-          } catch (err) {
-            console.error("Error saving debug payload:", err);
-          }
+          // We know exactly how Rabbit structures their payload based on their documentation
+          // Let's directly access the data according to their documented format
+          console.log("Processing webhook payload from Rabbit with searchId:", searchId);
           
-          // Extract results object according to Rabbit's documented structure
+          // Extract results according to the documented structure:
+          // {
+          //   "searchId": "rabbit_search_1745536572139",
+          //   "status": "completed", 
+          //   "progress": 100,
+          //   "results": {
+          //     "companies": [ ... ],
+          //     "metadata": { ... }
+          //   }
+          // }
+          
           let results;
           
-          // For completed or failed status, look for results in the expected location
-          if (status === 'completed' && payload.results) {
+          if (payload.results && typeof payload.results === 'object') {
+            // Standard format for completed results
             results = payload.results;
-            logWithStorage("Found completed results in payload.results");
-            console.log("RESULTS FOUND:", JSON.stringify(results, null, 2).substring(0, 200) + "...");
-          } 
-          // For in-progress updates, they might send partialResults
-          else if (status === 'in_progress' && payload.partialResults) {
-            results = payload.partialResults;
-            logWithStorage("Found partial results in payload.partialResults");
-            console.log("PARTIAL RESULTS FOUND:", JSON.stringify(results, null, 2).substring(0, 200) + "...");
-          }
-          // Look for direct companies array
-          else if (payload.companies && Array.isArray(payload.companies)) {
-            results = { companies: payload.companies };
-            logWithStorage("Found companies array directly in payload root", "info");
-            console.log("COMPANIES FOUND IN ROOT:", payload.companies.length);
-          }
-          // If we still don't have results, check other possible locations as fallback
-          else if (payload.results) {
-            results = payload.results;
-            logWithStorage("Found results in payload.results (fallback)");
-            console.log("FALLBACK RESULTS FOUND:", JSON.stringify(results, null, 2).substring(0, 200) + "...");
+            console.log(`Found results object with ${results.companies ? results.companies.length : 0} companies`);
+            logWithStorage(`Processing webhook with ${results.companies ? results.companies.length : 0} companies from Rabbit`, "info");
           } else {
-            logWithStorage("No results found in payload with expected structure", "error");
-            console.error("NO RESULTS FOUND IN PAYLOAD");
-            logWithStorage("Payload structure: " + JSON.stringify(Object.keys(payload)), "error");
+            // Log the actual structure we received to help diagnose issues
+            console.log("Unexpected payload structure, printing keys:", Object.keys(payload));
+            logWithStorage("Payload has unexpected structure with keys: " + Object.keys(payload).join(", "), "warn");
             
-            // Attempt to provide more debugging information
-            if (typeof payload === 'object' && payload !== null) {
-              for (const key of Object.keys(payload)) {
-                logWithStorage(`Payload key "${key}" type: ${typeof payload[key]}`, "info");
-                console.log(`Payload key "${key}" type: ${typeof payload[key]}`);
-                
-                if (typeof payload[key] === 'object' && payload[key] !== null) {
-                  logWithStorage(`Payload["${key}"] keys: ${Object.keys(payload[key])}`, "info");
-                  console.log(`Payload["${key}"] keys: ${Object.keys(payload[key])}`);
-                  
-                  // Try to find companies array at a deeper level
-                  if (payload[key].companies && Array.isArray(payload[key].companies)) {
-                    results = { companies: payload[key].companies };
-                    logWithStorage(`Found companies array in payload.${key}`, "info");
-                    console.log(`FOUND COMPANIES IN ${key}:`, payload[key].companies.length);
-                    break;
-                  }
-                }
-              }
-            }
-            
-            // If we still can't find results anywhere, we can't continue
-            if (!results) {
-              logWithStorage("CRITICAL: Unable to locate results data in any expected location", "error");
-              console.error("Unable to locate results data in webhook payload");
-              return;
+            // Try to handle common variations
+            if (payload.companies && Array.isArray(payload.companies)) {
+              // Companies directly at root level
+              results = { companies: payload.companies };
+              console.log(`Found companies array at root level with ${payload.companies.length} companies`);
+            } else if (payload.data && payload.data.results && payload.data.results.companies) {
+              // Nested under 'data'
+              results = payload.data.results;
+              console.log(`Found companies under data.results with ${results.companies.length} companies`);
+            } else {
+              // Unable to find companies anywhere
+              console.error("Unable to find companies array in webhook payload");
+              logWithStorage("CRITICAL: No companies array found in webhook payload", "error");
+              console.log("Full payload:", JSON.stringify(payload, null, 2));
+              return; // Exit if we can't find the data
             }
           }
           

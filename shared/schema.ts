@@ -27,6 +27,17 @@ export const companies = pgTable("companies", {
   differentiation: text("differentiation").array(),
   totalScore: integer("total_score"),
   snapshot: jsonb("snapshot"),
+  // Additional fields for Rabbit provider
+  industry: text("industry"),
+  location: text("location"),
+  description: text("description"),
+  employeeCount: integer("employee_count"),
+  foundedYear: integer("founded_year"),
+  revenue: text("revenue"),
+  socialProfiles: jsonb("social_profiles"),
+  technologiesUsed: text("technologies_used").array(),
+  productOfferings: text("product_offerings").array(),
+  headquarters: text("headquarters"),
   createdAt: timestamp("created_at").defaultNow()
 });
 
@@ -125,7 +136,18 @@ const companySchema = z.object({
   validationPoints: z.array(z.string()).nullable(),
   differentiation: z.array(z.string()).nullable(),
   totalScore: z.number().nullable(),
-  snapshot: z.record(z.unknown()).nullable()
+  snapshot: z.record(z.unknown()).nullable(),
+  // Additional fields for Rabbit provider
+  industry: z.string().nullable(),
+  location: z.string().nullable(),
+  description: z.string().nullable(),
+  employeeCount: z.number().nullable(),
+  foundedYear: z.number().nullable(),
+  revenue: z.string().nullable(),
+  socialProfiles: z.record(z.unknown()).nullable(),
+  technologiesUsed: z.array(z.string()).nullable(),
+  productOfferings: z.array(z.string()).nullable(),
+  headquarters: z.string().nullable()
 });
 
 const contactSchema = z.object({
