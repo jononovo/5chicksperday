@@ -1,5 +1,6 @@
 import express, { type Express, Request, Response } from "express";
 import { createServer } from "http";
+import fs from 'fs';
 import { storage } from "./storage";
 import { searchCompanies, analyzeCompany } from "./lib/search-logic";
 import { extractContacts } from "./lib/perplexity";
