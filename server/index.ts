@@ -68,7 +68,7 @@ app.get('/api/health', (_req, res) => {
     }
 
     const PORT = parseInt(process.env.PORT || "5000", 10);
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       log(`Express server serving on port ${PORT}`);
     });
   } catch (error) {
