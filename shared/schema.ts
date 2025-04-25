@@ -114,6 +114,23 @@ export const emailTemplates = pgTable("email_templates", {
   updatedAt: timestamp("updated_at").defaultNow()
 });
 
+export const webhookLogs = pgTable("webhook_logs", {
+  id: serial("id").primaryKey(),
+  requestId: text("request_id").notNull().unique(),
+  searchId: text("search_id"),
+  source: text("source").default('unknown'),
+  method: text("method").notNull(),
+  url: text("url").notNull(),
+  ip: text("ip"),
+  headers: jsonb("headers"),
+  body: jsonb("body"),
+  timestamp: timestamp("timestamp").defaultNow(),
+  status: text("status").default('received'),
+  processed: boolean("processed").default(false),
+  processingDetails: jsonb("processing_details"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
 const listSchema = z.object({
   listId: z.number().min(1001),
   prompt: z.string().min(1, "Search prompt is required"),
@@ -240,6 +257,20 @@ const emailTemplateSchema = z.object({
   category: z.string().default('general')
 });
 
+const webhookLogSchema = z.object({
+  requestId: z.string().min(1, "Request ID is required"),
+  searchId: z.string().optional(),
+  source: z.string().default('unknown'),
+  method: z.string().min(1, "HTTP method is required"),
+  url: z.string().min(1, "URL is required"),
+  ip: z.string().optional(),
+  headers: z.record(z.unknown()).optional(),
+  body: z.record(z.unknown()).optional(),
+  status: z.string().default('received'),
+  processed: z.boolean().default(false),
+  processingDetails: z.record(z.unknown()).optional()
+});
+
 export const insertListSchema = listSchema;
 export const insertCompanySchema = companySchema;
 export const insertContactSchema = contactSchema;
@@ -248,6 +279,7 @@ export const insertCampaignSchema = campaignSchema;
 export const insertCampaignListSchema = campaignListSchema;
 export const insertEmailTemplateSchema = emailTemplateSchema;
 export const insertContactFeedbackSchema = contactFeedbackSchema;
+export const insertWebhookLogSchema = webhookLogSchema;
 
 export type List = typeof lists.$inferSelect;
 export type InsertList = z.infer<typeof insertListSchema>;
@@ -265,6 +297,8 @@ export type EmailTemplate = typeof emailTemplates.$inferSelect;
 export type InsertEmailTemplate = z.infer<typeof insertEmailTemplateSchema>;
 export type ContactFeedback = typeof contactFeedback.$inferSelect;
 export type InsertContactFeedback = z.infer<typeof insertContactFeedbackSchema>;
+export type WebhookLog = typeof webhookLogs.$inferSelect;
+export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
 
 export type SearchModuleConfig = z.infer<typeof searchModuleConfigSchema>;
 export type SearchSection = SearchModuleConfig['searchSections'][string];
