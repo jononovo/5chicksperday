@@ -14,6 +14,9 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 
+// Import webhook monitor routes
+import webhookMonitorRoutes from './routes/webhook-monitor';
+
 // Keep track of active keep-alive intervals
 const keepAliveIntervals: Record<string, NodeJS.Timeout> = {};
 
@@ -81,6 +84,9 @@ function logWithStorage(message: string, type = 'info') {
 }
 
 export function registerRoutes(app: Express) {
+  // Register webhook monitor routes
+  app.use('/api/monitor', webhookMonitorRoutes);
+  
   // Log endpoint for remote access to application logs
   app.get("/api/debug/logs", (_req, res) => {
     res.json({ logs: logBuffer });
