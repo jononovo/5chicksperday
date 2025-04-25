@@ -14,8 +14,9 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 
-// Import webhook monitor routes
+// Import webhook monitor routes and logger
 import webhookMonitorRoutes from './routes/webhook-monitor';
+import { logWebhookRequest } from './lib/webhook-logger';
 
 // Keep track of active keep-alive intervals
 const keepAliveIntervals: Record<string, NodeJS.Timeout> = {};
@@ -188,9 +189,6 @@ export function registerRoutes(app: Express) {
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
-      // Import webhook logger dynamically to avoid circular dependencies
-      const { logWebhookRequest } = require('./lib/webhook-logger');
-      
       // Log the full raw request for diagnostic purposes
       logWebhookRequest(req, 'webhook-external');
       

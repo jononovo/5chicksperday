@@ -2,7 +2,7 @@
  * Test script to send a test webhook to our endpoint
  * This helps us verify that the webhook logging is working properly
  */
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function sendTestWebhook() {
   console.log('=== SENDING TEST WEBHOOK ===');

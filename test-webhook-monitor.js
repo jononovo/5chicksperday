@@ -2,7 +2,7 @@
  * Test script for the webhook monitor endpoints
  * This script allows you to test the monitoring dashboard without having to deploy
  */
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function testWebhookMonitor() {
   console.log('=== TESTING WEBHOOK MONITOR ===');
