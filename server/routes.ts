@@ -225,8 +225,19 @@ export function registerRoutes(app: Express) {
       // Now process the data asynchronously AFTER sending the response
       // This way, even if processing takes longer than 30 seconds, the webhook sender
       // has already received an acknowledgment and won't time out
+      
+      // CRITICAL: Immediately log that we've received the webhook but are processing asynchronously
+      console.log(`[WEBHOOK] Received webhook for search ${searchId}, status ${status} - now processing asynchronously`);
+      
+      // Use global-level error catching to ensure any errors are properly logged
+      process.on('unhandledRejection', (reason, promise) => {
+        console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+        logWithStorage(`CRITICAL ERROR: Unhandled promise rejection in webhook processing: ${reason}`, "error");
+      });
+      
       setTimeout(async () => {
         try {
+          console.log(`[WEBHOOK] Starting asynchronous processing for search ${searchId}`);
           logWithStorage("Starting asynchronous processing of webhook data");
           
           // If this is a partial update (in_progress), extend the keep-alive timer for this search
@@ -238,7 +249,7 @@ export function registerRoutes(app: Express) {
           
           // More detailed logging after we've already responded
           logWithStorage("Headers: " + JSON.stringify(req.headers, null, 2));
-          logWithStorage("Body: " + JSON.stringify(req.body, null, 2));
+          logWithStorage("Body: " + JSON.stringify(req.body, null, 2), "debug");
           logWithStorage("Request IP: " + req.ip);
           logWithStorage("User-Agent: " + req.headers['user-agent']);
           
@@ -266,6 +277,15 @@ export function registerRoutes(app: Express) {
             logWithStorage(`Webhook type: ${webhookType}`, "info");
           }
           
+          // CRITICAL DEBUGGING: Dump entire raw payload to help diagnose format issues
+          try {
+            console.log("FULL WEBHOOK PAYLOAD:", JSON.stringify(payload, null, 2));
+            fs.writeFileSync('webhook-debug.json', JSON.stringify(payload, null, 2));
+            logWithStorage("Saved full webhook payload to webhook-debug.json", "info");
+          } catch (err) {
+            console.error("Error saving debug payload:", err);
+          }
+          
           // Extract results object according to Rabbit's documented structure
           let results;
           
@@ -273,32 +293,57 @@ export function registerRoutes(app: Express) {
           if (status === 'completed' && payload.results) {
             results = payload.results;
             logWithStorage("Found completed results in payload.results");
+            console.log("RESULTS FOUND:", JSON.stringify(results, null, 2).substring(0, 200) + "...");
           } 
           // For in-progress updates, they might send partialResults
           else if (status === 'in_progress' && payload.partialResults) {
             results = payload.partialResults;
             logWithStorage("Found partial results in payload.partialResults");
+            console.log("PARTIAL RESULTS FOUND:", JSON.stringify(results, null, 2).substring(0, 200) + "...");
+          }
+          // Look for direct companies array
+          else if (payload.companies && Array.isArray(payload.companies)) {
+            results = { companies: payload.companies };
+            logWithStorage("Found companies array directly in payload root", "info");
+            console.log("COMPANIES FOUND IN ROOT:", payload.companies.length);
           }
           // If we still don't have results, check other possible locations as fallback
           else if (payload.results) {
             results = payload.results;
             logWithStorage("Found results in payload.results (fallback)");
+            console.log("FALLBACK RESULTS FOUND:", JSON.stringify(results, null, 2).substring(0, 200) + "...");
           } else {
             logWithStorage("No results found in payload with expected structure", "error");
+            console.error("NO RESULTS FOUND IN PAYLOAD");
             logWithStorage("Payload structure: " + JSON.stringify(Object.keys(payload)), "error");
             
             // Attempt to provide more debugging information
             if (typeof payload === 'object' && payload !== null) {
               for (const key of Object.keys(payload)) {
                 logWithStorage(`Payload key "${key}" type: ${typeof payload[key]}`, "info");
+                console.log(`Payload key "${key}" type: ${typeof payload[key]}`);
+                
                 if (typeof payload[key] === 'object' && payload[key] !== null) {
                   logWithStorage(`Payload["${key}"] keys: ${Object.keys(payload[key])}`, "info");
+                  console.log(`Payload["${key}"] keys: ${Object.keys(payload[key])}`);
+                  
+                  // Try to find companies array at a deeper level
+                  if (payload[key].companies && Array.isArray(payload[key].companies)) {
+                    results = { companies: payload[key].companies };
+                    logWithStorage(`Found companies array in payload.${key}`, "info");
+                    console.log(`FOUND COMPANIES IN ${key}:`, payload[key].companies.length);
+                    break;
+                  }
                 }
               }
             }
             
-            // If we can't find results anywhere, we can't continue
-            return;
+            // If we still can't find results anywhere, we can't continue
+            if (!results) {
+              logWithStorage("CRITICAL: Unable to locate results data in any expected location", "error");
+              console.error("Unable to locate results data in webhook payload");
+              return;
+            }
           }
           
           let source = 'External Provider';
