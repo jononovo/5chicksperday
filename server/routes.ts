@@ -242,10 +242,44 @@ export function registerRoutes(app: Express) {
           logWithStorage("Request IP: " + req.ip);
           logWithStorage("User-Agent: " + req.headers['user-agent']);
           
-          const results = payload.results;
-          if (!results) {
-            logWithStorage("No results found in payload");
-            return;
+          // Enhanced payload validation and extraction
+          // We need to handle different possible formats from various providers
+          let results;
+          
+          // Try different possible locations for the results data
+          if (payload.results) {
+            results = payload.results;
+            logWithStorage("Found results in payload.results");
+          } else if (payload.data && payload.data.results) {
+            results = payload.data.results;
+            logWithStorage("Found results in payload.data.results");
+          } else if (Array.isArray(payload.companies) || Array.isArray(payload.data?.companies)) {
+            // Some providers might send companies directly in the root
+            results = {
+              companies: Array.isArray(payload.companies) ? payload.companies : payload.data?.companies
+            };
+            logWithStorage("Found companies array at root level");
+          } else {
+            // Last attempt - treat the entire payload as results if it has companies array
+            if (Array.isArray(payload.data)) {
+              results = { companies: payload.data };
+              logWithStorage("Treating payload.data array as companies");
+            } else {
+              logWithStorage("No results found in payload with known structure", "error");
+              logWithStorage("Payload structure: " + JSON.stringify(Object.keys(payload)), "error");
+              
+              // If we still can't find results, log additional debug info
+              if (typeof payload === 'object' && payload !== null) {
+                for (const key of Object.keys(payload)) {
+                  logWithStorage(`Payload key "${key}" type: ${typeof payload[key]}`, "info");
+                  if (typeof payload[key] === 'object' && payload[key] !== null) {
+                    logWithStorage(`Payload["${key}"] keys: ${Object.keys(payload[key])}`, "info");
+                  }
+                }
+              }
+              
+              return;
+            }
           }
           
           let source = 'External Provider';
