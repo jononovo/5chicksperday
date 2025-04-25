@@ -182,6 +182,12 @@ export function registerRoutes(app: Express) {
   // External Provider Webhook Endpoint
   app.post("/api/external-workflow/webhook", async (req: Request, res: Response) => {
     try {
+      // Import webhook logger dynamically to avoid circular dependencies
+      const { logWebhookRequest } = require('./lib/webhook-logger');
+      
+      // Log the full raw request for diagnostic purposes
+      logWebhookRequest(req, 'webhook-external');
+      
       logWithStorage("============ WEBHOOK RECEIVED ============");
       logWithStorage("Received webhook from external provider at " + new Date().toISOString());
       
