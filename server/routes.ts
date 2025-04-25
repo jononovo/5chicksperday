@@ -242,44 +242,63 @@ export function registerRoutes(app: Express) {
           logWithStorage("Request IP: " + req.ip);
           logWithStorage("User-Agent: " + req.headers['user-agent']);
           
-          // Enhanced payload validation and extraction
-          // We need to handle different possible formats from various providers
+          // Rabbit-specific processing based on their documented format
+          // The format is:
+          // {
+          //   "searchId": "rabbit_search_1745536572139",
+          //   "status": "completed",
+          //   "progress": 100,
+          //   "results": {
+          //     "companies": [ ... ],
+          //     "metadata": { ... }
+          //   }
+          // }
+          
+          // Log headers that may contain useful tracking info
+          const searchIdHeader = req.headers['x-lgr-search-id'] as string;
+          const webhookType = req.headers['x-lgr-webhook-type'] as string;
+          
+          if (searchIdHeader) {
+            logWithStorage(`Received webhook with X-LGR-Search-ID: ${searchIdHeader}`, "info");
+          }
+          
+          if (webhookType) {
+            logWithStorage(`Webhook type: ${webhookType}`, "info");
+          }
+          
+          // Extract results object according to Rabbit's documented structure
           let results;
           
-          // Try different possible locations for the results data
-          if (payload.results) {
+          // For completed or failed status, look for results in the expected location
+          if (status === 'completed' && payload.results) {
             results = payload.results;
-            logWithStorage("Found results in payload.results");
-          } else if (payload.data && payload.data.results) {
-            results = payload.data.results;
-            logWithStorage("Found results in payload.data.results");
-          } else if (Array.isArray(payload.companies) || Array.isArray(payload.data?.companies)) {
-            // Some providers might send companies directly in the root
-            results = {
-              companies: Array.isArray(payload.companies) ? payload.companies : payload.data?.companies
-            };
-            logWithStorage("Found companies array at root level");
+            logWithStorage("Found completed results in payload.results");
+          } 
+          // For in-progress updates, they might send partialResults
+          else if (status === 'in_progress' && payload.partialResults) {
+            results = payload.partialResults;
+            logWithStorage("Found partial results in payload.partialResults");
+          }
+          // If we still don't have results, check other possible locations as fallback
+          else if (payload.results) {
+            results = payload.results;
+            logWithStorage("Found results in payload.results (fallback)");
           } else {
-            // Last attempt - treat the entire payload as results if it has companies array
-            if (Array.isArray(payload.data)) {
-              results = { companies: payload.data };
-              logWithStorage("Treating payload.data array as companies");
-            } else {
-              logWithStorage("No results found in payload with known structure", "error");
-              logWithStorage("Payload structure: " + JSON.stringify(Object.keys(payload)), "error");
-              
-              // If we still can't find results, log additional debug info
-              if (typeof payload === 'object' && payload !== null) {
-                for (const key of Object.keys(payload)) {
-                  logWithStorage(`Payload key "${key}" type: ${typeof payload[key]}`, "info");
-                  if (typeof payload[key] === 'object' && payload[key] !== null) {
-                    logWithStorage(`Payload["${key}"] keys: ${Object.keys(payload[key])}`, "info");
-                  }
+            logWithStorage("No results found in payload with expected structure", "error");
+            logWithStorage("Payload structure: " + JSON.stringify(Object.keys(payload)), "error");
+            
+            // Attempt to provide more debugging information
+            if (typeof payload === 'object' && payload !== null) {
+              for (const key of Object.keys(payload)) {
+                logWithStorage(`Payload key "${key}" type: ${typeof payload[key]}`, "info");
+                if (typeof payload[key] === 'object' && payload[key] !== null) {
+                  logWithStorage(`Payload["${key}"] keys: ${Object.keys(payload[key])}`, "info");
                 }
               }
-              
-              return;
             }
+            
+            // If we can't find results anywhere, we can't continue
+            return;
           }
           
           let source = 'External Provider';
@@ -302,8 +321,18 @@ export function registerRoutes(app: Express) {
           if (results.companies && Array.isArray(results.companies)) {
             for (const companyData of results.companies) {
               try {
+                // Log the company data we're about to process
+                logWithStorage(`Processing company: ${companyData.name}`, "info");
+                
                 // Check if this is a partial or complete result
                 const isPartial = isInProgress || stage !== 'EMAIL_DISCOVERY';
+                
+                // Validate essential company data before attempting to save
+                if (!companyData.name) {
+                  logWithStorage("Missing required company name field", "error");
+                  logWithStorage(`Company data: ${JSON.stringify(companyData)}`, "error");
+                  continue; // Skip this company
+                }
                 
                 // Create company record
                 const company = await storage.createCompany({
@@ -321,42 +350,82 @@ export function registerRoutes(app: Express) {
                   headquarters: companyData.headquarters || null
                 });
                 
+                logWithStorage(`Successfully created company: ${companyData.name} (ID: ${company.id})`, "info");
+                
                 // Process contacts if available
                 if (companyData.contacts && Array.isArray(companyData.contacts)) {
+                  logWithStorage(`Processing ${companyData.contacts.length} contacts for company ${companyData.name}`, "info");
+                  
                   for (const contactData of companyData.contacts) {
-                    await storage.createContact({
-                      companyId: company.id,
-                      name: contactData.name,
-                      role: contactData.role || null,
-                      email: contactData.email || null,
-                      probability: contactData.probability || null,
-                      linkedinUrl: contactData.linkedinUrl || null,
-                      twitterHandle: contactData.twitterHandle || null,
-                      phoneNumber: contactData.phoneNumber || null,
-                      department: contactData.department || null,
-                      location: contactData.location || null,
-                      verificationSource: source,
-                      nameConfidenceScore: contactData.nameConfidenceScore || null,
-                      userFeedbackScore: null,
-                      feedbackCount: 0
-                    });
+                    if (!contactData.name) {
+                      logWithStorage("Missing required contact name field, skipping contact", "error");
+                      continue; // Skip this contact
+                    }
+                    
+                    try {
+                      const contact = await storage.createContact({
+                        companyId: company.id,
+                        name: contactData.name,
+                        role: contactData.role || null,
+                        email: contactData.email || null,
+                        probability: contactData.probability || null,
+                        linkedinUrl: contactData.linkedinUrl || null,
+                        twitterHandle: contactData.twitterHandle || null,
+                        phoneNumber: contactData.phoneNumber || null,
+                        department: contactData.department || null,
+                        location: contactData.location || null,
+                        verificationSource: source,
+                        nameConfidenceScore: contactData.nameConfidenceScore || null,
+                        userFeedbackScore: null,
+                        feedbackCount: 0
+                      });
+                      
+                      logWithStorage(`Created contact: ${contactData.name} for company ${companyData.name}`, "info");
+                    } catch (contactError) {
+                      logWithStorage(`Error creating contact ${contactData.name}: ${contactError instanceof Error ? contactError.message : "Unknown error"}`, "error");
+                    }
                   }
                 }
                 
                 logWithStorage(`Processed company: ${companyData.name} with ${companyData.contacts?.length || 0} contacts`);
               } catch (error) {
-                console.error("Error processing external provider company:", error);
+                logWithStorage(`Error processing company ${companyData.name || "unknown"}: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+                if (error instanceof Error && error.stack) {
+                  logWithStorage(`Stack trace: ${error.stack}`, "error");
+                }
               }
             }
           }
           
           // Store standalone contacts if provided
           if (results.contacts && Array.isArray(results.contacts)) {
+            logWithStorage(`Processing ${results.contacts.length} standalone contacts`, "info");
+            
             for (const contactData of results.contacts) {
               // Only process contacts that have a companyId
               if (contactData.companyId) {
                 try {
-                  await storage.createContact({
+                  if (!contactData.name) {
+                    logWithStorage("Missing required contact name field, skipping standalone contact", "error");
+                    continue; // Skip this contact
+                  }
+                  
+                  logWithStorage(`Processing standalone contact: ${contactData.name} for company ID ${contactData.companyId}`, "info");
+                  
+                  // Check if the companyId exists in the database
+                  try {
+                    const existingCompany = await storage.getCompany(contactData.companyId);
+                    if (!existingCompany) {
+                      logWithStorage(`Company ID ${contactData.companyId} does not exist for contact ${contactData.name}`, "error");
+                      continue; // Skip this contact
+                    }
+                  } catch (companyError) {
+                    logWithStorage(`Error checking company ID ${contactData.companyId}: ${companyError instanceof Error ? companyError.message : "Unknown error"}`, "error");
+                    continue; // Skip this contact
+                  }
+                  
+                  // Create the contact
+                  const contact = await storage.createContact({
                     companyId: contactData.companyId,
                     name: contactData.name,
                     role: contactData.role || null,
@@ -372,11 +441,20 @@ export function registerRoutes(app: Express) {
                     userFeedbackScore: null,
                     feedbackCount: 0
                   });
+                  
+                  logWithStorage(`Successfully created standalone contact: ${contactData.name} (ID: ${contact.id})`, "info");
                 } catch (error) {
-                  console.error("Error processing external provider contact:", error);
+                  logWithStorage(`Error processing standalone contact: ${error instanceof Error ? error.message : "Unknown error"}`, "error");
+                  if (error instanceof Error && error.stack) {
+                    logWithStorage(`Stack trace: ${error.stack}`, "error");
+                  }
                 }
+              } else {
+                logWithStorage(`Skipping contact without companyId: ${contactData.name || "unnamed"}`, "warn");
               }
             }
+          } else {
+            logWithStorage("No standalone contacts found in results", "info");
           }
           
           logWithStorage(`Completed asynchronous processing of webhook data for ${searchId}`);

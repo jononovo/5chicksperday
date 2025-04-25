@@ -1,0 +1,76 @@
+Lead-Gen Rabbit Webhook Specification
+Dear Bear App Team,
+
+Thank you for your inquiry about our webhook integration. I'm happy to provide the detailed webhook payload structure we use when sending data to your endpoint.
+
+Complete JSON Payload Example
+{
+  "searchId": "rabbit_search_1745536572139",
+  "status": "completed",
+  "progress": 100,
+  "results": {
+    "companies": [
+      {
+        "name": "Radiant Plumbing & Air Conditioning",
+        "website": "https://www.radiantplumbing.com",
+        "industry": "Plumbing Contractors",
+        "location": "Austin, TX",
+        "description": "Full-service plumbing and HVAC contractor serving residential and commercial clients",
+        "employeeCount": 87,
+        "foundedYear": 1999,
+        "headquarters": "Austin, TX"
+      },
+      // Additional companies...
+    ],
+    "metadata": {
+      "moduleType": "COMPANY_SEARCH",
+      "validationScores": {
+        "companyScore": 93
+      },
+      "queryDetails": {
+        "original": "mid-sized plumbers in austin",
+        "refined": "austin texas plumbing contractors 25-150 employees"
+      }
+    }
+  }
+}
+Payload Structure Details
+Root-Level Fields:
+searchId: Unique identifier for the search request (string)
+status: Current status of the search ("in_progress", "completed", "failed")
+progress: Percentage completion, integer from 0-100
+results: Object containing all result data
+Company Data Location:
+Primary company data is located in results.companies as an array of company objects
+Each company object contains standardized fields (name, website, industry, etc.)
+All company fields are always present, though some may have null values if data couldn't be found
+Metadata Structure:
+Located at results.metadata
+Contains:
+moduleType: The type of search performed (e.g., "COMPANY_SEARCH")
+validationScores: Quality metrics for the results
+queryDetails: Information about the original and refined search terms
+HTTP Headers
+We include these custom headers with each webhook:
+
+X-LGR-Search-ID: [same as searchId in payload]
+X-LGR-Webhook-Type: progress_update
+Content-Type: application/json
+Progress Notifications
+For longer-running searches, we may send multiple webhooks with increasing progress values:
+
+{
+  "searchId": "rabbit_search_1745536572139",
+  "status": "in_progress",
+  "progress": 35,
+  "partialResults": {
+    // Limited preliminary data
+  }
+}
+Final webhooks always have status "completed" and progress 100.
+
+Let me know if you need any clarification or additional information about our webhook structure!
+
+Best regards,
+Lead-Gen Rabbit Integration Team
+
