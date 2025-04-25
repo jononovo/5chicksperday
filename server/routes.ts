@@ -229,6 +229,13 @@ export function registerRoutes(app: Express) {
         try {
           logWithStorage("Starting asynchronous processing of webhook data");
           
+          // If this is a partial update (in_progress), extend the keep-alive timer for this search
+          // This ensures the app stays awake for the final webhook
+          if (status === 'in_progress') {
+            logWithStorage(`Extending keep-alive for search ${searchId} since we received a partial update`, "info");
+            startKeepAlive(searchId, 15); // Reset the timer for another 15 minutes
+          }
+          
           // More detailed logging after we've already responded
           logWithStorage("Headers: " + JSON.stringify(req.headers, null, 2));
           logWithStorage("Body: " + JSON.stringify(req.body, null, 2));
@@ -479,6 +486,10 @@ export function registerRoutes(app: Express) {
       });
       
       try {
+        // Start a keep-alive timer to ensure the app stays awake for webhook responses
+        logWithStorage(`Starting keep-alive for search ${searchId} - app will stay awake for 15 minutes`, "info");
+        startKeepAlive(searchId, 15); // Keep the app running for 15 minutes
+        
         // Make the actual API request to the Rabbit service
         const response = await fetch(rabbitEndpoint, {
           method: 'POST',
@@ -517,7 +528,8 @@ export function registerRoutes(app: Express) {
           success: true,
           message: "Search request sent to Lead-Gen Rabbit",
           searchId: responseData.searchId || searchId,
-          status: 'in_progress'
+          status: 'in_progress',
+          keepAlive: true // Indicate that keep-alive is active for 15 minutes
         });
       } catch (error) {
         console.error("Error calling Lead-Gen Rabbit API:", error);
