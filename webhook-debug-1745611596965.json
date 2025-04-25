@@ -1,0 +1,123 @@
+{
+  "body": {
+    "searchId": "rabbit_search_1745611596924",
+    "status": "completed",
+    "progress": 100,
+    "results": {
+      "companies": [
+        {
+          "name": "ABC Plumbing Test Company",
+          "website": "https://www.abcplumbing-test.com",
+          "industry": "Plumbing",
+          "location": "Seattle, WA",
+          "description": "A test plumbing company created to verify webhook processing",
+          "employeeCount": 25,
+          "foundedYear": 2010,
+          "revenue": "$1-5 million",
+          "socialProfiles": {
+            "linkedin": "https://www.linkedin.com/company/abc-plumbing-test",
+            "facebook": "https://www.facebook.com/abcplumbingtest"
+          },
+          "technologiesUsed": [
+            "Wordpress",
+            "Mailchimp",
+            "QuickBooks"
+          ],
+          "productOfferings": [
+            "Residential Plumbing",
+            "Commercial Plumbing",
+            "Emergency Services"
+          ],
+          "headquarters": "Seattle, WA",
+          "contacts": [
+            {
+              "name": "John Smith",
+              "role": "Owner",
+              "email": "john@abcplumbing-test.com",
+              "probability": 95,
+              "linkedinUrl": "https://www.linkedin.com/in/johnsmith-test",
+              "phoneNumber": "206-555-1234",
+              "department": "Management",
+              "nameConfidenceScore": 90
+            },
+            {
+              "name": "Sarah Johnson",
+              "role": "Office Manager",
+              "email": "sarah@abcplumbing-test.com",
+              "probability": 85,
+              "linkedinUrl": "https://www.linkedin.com/in/sarahjohnson-test",
+              "phoneNumber": "206-555-5678",
+              "department": "Administration",
+              "nameConfidenceScore": 88
+            }
+          ]
+        },
+        {
+          "name": "XYZ Plumbing Services Test",
+          "website": "https://www.xyzplumbing-test.com",
+          "industry": "Plumbing",
+          "location": "Bellevue, WA",
+          "description": "Another test plumbing company for webhook validation",
+          "employeeCount": 15,
+          "foundedYear": 2015,
+          "revenue": "$500k-1 million",
+          "socialProfiles": {
+            "linkedin": "https://www.linkedin.com/company/xyz-plumbing-test"
+          },
+          "technologiesUsed": [
+            "Google Workspace",
+            "Asana"
+          ],
+          "productOfferings": [
+            "Residential Plumbing",
+            "Drain Cleaning"
+          ],
+          "headquarters": "Bellevue, WA",
+          "contacts": [
+            {
+              "name": "Michael Brown",
+              "role": "Owner",
+              "email": "michael@xyzplumbing-test.com",
+              "probability": 92,
+              "linkedinUrl": "https://www.linkedin.com/in/michaelbrown-test",
+              "phoneNumber": "425-555-4321",
+              "department": "Management",
+              "nameConfidenceScore": 95
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "moduleType": "Company Search",
+        "completedSearches": [
+          "web_search",
+          "business_directory"
+        ],
+        "validationScores": {
+          "companyNameValidation": 95,
+          "contactValidation": 90
+        },
+        "queryDetails": {
+          "original": "mid-sized plumbers in Seattle",
+          "refined": "medium plumbing businesses Seattle Washington"
+        }
+      }
+    }
+  },
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br",
+    "content-length": "2202",
+    "content-type": "application/json",
+    "user-agent": "node-fetch",
+    "x-webhook-type": "lead-gen-rabbit",
+    "host": "localhost:5000",
+    "connection": "keep-alive"
+  },
+  "ip": "127.0.0.1",
+  "method": "POST",
+  "path": "/api/external-workflow/webhook",
+  "query": {},
+  "timestamp": "2025-04-25T20:06:36.965Z",
+  "searchId": "rabbit_search_1745611596924"
+}
