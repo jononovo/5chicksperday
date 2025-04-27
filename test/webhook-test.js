@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 
 // Configure the webhook test
 const WEBHOOK_URL = 'https://7309249b-35d5-4d49-bf1b-820c1a4e2045-00-28p4ynamkriib.kirk.replit.dev/api/webhooks/workflow';
-const USER_ID = 1; // Replace with an actual user ID from your system
+const USER_ID = 2; // Using our test user ID we created
 const SEARCH_ID = `search_${USER_ID}_${Date.now()}`;
 
 // Sample webhook payload with company and contact data

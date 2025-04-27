@@ -183,6 +183,7 @@ export async function processWebhookResult(
           // If company not found, create a new one
           if (!company) {
             company = await storage.createCompany({
+              userId: userId, // Add the userId here for the second company creation as well
               name: companyName,
               size: null,
               age: null,
@@ -205,7 +206,8 @@ export async function processWebhookResult(
           
           // Now process and store each contact
           for (const contactData of contacts) {
-            const contact: InsertContact = {
+            const contact: any = {
+              userId: userId, // Add the userId for contacts as well
               name: contactData.name,
               companyId: company.id,
               role: contactData.role || contactData.title || null,
@@ -219,7 +221,7 @@ export async function processWebhookResult(
               probability: null,
               twitterHandle: null,
               phoneNumber: null,
-              alternativeEmails: null,
+              alternativeEmails: null, // This will need a schema update later 
               userFeedbackScore: null,
               feedbackCount: null,
               lastValidated: null,
