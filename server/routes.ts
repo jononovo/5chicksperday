@@ -15,6 +15,8 @@ import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enri
 import { google } from 'googleapis';
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
+import { workflowService } from "./lib/workflow-service";
+import { logIncomingWebhook, updateWebhookStatus } from "./lib/webhook-logger";
 
 // Helper functions for improved search test scoring and AI agent support
 function normalizeScore(score: number): number {
@@ -59,6 +61,130 @@ function requireAuth(req: express.Request, res: express.Response, next: express.
 }
 
 export function registerRoutes(app: Express) {
+  // External workflow webhook endpoint - receives results from workflow service
+  app.post("/api/webhooks/workflow", async (req, res) => {
+    try {
+      console.log("Received webhook from workflow service:", req.body);
+      
+      // Extract data from webhook payload
+      const { searchId, userId, results } = req.body;
+      
+      if (!searchId || !results) {
+        console.error("Invalid webhook payload: missing searchId or results");
+        return res.status(400).json({ 
+          status: "error", 
+          message: "Invalid webhook payload: missing searchId or results" 
+        });
+      }
+      
+      // Log the incoming webhook
+      const requestId = await logIncomingWebhook(
+        searchId,
+        req.body,
+        req.headers as Record<string, string>
+      );
+      
+      // Process the search results
+      const userIdNum = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+      
+      if (isNaN(userIdNum)) {
+        console.error("Invalid user ID in webhook payload");
+        await updateWebhookStatus(requestId, 400, "Invalid user ID", {
+          error: "Invalid user ID in webhook payload"
+        });
+        return res.status(400).json({ 
+          status: "error", 
+          message: "Invalid user ID" 
+        });
+      }
+      
+      // Process the search results
+      const processResult = await workflowService.processSearchResults(searchId, results, userIdNum);
+      
+      if (!processResult.success) {
+        console.error("Error processing search results:", processResult.error);
+        await updateWebhookStatus(requestId, 500, "Error processing results", {
+          error: processResult.error
+        });
+        return res.status(500).json({ 
+          status: "error", 
+          message: processResult.error || "Unknown error processing results" 
+        });
+      }
+      
+      // Update webhook status
+      await updateWebhookStatus(requestId, 200, "Success", {
+        processedAt: new Date().toISOString(),
+        message: "Search results processed successfully"
+      });
+      
+      // Return success response
+      return res.json({ 
+        status: "success", 
+        message: "Search results processed successfully" 
+      });
+    } catch (error) {
+      console.error("Error processing webhook:", error);
+      res.status(500).json({ 
+        status: "error", 
+        message: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+  
+  // Workflow search trigger endpoint - sends search request to workflow service
+  app.post("/api/workflow/search", requireAuth, async (req, res) => {
+    try {
+      const { query, strategyId } = req.body;
+      
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({
+          message: "Invalid request: query must be a non-empty string"
+        });
+      }
+      
+      if (!strategyId || typeof strategyId !== 'number') {
+        return res.status(400).json({
+          message: "Invalid request: strategyId must be a valid number"
+        });
+      }
+      
+      // Check if the strategy exists
+      const strategy = await storage.getSearchApproach(strategyId);
+      if (!strategy) {
+        return res.status(404).json({
+          message: `Search strategy with ID ${strategyId} not found`
+        });
+      }
+      
+      // Send search request to workflow service
+      const result = await workflowService.sendSearchRequest(
+        query,
+        req.user!.id,
+        strategyId
+      );
+      
+      if (!result.success) {
+        return res.status(500).json({
+          message: result.error || "Failed to initiate search via workflow service",
+          error: result.error
+        });
+      }
+      
+      // Return success with searchId
+      res.json({
+        message: "Search initiated successfully",
+        searchId: result.searchId,
+        status: "processing"
+      });
+    } catch (error) {
+      console.error("Workflow search error:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "An unexpected error occurred"
+      });
+    }
+  });
+  
   // New route for enriching multiple contacts
   app.post("/api/enrich-contacts", requireAuth, async (req, res) => {
     try {

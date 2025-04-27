@@ -1,5 +1,31 @@
-import { pgTable, text, serial, integer, jsonb, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, jsonb, timestamp, boolean, uuid, index } from "drizzle-orm/pg-core";
 import { z } from "zod";
+
+export const webhookLogs = pgTable(
+  "webhook_logs", 
+  {
+    id: serial("id").primaryKey(),
+    requestId: text("request_id").notNull(),
+    searchId: text("search_id"),
+    source: text("source").notNull(),  // Format: "provider-operation" (e.g. "workflow-send", "workflow-receive")
+    method: text("method"),
+    url: text("url"),
+    headers: jsonb("headers").default({}),
+    body: jsonb("body").default({}),
+    status: text("status").default("pending"), // pending, success, error
+    statusCode: integer("status_code"),
+    processingDetails: jsonb("processing_details").default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => {
+    return {
+      requestIdIdx: index("webhook_logs_request_id_idx").on(table.requestId),
+      searchIdIdx: index("webhook_logs_search_id_idx").on(table.searchId),
+      sourceIdx: index("webhook_logs_source_idx").on(table.source)
+    };
+  }
+);
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
