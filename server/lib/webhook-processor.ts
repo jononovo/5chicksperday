@@ -129,7 +129,8 @@ export async function processWebhookResult(
         // Store each company
         for (const companyData of result.results.companies) {
           // Process and store company
-          const company: InsertCompany = {
+          const company: any = {
+            userId: userId, // Add the userId here
             name: companyData.name,
             size: companyData.size || null,
             services: companyData.services || null,
