@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
@@ -56,6 +57,15 @@ app.get('/api/health', (_req, res) => {
     setupAuth(app);
     
     // Database already initialized through Drizzle
+    
+    // Initialize default search approaches
+    try {
+      await storage.initializeDefaultSearchApproaches();
+      console.log('Default search approaches initialized successfully');
+    } catch (error) {
+      console.error('Error initializing default search approaches:', error);
+      // Continue with server startup even if this fails
+    }
 
     const server = registerRoutes(app);
 
