@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, jsonb, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, jsonb, timestamp, boolean, uuid, index } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
 export const users = pgTable("users", {
@@ -139,6 +139,33 @@ export const searchTestResults = pgTable("search_test_results", {
   metadata: jsonb("metadata").default({}),
   createdAt: timestamp("created_at").defaultNow()
 });
+
+// Table for logging webhook interactions
+export const webhookLogs = pgTable(
+  "webhook_logs", 
+  {
+    id: serial("id").primaryKey(),
+    requestId: text("request_id").notNull(),
+    searchId: text("search_id"),
+    source: text("source").notNull(),  // Format: "provider-operation" (e.g. "workflow-send", "workflow-receive")
+    method: text("method"),
+    url: text("url"),
+    headers: jsonb("headers").default({}),
+    body: jsonb("body").default({}),
+    status: text("status").default("pending"), // pending, success, error
+    statusCode: integer("status_code"),
+    processingDetails: jsonb("processing_details").default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => {
+    return {
+      requestIdIdx: index("webhook_logs_request_id_idx").on(table.requestId),
+      searchIdIdx: index("webhook_logs_search_id_idx").on(table.searchId),
+      sourceIdx: index("webhook_logs_source_idx").on(table.source),
+    }
+  }
+);
 
 // N8N Workflow tables have been removed
 
@@ -288,6 +315,19 @@ const searchTestResultSchema = z.object({
   metadata: z.record(z.unknown()).optional()
 });
 
+const webhookLogSchema = z.object({
+  requestId: z.string(),
+  searchId: z.string().optional(),
+  source: z.string(),
+  method: z.string().optional(),
+  url: z.string().optional(),
+  headers: z.record(z.unknown()).optional(),
+  body: z.record(z.unknown()).optional(),
+  status: z.enum(['pending', 'success', 'error']).default('pending'),
+  statusCode: z.number().optional(),
+  processingDetails: z.record(z.unknown()).optional()
+});
+
 // N8N Workflow schemas have been removed
 
 export const insertListSchema = listSchema.extend({
@@ -306,6 +346,7 @@ export const insertEmailTemplateSchema = emailTemplateSchema.extend({
 export const insertContactFeedbackSchema = contactFeedbackSchema;
 export const insertUserPreferencesSchema = userPreferencesSchema;
 export const insertSearchTestResultSchema = searchTestResultSchema;
+export const insertWebhookLogSchema = webhookLogSchema;
 
 export type List = typeof lists.$inferSelect;
 export type InsertList = z.infer<typeof insertListSchema>;
