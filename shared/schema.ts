@@ -197,6 +197,7 @@ const companySchema = z.object({
 const contactSchema = z.object({
   name: z.string().min(1, "Contact name is required"),
   companyId: z.number(),
+  userId: z.number(),
   role: z.string().nullable(),
   email: z.string().email().nullable(),
   probability: z.number().min(1).max(100).nullable(),
