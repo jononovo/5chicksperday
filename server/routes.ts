@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer } from "http";
 import { storage } from "./storage";
 import { searchCompanies, analyzeCompany } from "./lib/search-logic";
@@ -15,6 +15,8 @@ import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enri
 import { google } from 'googleapis';
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
+import { processWebhookResult } from "./lib/webhook-processor";
+import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow-connector";
 
 // Helper functions for improved search test scoring and AI agent support
 function normalizeScore(score: number): number {
@@ -1573,6 +1575,94 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       console.error('Gmail send error:', error);
       res.status(500).json({
         message: error instanceof Error ? error.message : "Failed to send email"
+      });
+    }
+  });
+
+  // === Workflow Integration Endpoints ===
+
+  // Ping endpoint for keep-alive
+  app.get("/api/ping", (_req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
+  // Webhook endpoint to receive results from workflow
+  app.post("/api/webhooks/workflow/:param1?/:param2?/:param3?/:param4?", async (req, res) => {
+    try {
+      console.log(`Webhook received: ${new Date().toISOString()}`);
+      console.log(`Path parameters: ${req.params.param1}, ${req.params.param2}, ${req.params.param3}, ${req.params.param4}`);
+      
+      // Process the webhook result
+      const result = await processWebhookResult(req.body, req.headers as Record<string, any>);
+      
+      // Always return 200 to acknowledge receipt - prevents retries
+      return res.status(200).json({
+        success: result.success,
+        message: result.message,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Error processing webhook: ${error instanceof Error ? error.message : "Unknown error"}`);
+      
+      // Still return 200 OK to prevent retries, but indicate there was a processing error
+      return res.status(200).json({
+        success: false,
+        message: "Error processing webhook",
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Endpoint to initiate a workflow search
+  app.post("/api/workflow-search", requireAuth, async (req, res) => {
+    try {
+      const { query, options } = req.body;
+      
+      if (!query || typeof query !== 'string') {
+        res.status(400).json({
+          message: "Invalid request: query must be a non-empty string",
+          success: false
+        });
+        return;
+      }
+      
+      // Send the search request to the workflow system
+      const result = await sendSearchRequest(req.user!.id, query, options);
+      
+      // Start the keep-alive mechanism (15 minutes by default)
+      if (result.success) {
+        startKeepAlive(result.searchId);
+      }
+      
+      res.json({
+        ...result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Workflow search error: ${error instanceof Error ? error.message : "Unknown error"}`);
+      res.status(500).json({
+        success: false,
+        message: "Failed to initiate workflow search",
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Endpoint to check workflow provider health
+  app.get("/api/workflow/health", requireAuth, async (_req, res) => {
+    try {
+      const { checkProviderHealth } = await import('./lib/webhook-logger');
+      const health = await checkProviderHealth();
+      res.json(health);
+    } catch (error) {
+      console.error(`Health check error: ${error instanceof Error ? error.message : "Unknown error"}`);
+      res.status(500).json({
+        provider: 'workflow',
+        connected: false,
+        health: 'unknown',
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
