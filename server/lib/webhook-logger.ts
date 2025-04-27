@@ -1,40 +1,40 @@
 import { db } from "../db";
 import { webhookLogs, insertWebhookLogSchema } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Log an outgoing request to the workflow provider
  */
 export async function logOutgoingRequest(searchId: string, url: string, payload: any) {
-  const requestId = `workflow-send-${Date.now()}`;
-  
   try {
-    // Simple console logging
-    console.log(`[${new Date().toISOString()}] Logging outgoing request:`, {
-      requestId,
-      searchId,
-      url,
-      payload
-    });
+    const requestId = uuidv4(); // Generate a unique ID for this request
     
-    // Database logging
-    await db.insert(webhookLogs).values({
+    // Create log entry
+    const logEntry = {
       requestId,
       searchId,
       source: 'workflow-send',
-      method: 'POST',
       url,
-      headers: { 'Content-Type': 'application/json' },
-      body: payload,
-      status: 'pending',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      payload: JSON.stringify(payload),
+      createdAt: new Date()
+    };
+    
+    // Insert into database 
+    const [log] = await db.insert(webhookLogs)
+      .values(logEntry)
+      .returning();
+    
+    console.log(`Logged outgoing workflow request: ${requestId}`);
     
     return requestId;
   } catch (error) {
-    console.error(`Failed to log outgoing request: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    return requestId; // Still return the ID even if logging fails
+    console.error(`Error logging outgoing request: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return uuidv4(); // Return a new ID anyway so caller doesn't fail
   }
 }
 
@@ -42,34 +42,31 @@ export async function logOutgoingRequest(searchId: string, url: string, payload:
  * Log an incoming webhook from the workflow provider
  */
 export async function logIncomingWebhook(searchId: string, payload: any, headers: Record<string, any>) {
-  const requestId = `workflow-receive-${Date.now()}`;
-  
   try {
-    // Simple console logging
-    console.log(`[${new Date().toISOString()}] Logging incoming webhook:`, {
-      requestId,
-      searchId,
-      payload
-    });
+    const requestId = uuidv4(); // Generate a unique ID for this webhook
     
-    // Database logging
-    await db.insert(webhookLogs).values({
+    // Create log entry
+    const logEntry = {
       requestId,
       searchId,
       source: 'workflow-receive',
-      method: 'POST',
-      url: '/api/webhooks/workflow',
-      headers,
-      body: payload,
+      headers: headers,
+      payload: JSON.stringify(payload),
       status: 'received',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+      createdAt: new Date()
+    };
+    
+    // Insert into database
+    const [log] = await db.insert(webhookLogs)
+      .values(logEntry)
+      .returning();
+    
+    console.log(`Logged incoming webhook: ${requestId}`);
     
     return requestId;
   } catch (error) {
-    console.error(`Failed to log incoming webhook: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    return requestId; // Still return the ID even if logging fails
+    console.error(`Error logging incoming webhook: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return uuidv4(); // Return a new ID anyway so caller doesn't fail
   }
 }
 
@@ -78,31 +75,22 @@ export async function logIncomingWebhook(searchId: string, payload: any, headers
  */
 export async function logHttpStatus(requestId: string, statusCode: number, statusText: string, responseData?: any) {
   try {
-    // Simple console logging
-    console.log(`[${new Date().toISOString()}] Logging HTTP status for ${requestId}:`, {
-      statusCode,
-      statusText
-    });
-    
-    // Determine status based on statusCode
-    const status = statusCode >= 200 && statusCode < 300 ? 'success' : 'error';
-    
-    // Database logging
+    // Update the log with status information
     await db.update(webhookLogs)
       .set({
         statusCode,
-        status,
-        processingDetails: {
-          httpStatus: statusCode,
-          httpStatusText: statusText,
-          responseTime: new Date().toISOString(),
-          responseData
-        },
+        statusText,
+        response: responseData ? JSON.stringify(responseData) : null,
         updatedAt: new Date()
       })
       .where(eq(webhookLogs.requestId, requestId));
+    
+    console.log(`Updated log ${requestId} with status ${statusCode}: ${statusText}`);
+    
+    return true;
   } catch (error) {
-    console.error(`Failed to log HTTP status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error(`Error updating log status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return false;
   }
 }
 

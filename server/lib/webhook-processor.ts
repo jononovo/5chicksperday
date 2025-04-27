@@ -131,14 +131,21 @@ export async function processWebhookResult(
           // Process and store company
           const company: InsertCompany = {
             name: companyData.name,
-            userId,
-            listId: listResult.id,
             size: companyData.size || null,
             services: companyData.services || null,
             validationPoints: companyData.validationPoints || null,
             differentiation: companyData.differentiation || null,
             totalScore: companyData.totalScore || null,
-            website: companyData.website || null
+            website: companyData.website || null,
+            listId: listResult.id,
+            age: null,
+            alternativeProfileUrl: null,
+            defaultContactEmail: null,
+            ranking: null,
+            linkedinProminence: null,
+            customerCount: null,
+            rating: null,
+            snapshot: null
           };
           
           const savedCompany = await storage.createCompany(company);
@@ -176,7 +183,21 @@ export async function processWebhookResult(
           if (!company) {
             company = await storage.createCompany({
               name: companyName,
-              userId
+              size: null,
+              age: null,
+              website: null,
+              alternativeProfileUrl: null,
+              defaultContactEmail: null,
+              ranking: null,
+              linkedinProminence: null,
+              customerCount: null,
+              rating: null,
+              services: null,
+              validationPoints: null,
+              differentiation: null,
+              totalScore: null,
+              snapshot: null,
+              listId: null
             });
             console.log(`Created new company ${company.name} for contacts`);
           }
@@ -185,7 +206,6 @@ export async function processWebhookResult(
           for (const contactData of contacts) {
             const contact: InsertContact = {
               name: contactData.name,
-              userId,
               companyId: company.id,
               role: contactData.role || contactData.title || null,
               email: contactData.email || null,
@@ -194,7 +214,15 @@ export async function processWebhookResult(
               location: contactData.location || null,
               nameConfidenceScore: contactData.nameConfidenceScore || null,
               verificationSource: 'Workflow',
-              completedSearches: ['workflow_contact_discovery']
+              completedSearches: ['workflow_contact_discovery'],
+              probability: null,
+              twitterHandle: null,
+              phoneNumber: null,
+              alternativeEmails: null,
+              userFeedbackScore: null,
+              feedbackCount: null,
+              lastValidated: null,
+              lastEnriched: null
             };
             
             await storage.createContact(contact);
