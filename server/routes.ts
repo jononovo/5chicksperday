@@ -135,7 +135,7 @@ export function registerRoutes(app: Express) {
   // Workflow search trigger endpoint - sends search request to workflow service
   app.post("/api/workflow/search", requireAuth, async (req, res) => {
     try {
-      const { query, strategyId } = req.body;
+      const { query, strategyId, provider } = req.body;
       
       if (!query || typeof query !== 'string') {
         return res.status(400).json({
@@ -157,11 +157,17 @@ export function registerRoutes(app: Express) {
         });
       }
       
+      // Log the provider if specified
+      if (provider) {
+        console.log(`Using workflow provider: ${provider}`);
+      }
+      
       // Send search request to workflow service
       const result = await workflowService.sendSearchRequest(
         query,
         req.user!.id,
-        strategyId
+        strategyId,
+        provider
       );
       
       if (!result.success) {

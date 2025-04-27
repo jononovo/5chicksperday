@@ -8,32 +8,40 @@ interface SearchRequestPayload {
   searchId: string;
   userId: number;
   strategyId: number;
+  provider?: string;
   callbackUrl?: string;
 }
 
-// Default workflow webhook URL - this should be configured per environment
-// For production, this should be stored in environment variables
-const DEFAULT_WORKFLOW_URL = process.env.WORKFLOW_WEBHOOK_URL || 
-  "https://your-workflow-instance.n8n.cloud/webhook/workflow-trigger";
+// Workflow provider URLs
+const WORKFLOW_PROVIDERS = {
+  default: process.env.WORKFLOW_WEBHOOK_URL || 
+    "https://your-workflow-instance.n8n.cloud/webhook/workflow-trigger",
+  lion: process.env.LION_WORKFLOW_URL || 
+    "https://lion-workflow.example.com/webhook/trigger",
+  rabbit: process.env.RABBIT_WORKFLOW_URL || 
+    "https://rabbit-workflow.example.com/webhook/trigger",
+  donkey: process.env.DONKEY_WORKFLOW_URL || 
+    "https://donkey-workflow.example.com/webhook/trigger"
+};
 
 /**
  * Service for interacting with external workflow providers
  */
 export class WorkflowService {
-  private workflowUrl: string;
-  
-  constructor(workflowUrl?: string) {
-    this.workflowUrl = workflowUrl || DEFAULT_WORKFLOW_URL;
-  }
-  
   /**
    * Send a search request to the workflow provider
    * @param query The search query
    * @param userId The user ID making the request
    * @param strategyId The ID of the search strategy to use
+   * @param provider Optional workflow provider ID
    * @returns Object containing success status and search ID
    */
-  async sendSearchRequest(query: string, userId: number, strategyId: number): Promise<{ success: boolean; searchId: string; error?: string }> {
+  async sendSearchRequest(
+    query: string, 
+    userId: number, 
+    strategyId: number, 
+    provider?: string
+  ): Promise<{ success: boolean; searchId: string; error?: string }> {
     // Generate a unique search ID
     const searchId = `search_${Date.now()}`;
     
@@ -44,20 +52,28 @@ export class WorkflowService {
         throw new Error(`Search strategy with ID ${strategyId} not found`);
       }
       
+      // Get the workflow URL for the specified provider or use the default
+      const workflowUrl = provider && WORKFLOW_PROVIDERS[provider as keyof typeof WORKFLOW_PROVIDERS]
+        ? WORKFLOW_PROVIDERS[provider as keyof typeof WORKFLOW_PROVIDERS]
+        : WORKFLOW_PROVIDERS.default;
+        
+      console.log(`Using workflow provider: ${provider || 'default'} - URL: ${workflowUrl}`);
+      
       // Prepare the request payload
       const payload: SearchRequestPayload = {
         query,
         searchId,
         userId,
         strategyId,
+        provider,
         callbackUrl: `${process.env.APP_URL || 'http://localhost:3000'}/api/webhooks/workflow`
       };
       
       // Log the outgoing request
-      const requestId = await logOutgoingWebhook(searchId, this.workflowUrl, payload);
+      const requestId = await logOutgoingWebhook(searchId, workflowUrl, payload);
       
       // Make the API request
-      const response = await fetch(this.workflowUrl, {
+      const response = await fetch(workflowUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

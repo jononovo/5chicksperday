@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lion, Rabbit } from "lucide-react";
+import { FaDonkey } from "react-icons/fa";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -12,8 +13,16 @@ import { apiRequest } from "@/lib/queryClient";
 export function WorkflowSearchTrigger() {
   const [query, setQuery] = useState("");
   const [selectedStrategyId, setSelectedStrategyId] = useState<string>("");
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Workflow providers
+  const providers = [
+    { id: "lion", name: "Lion", icon: <Lion className="h-4 w-4 mr-2" /> },
+    { id: "rabbit", name: "Rabbit", icon: <Rabbit className="h-4 w-4 mr-2" /> },
+    { id: "donkey", name: "Donkey", icon: <FaDonkey className="h-4 w-4 mr-2" /> }
+  ];
 
   // Fetch available search strategies
   const { data: strategies, isLoading: strategiesLoading } = useQuery({
@@ -23,7 +32,7 @@ export function WorkflowSearchTrigger() {
 
   // Mutation for initiating a search
   const searchMutation = useMutation({
-    mutationFn: async (data: { query: string; strategyId: number }) => {
+    mutationFn: async (data: { query: string; strategyId: number; provider?: string }) => {
       return apiRequest("/api/workflow/search", {
         method: "POST",
         data,
@@ -69,6 +78,16 @@ export function WorkflowSearchTrigger() {
     searchMutation.mutate({
       query: query.trim(),
       strategyId: parseInt(selectedStrategyId, 10),
+      provider: selectedProvider || undefined
+    });
+  };
+
+  const handleProviderClick = (providerId: string) => {
+    setSelectedProvider(providerId);
+    
+    toast({
+      title: `${providerId.charAt(0).toUpperCase() + providerId.slice(1)} selected`,
+      description: `Search will be processed by the ${providerId} workflow provider.`,
     });
   };
 
@@ -118,6 +137,30 @@ export function WorkflowSearchTrigger() {
                 )}
               </SelectContent>
             </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="provider">Workflow Provider</Label>
+            <div className="flex gap-2 mt-1">
+              {providers.map((provider) => (
+                <Button
+                  key={provider.id}
+                  type="button"
+                  variant={selectedProvider === provider.id ? "default" : "outline"}
+                  className="flex-1"
+                  onClick={() => handleProviderClick(provider.id)}
+                  disabled={searchMutation.isPending}
+                >
+                  {provider.icon}
+                  {provider.name}
+                </Button>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {selectedProvider 
+                ? `Using ${selectedProvider} provider for this search` 
+                : "Select a workflow provider (optional)"}
+            </p>
           </div>
         </CardContent>
         <CardFooter>
