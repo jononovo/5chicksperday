@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Table,
@@ -544,6 +544,7 @@ export default function Build() {
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="endpoints">Endpoints</TabsTrigger>
                 <TabsTrigger value="examples">Examples</TabsTrigger>
+                <TabsTrigger value="workflow">Workflow Search</TabsTrigger>
               </TabsList>
               
               <TabsContent value="overview" className="space-y-4">
@@ -671,6 +672,35 @@ curl -X POST "https://your-repl-domain.replit.dev/api/agent/run-search-test" \\
                     <li>Run follow-up test with the same query</li>
                     <li>Compare results to measure improvement</li>
                     <li>Continue iterating to optimize performance</li>
+                  </ol>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="workflow" className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Workflow-Based Search</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This feature allows you to use external workflow automation services to run complex search operations.
+                    Results will be delivered asynchronously via webhook callbacks and stored in your database.
+                  </p>
+                </div>
+                
+                {/* Import the WorkflowSearchTrigger component */}
+                <div className="mt-4">
+                  {React.createElement(
+                    React.lazy(() => import("@/components/workflow-search-trigger")), 
+                    { key: "workflow-search-trigger" }
+                  )}
+                </div>
+                
+                <div className="mt-8">
+                  <h3 className="text-lg font-medium mb-2">How It Works</h3>
+                  <ol className="list-decimal pl-5 space-y-1 text-muted-foreground">
+                    <li>You enter a search query and select a search strategy</li>
+                    <li>The query is sent to an external workflow automation service</li>
+                    <li>The workflow processes your search using advanced strategies</li>
+                    <li>Results are delivered back to 5 Ducks via webhook</li>
+                    <li>Companies and contacts are stored in your database</li>
                   </ol>
                 </div>
               </TabsContent>
