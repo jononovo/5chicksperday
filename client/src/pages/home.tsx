@@ -446,8 +446,8 @@ export default function Home() {
       <IntroTourModal open={showTour} onOpenChange={setShowTour} />
 
       <div className="grid grid-cols-12 gap-6">
-        {/* Main Content Area - 9 columns */}
-        <div className="col-span-9 space-y-6">
+        {/* Main Content Area - full width */}
+        <div className="col-span-12 space-y-6">
           {/* Search Section */}
           <Card>
             <CardHeader>
@@ -661,44 +661,6 @@ export default function Home() {
                 />
               </div>
             </CardContent>
-          </Card>
-        </div>
-
-        {/* Search Flow Section - 3 columns */}
-        <div className="col-span-3">
-          <Card>
-            <CardHeader>
-              <div className="space-y-4">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => setIsSearchFlowExpanded(!isSearchFlowExpanded)}
-                >
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Search className="w-5 h-5" />
-                    Search Flow
-                    {isSearchFlowExpanded ? (
-                      <ChevronUp className="w-4 h-4" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4" />
-                    )}
-                  </CardTitle>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setLocation("/api-templates")}
-                  className="w-full justify-start"
-                >
-                  <Code2 className="h-4 w-4 mr-2" />
-                  View API Templates
-                </Button>
-              </div>
-            </CardHeader>
-            {isSearchFlowExpanded && (
-              <CardContent className="p-2">
-                <SearchFlowNew approaches={searchApproaches} />
-              </CardContent>
-            )}
           </Card>
         </div>
       </div>
