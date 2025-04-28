@@ -406,7 +406,7 @@ export function registerRoutes(app: Express) {
 
   // Companies search endpoint
   app.post("/api/companies/search", requireAuth, async (req, res) => {
-    const { query, strategyId } = req.body;
+    const { query, strategyId, options } = req.body;
 
     if (!query || typeof query !== 'string') {
       res.status(400).json({
@@ -414,10 +414,15 @@ export function registerRoutes(app: Express) {
       });
       return;
     }
+    
+    // Log search options if provided
+    if (options) {
+      console.log('Search options received:', options);
+    }
 
     try {
-      // Search for matching companies
-      const companyNames = await searchCompanies(query);
+      // Search for matching companies with options
+      const companyNames = await searchCompanies(query, options);
 
       // Get search approaches for analysis
       const approaches = await storage.listSearchApproaches();

@@ -9,6 +9,7 @@ import { Loader2, Search, HelpCircle } from "lucide-react";
 import type { SearchModuleConfig, SearchApproach } from "@shared/schema";
 import { useConfetti } from "@/hooks/use-confetti";
 import { useSearchStrategy } from "@/lib/search-strategy-context";
+import { SearchApproachOptions } from "@/components/search-approach-options";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ export default function PromptEditor({
   initialPrompt = ""
 }: PromptEditorProps) {
   const [query, setQuery] = useState(initialPrompt);
+  const [searchOptions, setSearchOptions] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { triggerConfetti } = useConfetti();
@@ -136,12 +138,14 @@ export default function PromptEditor({
         searchFlows.find(flow => flow.id.toString() === selectedStrategyId) : null;
       
       console.log(`Searching with strategy: ${selectedStrategy?.name || "Default"} (ID: ${selectedStrategyId || "none"})`);
+      console.log("Search options:", searchOptions);
 
       // Ensure proper typing for the search request
       const res = await apiRequest("POST", "/api/companies/search", { 
         query: searchQuery,
         flows: activeFlows,
-        strategyId: selectedStrategyId ? parseInt(selectedStrategyId) : undefined
+        strategyId: selectedStrategyId ? parseInt(selectedStrategyId) : undefined,
+        options: searchOptions // Include the search options
       });
       return res.json();
     },
@@ -295,6 +299,14 @@ export default function PromptEditor({
             </Select>
           </div>
         </div>
+        
+        {/* Search approach options */}
+        {selectedStrategyId && (
+          <SearchApproachOptions 
+            approachId={parseInt(selectedStrategyId)} 
+            onOptionsChange={setSearchOptions}
+          />
+        )}
         
         {/* Custom Workflow Configuration */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">

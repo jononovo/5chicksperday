@@ -11,23 +11,39 @@ import { validateName } from "./results-analysis/contact-name-validation";
 import { extractContacts } from "./results-analysis/email-extraction-format";
 import { validateNames } from "./results-analysis/contact-ai-name-scorer";
 
+// Define the search options interface
+interface SearchOptions {
+  excludeFranchises?: boolean;
+  highValue?: boolean;
+  triplePrompt?: boolean;
+  focusOnSeniorRoles?: boolean;
+  includePatternMatching?: boolean;
+  [key: string]: boolean | undefined;
+}
+
 // Core search functions
-export async function searchCompanies(query: string): Promise<string[]> {
-  const messages: PerplexityMessage[] = [
-    {
-      role: "system",
-      content: `You are a business intelligence analyst. Return ONLY a list of 5 real company names that match this search criteria. Each company should be:
+export async function searchCompanies(query: string, options?: SearchOptions): Promise<string[]> {
+  // Add options to the search criteria
+  let systemContent = `You are a business intelligence analyst. Return ONLY a list of 5 real company names that match this search criteria. Each company should be:
       1. A real, verifiable business entity
       2. Not a generic business term or category
       3. Not a department or division name
-      4. Return full company names (e.g. "Microsoft Corporation" not just "Microsoft")
-
-      Format your response as a simple list with one company name per line, nothing else.`
-    },
-    {
-      role: "user",
-      content: `Find 5 companies that match this criteria: ${query}`
-    }
+      4. Return full company names (e.g. "Microsoft Corporation" not just "Microsoft")`;
+  
+  // Customize the prompt based on options
+  if (options?.excludeFranchises) {
+    systemContent += `\n      5. Exclude franchise businesses`;
+  }
+  
+  if (options?.highValue) {
+    systemContent += `\n      6. Focus on high-value, premium businesses in the selected category with established reputations`;
+  }
+  
+  systemContent += `\n\nFormat your response as a simple list with one company name per line, nothing else.`;
+  
+  const messages: PerplexityMessage[] = [
+    { role: "system", content: systemContent },
+    { role: "user", content: `Find 5 companies that match this criteria: ${query}` }
   ];
 
   const response = await queryPerplexity(messages);
