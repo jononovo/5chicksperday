@@ -234,7 +234,7 @@ export const searchSequenceSchema = z.object({
 
 export const searchApproachSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  prompt: z.string().min(1, "Prompt is required"),
+  prompt: z.string().optional(),
   order: z.number().min(1),
   active: z.boolean().nullable(),
   config: searchModuleConfigSchema,

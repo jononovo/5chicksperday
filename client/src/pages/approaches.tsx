@@ -31,7 +31,7 @@ import {
 // Form schema for creating/editing approaches
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  prompt: z.string().min(1, "Prompt is required"),
+  prompt: z.string().optional(),
   order: z.number().min(1, "Order is required"),
   active: z.boolean().default(true),
   type: z.enum(["internal", "external"]),
