@@ -76,22 +76,7 @@ export function SearchApproachOptions({ approachId, onOptionsChange }: SearchApp
     
     setOptionStates(initialStates);
     if (onOptionsChange) onOptionsChange(initialStates);
-  }, [approachId, onOptionsChange]);
-  
-  // Handle toggle change
-  const handleToggleChange = (id: string, checked: boolean) => {
-    const updatedStates = { ...optionStates, [id]: checked };
-    setOptionStates(updatedStates);
-    if (onOptionsChange) onOptionsChange(updatedStates);
-  };
-  
-  // Always call useEffect first to reset options when needed
-  useEffect(() => {
-    // Reset options state when there are no options for this approach
-    if (!approachId || !APPROACH_OPTIONS[approachId] || APPROACH_OPTIONS[approachId].length === 0) {
-      if (onOptionsChange) onOptionsChange({});
-    }
-  }, [approachId, onOptionsChange]);
+  }, [approachId]);
   
   // If no approach is selected or no options available, don't render anything
   if (!approachId || !APPROACH_OPTIONS[approachId] || APPROACH_OPTIONS[approachId].length === 0) {
@@ -101,20 +86,40 @@ export function SearchApproachOptions({ approachId, onOptionsChange }: SearchApp
   // Get the options for this approach
   const options = APPROACH_OPTIONS[approachId];
   
+  // Handle toggle change (simplified and more direct)
+  const handleToggleChange = (id: string, checked: boolean) => {
+    console.log(`Toggle changed for ${id}: ${checked}`);
+    
+    // Create a new state object
+    const newState = { ...optionStates, [id]: checked };
+    
+    // Update local state
+    setOptionStates(newState);
+    
+    // Notify parent component
+    if (onOptionsChange) {
+      onOptionsChange(newState);
+    }
+  };
+  
   return (
     <Card className="mt-3 p-3">
       <h3 className="text-sm font-medium mb-2">Search Options</h3>
       <Separator className="mb-3" />
       <div className="space-y-3">
         {options.map((option) => (
-          <div key={option.id} className="flex items-center space-x-2">
+          <div key={option.id} className="flex items-center space-x-2 cursor-pointer" 
+               onClick={() => handleToggleChange(option.id, !optionStates[option.id])}>
             <Switch 
               id={`option-${option.id}`} 
-              checked={optionStates[option.id] || false}
+              checked={!!optionStates[option.id]}
               onCheckedChange={(checked) => handleToggleChange(option.id, checked)}
             />
             <div className="grid gap-0.5">
-              <Label htmlFor={`option-${option.id}`} className="text-sm font-medium">
+              <Label 
+                htmlFor={`option-${option.id}`} 
+                className="text-sm font-medium cursor-pointer"
+              >
                 {option.label}
               </Label>
               <p className="text-xs text-muted-foreground">{option.description}</p>
