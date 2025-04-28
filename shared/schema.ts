@@ -81,7 +81,11 @@ export const searchApproaches = pgTable("search_approaches", {
   completedSearches: text("completed_searches").array(),
   technicalPrompt: text("technical_prompt"),
   responseStructure: text("response_structure"),
-  moduleType: text("module_type").default('company_overview'),  
+  moduleType: text("module_type").default('company_overview'),
+  type: text("type").default('internal'), // 'internal' or 'external'
+  requestUrl: text("request_url"), // URL for external search approaches
+  requestFormat: jsonb("request_format"), // JSON format for external search requests
+  responseFormat: jsonb("response_format"), // Expected response format from external services
   validationRules: jsonb("validation_rules").default({})  
 });
 
@@ -244,6 +248,10 @@ export const searchApproachSchema = z.object({
     'email_enrichment',
     'email_deepdive'
   ]).default('company_overview'),
+  type: z.enum(['internal', 'external']).default('internal'),
+  requestUrl: z.string().url().optional(),
+  requestFormat: z.record(z.unknown()).optional(),
+  responseFormat: z.record(z.unknown()).optional(),
   sequence: searchSequenceSchema.optional(),
   validationRules: z.record(z.unknown()).default({})
 });
