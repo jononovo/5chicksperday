@@ -1007,6 +1007,116 @@ export function registerRoutes(app: Express) {
       });
     }
   });
+
+  // Search Approaches CRUD endpoints
+  app.get("/api/search-approaches", async (_req, res) => {
+    try {
+      const approaches = await storage.listSearchApproaches();
+      res.json(approaches);
+    } catch (error) {
+      console.error('Error fetching search approaches:', error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to fetch search approaches"
+      });
+    }
+  });
+
+  app.get("/api/search-approaches/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      const approach = await storage.getSearchApproach(id);
+      if (!approach) {
+        return res.status(404).json({ message: "Search approach not found" });
+      }
+      
+      res.json(approach);
+    } catch (error) {
+      console.error(`Error fetching search approach with ID ${req.params.id}:`, error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to fetch search approach"
+      });
+    }
+  });
+
+  app.post("/api/search-approaches", requireAuth, async (req, res) => {
+    try {
+      // Validate the request body
+      const parseResult = insertSearchApproachSchema.safeParse(req.body);
+      
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid request body",
+          errors: parseResult.error.errors 
+        });
+      }
+      
+      const approach = await storage.createSearchApproach(parseResult.data);
+      res.status(201).json(approach);
+    } catch (error) {
+      console.error('Error creating search approach:', error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to create search approach"
+      });
+    }
+  });
+
+  app.patch("/api/search-approaches/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      // Get the existing approach
+      const existingApproach = await storage.getSearchApproach(id);
+      if (!existingApproach) {
+        return res.status(404).json({ message: "Search approach not found" });
+      }
+      
+      // Update the approach
+      const updatedApproach = await storage.updateSearchApproach(id, req.body);
+      res.json(updatedApproach);
+    } catch (error) {
+      console.error(`Error updating search approach with ID ${req.params.id}:`, error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to update search approach"
+      });
+    }
+  });
+
+  app.delete("/api/search-approaches/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+      }
+      
+      // Check if the approach exists
+      const existingApproach = await storage.getSearchApproach(id);
+      if (!existingApproach) {
+        return res.status(404).json({ message: "Search approach not found" });
+      }
+      
+      // Delete the approach (if a delete method exists, otherwise use update to mark as inactive)
+      if (typeof storage.deleteSearchApproach === 'function') {
+        await storage.deleteSearchApproach(id);
+      } else {
+        // Alternative: mark as inactive
+        await storage.updateSearchApproach(id, { active: false });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error(`Error deleting search approach with ID ${req.params.id}:`, error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to delete search approach"
+      });
+    }
+  });
   
   // Search Test Results endpoints
   app.get("/api/search-test-results", requireAuth, async (req, res) => {
