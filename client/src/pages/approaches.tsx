@@ -333,6 +333,23 @@ export default function ApproachesPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground line-clamp-2">{approach.prompt}</p>
+                  
+                  {approach.type === "internal" && approach.sequence?.modules && (
+                    <div className="mt-2">
+                      <div className="text-xs text-muted-foreground font-medium">Search flow:</div>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {approach.sequence.modules.map((module, index) => (
+                          <div key={index} className="flex items-center">
+                            {index > 0 && <span className="mx-1 text-gray-300">→</span>}
+                            <Badge variant="outline" className="text-xs py-0 px-2">
+                              {module.replace(/_/g, ' ')}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
                   {approach.type === "external" && approach.requestUrl && (
                     <div className="mt-2 text-xs flex items-center text-muted-foreground">
                       <ExternalLink className="h-3 w-3 mr-1" />
@@ -389,6 +406,22 @@ export default function ApproachesPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground line-clamp-2">{approach.prompt}</p>
+                    
+                    {approach.sequence?.modules && (
+                      <div className="mt-2">
+                        <div className="text-xs text-muted-foreground font-medium">Search flow:</div>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {approach.sequence.modules.map((module, index) => (
+                            <div key={index} className="flex items-center">
+                              {index > 0 && <span className="mx-1 text-gray-300">→</span>}
+                              <Badge variant="outline" className="text-xs py-0 px-2">
+                                {module.replace(/_/g, ' ')}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                   <CardFooter className="pt-0 pb-3">
                     <Button variant="outline" size="sm" onClick={() => handleEdit(approach)}>
