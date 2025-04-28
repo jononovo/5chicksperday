@@ -11,8 +11,6 @@ import {
   UserCircle,
   Banknote,
   Eye,
-  ChevronDown,
-  ChevronUp,
   ThumbsUp,
   ThumbsDown,
   Star,
@@ -32,14 +30,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Company, Contact } from "@shared/schema";
+import type { Company, Contact, SearchApproach } from "@shared/schema";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import SearchFlowNew from "@/components/search-flow-new";
 import { filterTopProspects } from "@/lib/results-analysis/prospect-filtering";
 import { IntroTourModal } from "@/components/intro-tour-modal";
 import {
@@ -66,7 +63,6 @@ export default function Home() {
   const [currentResults, setCurrentResults] = useState<CompanyWithContacts[] | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [pendingContactId, setPendingContactId] = useState<number | null>(null);
-  const [isSearchFlowExpanded, setIsSearchFlowExpanded] = useState(true);
   // Initialize showTour based on localStorage
   const [showTour, setShowTour] = useState(() => {
     try {
