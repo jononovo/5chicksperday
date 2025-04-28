@@ -370,16 +370,18 @@ export default function SearchFlowNew({ approaches }: SearchFlowNewProps) {
     a.name === "Advanced Key Contact Discovery" || 
     a.moduleType === 'company_overview')?.id.toString() || approaches[0]?.id.toString();
 
-  // Only set a default strategy if none is selected
+  // Only set a default strategy if none is selected, and only sync local state with global
   useEffect(() => {
-    // Only set the default on first mount when no strategy is selected
-    if (!selectedStrategyId && defaultStrategy) {
+    // Only set the default on first mount when absolutely no strategy is selected
+    if (!selectedStrategyId && !localSelectedStrategy && defaultStrategy) {
+      // This should only happen on first page load
       setSelectedStrategyId(defaultStrategy);
       setLocalSelectedStrategy(defaultStrategy);
       console.log(`SearchFlowNew: Setting initial default strategy to ${defaultStrategy}`);
-    } else if (selectedStrategyId !== localSelectedStrategy) {
+    } else if (selectedStrategyId && selectedStrategyId !== localSelectedStrategy) {
       // Update local state if global state changed (from the dropdown elsewhere)
-      setLocalSelectedStrategy(selectedStrategyId);
+      // This ensures the dropdown shows the correct value
+      setLocalSelectedStrategy(selectedStrategyId || undefined);
       console.log(`SearchFlowNew: Syncing with global context, strategy is now ${selectedStrategyId}`);
     }
   }, [defaultStrategy, selectedStrategyId, localSelectedStrategy, setSelectedStrategyId]);

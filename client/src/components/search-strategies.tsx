@@ -61,22 +61,21 @@ export function SearchStrategies({ onStrategyChange, defaultStrategy }: SearchSt
     }
   }, [defaultStrategy, selectedStrategy]);
   
-  // Initialize the strategy if needed
+  // Initialize the strategy if needed - but ONLY if no strategy is selected at all
   useEffect(() => {
-    // Only set a default if we have strategies loaded AND no strategy is selected
-    if (strategies.length > 0) {
-      if (!selectedStrategy || !strategies.some(s => s.id.toString() === selectedStrategy)) {
-        // Find default strategy - Advanced Key Contact Discovery
-        const advancedStrategy = strategies.find(s => s.name === "Advanced Key Contact Discovery");
-        if (advancedStrategy) {
-          const strategyId = advancedStrategy.id.toString();
-          setSelectedStrategy(strategyId);
-          onStrategyChange(strategyId);
-          console.log(`Auto-selecting default strategy: ${advancedStrategy.name} (${strategyId})`);
-        }
+    // Only set a default if we have strategies loaded AND no strategy at all is selected
+    // This should only happen on first load, not when changing strategies
+    if (strategies.length > 0 && !selectedStrategy && !defaultStrategy) {
+      // Find default strategy - Advanced Key Contact Discovery
+      const advancedStrategy = strategies.find(s => s.name === "Advanced Key Contact Discovery");
+      if (advancedStrategy) {
+        const strategyId = advancedStrategy.id.toString();
+        setSelectedStrategy(strategyId);
+        onStrategyChange(strategyId);
+        console.log(`Auto-selecting initial default strategy: ${advancedStrategy.name} (${strategyId})`);
       }
     }
-  }, [strategies, selectedStrategy, onStrategyChange]);
+  }, [strategies, selectedStrategy, defaultStrategy, onStrategyChange]);
 
   const handleStrategyChange = (value: string) => {
     setSelectedStrategy(value);

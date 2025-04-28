@@ -198,7 +198,10 @@ export default function PromptEditor({
     console.log(`Prompt editor: Strategy changed to: ${value}`);
     // Ensure we're setting a valid strategy
     if (searchApproaches.some(approach => approach.id.toString() === value)) {
-      setSelectedStrategyId(value);
+      // Force this to render after a slight delay to make sure it's processed
+      setTimeout(() => {
+        setSelectedStrategyId(value);
+      }, 0);
     } else {
       console.warn(`Invalid strategy ID selected: ${value}`);
     }
