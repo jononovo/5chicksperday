@@ -56,7 +56,15 @@ export default function PromptEditor({
   });
 
   // Use our search strategy context
-  const { selectedStrategyId } = useSearchStrategy();
+  const { selectedStrategyId, setSelectedStrategyId } = useSearchStrategy();
+  
+  // Fetch all search approaches for the dropdown
+  const { data: searchApproaches = [] } = useQuery<SearchApproach[]>({
+    queryKey: ["/api/search-approaches"],
+    select: (data) => data
+      .filter(approach => approach.active !== false)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+  });
   
   // Mutation for workflow-based search
   const workflowSearchMutation = useMutation({
@@ -167,8 +175,24 @@ export default function PromptEditor({
       });
       return;
     }
+    
+    if (!selectedStrategyId) {
+      toast({
+        title: "No Search Approach Selected",
+        description: "Please select a search approach before searching.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     onAnalyze();
     searchMutation.mutate(query);
+  };
+  
+  // Handle search approach selection
+  const handleStrategyChange = (value: string) => {
+    console.log(`Strategy changed to: ${value}`);
+    setSelectedStrategyId(value);
   };
 
   // State for custom workflow configuration with localStorage persistence
@@ -231,6 +255,7 @@ export default function PromptEditor({
   return (
     <Card className="p-3">
       <div className="flex flex-col gap-2">
+        {/* Search input field */}
         <div className="flex gap-2">
           <Input
             value={query}
@@ -240,7 +265,7 @@ export default function PromptEditor({
           />
           <Button 
             onClick={handleSearch} 
-            disabled={isAnalyzing || searchMutation.isPending}
+            disabled={isAnalyzing || searchMutation.isPending || !selectedStrategyId}
           >
             {(isAnalyzing || searchMutation.isPending) && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -248,6 +273,27 @@ export default function PromptEditor({
             <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
+        </div>
+        
+        {/* Search approach selector */}
+        <div className="flex gap-2 items-center">
+          <div className="flex-1">
+            <Select
+              value={selectedStrategyId || undefined}
+              onValueChange={handleStrategyChange}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a search approach" />
+              </SelectTrigger>
+              <SelectContent>
+                {searchApproaches.map((approach) => (
+                  <SelectItem key={approach.id} value={approach.id.toString()}>
+                    {approach.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         
         {/* Custom Workflow Configuration */}
