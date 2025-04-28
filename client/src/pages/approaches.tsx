@@ -204,11 +204,16 @@ export default function ApproachesPage() {
     // Make sure order is a number
     const order = typeof data.order === 'string' ? parseInt(data.order) : data.order;
     
+    // For internal approaches, we should omit the URL or set to null
+    const isInternalType = data.type === 'internal';
+    
     // Parse JSON strings to objects if they are provided
     const formattedData = {
       ...data,
       order: isNaN(order) ? 1 : order,
       config: {}, // Required by the schema
+      // For internal approaches, exclude the requestUrl field
+      requestUrl: isInternalType ? undefined : (data.requestUrl || undefined),
       requestFormat: data.requestFormat ? JSON.parse(data.requestFormat) : undefined,
       responseFormat: data.responseFormat ? JSON.parse(data.responseFormat) : undefined
     };
@@ -220,11 +225,16 @@ export default function ApproachesPage() {
     // Make sure order is a number
     const order = typeof data.order === 'string' ? parseInt(data.order) : data.order;
     
+    // For internal approaches, we should omit the URL or set to null
+    const isInternalType = data.type === 'internal';
+    
     // Parse JSON strings to objects if they are provided
     const formattedData = {
       ...data,
       order: isNaN(order) ? 1 : order,
       config: {}, // Required by the schema
+      // For internal approaches, exclude the requestUrl field
+      requestUrl: isInternalType ? undefined : (data.requestUrl || undefined),
       requestFormat: data.requestFormat ? JSON.parse(data.requestFormat) : undefined,
       responseFormat: data.responseFormat ? JSON.parse(data.responseFormat) : undefined
     };
