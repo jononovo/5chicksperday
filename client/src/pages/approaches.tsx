@@ -79,6 +79,7 @@ export default function ApproachesPage() {
         description: "Search approach created successfully",
       });
       setIsCreateDialogOpen(false);
+      createForm.reset();
     },
     onError: (error) => {
       toast({
@@ -140,7 +141,7 @@ export default function ApproachesPage() {
     defaultValues: {
       name: "",
       prompt: "",
-      order: approaches.length + 1,
+      order: approaches && approaches.length ? approaches.length + 1 : 1,
       active: true,
       type: "internal",
       moduleType: "company_overview",
@@ -238,11 +239,11 @@ export default function ApproachesPage() {
   };
 
   if (isLoading) {
-    return <div className="container py-10">Loading approaches...</div>;
+    return <div className="container mx-auto px-4 py-10 max-w-7xl">Loading approaches...</div>;
   }
 
   if (error) {
-    return <div className="container py-10">Error loading approaches: {(error as Error).message}</div>;
+    return <div className="container mx-auto px-4 py-10 max-w-7xl">Error loading approaches: {(error as Error).message}</div>;
   }
 
   // Helper to render approach type badge
@@ -255,7 +256,9 @@ export default function ApproachesPage() {
   };
 
   // Helper to render module type badge
-  const renderModuleBadge = (type: string) => {
+  const renderModuleBadge = (type: string | null) => {
+    if (!type) return null;
+    
     switch (type) {
       case "company_overview":
         return <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">Company Overview</Badge>;
@@ -531,62 +534,34 @@ export default function ApproachesPage() {
               
               <FormField
                 control={createForm.control}
-                name="moduleType"
+                name="prompt"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Module Type</FormLabel>
+                    <FormLabel>Prompt</FormLabel>
                     <FormControl>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select module type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="company_overview">Company Overview</SelectItem>
-                          <SelectItem value="decision_maker">Decision Maker</SelectItem>
-                          <SelectItem value="email_discovery">Email Discovery</SelectItem>
-                          <SelectItem value="email_enrichment">Email Enrichment</SelectItem>
-                          <SelectItem value="email_deepdive">Email Deepdive</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Textarea 
+                        placeholder="Describe how to search for and analyze the target information"
+                        className="min-h-[100px]"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormDescription>
-                      The type of search module this approach is designed for.
+                      The main prompt that guides the search approach.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
-              <FormField
-                control={createForm.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>User Prompt</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Enter the user-facing prompt that describes what this approach does"
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
+
               <FormField
                 control={createForm.control}
                 name="active"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Active Status</FormLabel>
+                      <FormLabel className="text-base">Active</FormLabel>
                       <FormDescription>
-                        Enable or disable this search approach.
+                        Enable or disable this search approach
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -595,6 +570,7 @@ export default function ApproachesPage() {
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -660,7 +636,7 @@ export default function ApproachesPage() {
                           />
                         </FormControl>
                         <FormDescription>
-                          The URL endpoint for the external search service.
+                          The URL to send search requests to.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -681,7 +657,7 @@ export default function ApproachesPage() {
                           />
                         </FormControl>
                         <FormDescription>
-                          JSON template for the request. Use {{query}} as a placeholder for the search query.
+                          JSON template for the request. Use {"{{"}"query{"}}"} as a placeholder for the search query.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -702,7 +678,7 @@ export default function ApproachesPage() {
                           />
                         </FormControl>
                         <FormDescription>
-                          Expected JSON structure of the response from the external service.
+                          Expected format of the response.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -716,7 +692,10 @@ export default function ApproachesPage() {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? "Creating..." : "Create Approach"}
+                  {createMutation.isPending && (
+                    <span className="animate-spin mr-2">⊚</span>
+                  )}
+                  Create Approach
                 </Button>
               </DialogFooter>
             </form>
@@ -730,7 +709,7 @@ export default function ApproachesPage() {
           <DialogHeader>
             <DialogTitle>Edit Search Approach</DialogTitle>
             <DialogDescription>
-              Update this search approach's settings.
+              Update this search approach to improve discovery of companies and contacts.
             </DialogDescription>
           </DialogHeader>
           
@@ -744,7 +723,7 @@ export default function ApproachesPage() {
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="E.g., Advanced Company Discovery" {...field} />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -801,63 +780,33 @@ export default function ApproachesPage() {
               
               <FormField
                 control={editForm.control}
-                name="moduleType"
+                name="prompt"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Module Type</FormLabel>
+                    <FormLabel>Prompt</FormLabel>
                     <FormControl>
-                      <Select 
-                        onValueChange={field.onChange} 
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select module type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="company_overview">Company Overview</SelectItem>
-                          <SelectItem value="decision_maker">Decision Maker</SelectItem>
-                          <SelectItem value="email_discovery">Email Discovery</SelectItem>
-                          <SelectItem value="email_enrichment">Email Enrichment</SelectItem>
-                          <SelectItem value="email_deepdive">Email Deepdive</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Textarea 
+                        className="min-h-[100px]"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormDescription>
-                      The type of search module this approach is designed for.
+                      The main prompt that guides the search approach.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
-              <FormField
-                control={editForm.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>User Prompt</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Enter the user-facing prompt that describes what this approach does"
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
+
               <FormField
                 control={editForm.control}
                 name="active"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Active Status</FormLabel>
+                      <FormLabel className="text-base">Active</FormLabel>
                       <FormDescription>
-                        Enable or disable this search approach.
+                        Enable or disable this search approach
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -866,6 +815,7 @@ export default function ApproachesPage() {
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -880,7 +830,6 @@ export default function ApproachesPage() {
                         <FormLabel>Technical Prompt</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Technical details for the AI or search system"
                             className="min-h-[100px]"
                             {...field} 
                           />
@@ -901,7 +850,6 @@ export default function ApproachesPage() {
                         <FormLabel>Response Structure</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="The expected structure of responses from this approach"
                             className="min-h-[100px] font-mono"
                             {...field} 
                           />
@@ -925,13 +873,10 @@ export default function ApproachesPage() {
                       <FormItem>
                         <FormLabel>Request URL</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="https://example.com/api/search"
-                            {...field} 
-                          />
+                          <Input {...field} />
                         </FormControl>
                         <FormDescription>
-                          The URL endpoint for the external search service.
+                          The URL to send search requests to.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -946,13 +891,12 @@ export default function ApproachesPage() {
                         <FormLabel>Request Format</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder='{"query": "{{query}}", "options": {"limit": 10}}'
                             className="min-h-[100px] font-mono"
                             {...field} 
                           />
                         </FormControl>
                         <FormDescription>
-                          JSON template for the request. Use {{query}} as a placeholder for the search query.
+                          JSON template for the request. Use {"{{"}"query{"}}"} as a placeholder for the search query.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -967,13 +911,12 @@ export default function ApproachesPage() {
                         <FormLabel>Response Format</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder='{"companies": [{"name": "string", "website": "string"}], "contacts": [{"name": "string", "email": "string"}]}'
                             className="min-h-[100px] font-mono"
                             {...field} 
                           />
                         </FormControl>
                         <FormDescription>
-                          Expected JSON structure of the response from the external service.
+                          Expected format of the response.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -987,7 +930,10 @@ export default function ApproachesPage() {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? "Updating..." : "Update Approach"}
+                  {updateMutation.isPending && (
+                    <span className="animate-spin mr-2">⊚</span>
+                  )}
+                  Save Changes
                 </Button>
               </DialogFooter>
             </form>
