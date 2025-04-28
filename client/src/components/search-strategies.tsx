@@ -42,8 +42,8 @@ const EXCLUDED_MODULES = [
 ];
 
 export function SearchStrategies({ onStrategyChange, defaultStrategy }: SearchStrategyProps) {
-  // We'll use local state but initialized with defaultStrategy or "17" (Advanced Key Contact Discovery)
-  const [selectedStrategy, setSelectedStrategy] = useState<string | undefined>(defaultStrategy || "17");
+  // We'll use local state but initialized with defaultStrategy
+  const [selectedStrategy, setSelectedStrategy] = useState<string | undefined>(defaultStrategy);
 
   // Properly type the data and query
   const { data: strategies = [] } = useQuery<SearchApproach[], Error, SearchApproach[]>({

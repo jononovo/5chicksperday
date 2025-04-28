@@ -14,8 +14,8 @@ const SearchStrategyContext = createContext<SearchStrategyContextType>({
 
 // Create a provider component
 export function SearchStrategyProvider({ children }: { children: ReactNode }) {
-  // Initialize with ID 17 which is "Advanced Key Contact Discovery" 
-  const [selectedStrategyId, setSelectedStrategyId] = useState<string | null>("17");
+  // Initialize with null, let the component decide what to select
+  const [selectedStrategyId, setSelectedStrategyId] = useState<string | null>(null);
 
   return (
     <SearchStrategyContext.Provider value={{ selectedStrategyId, setSelectedStrategyId }}>
