@@ -368,7 +368,7 @@ export default function SearchFlowNew({ approaches }: SearchFlowNewProps) {
   // Find default strategy (company_overview type)
   const defaultStrategy = approaches.find(a => 
     a.name === "Advanced Key Contact Discovery" || 
-    a.moduleType === 'company_overview')?.id.toString();
+    a.moduleType === 'company_overview')?.id.toString() || approaches[0]?.id.toString();
 
   // Set default strategy on component mount if none is selected
   useEffect(() => {

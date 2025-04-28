@@ -86,7 +86,12 @@ export function SearchApproachOptions({ approachId, onOptionsChange }: SearchApp
   };
   
   // If no approach is selected or no options available, don't render anything
-  if (!approachId || !APPROACH_OPTIONS[approachId]) {
+  if (!approachId || !APPROACH_OPTIONS[approachId] || APPROACH_OPTIONS[approachId].length === 0) {
+    // Reset options state when there are no options for this approach
+    useEffect(() => {
+      if (onOptionsChange) onOptionsChange({});
+    }, [onOptionsChange]);
+    
     return null;
   }
   
