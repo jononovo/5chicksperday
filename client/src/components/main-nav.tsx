@@ -9,8 +9,8 @@ const navigation = [
   { name: "Search", href: "/" },
   { name: "Lists", href: "/lists" },
   { name: "Campaigns", href: "/campaigns" },
-  { name: "Outreach", href: "/outreach" },
-  { name: "Database", href: "/database" }
+  { name: "Approaches", href: "/approaches" },
+  { name: "Outreach", href: "/outreach" }
 ];
 
 export function MainNav() {
