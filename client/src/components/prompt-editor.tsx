@@ -310,10 +310,23 @@ export default function PromptEditor({
         
         {/* Search approach options */}
         {selectedStrategyId && (
-          <SearchApproachOptions 
-            approachId={parseInt(selectedStrategyId)} 
-            onOptionsChange={setSearchOptions}
-          />
+          <div>
+            <SearchApproachOptions 
+              approachId={parseInt(selectedStrategyId)} 
+              onOptionsChange={(options) => {
+                setSearchOptions(options);
+                console.log("Search options updated:", options);
+              }}
+            />
+            {Object.keys(searchOptions).length > 0 && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                Options: {Object.entries(searchOptions)
+                  .filter(([_, value]) => value)
+                  .map(([key]) => key)
+                  .join(', ')}
+              </div>
+            )}
+          </div>
         )}
         
         {/* Custom Workflow Configuration */}
