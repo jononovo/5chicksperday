@@ -334,7 +334,7 @@ export default function ApproachesPage() {
                       <td className="p-4 align-middle">{approach.name}</td>
                       <td className="p-4 align-middle">
                         {approach.type === "internal" || !approach.type ? (
-                          <Badge variant="primary" className="bg-blue-500 hover:bg-blue-600 text-white">Internal</Badge>
+                          <Badge variant="secondary" className="bg-blue-500 hover:bg-blue-600 text-white">Internal</Badge>
                         ) : (
                           <Badge variant="outline" className="bg-gray-100 text-gray-800 hover:bg-gray-200">External</Badge>
                         )}
@@ -372,125 +372,152 @@ export default function ApproachesPage() {
           </div>
         </TabsContent>
         
-        <TabsContent value="internal" className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {approaches
-              .filter((approach: SearchApproach) => approach.type === "internal" || !approach.type)
-              .map((approach: SearchApproach) => (
-                <Card key={approach.id} className="overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{approach.name}</CardTitle>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEdit(approach)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDelete(approach.id)} className="text-red-600">
-                            <Trash className="mr-2 h-4 w-4" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {renderModuleBadge(approach.moduleType)}
-                      {approach.active ? (
-                        <Badge variant="outline" className="bg-green-50 text-green-700">Active</Badge>
-                      ) : (
-                        <Badge variant="outline" className="bg-gray-50 text-gray-700">Inactive</Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{approach.prompt}</p>
-                    
-                    {approach.sequence?.modules && (
-                      <div className="mt-2">
-                        <div className="text-xs text-muted-foreground font-medium">Search flow:</div>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {approach.sequence.modules.map((module, index) => (
-                            <div key={index} className="flex items-center">
-                              {index > 0 && <span className="mx-1 text-gray-300">→</span>}
-                              <Badge variant="outline" className="text-xs py-0 px-2">
-                                {module.replace(/_/g, ' ')}
-                              </Badge>
+        <TabsContent value="internal" className="mt-6">
+          <div className="rounded-md border">
+            <div className="bg-muted/50 p-4">
+              <h3 className="text-lg font-medium">Internal Approaches</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Built-in search methods using the platform's search capabilities
+              </p>
+            </div>
+            <div className="relative w-full overflow-auto">
+              <table className="w-full caption-bottom text-sm">
+                <thead>
+                  <tr className="border-b transition-colors hover:bg-muted/20">
+                    <th className="h-12 px-4 text-left align-middle font-medium">Name</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium">Module</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium">Search Flow</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium">Status</th>
+                    <th className="h-12 px-4 text-center align-middle font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {approaches
+                    .filter((approach: SearchApproach) => approach.type === "internal" || !approach.type)
+                    .map((approach: SearchApproach) => (
+                      <tr 
+                        key={approach.id} 
+                        className="border-b transition-colors hover:bg-muted/50"
+                      >
+                        <td className="p-4 align-middle">{approach.name}</td>
+                        <td className="p-4 align-middle">
+                          {renderModuleBadge(approach.moduleType)}
+                        </td>
+                        <td className="p-4 align-middle">
+                          {approach.sequence?.modules && (
+                            <div className="flex flex-wrap gap-1">
+                              {approach.sequence.modules.map((module, index) => (
+                                <div key={index} className="flex items-center">
+                                  {index > 0 && <span className="mx-1 text-gray-300">→</span>}
+                                  <Badge variant="outline" className="text-xs py-0 px-2">
+                                    {module.replace(/_/g, ' ')}
+                                  </Badge>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="pt-0 pb-3">
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(approach)}>
-                      <Edit className="h-3 w-3 mr-2" />
-                      Edit
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+                          )}
+                        </td>
+                        <td className="p-4 align-middle">
+                          {approach.active ? (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Active</Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-gray-50 text-gray-600">Inactive</Badge>
+                          )}
+                        </td>
+                        <td className="p-4 align-middle">
+                          <div className="flex justify-center space-x-2">
+                            <Button variant="outline" size="sm" onClick={() => handleEdit(approach)} title="Edit">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50" 
+                              title="View Details"
+                            >
+                              <SearchIcon className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </TabsContent>
         
-        <TabsContent value="external" className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {approaches
-              .filter((approach: SearchApproach) => approach.type === "external")
-              .map((approach: SearchApproach) => (
-                <Card key={approach.id} className="overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{approach.name}</CardTitle>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEdit(approach)}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDelete(approach.id)} className="text-red-600">
-                            <Trash className="mr-2 h-4 w-4" /> Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {renderModuleBadge(approach.moduleType)}
-                      {approach.active ? (
-                        <Badge variant="outline" className="bg-green-50 text-green-700">Active</Badge>
-                      ) : (
-                        <Badge variant="outline" className="bg-gray-50 text-gray-700">Inactive</Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{approach.prompt}</p>
-                    {approach.requestUrl && (
-                      <div className="mt-2 text-xs flex items-center text-muted-foreground">
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        <span className="truncate">{approach.requestUrl}</span>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter className="pt-0 pb-3">
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(approach)}>
-                      <Edit className="h-3 w-3 mr-2" />
-                      Edit
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+        <TabsContent value="external" className="mt-6">
+          <div className="rounded-md border">
+            <div className="bg-muted/50 p-4">
+              <h3 className="text-lg font-medium">External Approaches</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Search methods that use external workflow providers
+              </p>
+            </div>
+            <div className="relative w-full overflow-auto">
+              <table className="w-full caption-bottom text-sm">
+                <thead>
+                  <tr className="border-b transition-colors hover:bg-muted/20">
+                    <th className="h-12 px-4 text-left align-middle font-medium">Name</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium">Provider</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium">Module</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium">Status</th>
+                    <th className="h-12 px-4 text-center align-middle font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {approaches
+                    .filter((approach: SearchApproach) => approach.type === "external")
+                    .map((approach: SearchApproach) => (
+                      <tr 
+                        key={approach.id} 
+                        className="border-b transition-colors hover:bg-muted/50"
+                      >
+                        <td className="p-4 align-middle">{approach.name}</td>
+                        <td className="p-4 align-middle">
+                          <Badge 
+                            variant="outline" 
+                            className={`
+                              ${approach.workflowProvider === 'rabbit' ? 'bg-orange-50 text-orange-700 border-orange-200' : ''}
+                              ${approach.workflowProvider === 'lion' ? 'bg-amber-50 text-amber-700 border-amber-200' : ''}
+                              ${approach.workflowProvider === 'donkey' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
+                              ${!approach.workflowProvider ? 'bg-gray-50 text-gray-700' : ''}
+                            `}
+                          >
+                            {approach.workflowProvider ? approach.workflowProvider.charAt(0).toUpperCase() + approach.workflowProvider.slice(1) : 'Generic'}
+                          </Badge>
+                        </td>
+                        <td className="p-4 align-middle">
+                          {renderModuleBadge(approach.moduleType)}
+                        </td>
+                        <td className="p-4 align-middle">
+                          {approach.active ? (
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Active</Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-gray-50 text-gray-600">Inactive</Badge>
+                          )}
+                        </td>
+                        <td className="p-4 align-middle">
+                          <div className="flex justify-center space-x-2">
+                            <Button variant="outline" size="sm" onClick={() => handleEdit(approach)} title="Edit">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50" 
+                              title="View Details"
+                            >
+                              <SearchIcon className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </TabsContent>
       </Tabs>
