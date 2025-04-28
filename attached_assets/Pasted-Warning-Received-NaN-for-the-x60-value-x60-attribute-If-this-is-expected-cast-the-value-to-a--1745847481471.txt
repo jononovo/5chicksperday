@@ -1,0 +1,81 @@
+Warning: Received NaN for the &#x60;value&#x60; attribute. If this is expected, cast the value to a string.
+    at input
+    at _c (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/input.tsx:20:11)
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:52:11
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:33:11
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/form.tsx:127:9
+    at div
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/form.tsx:71:6
+    at Controller (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=206f2911:313:35)
+    at FormField (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/form.tsx:32:6)
+    at div
+    at form
+    at FormProvider (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=206f2911:102:11)
+    at div
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=206f2911:41:13
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2KBELDHW.js?v=206f2911:59:7
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:52:11
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:33:11
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=206f2911:41:13
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-NNB7BE2G.js?v=206f2911:34:5
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:233:13
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:156:58
+    at Presence (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54B2F5GZ.js?v=206f2911:24:11)
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:147:64
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:52:11
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:33:11
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=206f2911:41:13
+    at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2KBELDHW.js?v=206f2911:258:22
+    at Presence (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54B2F5GZ.js?v=206f2911:24:11)
+    at Provider (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-L7FCK3EQ.js?v=206f2911:48:15)
+    at DialogPortal (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:110:11)
+    at _c3 (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/dialog.tsx:49:12)
+    at Provider (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-L7FCK3EQ.js?v=206f2911:48:15)
+    at Dialog (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:51:5)
+    at div
+    at ApproachesPage…
+at input
+at _c (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/input.tsx:20:11)
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:52:11
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:33:11
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/form.tsx:127:9
+at div
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/form.tsx:71:6
+at Controller (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=206f2911:313:35)
+at FormField (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/form.tsx:32:6)
+at div
+at form
+at FormProvider (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YABUFNLM.js?v=206f2911:102:11)
+at div
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=206f2911:41:13
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2KBELDHW.js?v=206f2911:59:7
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:52:11
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:33:11
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=206f2911:41:13
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-NNB7BE2G.js?v=206f2911:34:5
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:233:13
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:156:58
+at Presence (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54B2F5GZ.js?v=206f2911:24:11)
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:147:64
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:52:11
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=206f2911:33:11
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=206f2911:41:13
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2KBELDHW.js?v=206f2911:258:22
+at Presence (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-54B2F5GZ.js?v=206f2911:24:11)
+at Provider (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-L7FCK3EQ.js?v=206f2911:48:15)
+at DialogPortal (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:110:11)
+at _c3 (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/src/components/ui/dialog.tsx:49:12)
+at Provider (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-L7FCK3EQ.js?v=206f2911:48:15)
+at Dialog (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-dialog.js?v=206f2911:51:5)
+at div
+at ApproachesPage…
+at t.value (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://b583ab2d-d622-4068-baa1-f0925606ed0a-00-1jadsml3yljop.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+API Request: PATCH /api/search-approaches/3 
+Object {hasData: true, timestamp: "2025-04-28T13:37:28.144Z"}
+API Request: POST /api/search-approaches 
+Object {hasData: true, timestamp: "2025-04-28T13:37:39.815Z"}
+API Request Error: POST /api/search-approaches 
+Object {error: "400: {"message":"Invalid request…", timestamp: "2025-04-28T13:37:40.006Z"}

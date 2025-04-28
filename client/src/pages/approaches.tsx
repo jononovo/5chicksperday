@@ -201,9 +201,14 @@ export default function ApproachesPage() {
 
   // Handle create form submission
   const handleCreateSubmit = (data: FormData) => {
+    // Make sure order is a number
+    const order = typeof data.order === 'string' ? parseInt(data.order) : data.order;
+    
     // Parse JSON strings to objects if they are provided
     const formattedData = {
       ...data,
+      order: isNaN(order) ? 1 : order,
+      config: {}, // Required by the schema
       requestFormat: data.requestFormat ? JSON.parse(data.requestFormat) : undefined,
       responseFormat: data.responseFormat ? JSON.parse(data.responseFormat) : undefined
     };
@@ -212,9 +217,14 @@ export default function ApproachesPage() {
 
   // Handle edit form submission
   const handleEditSubmit = (data: FormData & { id: number }) => {
+    // Make sure order is a number
+    const order = typeof data.order === 'string' ? parseInt(data.order) : data.order;
+    
     // Parse JSON strings to objects if they are provided
     const formattedData = {
       ...data,
+      order: isNaN(order) ? 1 : order,
+      config: {}, // Required by the schema
       requestFormat: data.requestFormat ? JSON.parse(data.requestFormat) : undefined,
       responseFormat: data.responseFormat ? JSON.parse(data.responseFormat) : undefined
     };
