@@ -421,7 +421,7 @@ export function registerRoutes(app: Express) {
     }
 
     try {
-      // Search for matching companies with options
+      // Search for matching companies with search options
       const companyNames = await searchCompanies(query, options);
 
       // Get search approaches for analysis
