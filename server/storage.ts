@@ -379,12 +379,31 @@ class DatabaseStorage implements IStorage {
     return db.select().from(searchApproaches);
   }
 
+  async createSearchApproach(data: InsertSearchApproach): Promise<SearchApproach> {
+    console.log('DatabaseStorage.createSearchApproach called with:', { name: data.name });
+    try {
+      const [approach] = await db
+        .insert(searchApproaches)
+        .values(data)
+        .returning();
+      console.log('Created search approach:', { id: approach.id, name: approach.name });
+      return approach;
+    } catch (error) {
+      console.error('Error creating search approach:', error);
+      throw error;
+    }
+  }
+
   async updateSearchApproach(id: number, data: Partial<SearchApproach>): Promise<SearchApproach> {
     const [updated] = await db.update(searchApproaches)
       .set(data)
       .where(eq(searchApproaches.id, id))
       .returning();
     return updated;
+  }
+  
+  async deleteSearchApproach(id: number): Promise<void> {
+    await db.delete(searchApproaches).where(eq(searchApproaches.id, id));
   }
   
   // Search Test Results
