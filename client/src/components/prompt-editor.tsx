@@ -195,8 +195,13 @@ export default function PromptEditor({
   
   // Handle search approach selection
   const handleStrategyChange = (value: string) => {
-    console.log(`Strategy changed to: ${value}`);
-    setSelectedStrategyId(value);
+    console.log(`Prompt editor: Strategy changed to: ${value}`);
+    // Ensure we're setting a valid strategy
+    if (searchApproaches.some(approach => approach.id.toString() === value)) {
+      setSelectedStrategyId(value);
+    } else {
+      console.warn(`Invalid strategy ID selected: ${value}`);
+    }
   };
 
   // State for custom workflow configuration with localStorage persistence

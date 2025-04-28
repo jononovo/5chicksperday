@@ -42,7 +42,7 @@ const EXCLUDED_MODULES = [
 ];
 
 export function SearchStrategies({ onStrategyChange, defaultStrategy }: SearchStrategyProps) {
-  // We'll use local state but initialized with defaultStrategy
+  // Use the defaultStrategy from props for local state
   const [selectedStrategy, setSelectedStrategy] = useState<string | undefined>(defaultStrategy);
 
   // Properly type the data and query
@@ -53,12 +53,20 @@ export function SearchStrategies({ onStrategyChange, defaultStrategy }: SearchSt
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
   });
   
-  // Ensure the strategy ID is properly initialized when the component loads
+  // Update local state when defaultStrategy changes (from parent context)
   useEffect(() => {
-    // If we have strategies loaded and our current ID is not in the list, 
-    // find Advanced Key Contact Discovery
+    if (defaultStrategy && defaultStrategy !== selectedStrategy) {
+      setSelectedStrategy(defaultStrategy);
+      console.log(`SearchStrategies: Updated from parent context to ${defaultStrategy}`);
+    }
+  }, [defaultStrategy, selectedStrategy]);
+  
+  // Initialize the strategy if needed
+  useEffect(() => {
+    // Only set a default if we have strategies loaded AND no strategy is selected
     if (strategies.length > 0) {
       if (!selectedStrategy || !strategies.some(s => s.id.toString() === selectedStrategy)) {
+        // Find default strategy - Advanced Key Contact Discovery
         const advancedStrategy = strategies.find(s => s.name === "Advanced Key Contact Discovery");
         if (advancedStrategy) {
           const strategyId = advancedStrategy.id.toString();
@@ -66,10 +74,6 @@ export function SearchStrategies({ onStrategyChange, defaultStrategy }: SearchSt
           onStrategyChange(strategyId);
           console.log(`Auto-selecting default strategy: ${advancedStrategy.name} (${strategyId})`);
         }
-      } else if (selectedStrategy) {
-        // Make sure parent component has the current strategy ID
-        onStrategyChange(selectedStrategy);
-        console.log(`Using already selected strategy ID: ${selectedStrategy}`);
       }
     }
   }, [strategies, selectedStrategy, onStrategyChange]);
