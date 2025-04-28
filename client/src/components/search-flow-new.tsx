@@ -162,7 +162,7 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
   };
 
   // Fix the isCompleted check by providing a default empty array if completedSearches is null
-  const isCompleted = approach.completedSearches ? 
+  const isCompleted = approach.completedSearches && approach.moduleType ? 
     approach.completedSearches.includes(approach.moduleType) : 
     false;
 

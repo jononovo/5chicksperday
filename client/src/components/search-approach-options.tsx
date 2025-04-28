@@ -85,13 +85,16 @@ export function SearchApproachOptions({ approachId, onOptionsChange }: SearchApp
     if (onOptionsChange) onOptionsChange(updatedStates);
   };
   
+  // Always call useEffect first to reset options when needed
+  useEffect(() => {
+    // Reset options state when there are no options for this approach
+    if (!approachId || !APPROACH_OPTIONS[approachId] || APPROACH_OPTIONS[approachId].length === 0) {
+      if (onOptionsChange) onOptionsChange({});
+    }
+  }, [approachId, onOptionsChange]);
+  
   // If no approach is selected or no options available, don't render anything
   if (!approachId || !APPROACH_OPTIONS[approachId] || APPROACH_OPTIONS[approachId].length === 0) {
-    // Reset options state when there are no options for this approach
-    useEffect(() => {
-      if (onOptionsChange) onOptionsChange({});
-    }, [onOptionsChange]);
-    
     return null;
   }
   
