@@ -1,0 +1,100 @@
+
+5 Ducks
+Planning
+Build
+Search
+Lists
+Campaigns
+Approaches
+Outreach
+Logout
+Search Approaches
+Manage your search strategies for discovering companies and contacts
+
+New Approach
+All Approaches
+Internal
+External
+All Approaches
+Your collection of search strategies for finding companies and contacts
+
+Name	Type	Module	Status	Actions
+Standard Contact Search	Internal	Company Overview	Active	
+
+
+Rabbit Smart Workflow	External	Company Overview	Active	
+
+
+Lion Advanced Workflow	External	Company Overview	Active	
+
+
+Donkey Basic Workflow	External	Company Overview	Active	
+
+
+Advanced Key Contact Discovery	Internal	Company Overview	Active	
+
+
+5 Ducks
+Advanced AI-powered business intelligence platform delivering comprehensive company and contact intelligence.
+
+Company
+Privacy Policy
+Terms & Conditions
+Pricing
+Blog
+Support
+Contact Us
+Help Center
+Stay Updated
+Enter your email
+Subscribe
+© 2025 5 Ducks. All rights reserved.
+Create Search Approach
+Add a new search approach to discover companies and contacts.
+
+Name
+asdf
+Display Order
+6
+Approach Type
+External
+
+Internal approaches use the built-in search engine, external approaches connect to external services.
+
+Prompt
+Describe how to search for and analyze the target information
+The main prompt that guides the search approach.
+
+Active
+Enable or disable this search approach
+
+
+
+Request URL
+https://asdf.com
+The URL to send search requests to.
+
+Request Format
+{"query": "{{query}}", "options": {"limit": 10}}
+JSON template for the request. Use {{"query}} as a placeholder for the search query.
+
+Response Format
+{"companies": [{"name": "string", "website": "string"}], "contacts": [{"name": "string", "email": "string"}]}
+Expected format of the response.
+
+Cancel
+Create Approach
+Close
+[plugin:runtime-error-plugin] Failed to execute 'fetch' on 'Window': '/api/search-approaches' is not a valid HTTP method.
+/home/runner/workspace/client/src/lib/queryClient.ts:44:23
+42 |      });
+43 |      
+44 |      const res = await fetch(url, {
+   |                        ^
+45 |        method: method,
+46 |        headers: data ? { "Content-Type": "application/json" } : {},
+
+    at apiRequest /home/runner/workspace/client/src/lib/queryClient.ts:44:23
+    at Object.mutationFn /home/runner/workspace/client/src/pages/approaches.tsx:83:14
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.js.

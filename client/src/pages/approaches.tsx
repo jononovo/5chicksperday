@@ -80,7 +80,7 @@ export default function ApproachesPage() {
   // Create mutation
   const createMutation = useMutation({
     mutationFn: (data: FormData) => {
-      return apiRequest("/api/search-approaches", "POST", data);
+      return apiRequest("POST", "/api/search-approaches", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/search-approaches"] });
@@ -104,7 +104,7 @@ export default function ApproachesPage() {
   const updateMutation = useMutation({
     mutationFn: (data: FormData & { id: number }) => {
       const { id, ...rest } = data;
-      return apiRequest(`/api/search-approaches/${id}`, "PATCH", rest);
+      return apiRequest("PATCH", `/api/search-approaches/${id}`, rest);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/search-approaches"] });
@@ -127,7 +127,7 @@ export default function ApproachesPage() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: (id: number) => {
-      return apiRequest(`/api/search-approaches/${id}`, "DELETE");
+      return apiRequest("DELETE", `/api/search-approaches/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/search-approaches"] });
