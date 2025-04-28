@@ -273,7 +273,7 @@ export default function ApproachesPage() {
   };
 
   return (
-    <div className="container py-10">
+    <div className="container mx-auto px-4 py-10 max-w-7xl">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Search Approaches</h1>
