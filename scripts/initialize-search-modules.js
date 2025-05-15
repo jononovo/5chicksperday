@@ -1,6 +1,6 @@
 // Script to initialize all required search modules and strategies
-import { db } from '../server/db.js';
-import { searchApproaches } from '../shared/schema.js';
+import { db } from '../server/db';
+import { searchApproaches } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 
 // Define core modules with proper configuration
