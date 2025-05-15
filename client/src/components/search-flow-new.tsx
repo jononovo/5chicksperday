@@ -73,6 +73,12 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
 
   const toggleMutation = useMutation({
     mutationFn: async (active: boolean) => {
+      // Prevent disabling core modules
+      if (active === false && isCoreModule) {
+        setValidationError("Core modules cannot be disabled as they are required for search functionality");
+        throw new Error("Core modules cannot be disabled");
+      }
+      
       const response = await apiRequest(
         "PATCH",
         `/api/search-approaches/${approach.id}`,
@@ -88,14 +94,10 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/search-approaches"] });
-      toast({
-        title: approach.active ? "Approach Disabled" : "Approach Enabled",
-        description: approach.moduleType === 'email_enrichment'
-          ? `Email enrichment ${approach.active ? 'disabled' : 'enabled'}. ${!approach.active ? 'Top prospects will be automatically enriched after search.' : ''}`
-          : `Search approach has been ${approach.active ? "disabled" : "enabled"}.`,
-      });
+      // Toast notifications removed as requested
     },
     onError: (error) => {
+      // Keep error notifications as they are important
       toast({
         title: "Toggle Failed",
         description: error instanceof Error ? error.message : "Failed to toggle approach",
@@ -128,10 +130,7 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
       queryClient.invalidateQueries({ queryKey: ["/api/search-approaches"] });
       setIsEditing(false);
       setValidationError(null);
-      toast({
-        title: "Approach Updated",
-        description: "Search approach updated successfully.",
-      });
+      // Toast notification removed as requested
     },
     onError: (error) => {
       setValidationError(error instanceof Error ? error.message : "Failed to update approach");
