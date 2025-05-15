@@ -53,6 +53,10 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
   const [validationError, setValidationError] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  
+  // Determine if this module is a core module or an add-on module
+  const isCoreModule = CORE_MODULES.includes(approach.moduleType);
+  const isAddonModule = ADDON_MODULES.includes(approach.moduleType);
 
   const config = approach.config as SearchModuleConfig || {
     subsearches: {},
@@ -213,7 +217,19 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
 
         <div className="flex-1">
           <AccordionTrigger className="hover:no-underline">
-            <span className="font-medium text-base">{approach.name}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-base">{approach.name}</span>
+              {isCoreModule && (
+                <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200">
+                  Core
+                </Badge>
+              )}
+              {isAddonModule && (
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200">
+                  Add-on
+                </Badge>
+              )}
+            </div>
           </AccordionTrigger>
         </div>
       </div>
@@ -362,17 +378,20 @@ export default function SearchFlowNew({ approaches }: SearchFlowNewProps) {
   const { selectedStrategyId, setSelectedStrategyId } = useSearchStrategy();
   const [localSelectedStrategy, setLocalSelectedStrategy] = useState<string>();
 
-  // Sort approaches by fixed order
-  const sortedApproaches = [...approaches].sort((a, b) => {
+  // Filter approaches to only show modules (not strategies)
+  const moduleApproaches = approaches.filter(a => !a.isStrategy);
+  
+  // Sort modules by fixed order
+  const sortedApproaches = [...moduleApproaches].sort((a, b) => {
     const orderA = APPROACH_ORDER[a.moduleType as keyof typeof APPROACH_ORDER] || 999;
     const orderB = APPROACH_ORDER[b.moduleType as keyof typeof APPROACH_ORDER] || 999;
     return orderA - orderB;
   });
 
-  // Find default strategy (company_overview type)
+  // Find default strategy - using isStrategy field
   const defaultStrategy = approaches.find(a => 
-    a.name === "Advanced Key Contact Discovery" || 
-    a.moduleType === 'company_overview')?.id.toString();
+    (a.isStrategy && a.name === "Advanced Key Contact Discovery") || 
+    (a.isStrategy && a.active))?.id.toString();
 
   // Set default strategy on component mount if none is selected
   useEffect(() => {
