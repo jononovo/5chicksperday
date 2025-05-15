@@ -186,7 +186,7 @@ export default function Home() {
     
     // Use the filtering logic with increased maxPerCompany
     const filteredProspects = filterTopProspects(allContacts, {
-      maxPerCompany: 10, // Increased from 3 to 10 to show more contacts per company
+      maxPerCompany: 20, // Increased from 10 to 20 to show more contacts per company
       minProbability: 50
     });
     
