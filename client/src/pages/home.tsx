@@ -174,9 +174,9 @@ export default function Home() {
       }
     });
 
-    // Use the filtering logic
+    // Use the filtering logic with increased maxPerCompany
     return filterTopProspects(allContacts, {
-      maxPerCompany: 3,
+      maxPerCompany: 10, // Increased from 3 to 10 to show more contacts per company
       minProbability: 50
     });
   };

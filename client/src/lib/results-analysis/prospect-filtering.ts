@@ -12,7 +12,7 @@ interface FilterOptions {
 
 export function filterTopProspects(
   contacts: ContactWithCompanyInfo[],
-  options: FilterOptions = { maxPerCompany: 3, minProbability: 50 }
+  options: FilterOptions = { maxPerCompany: 10, minProbability: 50 }
 ): ContactWithCompanyInfo[] {
   // First, ensure we're working with valid contacts
   const validContacts = contacts.filter(contact => 
@@ -39,7 +39,7 @@ export function filterTopProspects(
     // Skip if we've reached the max contacts for this company
     if (contact.companyId) {
       companyCount[contact.companyId] = companyCount[contact.companyId] || 0;
-      if (companyCount[contact.companyId] >= (options.maxPerCompany ?? 3)) {
+      if (companyCount[contact.companyId] >= (options.maxPerCompany ?? 10)) {
         continue;
       }
     }
