@@ -84,6 +84,11 @@ export const DECISION_MAKER_MODULE = {
     - Location information
 
     ONLY RETURN A LIST OF ACTUAL PEOPLE WHO WORK AT THE COMPANY.`,
+  defaultConfig: {
+    searchOptions: {
+      maxContactsPerCompany: 20  // Default increased from 10 to 20
+    }
+  },
   responseStructure: {
     contacts: [
       {
@@ -799,8 +804,12 @@ Provide their full name and current position. If this information is not availab
         // Sort by probability
         validatedContacts.sort((a, b) => (b.probability || 0) - (a.probability || 0));
         
-        // Limit to top 10 contacts per company to keep quality high
-        const topContacts = validatedContacts.slice(0, 10);
+        // Get contact limit from config or use default (increased from 10 to 20)
+        const contactLimit = config.searchOptions?.maxContactsPerCompany || 20;
+        console.log(`Using contact limit of ${contactLimit} for company ${company.name}`);
+        
+        // Apply the configured limit
+        const topContacts = validatedContacts.slice(0, contactLimit);
 
         contacts.push(...topContacts);
 
