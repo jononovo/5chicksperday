@@ -607,8 +607,12 @@ export function registerRoutes(app: Express) {
               email?: string | null;
               probability?: number | null;
               nameConfidenceScore?: number | null;
-            }) =>
-              storage.createContact({
+            }) => {
+              if (!contact.name) {
+                console.warn('Skipping contact with missing name');
+                return null; // Will be filtered out later
+              }
+              return storage.createContact({
                 companyId: createdCompany.id,
                 name: contact.name,
                 role: contact.role ?? null,
@@ -625,7 +629,7 @@ export function registerRoutes(app: Express) {
                 feedbackCount: 0,
                 userId: req.user!.id
               })
-            )
+            })
           );
 
           return { ...createdCompany, contacts: createdContacts };
@@ -755,7 +759,7 @@ export function registerRoutes(app: Express) {
         await storage.deleteContactsByCompany(companyId, req.user!.id);
 
         // Create new contacts with only the essential fields and minimum confidence score
-        const validContacts = newContacts.filter((contact: Contact) => 
+        const validContacts = newContacts.filter((contact: Partial<Contact>) => 
           contact.name && 
           contact.name !== "Unknown" && 
           (!contact.probability || contact.probability >= 40) // Filter out contacts with low confidence/probability scores
@@ -763,7 +767,7 @@ export function registerRoutes(app: Express) {
         console.log('Valid contacts for enrichment:', validContacts);
 
         const createdContacts = await Promise.all(
-          validContacts.map(async (contact: Contact) => {
+          validContacts.map(async (contact: Partial<Contact>) => {
             console.log(`Processing contact enrichment for: ${contact.name}`);
 
             return storage.createContact({
