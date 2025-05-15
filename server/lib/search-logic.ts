@@ -1,15 +1,15 @@
 import type { Company, Contact } from "@shared/schema";
 import { queryPerplexity } from "./api/perplexity-client";
 import type { PerplexityMessage } from "./types/perplexity";
-import { analyzeWithPerplexity } from "./perplexity";
+import { 
+  analyzeWithPerplexity, 
+  discoverContactsDirectly 
+} from "./perplexity";
 import { 
   analyzeCompanySize, 
   analyzeDifferentiators,
   calculateCompanyScore 
 } from "./results-analysis/company-analysis";
-import { validateName } from "./results-analysis/contact-name-validation";
-import { extractContacts } from "./results-analysis/email-extraction-format";
-import { validateNames } from "./results-analysis/contact-ai-name-scorer";
 
 // Core search functions
 export async function searchCompanies(query: string): Promise<string[]> {
@@ -77,5 +77,5 @@ export async function analyzeCompany(
   return queryPerplexity(messages);
 }
 
-// Export the functions we need
-export { validateNames, extractContacts };
+// Export the additional function
+export { discoverContactsDirectly };

@@ -2,7 +2,7 @@ import express, { type Express } from "express";
 import { createServer } from "http";
 import { storage } from "./storage";
 import { searchCompanies, analyzeCompany } from "./lib/search-logic";
-import { extractContacts } from "./lib/perplexity";
+import { discoverContactsDirectly } from "./lib/perplexity";
 import { parseCompanyData } from "./lib/results-analysis/company-parser";
 import { queryPerplexity } from "./lib/api/perplexity-client";
 import { searchContactDetails } from "./lib/api-interactions";
@@ -586,30 +586,31 @@ export function registerRoutes(app: Express) {
           
           console.log(`Detected industry for ${companyName}: ${industry || 'unknown'}`);
           
-          // Extract contacts with validation options including industry context
-          const allContacts = await extractContacts(
-            analysisResults,
-            companyName,
-            {
-              useLocalValidation: true,
-              localValidationWeight: 0.3,
-              minimumScore: 20,
-              companyNamePenalty: 20,
-              industry: industry // Pass industry context to validation
-            }
-          );
+          // Use our simplified direct contact discovery approach
+          // Skip all the complex validation and simply ask Perplexity for contacts
+          const systemPrompt = `Analyze the company structure to identify key decision makers with accurate information.
+          Focus on C-level executives, founders, and directors. Ensure each name is accurate and
+          represents a real person at the company. Industry context: ${industry || 'general business'}.`;
           
-          // Filter contacts by confidence score
-          const contacts = allContacts.filter(contact => 
-            (!contact.probability || contact.probability >= 40) // Filter out contacts with low probability scores
+          // Call our simplified function
+          const contacts = await discoverContactsDirectly(
+            companyName,
+            systemPrompt,
+            true // Include emails
           );
 
           // Create contact records with basic information
           const createdContacts = await Promise.all(
-            contacts.map(contact =>
+            contacts.map((contact: {
+              name: string;
+              role?: string | null;
+              email?: string | null;
+              probability?: number | null;
+              nameConfidenceScore?: number | null;
+            }) =>
               storage.createContact({
                 companyId: createdCompany.id,
-                name: contact.name!,
+                name: contact.name,
                 role: contact.role ?? null,
                 email: contact.email ?? null,
                 probability: contact.probability ?? null,
@@ -737,15 +738,16 @@ export function registerRoutes(app: Express) {
         }
         console.log(`Detected industry for contact enrichment: ${industry || 'unknown'}`);
         
-        // Pass industry context to contact extraction
-        const newContacts = await extractContacts(
-          [analysisResult], 
-          company.name, 
-          { 
-            useLocalValidation: true,
-            minimumScore: 20,
-            industry: industry // Include industry context for validation
-          }
+        // Use our simplified direct contact discovery
+        const systemPrompt = `Analyze the company structure to identify key decision makers with accurate information.
+          Focus on C-level executives, founders, and directors. Ensure each name is accurate and
+          represents a real person at the company. Industry context: ${industry || 'general business'}.`;
+        
+        // Call our simplified function with direct Perplexity interaction
+        const newContacts = await discoverContactsDirectly(
+          company.name,
+          systemPrompt,
+          true // Include emails
         );
         console.log('Extracted contacts:', newContacts);
 

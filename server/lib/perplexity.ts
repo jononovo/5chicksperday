@@ -139,6 +139,97 @@ export async function validateEmails(emails: string[]): Promise<EmailValidationR
 }
 
 // Re-export essential analysis functions
-export { extractContacts } from "./results-analysis/email-extraction-format";
 export { parseCompanyData } from "./results-analysis/company-parser";
 export type { PerplexityMessage };
+
+/**
+ * Direct contact discovery with Perplexity
+ * Simplified approach that directly asks Perplexity for contacts without complex validation
+ */
+export async function discoverContactsDirectly(
+  companyName: string,
+  prompt?: string,
+  includeEmails: boolean = true
+): Promise<Partial<Contact>[]> {
+  try {
+    console.log(`Starting direct contact discovery for ${companyName}`);
+    
+    // Default prompt if none provided
+    const systemPrompt = prompt || 
+      `Analyze the company structure to identify key decision makers with accurate information.
+       Focus on C-level executives, founders, and directors. Ensure each name is accurate and
+       represents a real person at the company.`;
+    
+    // Technical prompt with structured response format
+    const technicalPrompt = `Find the key decision makers at ${companyName}.
+      ${includeEmails ? 'Include business email addresses when available.' : ''}`;
+    
+    const responseFormat = `{
+      "contacts": [
+        {
+          "name": "Full name of the contact",
+          "role": "Their specific job title",
+          "email": ${includeEmails ? '"Their email if known"' : 'null'},
+          "confidence": "High/Medium/Low based on data certainty"
+        }
+      ]
+    }`;
+    
+    // Make the request to Perplexity
+    const result = await analyzeWithPerplexity(
+      technicalPrompt,
+      systemPrompt,
+      responseFormat
+    );
+    
+    try {
+      // Extract JSON response from the text
+      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.warn('No JSON found in Perplexity response');
+        return [];
+      }
+      
+      const parsedData = JSON.parse(jsonMatch[0]);
+      
+      if (!parsedData.contacts || !Array.isArray(parsedData.contacts)) {
+        console.warn('No contacts array found in parsed data');
+        return [];
+      }
+      
+      // Map to Contact structure with simple confidence scoring
+      return parsedData.contacts.map((contact: {
+        name: string;
+        role?: string;
+        email?: string;
+        confidence?: string;
+      }) => {
+        // Simple confidence scoring based on Perplexity's confidence
+        let probability = 70; // Default medium confidence
+        
+        if (contact.confidence) {
+          const confidenceStr = contact.confidence.toLowerCase();
+          if (confidenceStr.includes('high')) probability = 90;
+          else if (confidenceStr.includes('medium')) probability = 70;
+          else if (confidenceStr.includes('low')) probability = 50;
+        }
+        
+        return {
+          name: contact.name,
+          role: contact.role || null,
+          email: contact.email || null,
+          probability,
+          nameConfidenceScore: probability,
+          lastValidated: new Date(),
+          completedSearches: ['perplexity_direct']
+        };
+      });
+    } catch (parseError) {
+      console.error('Failed to parse Perplexity response:', parseError);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error in direct contact discovery:', error);
+    return [];
+  }
+}
