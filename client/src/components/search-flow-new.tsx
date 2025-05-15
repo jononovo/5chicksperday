@@ -33,6 +33,10 @@ const APPROACH_ORDER = {
   'email_deepdive': 5
 };
 
+// Categorize modules as core or add-on
+const CORE_MODULES = ['company_overview', 'decision_maker', 'email_discovery'];
+const ADDON_MODULES = ['email_enrichment', 'email_deepdive'];
+
 interface SearchFlowNewProps {
   approaches: SearchApproach[];
 }

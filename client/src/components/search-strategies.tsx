@@ -24,32 +24,37 @@ interface SearchStrategyProps {
   defaultStrategy?: string;
 }
 
-// Strategies to display in the dropdown
-const VALID_STRATEGIES = [
+// Adding comments to explain the new approach
+// We no longer need these hardcoded lists as we now use the isStrategy field
+// from the database to distinguish between modules and strategies
+//
+// Keeping this comment for documentation of what previously existed
+/*
+Previous implementation used hardcoded lists:
+VALID_STRATEGIES = [
   "Advanced Key Contact Discovery",
   "Small Business Contacts",
   "Enhanced Contact Discovery",
   "Legacy Search (v1)",
   "Comprehensive Search"
 ];
-
-// Modules that should NOT be shown as strategies
-const EXCLUDED_MODULES = [
+EXCLUDED_MODULES = [
   "Company Overview",
   "Email Discovery",
   "Enrich Email",
   "Email Deepdive"
 ];
+*/
 
 export function SearchStrategies({ onStrategyChange, defaultStrategy }: SearchStrategyProps) {
   // We'll use local state but initialized with defaultStrategy or "17" (Advanced Key Contact Discovery)
   const [selectedStrategy, setSelectedStrategy] = useState<string | undefined>(defaultStrategy || "17");
 
-  // Properly type the data and query
+  // Properly type the data and query - now using isStrategy field
   const { data: strategies = [] } = useQuery<SearchApproach[], Error, SearchApproach[]>({
     queryKey: ["/api/search-approaches"],
     select: (data) => data
-      .filter(s => s.active && VALID_STRATEGIES.includes(s.name) && !EXCLUDED_MODULES.includes(s.name))
+      .filter(s => s.active && s.isStrategy) // Only show active strategies using the database field
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
   });
   

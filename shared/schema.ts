@@ -77,6 +77,7 @@ export const searchApproaches = pgTable("search_approaches", {
   prompt: text("prompt").notNull(),
   order: integer("order").notNull(),
   active: boolean("active").default(true),
+  isStrategy: boolean("is_strategy").default(false), // Added this field to match our SQL change
   config: jsonb("config").default({}).notNull(),
   completedSearches: text("completed_searches").array(),
   technicalPrompt: text("technical_prompt"),
@@ -233,6 +234,7 @@ export const searchApproachSchema = z.object({
   prompt: z.string().min(1, "Prompt is required"),
   order: z.number().min(1),
   active: z.boolean().nullable(),
+  isStrategy: z.boolean().default(false), // Add this new field
   config: searchModuleConfigSchema,
   completedSearches: z.array(z.string()).optional(),
   technicalPrompt: z.string().optional(),
