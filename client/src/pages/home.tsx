@@ -164,8 +164,16 @@ export default function Home() {
     if (!currentResults) return [];
 
     const allContacts: (Contact & { companyName: string; companyId: number })[] = [];
+    
+    // Add detailed logging to see what contacts are available per company
     currentResults.forEach(company => {
-      if (company.contacts) {
+      console.log(`Company ${company.name} has ${company.contacts?.length || 0} contacts`);
+      
+      if (company.contacts && company.contacts.length > 0) {
+        // Log probability distribution
+        console.log(`Contact probability distribution for ${company.name}:`, 
+          company.contacts.map(c => ({name: c.name, probability: c.probability})));
+          
         allContacts.push(...company.contacts.map(contact => ({
           ...contact,
           companyName: company.name,
@@ -173,12 +181,27 @@ export default function Home() {
         })));
       }
     });
-
+    
+    console.log(`Total contacts before filtering: ${allContacts.length}`);
+    
     // Use the filtering logic with increased maxPerCompany
-    return filterTopProspects(allContacts, {
+    const filteredProspects = filterTopProspects(allContacts, {
       maxPerCompany: 10, // Increased from 3 to 10 to show more contacts per company
       minProbability: 50
     });
+    
+    console.log(`Filtered prospects: ${filteredProspects.length}`);
+    
+    // Log company distribution in filtered results
+    const companyDistribution: Record<string, number> = {};
+    filteredProspects.forEach(contact => {
+      const companyName = contact.companyName || 'Unknown';
+      companyDistribution[companyName] = (companyDistribution[companyName] || 0) + 1;
+    });
+    
+    console.log('Company distribution in filtered prospects:', companyDistribution);
+    
+    return filteredProspects;
   };
 
   // Updated navigation handlers
