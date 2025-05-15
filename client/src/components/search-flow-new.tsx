@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
@@ -55,8 +56,9 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
   const { toast } = useToast();
   
   // Determine if this module is a core module or an add-on module
-  const isCoreModule = CORE_MODULES.includes(approach.moduleType);
-  const isAddonModule = ADDON_MODULES.includes(approach.moduleType);
+  const moduleType = approach.moduleType || 'company_overview';
+  const isCoreModule = CORE_MODULES.includes(moduleType);
+  const isAddonModule = ADDON_MODULES.includes(moduleType);
 
   const config = approach.config as SearchModuleConfig || {
     subsearches: {},
@@ -170,9 +172,9 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
   };
 
   // Fix the isCompleted check by providing a default empty array if completedSearches is null
-  const isCompleted = approach.completedSearches ? 
-    approach.completedSearches.includes(approach.moduleType) : 
-    false;
+  const isCompleted = Array.isArray(approach.completedSearches) && moduleType
+    ? approach.completedSearches.includes(moduleType) 
+    : false;
 
   const minimumConfidence = config.validationRules?.minimumConfidence || 0;
 
@@ -220,14 +222,14 @@ function ApproachEditor({ approach }: { approach: SearchApproach }) {
             <div className="flex items-center gap-2">
               <span className="font-medium text-base">{approach.name}</span>
               {isCoreModule && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200">
+                <div className="px-2 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200">
                   Core
-                </Badge>
+                </div>
               )}
               {isAddonModule && (
-                <Badge variant="outline" className="bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200">
+                <div className="px-2 py-0.5 rounded-full text-xs bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border border-amber-200">
                   Add-on
-                </Badge>
+                </div>
               )}
             </div>
           </AccordionTrigger>
