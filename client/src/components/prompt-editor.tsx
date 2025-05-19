@@ -291,7 +291,7 @@ export default function PromptEditor({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !(isAnalyzing || searchMutation.isPending)) {
+              if (e.key === 'Enter' && !(isAnalyzing || quickSearchMutation.isPending || fullContactSearchMutation.isPending)) {
                 e.preventDefault();
                 handleSearch();
               }
