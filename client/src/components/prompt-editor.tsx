@@ -284,9 +284,9 @@ export default function PromptEditor({
   };
 
   return (
-    <Card className="p-3">
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2">
+    <Card className="shadow-none border-none">
+      <div className="flex flex-col">
+        <div className="flex gap-1">
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -297,12 +297,13 @@ export default function PromptEditor({
               }
             }}
             placeholder="Enter a search query (e.g., 'mid-sized plumbers in Atlanta')..."
-            className="flex-1"
+            className="flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 border-r-0 rounded-r-none"
           />
           <div className="flex items-center">
             <Button 
               onClick={handleSearch} 
               disabled={isAnalyzing || quickSearchMutation.isPending || fullContactSearchMutation.isPending}
+              className="rounded-l-none"
             >
               {(isAnalyzing || quickSearchMutation.isPending || fullContactSearchMutation.isPending) && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
