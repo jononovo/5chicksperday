@@ -27,56 +27,31 @@ export function MainNav() {
     <nav className="flex items-center justify-between border-b mb-4 px-4 py-3">
       <div className="flex items-center">
         <Logo size="sm" className="mr-4 md:mr-8" />
-        {isMobile ? (
-          <div className="flex justify-center space-x-8 mx-auto">
-            {navigation.map((item) => {
-              const isActive = item.href === location || 
-                (item.href === "/" && location === "/");
+        <div className={`flex ${isMobile ? "justify-center space-x-6" : "space-x-4"}`}>
+          {navigation.map((item) => {
+            const isActive = item.href === location || 
+              (item.href === "/" && location === "/");
 
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`${
-                    isActive
-                      ? "text-primary font-semibold border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  } flex items-center justify-center w-10 py-1.5 text-sm font-medium transition-colors`}
-                >
-                  {item.icon === "dashboard" && <LayoutDashboard className="h-5 w-5" />}
-                  {item.icon === "mail" && <Mail className="h-5 w-5" />}
-                  {item.icon === "message" && <MessageCircle className="h-5 w-5" />}
-                </Link>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex space-x-4">
-            {navigation.map((item) => {
-              const isActive = item.href === location || 
-                (item.href === "/" && location === "/");
-
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`${
-                    isActive
-                      ? "text-primary font-semibold border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                  } px-2 py-1.5 text-sm font-medium transition-colors`}
-                >
-                  <div className="flex items-center">
-                    {item.icon === "dashboard" && <LayoutDashboard className="mr-1 h-4 w-4" />}
-                    {item.icon === "mail" && <Mail className="mr-1 h-4 w-4" />}
-                    {item.icon === "message" && <MessageCircle className="mr-1 h-4 w-4" />}
-                    {item.name}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`${
+                  isActive
+                    ? "text-primary font-semibold border-b-2 border-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                } ${isMobile ? "px-3" : "px-2"} py-1.5 text-sm font-medium transition-colors`}
+              >
+                <div className={`flex items-center ${isMobile ? "justify-center" : ""}`}>
+                  {item.icon === "dashboard" && <LayoutDashboard className={isMobile ? "h-5 w-5" : "mr-1 h-4 w-4"} />}
+                  {item.icon === "mail" && <Mail className={isMobile ? "h-5 w-5" : "mr-1 h-4 w-4"} />}
+                  {item.icon === "message" && <MessageCircle className={isMobile ? "h-5 w-5" : "mr-1 h-4 w-4"} />}
+                  <span className={isMobile ? "hidden" : "inline"}>{item.name}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
       {/* Always show the menu button, without requiring user authentication */}
       <div className="flex items-center ml-auto">

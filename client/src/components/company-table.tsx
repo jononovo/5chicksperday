@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -20,9 +17,7 @@ import {
   Rocket,
   Star,
   ThumbsUp,
-  ThumbsDown,
-  Menu,
-  Tag
+  ThumbsDown
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -31,37 +26,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { Company, Contact } from "@shared/schema";
 import { ContactWithCompanyInfo } from "@/lib/results-analysis/prospect-filtering";
 
 interface CompanyTableProps {
   companies: Array<Company & { contacts?: ContactWithCompanyInfo[] }>;
   handleCompanyView: (companyId: number) => void;
-  // Add these props to connect to existing functionality
-  handleHunterSearch?: (contactId: number) => void;
-  handleAeroLeadsSearch?: (contactId: number) => void;
-  handleEnrichContact?: (contactId: number) => void;
-  pendingHunterIds?: Set<number>;
-  pendingAeroLeadsIds?: Set<number>;
-  pendingContactIds?: Set<number>;
 }
 
-export default function CompanyTable({ 
-  companies, 
-  handleCompanyView,
-  handleHunterSearch,
-  handleAeroLeadsSearch,
-  handleEnrichContact,
-  pendingHunterIds,
-  pendingAeroLeadsIds,
-  pendingContactIds
-}: CompanyTableProps) {
+export default function CompanyTable({ companies, handleCompanyView }: CompanyTableProps) {
   console.log('CompanyTable received companies:', 
     companies.map(c => ({ id: c.id, name: c.name }))
   );
@@ -114,8 +87,8 @@ export default function CompanyTable({
               />
             </TableHead>
             <TableHead>Name</TableHead>
-            <TableHead className="hidden md:table-cell">Details</TableHead>
-            <TableHead className="hidden md:table-cell">Score</TableHead>
+            <TableHead>Details</TableHead>
+            <TableHead>Score</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -130,10 +103,10 @@ export default function CompanyTable({
                 {/* Main company row - always visible */}
                 <TableRow 
                   key={company.id} 
-                  className={`cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-800/30 bg-blue-100/80 dark:bg-blue-700/30 ${isExpanded ? 'h-5 opacity-50' : 'h-10 opacity-100'} transition-all duration-200`}
+                  className={`cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 bg-slate-100/50 dark:bg-slate-800/20 ${isExpanded ? 'h-5 opacity-50' : 'h-10 opacity-100'} transition-all duration-200`}
                   onClick={() => toggleRowExpansion(company.id)}
                 >
-                  <TableCell className={`px-2 ${isExpanded ? 'py-0' : 'py-1'}`}>
+                  <TableCell className="px-2 py-1">
                     <input 
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300"
@@ -141,23 +114,10 @@ export default function CompanyTable({
                       onClick={(e) => e.stopPropagation()}
                     />
                   </TableCell>
-                  <TableCell className={`font-medium pl-1 ${isExpanded ? 'py-0' : 'py-1'}`}>
-                    <div>{company.name}</div>
-                    {!isExpanded && company.website && (
-                      <div className="md:hidden text-xs text-muted-foreground leading-tight">
-                        <a 
-                          href={company.website.startsWith('http') ? company.website : `https://${company.website}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {company.website.replace(/^https?:\/\//, '')}
-                        </a>
-                      </div>
-                    )}
+                  <TableCell className="font-medium py-1">
+                    {company.name}
                   </TableCell>
-                  <TableCell className={`hidden md:table-cell ${isExpanded ? 'py-0' : 'py-1'}`}>
+                  <TableCell className="py-1">
                     {company.website ? (
                       <a 
                         href={company.website.startsWith('http') ? company.website : `https://${company.website}`} 
@@ -170,20 +130,18 @@ export default function CompanyTable({
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     ) : null}
-                    {!isExpanded && (
-                      <div className="text-xs text-muted-foreground">
-                        <span className="text-xs text-slate-500">
-                          {company.contacts?.length || 0} contacts
-                        </span>
-                      </div>
-                    )}
+                    <div className="text-xs text-muted-foreground">
+                      <span className="text-xs text-slate-500">
+                        {company.contacts?.length || 0} contacts
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell className={`hidden md:table-cell ${isExpanded ? 'py-0' : 'py-1'}`}>
+                  <TableCell className="py-1">
                     <Badge variant={company.totalScore && company.totalScore > 70 ? "default" : "secondary"}>
                       {company.totalScore ?? 'N/A'}
                     </Badge>
                   </TableCell>
-                  <TableCell className={`text-center ${isExpanded ? 'py-0' : 'py-1'}`}>
+                  <TableCell className="py-1">
                     <TooltipProvider delayDuration={500}>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -221,31 +179,27 @@ export default function CompanyTable({
                         aria-label={`Select ${contact.name}`}
                       />
                     </TableCell>
-                    <TableCell className="py-1 pl-1">
+                    <TableCell className="py-1">
                       <div className="font-medium leading-tight">{contact.name}</div>
                       <div className="text-xs text-slate-500 leading-tight -mt-0.5 truncate max-w-[300px]" title={contact.role || "N/A"}>
                         {contact.role || "N/A"}
                       </div>
-                      <div className="md:hidden text-xs text-muted-foreground leading-tight mt-0.5">
-                        {contact.email || "Email not available"}
-                      </div>
                     </TableCell>
-                    <TableCell className="py-1 hidden md:table-cell">
+                    <TableCell className="py-1">
                       <span className="text-xs text-muted-foreground">
                         {contact.email || "Email not available"}
                       </span>
                     </TableCell>
-                    <TableCell className="py-1 hidden md:table-cell">
+                    <TableCell className="py-1">
                       <Badge
-                        variant="secondary"
+                        variant={(contact.probability || 0) >= 80 ? "default" : "secondary"}
                         className="text-xs"
                       >
                         {contact.probability || 0}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-1 text-center">
-                      {/* Desktop action buttons */}
-                      <div className="hidden md:flex items-center justify-center gap-1">
+                    <TableCell className="py-1">
+                      <div className="flex items-center gap-1">
                         <TooltipProvider delayDuration={500}>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -322,39 +276,6 @@ export default function CompanyTable({
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                      </div>
-                      
-                      {/* Mobile dropdown menu */}
-                      <div className="md:hidden">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                              <Menu className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Mail className="h-4 w-4 mr-2" />
-                              Send Email
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Gem className="h-4 w-4 mr-2" />
-                              AeroLeads Email
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Target className="h-4 w-4 mr-2" />
-                              Hunter.io Email
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Rocket className="h-4 w-4 mr-2" />
-                              Add to campaign
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
                       </div>
                     </TableCell>
                   </TableRow>
