@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "wouter";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LogoProps {
   // Size variant options
@@ -18,6 +19,8 @@ export function Logo({
   asLink = true,
   className = ""
 }: LogoProps) {
+  const isMobile = useIsMobile();
+  
   // Size-specific classes
   const sizeClasses = {
     sm: "text-xl",
@@ -54,7 +57,8 @@ export function Logo({
       {showEmojis && (
         <div className={`flex items-end ${emojiContainerClasses[size]}`}>
           <span className={duckSizeClasses[size]}>🐥</span>
-          <span className={eggSizeClasses[size]}>🥚🥚🥚🥚</span>
+          {/* Hide eggs on mobile */}
+          <span className={`${eggSizeClasses[size]} hidden md:inline`}>🥚🥚🥚🥚</span>
         </div>
       )}
     </div>
