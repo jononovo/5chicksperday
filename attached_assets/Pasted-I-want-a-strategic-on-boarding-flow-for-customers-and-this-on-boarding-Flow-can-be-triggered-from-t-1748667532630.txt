@@ -1,0 +1,14 @@
+I want a strategic on boarding flow for customers and this on boarding. Flow can be triggered from the landing page or really anywhere and basically it asks the customer. What are you selling? Is it a service or product? What is unique about it? Is it your personal approach your availability your quick responses you're good service time some other attribute. It also asks who do you normally sell to and is it kind of a niche product or person you speak like to like hotels near the coast family, friendly hotels near the coast or is it more like all plumbers in New Jersey are potential customers.
+
+So basically ring, fencing, and being able to understand like what the strategy is for the next three months of who we're gonna push you to approach.
+
+But to build the whole strategy, we have to collect that information.
+
+In in order to click that information in a versatile way, I think a chat interface with an AI agent is the best.
+
+However, it should start on the landing page with just a simple input or even a click box like product or service and the user just choose one of those two buttons and when they click product, it'll say please explain your product and if you click service, it'll say please explain your service.
+As soon as you've clicked one of them and entered your service and click go, it'll actually open the chat and say hi. I love this product and ask a few more questions about it before then going to the next phase of the questionnaire and then building a strategic profile of the seller and the product and the most likely customer and how to reach out to them speak to them, contact them, etc.
+
+So it's really a guided strategic workshop and planning session.
+
+But the nice thing is that we then out of the strategic plan create search prompts for leads, and we use those search prompts. We stack and queue them up two weeks at a time to be able to get the list of customers every day or every second day and then send the required list of top prospects to the people that need to send them out.

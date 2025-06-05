@@ -73,7 +73,7 @@
     "lucide-react": "^0.453.0",
     "memoizee": "^0.4.17",
     "memorystore": "^1.6.7",
-    "openai": "^4.85.2",
+    "openai": "^4.104.0",
     "openid-client": "^6.5.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",

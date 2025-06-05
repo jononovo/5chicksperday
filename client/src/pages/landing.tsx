@@ -155,35 +155,74 @@ export default function LandingPage() {
               Sell to 5 new people every day.
             </h1>
             
-            <p className="text-xl text-slate-700 dark:text-slate-300 mb-12 max-w-2xl mx-auto">
-              <span className="font-normal">What type of business 💼 would you like to sell to? 🤷🏼‍♀️<br />
-              And where?</span>
+            <p className="text-xl text-slate-700 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
+              <span className="font-normal">Let's create your strategic sales plan.<br />
+              What are you selling?</span>
             </p>
 
-            {/* Search Input */}
-            <div className="relative max-w-2xl mx-auto mb-10">
-              <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-full opacity-70 blur"></div>
-              <div className="relative bg-white dark:bg-slate-900 rounded-full">
-                <Input
-                  type="text"
-                  placeholder="Adventure service providers in Maine"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 pr-36 py-7 text-lg rounded-full border-transparent shadow-lg focus-visible:ring-2 focus-visible:ring-blue-500"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearch();
-                    }
-                  }}
-                />
-                <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-blue-500" size={20} />
+            {/* Strategic Onboarding Section */}
+            <div className="max-w-2xl mx-auto mb-12">
+              <div className="grid grid-cols-2 gap-4 mb-8">
                 <Button
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full px-5 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                  onClick={() => handleSearch()}
+                  className="h-24 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2"
+                  onClick={() => {
+                    trackEvent('onboarding_start', 'landing_page', 'product');
+                    setLocation("/planning?type=product");
+                  }}
                 >
-                  <span className="mr-2">Quack</span>
-                  <ArrowRight size={16} />
+                  <div className="text-2xl">📦</div>
+                  <span className="font-semibold">Product</span>
                 </Button>
+                <Button
+                  className="h-24 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2"
+                  onClick={() => {
+                    trackEvent('onboarding_start', 'landing_page', 'service');
+                    setLocation("/planning?type=service");
+                  }}
+                >
+                  <div className="text-2xl">🛠️</div>
+                  <span className="font-semibold">Service</span>
+                </Button>
+              </div>
+              
+              <div className="text-center mb-8">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-300 dark:border-slate-600"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-950 dark:to-blue-950 text-slate-500 dark:text-slate-400">
+                      or search directly
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Traditional Search Input */}
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-full opacity-70 blur"></div>
+                <div className="relative bg-white dark:bg-slate-900 rounded-full">
+                  <Input
+                    type="text"
+                    placeholder="Adventure service providers in Maine"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 pr-36 py-7 text-lg rounded-full border-transparent shadow-lg focus-visible:ring-2 focus-visible:ring-blue-500"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSearch();
+                      }
+                    }}
+                  />
+                  <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-blue-500" size={20} />
+                  <Button
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 rounded-full px-5 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                    onClick={() => handleSearch()}
+                  >
+                    <span className="mr-2">Quack</span>
+                    <ArrowRight size={16} />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -222,6 +261,43 @@ export default function LandingPage() {
               <div className="text-center p-3 md:p-4">
                 <div className="text-3xl md:text-4xl font-bold text-pink-600 dark:text-pink-400 mb-2">Avg $70k</div>
                 <div className="text-sm text-slate-500 dark:text-slate-400">New Revenue Pipeline*</div>
+              </div>
+            </div>
+
+            {/* Strategic Onboarding Section */}
+            <div className="max-w-2xl mx-auto mb-12">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl font-bold mb-2">Get Your Personalized Sales Strategy</h3>
+                <p className="text-gray-600 dark:text-gray-300">Tell us about your business and we'll create a custom prospecting plan</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <Button
+                  className="h-24 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2"
+                  onClick={() => {
+                    trackEvent('onboarding_start', 'landing_page', 'product');
+                    setLocation("/planning?type=product");
+                  }}
+                >
+                  <div className="text-2xl">📦</div>
+                  <span className="font-semibold">Product</span>
+                </Button>
+                <Button
+                  className="h-24 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2"
+                  onClick={() => {
+                    trackEvent('onboarding_start', 'landing_page', 'service');
+                    setLocation("/planning?type=service");
+                  }}
+                >
+                  <div className="text-2xl">🛠️</div>
+                  <span className="font-semibold">Service</span>
+                </Button>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Get a 5-step guided conversation to build your sales strategy
+                </p>
               </div>
             </div>
           </div>
@@ -385,8 +461,8 @@ export default function LandingPage() {
                     <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center mb-4">
                       <UserCheck className="text-purple-600 dark:text-purple-400" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">We limit you to 10 Emails per Day</h3>
-                    <p className="text-slate-600 dark:text-slate-400">So that you never have to feel intimidated about doing outreach.</p>
+                    <h3 className="text-xl font-semibold mb-2">Daily master-plan via email - No login necessary</h3>
+                    <p className="text-slate-600 dark:text-slate-400">Get all the details per contact  - Click to open edit each email body or subject line and voila!</p>
                   </div>
                   
                   <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-md">

@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const tryFreeBtn = document.getElementById('try-free-btn');
   const examplePrompts = document.querySelectorAll('.example-prompt');
   const videoContainer = document.getElementById('video-container');
+  const productBtn = document.getElementById('product-btn');
+  const serviceBtn = document.getElementById('service-btn');
   
   // Handle search functionality
   function handleSearch(query = null) {
@@ -19,6 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Navigate to the app
     window.location.href = '/app';
+  }
+  
+  // Handle onboarding start
+  window.handleOnboardingStart = function(type) {
+    console.log('Onboarding start tracked:', type);
+    // Navigate to planning page with type parameter
+    window.location.href = `/planning?type=${type}`;
   }
   
   // Search button click
@@ -87,6 +96,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (videoThumbnail) videoThumbnail.classList.add('hidden');
         if (videoExpandedContent) videoExpandedContent.classList.remove('hidden');
       }
+    });
+  }
+  
+  // Strategic onboarding buttons
+  if (productBtn) {
+    productBtn.addEventListener('click', function() {
+      // Track onboarding start event
+      console.log('Onboarding start tracked: product');
+      
+      // Navigate to planning page with product type
+      window.location.href = '/planning?type=product';
+    });
+  }
+  
+  if (serviceBtn) {
+    serviceBtn.addEventListener('click', function() {
+      // Track onboarding start event
+      console.log('Onboarding start tracked: service');
+      
+      // Navigate to planning page with service type
+      window.location.href = '/planning?type=service';
     });
   }
 });

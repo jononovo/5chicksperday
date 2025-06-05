@@ -1,0 +1,33 @@
+cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation
+User not authenticated, staying on landing page
+Processing strategy chat with input: Generate product summary
+Strategy chat response: 
+Object {type: "product_summary", message: "Here's your product analysis summary:", phase: "TARGET_COLLECTION", data: {…}}
+sendMessage called
+Message to send: hotels in brooklyn
+Processing strategy chat with input: hotels in brooklyn
+Strategy chat response: 
+Object {type: "conversation", message: "Is there an additional niche or another example that you think could improve your sales chances?…", phase: "TARGET_COLLECTION"}
+sendMessage called
+Message to send: yes
+Processing strategy chat with input: yes
+Strategy chat response: 
+Object {type: "conversation", message: "Please provide the refined target example with additional specificity.", phase: "TARGET_COLLECTION"}
+sendMessage called
+Message to send: luxury hotels in brooklyn
+Processing strategy chat with input: luxury hotels in brooklyn
+Strategy chat response: 
+Object {type: "progressive_strategy", message: "Perfect! Now I'll create your **strategic sales plan** step by step.", phase: "TARGET_COLLECTION", initialTarget: "hotels in brooklyn", refinedTarget: "luxury hotels in brooklyn", …}
+Progressive strategy called with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "luxury hotels in brooklyn", formDataExists: true, formData: {…}}
+Calling boundary API with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "luxury hotels in brooklyn", productContext: {…}}
+sendMessage called
+Message to send: ok
+Processing strategy chat with input: ok
+Strategy chat response: 
+Object {type: "progressive_strategy", message: "Perfect! Now I'll create your **strategic sales plan** step by step.", phase: "TARGET_COLLECTION", initialTarget: "hotels in brooklyn", refinedTarget: "luxury hotels in brooklyn", …}
+Progressive strategy called with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "luxury hotels in brooklyn", formDataExists: true, formData: {…}}
+Calling boundary API with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "luxury hotels in brooklyn", productContext: {…}}

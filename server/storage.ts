@@ -1,6 +1,6 @@
 import { 
   userPreferences, lists, companies, contacts, campaigns, emailTemplates, searchApproaches, users, searchTestResults,
-  emailThreads, emailMessages,
+  emailThreads, emailMessages, strategicProfiles, onboardingChats,
   type UserPreferences, type InsertUserPreferences,
   type List, type InsertList,
   type Company, type InsertCompany,
@@ -11,7 +11,9 @@ import {
   type User, type InsertUser,
   type SearchTestResult, type InsertSearchTestResult,
   type EmailThread, type InsertEmailThread,
-  type EmailMessage, type InsertEmailMessage
+  type EmailMessage, type InsertEmailMessage,
+  type StrategicProfile, type InsertStrategicProfile,
+  type OnboardingChat, type InsertOnboardingChat
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, sql } from "drizzle-orm";
@@ -84,6 +86,11 @@ export interface IStorage {
   createSearchTestResult(result: InsertSearchTestResult): Promise<SearchTestResult>;
   updateTestResultStatus(id: number, status: 'completed' | 'running' | 'failed', metadata?: Record<string, unknown>): Promise<SearchTestResult>;
   getStrategyPerformanceHistory(strategyId: number, userId: number): Promise<{ dates: string[], scores: number[] }>;
+
+  // Strategic Profiles
+  getStrategicProfiles(userId: number): Promise<StrategicProfile[]>;
+  createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile>;
+  updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -742,6 +749,31 @@ class DatabaseStorage implements IStorage {
     }
 
     console.log('Default search approaches initialized successfully.');
+  }
+
+  // Strategic Profiles methods
+  async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
+    return await db
+      .select()
+      .from(strategicProfiles)
+      .where(eq(strategicProfiles.userId, userId));
+  }
+
+  async createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile> {
+    const [profile] = await db
+      .insert(strategicProfiles)
+      .values(data)
+      .returning();
+    return profile;
+  }
+
+  async updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile> {
+    const [profile] = await db
+      .update(strategicProfiles)
+      .set(data)
+      .where(eq(strategicProfiles.id, id))
+      .returning();
+    return profile;
   }
 }
 

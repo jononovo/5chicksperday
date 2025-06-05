@@ -382,6 +382,60 @@ export const webhookLogs = pgTable("webhook_logs", {
   updatedAt: timestamp("updated_at").defaultNow().notNull()
 });
 
+// Strategic onboarding tables
+export const strategicProfiles = pgTable("strategic_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  businessType: text("business_type").notNull(), // "product" or "service"
+  businessDescription: text("business_description").notNull(),
+  uniqueAttributes: text("unique_attributes").array(),
+  targetCustomers: text("target_customers").notNull(),
+  marketNiche: text("market_niche"), // "niche" or "broad"
+  // Enhanced product profile fields
+  productService: text("product_service"), // What they sell
+  customerFeedback: text("customer_feedback"), // What customers say
+  website: text("website"), // Company website
+  businessLocation: text("business_location"), // Where they're located
+  primaryCustomerType: text("primary_customer_type"), // Who they sell to
+  primarySalesChannel: text("primary_sales_channel"), // How they find customers
+  primaryBusinessGoal: text("primary_business_goal"), // Main business objective
+  // Strategy fields for cold email outreach
+  strategyHighLevelBoundary: text("strategy_high_level_boundary"), // "3-4 star family-friendly hotels in coastal SE US"
+  exampleSprintPlanningPrompt: text("example_sprint_planning_prompt"), // "family-friendly hotels on space coast, florida"
+  exampleDailySearchQuery: text("example_daily_search_query"), // "family-friendly hotels in cocoa beach"
+  productAnalysisSummary: text("product_analysis_summary"), // AI-generated product profile summary
+  reportSalesContextGuidance: text("report_sales_context_guidance"), // AI-generated context for cold email approach
+  reportSalesTargetingGuidance: text("report_sales_targeting_guidance"), // AI-generated targeting recommendations
+  dailySearchQueries: text("daily_search_queries"), // JSON array of 8 daily search queries from strategy
+  strategicPlan: jsonb("strategic_plan").default({}),
+  searchPrompts: text("search_prompts").array(),
+  status: text("status").default("in_progress"), // "in_progress", "completed"
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const onboardingChats = pgTable("onboarding_chats", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  profileId: integer("profile_id").notNull().references(() => strategicProfiles.id),
+  messages: jsonb("messages").default([]),
+  currentStep: text("current_step").default("business_description"),
+  isComplete: boolean("is_complete").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const prospectDeliveries = pgTable("prospect_deliveries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  profileId: integer("profile_id").notNull().references(() => strategicProfiles.id),
+  searchPrompt: text("search_prompt").notNull(),
+  deliveryDate: timestamp("delivery_date").notNull(),
+  status: text("status").default("scheduled"), // "scheduled", "delivered", "failed"
+  prospectCount: integer("prospect_count").default(0),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
 // Define Schema for webhook logs
 // Email conversation schemas
 export const emailThreadSchema = z.object({
@@ -422,11 +476,80 @@ export const insertEmailMessageSchema = emailMessageSchema;
 
 export const insertWebhookLogSchema = webhookLogSchema;
 
+// Strategic onboarding schemas
+export const strategicProfileSchema = z.object({
+  businessType: z.enum(["product", "service"]),
+  businessDescription: z.string().min(1, "Business description is required"),
+  uniqueAttributes: z.array(z.string()).optional(),
+  targetCustomers: z.string().min(1, "Target customers description is required"),
+  marketNiche: z.enum(["niche", "broad"]).optional(),
+  // Enhanced product profile fields
+  productService: z.string().optional(),
+  customerFeedback: z.string().optional(),
+  website: z.string().optional(),
+  businessLocation: z.string().optional(),
+  primaryCustomerType: z.string().optional(),
+  primarySalesChannel: z.string().optional(),
+  primaryBusinessGoal: z.string().optional(),
+  // Strategy fields for cold email outreach
+  strategyHighLevelBoundary: z.string().optional(),
+  exampleSprintPlanningPrompt: z.string().optional(),
+  exampleDailySearchQuery: z.string().optional(),
+  productAnalysisSummary: z.string().optional(),
+  reportSalesContextGuidance: z.string().optional(),
+  reportSalesTargetingGuidance: z.string().optional(),
+  dailySearchQueries: z.string().optional(),
+  strategicPlan: z.record(z.unknown()).optional(),
+  searchPrompts: z.array(z.string()).optional(),
+  status: z.enum(["in_progress", "completed"]).default("in_progress")
+});
+
+export const onboardingChatSchema = z.object({
+  profileId: z.number(),
+  messages: z.array(z.object({
+    id: z.string(),
+    content: z.string(),
+    role: z.enum(["user", "assistant"]),
+    timestamp: z.string()
+  })).optional(),
+  currentStep: z.string().default("business_description"),
+  isComplete: z.boolean().default(false)
+});
+
+export const prospectDeliverySchema = z.object({
+  profileId: z.number(),
+  searchPrompt: z.string().min(1, "Search prompt is required"),
+  deliveryDate: z.string(), // ISO string
+  status: z.enum(["scheduled", "delivered", "failed"]).default("scheduled"),
+  prospectCount: z.number().default(0)
+});
+
+export const insertStrategicProfileSchema = strategicProfileSchema.extend({
+  userId: z.number()
+});
+
+export const insertOnboardingChatSchema = onboardingChatSchema.extend({
+  userId: z.number()
+});
+
+export const insertProspectDeliverySchema = prospectDeliverySchema.extend({
+  userId: z.number()
+});
+
 export type EmailThread = typeof emailThreads.$inferSelect;
 export type InsertEmailThread = z.infer<typeof insertEmailThreadSchema>;
 export type EmailMessage = typeof emailMessages.$inferSelect;
 export type InsertEmailMessage = z.infer<typeof insertEmailMessageSchema>;
 export type WebhookLog = typeof webhookLogs.$inferSelect;
+export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
+
+// Strategic onboarding types
+export type StrategicProfile = typeof strategicProfiles.$inferSelect;
+export type InsertStrategicProfile = z.infer<typeof insertStrategicProfileSchema>;
+export type OnboardingChat = typeof onboardingChats.$inferSelect;
+export type InsertOnboardingChat = z.infer<typeof insertOnboardingChatSchema>;
+export type ProspectDelivery = typeof prospectDeliveries.$inferSelect;
+export type InsertProspectDelivery = z.infer<typeof insertProspectDeliverySchema>;
 export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
 
 // Add User type

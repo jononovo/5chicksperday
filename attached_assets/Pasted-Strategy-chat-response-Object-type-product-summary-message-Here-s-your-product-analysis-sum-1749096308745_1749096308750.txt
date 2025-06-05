@@ -1,0 +1,33 @@
+Strategy chat response: 
+Object {type: "product_summary", message: "Here's your product analysis summary:", phase: "TARGET_COLLECTION", data: {…}}
+sendMessage called
+Message to send: hotels in brooklyn
+Processing strategy chat with input: hotels in brooklyn
+Strategy chat response: 
+Object {type: "conversation", message: "Is there an additional niche or another example that you think could improve your sales chances?…", phase: "TARGET_COLLECTION"}
+sendMessage called
+Message to send: pet-friendly hotels in brooklyn
+Processing strategy chat with input: pet-friendly hotels in brooklyn
+Strategy chat response: 
+Object {type: "progressive_strategy", message: "Perfect! Now I'll create your **strategic sales plan** step by step.", phase: "TARGET_COLLECTION", initialTarget: "hotels in brooklyn", refinedTarget: "pet-friendly hotels in brooklyn", …}
+Progressive strategy called with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "pet-friendly hotels in brooklyn", formDataExists: true, formData: {…}}
+Calling boundary API with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "pet-friendly hotels in brooklyn", productContext: {…}}
+Boundary data received: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+About to display boundary options...
+Boundary options displayed, returning to wait for selection
+Calling sprint API with: 
+Object {boundary: "Pet-friendly hotels in NYC, NJ, CT.", refinedTarget: "pet-friendly hotels in brooklyn", productContext: {…}}
+Sprint step completed: 
+Object {type: "sprint", title: "Sprint Strategy", content: "**ExampleSprintPlanningPrompt**: "Identify pet-friendly hotels in Brooklyn and neighboring NYC…", step: 2, totalSteps: 3}
+Calling queries API with: 
+Object {boundary: "Pet-friendly hotels in NYC, NJ, CT.", sprintPrompt: "**ExampleSprintPlanningPrompt**: "Identify pet-friendly hotels in Brooklyn and neighboring NYC…", productContext: {…}}
+Queries step completed: 
+Object {type: "queries", title: "Daily Search Queries", content: Array(8), step: 3, totalSteps: 3, …}
+Strategy generation completed successfully
+Displaying sales approach prompt...
+setTimeout executing, calling displaySalesApproachPrompt with: 
+Object {initialTarget: "hotels in brooklyn", refinedTarget: "pet-friendly hotels in brooklyn"}
+displaySalesApproachPrompt call completed
