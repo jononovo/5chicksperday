@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { SemiProtectedRoute } from "@/lib/semi-protected-route";
+import { ProgressiveSemiProtectedRoute } from "@/lib/progressive-semi-protected-route";
 import { Layout, AppLayout } from "@/components/layout";
 import { SearchStrategyProvider } from "@/lib/search-strategy-context";
 import { RegistrationModalProvider } from "@/hooks/use-registration-modal";
@@ -167,14 +168,14 @@ function Router() {
                 <Route path="/auth" component={Auth} />
                 
                 {/* Semi-protected routes - allow initial access but prompt for login for certain actions */}
-                <SemiProtectedRoute path="/app" component={() => 
+                <ProgressiveSemiProtectedRoute path="/app" component={({ user, isLoading, error }) => 
                   <Suspense fallback={<LoadingScreen message="Loading search interface..." />}>
-                    <Home />
+                    <Home user={user} isAuthLoading={isLoading} authError={error} />
                   </Suspense>
                 } />
-                <SemiProtectedRoute path="/companies/:id" component={() => 
+                <ProgressiveSemiProtectedRoute path="/companies/:id" component={({ user, isLoading, error }) => 
                   <Suspense fallback={<LoadingScreen message="Loading company details..." />}>
-                    <CompanyDetails />
+                    <CompanyDetails user={user} isAuthLoading={isLoading} authError={error} />
                   </Suspense>
                 } />
                 
