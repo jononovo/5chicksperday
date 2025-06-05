@@ -42,7 +42,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Company, Contact } from "@shared/schema";
 
-export default function CompanyDetails() {
+interface CompanyDetailsProps {
+  user?: any;
+  isAuthLoading?: boolean;
+  authError?: Error | null;
+}
+
+export default function CompanyDetails({ user, isAuthLoading = false, authError }: CompanyDetailsProps = {}) {
   const [, params] = useRoute("/companies/:id");
   const [, navigate] = useLocation();
   const { toast } = useToast();

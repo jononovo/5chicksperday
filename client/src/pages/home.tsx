@@ -77,7 +77,13 @@ interface SavedSearchState {
   currentResults: CompanyWithContacts[] | null;
 }
 
-export default function Home() {
+interface HomeProps {
+  user?: any;
+  isAuthLoading?: boolean;
+  authError?: Error | null;
+}
+
+export default function Home({ user, isAuthLoading = false, authError }: HomeProps = {}) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentQuery, setCurrentQuery] = useState<string | null>(null);
   const [currentResults, setCurrentResults] = useState<CompanyWithContacts[] | null>(null);
@@ -105,7 +111,6 @@ export default function Home() {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const registrationModal = useRegistrationModal();
-  const auth = useAuth();
 
   // Load state from localStorage on component mount
   useEffect(() => {
@@ -1338,7 +1343,7 @@ export default function Home() {
                           size="sm" 
                           className="flex items-center gap-1 h-8 opacity-45 hover:opacity-100 hover:bg-white transition-all"
                           onClick={() => {
-                            if (!auth.user) {
+                            if (!user) {
                               registrationModal.openModal();
                               return;
                             }
