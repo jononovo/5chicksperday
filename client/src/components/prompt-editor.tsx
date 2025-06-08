@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, HelpCircle } from "lucide-react";
 
+
 import { useConfetti } from "@/hooks/use-confetti";
 import { useSearchStrategy } from "@/lib/search-strategy-context";
 import SearchSettingsDrawer from "./search-settings-drawer";
@@ -16,7 +17,7 @@ import { useRegistrationModal } from "@/hooks/use-registration-modal";
 import { SearchProgress } from "./search-progress";
 import { MainSearchSummary } from "./main-search-summary";
 import { LandingPageTooltip } from "@/components/ui/landing-page-tooltip";
-import ContactSearchOptimizer, { ContactSearchConfig } from "./contact-search-optimizer";
+import ContactSearchChips, { ContactSearchConfig } from "./contact-search-chips";
 import {
   Tooltip,
   TooltipContent,
@@ -36,6 +37,7 @@ interface PromptEditorProps {
   lastExecutedQuery?: string | null; // Last executed search query
   onInputChange?: (newValue: string) => void; // Callback for input changes
   onSearchSuccess?: () => void; // Callback when search completes successfully
+  hasSearchResults?: boolean; // Flag to indicate if search results exist
 }
 
 export default function PromptEditor({ 
@@ -49,7 +51,8 @@ export default function PromptEditor({
   onDismissLandingHint,
   lastExecutedQuery = null,
   onInputChange,
-  onSearchSuccess
+  onSearchSuccess,
+  hasSearchResults = false
 }: PromptEditorProps) {
   const [query, setQuery] = useState(initialPrompt);
   const { toast } = useToast();
@@ -87,7 +90,9 @@ export default function PromptEditor({
     enableDepartmentHeads: true,
     enableMiddleManagement: true,
     enableCustomSearch: false,
-    customSearchTarget: ""
+    customSearchTarget: "",
+    enableCustomSearch2: false,
+    customSearchTarget2: ""
   });
 
   // Handle contact search config changes
@@ -139,7 +144,6 @@ export default function PromptEditor({
     window.addEventListener('dismissTooltip', handleTooltipDismiss);
     return () => window.removeEventListener('dismissTooltip', handleTooltipDismiss);
   }, [onDismissLandingHint]);
-
 
 
   // Use our search strategy context
@@ -223,7 +227,11 @@ export default function PromptEditor({
       // Pass companies immediately to the parent component
       console.log("Processing company results...");
       console.log(`Found ${data.companies.length} companies matching your search`);
-      onCompaniesReceived(data.query, data.companies);
+      
+      // Reset input changed state since we have initial results
+      setInputHasChanged(false);
+      
+      onCompaniesReceived(query, data.companies);
       
       toast({
         title: "Companies Found",
@@ -308,8 +316,11 @@ export default function PromptEditor({
       
       console.log("Processing and organizing results...");
       
+      // Reset input changed state since search is complete
+      setInputHasChanged(false);
+      
       // Send full results with contacts to parent component
-      onSearchResults(data.query, data.companies);
+      onSearchResults(query, data.companies);
       
 
       
@@ -367,8 +378,7 @@ export default function PromptEditor({
       onDismissLandingHint();
     }
     
-    // Reset input changed state
-    setInputHasChanged(false);
+    // Don't reset inputHasChanged here - wait until search completes
     
     // Reset and initialize progress
     setSearchProgress({ phase: "Starting-up Search Requests", completed: 0, total: 5 });
@@ -526,6 +536,7 @@ export default function PromptEditor({
             
             {/* Settings drawer trigger with custom search props */}
             <SearchSettingsDrawer 
+              
               targetUrl={targetUrl}
               setTargetUrl={setTargetUrl}
               resultsUrl={resultsUrl}
@@ -537,11 +548,13 @@ export default function PromptEditor({
           </div>
         </div>
         
-        {/* Contact Search Optimizer - positioned below search input */}
-        <ContactSearchOptimizer
+        {/* Contact Search Chips - positioned below search input */}
+        <ContactSearchChips
           onConfigChange={handleContactSearchConfigChange}
           disabled={isAnalyzing || quickSearchMutation.isPending || fullContactSearchMutation.isPending}
           isSearching={quickSearchMutation.isPending || fullContactSearchMutation.isPending}
+          hasSearchResults={hasSearchResults}
+          inputHasChanged={inputHasChanged}
         />
         
         {/* Progress Bar - moved below search input/button */}

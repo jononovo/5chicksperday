@@ -1259,7 +1259,8 @@ export default function Home() {
                 setTimeout(() => {
                   setHighlightEmailButton(false);
                 }, 25000);
-              }}
+                }}
+                hasSearchResults={currentResults ? currentResults.length > 0 : false}
             />
             </Suspense>
           </div>
