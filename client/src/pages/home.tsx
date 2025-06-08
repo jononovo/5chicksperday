@@ -1252,7 +1252,10 @@ export default function Home() {
                 isFromLandingPage={isFromLandingPage}
                 onDismissLandingHint={() => setIsFromLandingPage(false)}
                 lastExecutedQuery={lastExecutedQuery}
-                onInputChange={(newValue) => setInputHasChanged(newValue !== lastExecutedQuery)}
+                onInputChange={(newValue) => {
+                  setCurrentQuery(newValue);
+                  setInputHasChanged(newValue !== lastExecutedQuery);
+                }}
                 onSearchSuccess={() => {
                   // Highlight only the email search button for 25 seconds
                 setHighlightEmailButton(true);

@@ -114,9 +114,9 @@ export default function PromptEditor({
   // State to track if we should apply the gradient text effect
   const [showGradientText, setShowGradientText] = useState(false);
   
-  // Update the query when initialPrompt changes
+  // Set initial query only once when component mounts or when coming from landing page
   useEffect(() => {
-    if (initialPrompt) {
+    if (initialPrompt && query === "") {
       setQuery(initialPrompt);
       
       // If we're coming from the landing page, apply the gradient text effect temporarily
@@ -485,7 +485,12 @@ export default function PromptEditor({
         <div className="flex flex-row gap-2 pl-0">
           <Input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              if (onInputChange) {
+                onInputChange(e.target.value);
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !(isAnalyzing || quickSearchMutation.isPending || fullContactSearchMutation.isPending)) {
                 e.preventDefault();
