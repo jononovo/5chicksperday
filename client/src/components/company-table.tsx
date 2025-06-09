@@ -201,16 +201,22 @@ export default function CompanyTable({
     }
   }, [companies]); // Trigger when companies data changes
   
-  // Get top contacts for a company (up to 3)
+  // Get top contacts for a company (up to 3) - prioritizing those with emails
   const getTopContacts = (company: Company & { contacts?: ContactWithCompanyInfo[] }) => {
     if (!company.contacts || company.contacts.length === 0) {
       return [];
     }
     
-    // Sort by probability descending and take the top 3
-    return [...company.contacts]
-      .sort((a, b) => (b.probability || 0) - (a.probability || 0))
-      .slice(0, 3);
+    // Separate contacts by email availability
+    const withEmails = company.contacts.filter(c => c.email && c.email.length > 5);
+    const withoutEmails = company.contacts.filter(c => !c.email || c.email.length <= 5);
+    
+    // Sort each group by probability (maintain quality scoring)
+    const sortedWithEmails = withEmails.sort((a, b) => (b.probability || 0) - (a.probability || 0));
+    const sortedWithoutEmails = withoutEmails.sort((a, b) => (b.probability || 0) - (a.probability || 0));
+    
+    // Emails first, then others, limit to 3
+    return [...sortedWithEmails, ...sortedWithoutEmails].slice(0, 3);
   };
 
   return (
