@@ -160,7 +160,7 @@ export default function Home() {
   });
   
   // Track current search session to prevent state overwrites
-  const currentSearchSessionRef = useRef<string | null>(null);
+  const currentSearchSessionRef = useRef<string | undefined>(undefined);
   
   // Generate unique search session ID
   const generateSearchSessionId = () => {
@@ -189,7 +189,7 @@ export default function Home() {
       return;
     }
     
-    // Priority 2: Only load saved state if no new search is pending
+    // Priority 2: Load saved state if it exists
     const savedState = loadSearchState();
     if (savedState) {
       console.log('Loading saved search state:', {
@@ -201,52 +201,52 @@ export default function Home() {
         lastActiveTime: savedState.lastActiveTime
       });
       
-      // Smart recovery: Check if search was in progress and enough time has passed
-      const now = Date.now();
-      const lastActive = savedState.lastActiveTime || 0;
-      const timeSinceLastActive = now - lastActive;
-      const fiveMinutesAgo = 5 * 60 * 1000; // 5 minutes in milliseconds
-      
-      // Only restore state if it's recent and valid
-      if (timeSinceLastActive < fiveMinutesAgo) {
+      // Always restore completed search results regardless of age
+      if (savedState.currentResults && savedState.currentResults.length > 0) {
+        console.log('Restoring completed search results');
         setCurrentQuery(savedState.currentQuery);
         setCurrentResults(savedState.currentResults);
         
-        if (savedState.isAnalyzing) {
-          // Search was in progress recently - likely completed
-          console.log('Detected interrupted company search - checking for completion...');
-          setIsAnalyzing(false); // Don't show analyzing state
-          
-          // If we have results but search was in progress, search likely completed
-          if (savedState.currentResults && savedState.currentResults.length > 0) {
+        // Only handle recovery notifications for recent sessions
+        const now = Date.now();
+        const lastActive = savedState.lastActiveTime || 0;
+        const timeSinceLastActive = now - lastActive;
+        const fiveMinutesAgo = 5 * 60 * 1000; // 5 minutes in milliseconds
+        
+        if (timeSinceLastActive < fiveMinutesAgo) {
+          if (savedState.isAnalyzing) {
+            // Search was in progress recently - likely completed
+            console.log('Detected interrupted company search - checking for completion...');
+            setIsAnalyzing(false); // Don't show analyzing state
+            
             console.log('Search appears to have completed while away');
             toast({
               title: "Search Completed",
               description: `Found ${savedState.currentResults.length} companies while you were away`,
             });
           }
-        }
-        
-        if (savedState.isConsolidatedSearching) {
-          // Email search was in progress recently
-          console.log('Detected interrupted email search - checking for completion...');
           
-          // Check if companies now have emails (search completed)
-          const companiesWithEmails = savedState.currentResults?.filter(company => 
-            company.contacts?.some(contact => contact.email && contact.email.length > 5)
-          ).length || 0;
-          
-          if (companiesWithEmails > 0) {
-            console.log('Email search appears to have completed while away');
-            toast({
-              title: "Email Search Completed", 
-              description: `Found emails for ${companiesWithEmails} companies while you were away`,
-            });
+          if (savedState.isConsolidatedSearching) {
+            // Email search was in progress recently
+            console.log('Detected interrupted email search - checking for completion...');
+            
+            // Check if companies now have emails (search completed)
+            const companiesWithEmails = savedState.currentResults?.filter(company => 
+              company.contacts?.some(contact => contact.email && contact.email.length > 5)
+            ).length || 0;
+            
+            if (companiesWithEmails > 0) {
+              console.log('Email search appears to have completed while away');
+              toast({
+                title: "Email Search Completed", 
+                description: `Found emails for ${companiesWithEmails} companies while you were away`,
+              });
+            }
           }
         }
       } else {
-        // Clear stale data that's more than 5 minutes old
-        console.log('Clearing stale search session data');
+        // Only clear if there are no results to preserve
+        console.log('No results found in saved state, clearing');
         localStorage.removeItem('searchState');
         sessionStorage.removeItem('searchState');
       }
