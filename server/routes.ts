@@ -2461,9 +2461,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
       console.log('Hunter.io search result:', result);
 
-      // Update the contact with the results, but preserve existing email if no new email found
+      // Create update data object with explicit email handling
       const updateData: any = {
-        ...contact,
         completedSearches: [...(contact.completedSearches || []), 'hunter_search'],
         lastValidated: new Date()
       };
@@ -2477,8 +2476,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
           contactId: contact.id
         });
         
-        // If we already have a primary email but it's different from the new one
-        if (contact.email && contact.email !== result.email) {
+        // Check if contact has a meaningful existing email (not null, undefined, or empty string)
+        const hasExistingEmail = contact.email && contact.email.trim().length > 0;
+        
+        if (hasExistingEmail && contact.email !== result.email) {
           // Initialize empty array if alternativeEmails is null or undefined
           const existingAlternatives = Array.isArray(contact.alternativeEmails) ? contact.alternativeEmails : [];
           console.log('Current alternative emails:', existingAlternatives);
@@ -2489,13 +2490,14 @@ Then, on a new line, write the body of the email. Keep both subject and content 
             console.log('Updated alternative emails:', updateData.alternativeEmails);
           }
         } else {
-          // If no primary email exists, set this as the primary
+          // If no primary email exists or it's the same, set this as the primary
           updateData.email = result.email;
           console.log('Setting as primary email:', result.email);
         }
         updateData.nameConfidenceScore = result.confidence;
       }
       
+      console.log('About to update contact with data:', updateData);
       const updatedContact = await storage.updateContact(contactId, updateData);
 
       console.log('Contact updated with Hunter.io result:', {
@@ -2503,6 +2505,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         email: updatedContact?.email,
         confidence: updatedContact?.nameConfidenceScore
       });
+      
+      console.log('Full updated contact object:', JSON.stringify(updatedContact, null, 2));
 
       res.json(updatedContact);
     } catch (error) {
