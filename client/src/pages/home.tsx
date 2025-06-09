@@ -75,6 +75,16 @@ interface CompanyWithContacts extends Company {
 interface SavedSearchState {
   currentQuery: string | null;
   currentResults: CompanyWithContacts[] | null;
+  // Search process state
+  isAnalyzing?: boolean;
+  isConsolidatedSearching?: boolean;
+  searchProgress?: {
+    phase: string;
+    completed: number;
+    total: number;
+  };
+  sessionStartTime?: number;
+  lastActiveTime?: number;
 }
 
 export default function Home() {
@@ -139,7 +149,16 @@ export default function Home() {
     return null;
   };
 
-  // Load state from localStorage on component mount
+  // Consolidated Email Search functionality
+  const [isConsolidatedSearching, setIsConsolidatedSearching] = useState(false);
+  const isAutomatedSearchRef = useRef(false);
+  const [searchProgress, setSearchProgress] = useState({
+    phase: "",
+    completed: 0,
+    total: 0
+  });
+
+  // Load state from localStorage on component mount with search recovery
   useEffect(() => {
     // Check for pending search query from landing page
     const pendingQuery = localStorage.getItem('pendingSearchQuery');
@@ -156,10 +175,58 @@ export default function Home() {
         console.log('Loading saved search state:', {
           query: savedState.currentQuery,
           resultsCount: savedState.currentResults?.length,
-          companies: savedState.currentResults?.map(c => ({ id: c.id, name: c.name }))
+          companies: savedState.currentResults?.map(c => ({ id: c.id, name: c.name })),
+          wasAnalyzing: savedState.isAnalyzing,
+          wasConsolidatedSearching: savedState.isConsolidatedSearching,
+          lastActiveTime: savedState.lastActiveTime
         });
+        
         setCurrentQuery(savedState.currentQuery);
         setCurrentResults(savedState.currentResults);
+        
+        // Smart recovery: Check if search was in progress and enough time has passed
+        const now = Date.now();
+        const lastActive = savedState.lastActiveTime || 0;
+        const timeSinceLastActive = now - lastActive;
+        const fiveMinutesAgo = 5 * 60 * 1000; // 5 minutes in milliseconds
+        
+        if (savedState.isAnalyzing && timeSinceLastActive < fiveMinutesAgo) {
+          // Search was in progress recently - likely still running or completed
+          console.log('Detected interrupted company search - checking for completion...');
+          setIsAnalyzing(false); // Don't show analyzing state
+          
+          // If we have results but search was in progress, search likely completed
+          if (savedState.currentResults && savedState.currentResults.length > 0) {
+            console.log('Search appears to have completed while away');
+            toast({
+              title: "Search Completed",
+              description: `Found ${savedState.currentResults.length} companies while you were away`,
+            });
+          }
+        }
+        
+        if (savedState.isConsolidatedSearching && timeSinceLastActive < fiveMinutesAgo) {
+          // Email search was in progress recently
+          console.log('Detected interrupted email search - checking for completion...');
+          
+          // Check if companies now have emails (search completed)
+          const companiesWithEmails = savedState.currentResults?.filter(company => 
+            company.contacts?.some(contact => contact.email && contact.email.length > 5)
+          ).length || 0;
+          
+          if (companiesWithEmails > 0) {
+            console.log('Email search appears to have completed while away');
+            toast({
+              title: "Email Search Completed", 
+              description: `Found emails for ${companiesWithEmails} companies while you were away`,
+            });
+          }
+        }
+        
+        // Clear old session data if more than 5 minutes old
+        if (timeSinceLastActive > fiveMinutesAgo) {
+          console.log('Clearing stale search session data');
+        }
       }
     }
     
@@ -172,7 +239,7 @@ export default function Home() {
     };
   }, []);
 
-  // Save state to localStorage whenever it changes (but prevent corruption during unmount)
+  // Save state to localStorage whenever it changes (including search process state)
   useEffect(() => {
     // Only save if component is mounted and initialized (prevents corruption during unmount)
     if (!isMountedRef.current || !isInitializedRef.current) {
@@ -180,26 +247,35 @@ export default function Home() {
       return;
     }
     
-    // Only save if we have meaningful data (prevents saving null states)
-    if (currentQuery || (currentResults && currentResults.length > 0)) {
-      const stateToSave: SavedSearchState = {
-        currentQuery,
-        currentResults
-      };
-      console.log('Saving search state:', {
-        query: currentQuery,
-        resultsCount: currentResults?.length,
-        companies: currentResults?.map(c => ({ id: c.id, name: c.name }))
-      });
-      
-      // Save to both localStorage and sessionStorage for redundancy
-      const stateString = JSON.stringify(stateToSave);
-      localStorage.setItem('searchState', stateString);
-      sessionStorage.setItem('searchState', stateString);
-    } else {
-      console.log('Skipping localStorage save - no meaningful data to save');
-    }
-  }, [currentQuery, currentResults]);
+    // Save state including search process information
+    const stateToSave: SavedSearchState = {
+      currentQuery,
+      currentResults,
+      isAnalyzing,
+      isConsolidatedSearching,
+      searchProgress: {
+        phase: searchProgress.phase,
+        completed: searchProgress.completed,
+        total: searchProgress.total
+      },
+      sessionStartTime: isAnalyzing || isConsolidatedSearching ? Date.now() : undefined,
+      lastActiveTime: Date.now()
+    };
+    
+    console.log('Saving search state:', {
+      query: currentQuery,
+      resultsCount: currentResults?.length,
+      companies: currentResults?.map(c => ({ id: c.id, name: c.name })),
+      isAnalyzing,
+      isConsolidatedSearching,
+      searchPhase: searchProgress.phase
+    });
+    
+    // Save to both localStorage and sessionStorage for redundancy
+    const stateString = JSON.stringify(stateToSave);
+    localStorage.setItem('searchState', stateString);
+    sessionStorage.setItem('searchState', stateString);
+  }, [currentQuery, currentResults, isAnalyzing, isConsolidatedSearching, searchProgress]);
 
 
 
@@ -893,14 +969,6 @@ export default function Home() {
     return pendingApolloIds.has(contactId);
   };
   
-  // Consolidated Email Search functionality
-  const [isConsolidatedSearching, setIsConsolidatedSearching] = useState(false);
-  const isAutomatedSearchRef = useRef(false);
-  const [searchProgress, setSearchProgress] = useState({
-    phase: "",
-    completed: 0,
-    total: 0
-  });
   const [summaryVisible, setSummaryVisible] = useState(false);
   const [contactReportVisible, setContactReportVisible] = useState(false);
   
