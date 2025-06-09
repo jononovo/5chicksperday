@@ -496,7 +496,7 @@ export default function Home() {
         if (!prev) return null;
         
         // Make sure we're only updating this specific contact without disturbing other state
-        return prev.map(company => {
+        const updatedResults = prev.map(company => {
           // Only update the company that contains this contact
           if (!company.contacts?.some(c => c.id === data.id)) {
             return company;
@@ -509,6 +509,19 @@ export default function Home() {
             )
           };
         });
+        
+        // Save email update immediately to localStorage for navigation persistence
+        const stateToSave = {
+          currentQuery,
+          currentResults: updatedResults,
+          isAnalyzing: false,
+          isConsolidatedSearching,
+          lastActiveTime: Date.now()
+        };
+        console.log('Saving email update immediately:', data.name, data.email ? 'found email' : 'no email');
+        localStorage.setItem('searchState', JSON.stringify(stateToSave));
+        
+        return updatedResults;
       });
       
       // Remove this contact ID from the set of pending contacts
@@ -732,7 +745,7 @@ export default function Home() {
         if (!prev) return null;
         
         // Only update the specific contact without affecting others
-        return prev.map(company => {
+        const updatedResults = prev.map(company => {
           if (!company.contacts?.some(c => c.id === data.id)) {
             return company;
           }
@@ -744,6 +757,19 @@ export default function Home() {
             )
           };
         });
+        
+        // Save Hunter email update immediately to localStorage for navigation persistence
+        const stateToSave = {
+          currentQuery,
+          currentResults: updatedResults,
+          isAnalyzing: false,
+          isConsolidatedSearching,
+          lastActiveTime: Date.now()
+        };
+        console.log('Saving Hunter email update immediately:', data.name, data.email ? 'found email' : 'no email');
+        localStorage.setItem('searchState', JSON.stringify(stateToSave));
+        
+        return updatedResults;
       });
       
       // Remove this contact ID from the set of pending searches
@@ -1185,7 +1211,7 @@ export default function Home() {
         if (!prev) return null;
         
         // Only update the specific contact without affecting others
-        return prev.map(company => {
+        const updatedResults = prev.map(company => {
           if (!company.contacts?.some(c => c.id === data.id)) {
             return company;
           }
@@ -1197,6 +1223,19 @@ export default function Home() {
             )
           };
         });
+        
+        // Save Apollo email update immediately to localStorage for navigation persistence
+        const stateToSave = {
+          currentQuery,
+          currentResults: updatedResults,
+          isAnalyzing: false,
+          isConsolidatedSearching,
+          lastActiveTime: Date.now()
+        };
+        console.log('Saving Apollo email update immediately:', data.name, data.email ? 'found email' : 'no email');
+        localStorage.setItem('searchState', JSON.stringify(stateToSave));
+        
+        return updatedResults;
       });
       
       // Remove this contact ID from the set of pending searches
