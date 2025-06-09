@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -122,6 +122,47 @@ export default function Home() {
   const isMountedRef = useRef(true);
   const isInitializedRef = useRef(false);
 
+  // Function to refresh contact data from database
+  const refreshContactDataFromDatabase = useCallback(async (companies: CompanyWithContacts[]) => {
+    try {
+      console.log('Fetching fresh contact data from database...');
+      const updatedCompanies = await Promise.all(
+        companies.map(async (company) => {
+          try {
+            const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
+            const freshContacts = await response.json();
+            
+            // Merge fresh contact data from database with existing company data
+            return {
+              ...company,
+              contacts: freshContacts || company.contacts
+            };
+          } catch (error) {
+            console.error(`Failed to refresh contacts for company ${company.id}:`, error);
+            return company; // Keep original data if refresh fails
+          }
+        })
+      );
+      
+      console.log('Fresh contact data fetched, updating state...');
+      setCurrentResults(updatedCompanies);
+      
+      // Update localStorage with fresh data
+      const stateToSave = {
+        currentQuery,
+        currentResults: updatedCompanies,
+        isAnalyzing: false,
+        isConsolidatedSearching: false,
+        lastActiveTime: Date.now()
+      };
+      localStorage.setItem('searchState', JSON.stringify(stateToSave));
+      console.log('Updated localStorage with fresh contact data');
+      
+    } catch (error) {
+      console.error('Failed to refresh contact data from database:', error);
+    }
+  }, [currentQuery]);
+
   // Helper function to load valid search state with fallback
   const loadSearchState = (): SavedSearchState | null => {
     try {
@@ -183,6 +224,21 @@ export default function Home() {
       console.log('Restoring search results:', savedState.currentResults.length, 'companies');
       setCurrentQuery(savedState.currentQuery);
       setCurrentResults(savedState.currentResults);
+      
+      // Check if we need to refresh contact data from database
+      // This happens when emails were found while user was away
+      const needsRefresh = savedState.currentResults.some(company => 
+        company.contacts?.some(contact => 
+          contact.completedSearches?.some(search => 
+            ['hunter_search', 'apollo_search', 'contact_enrichment', 'aeroleads_search'].includes(search)
+          )
+        )
+      );
+      
+      if (needsRefresh) {
+        console.log('Refreshing contact data from database to get updated emails');
+        refreshContactDataFromDatabase(savedState.currentResults);
+      }
     }
     
     isInitializedRef.current = true;
