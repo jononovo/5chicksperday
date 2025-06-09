@@ -159,146 +159,53 @@ export default function Home() {
     total: 0
   });
   
-  // Track current search session to prevent state overwrites
-  const currentSearchSessionRef = useRef<string | undefined>(undefined);
-  
-  // Generate unique search session ID
-  const generateSearchSessionId = () => {
-    return `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  };
 
-  // Load state from localStorage on component mount with proper priority logic
+
+  // Simple state loading on component mount
   useEffect(() => {
-    // Priority 1: Check for pending search query from landing page (highest priority)
+    // Check for new search from landing page first
     const pendingQuery = localStorage.getItem('pendingSearchQuery');
     if (pendingQuery) {
-      console.log('Found pending search query:', pendingQuery);
-      console.log('Clearing any saved search state to prioritize new search');
-      
-      // Clear saved state since we have a new search to execute
+      console.log('Starting new search from landing page:', pendingQuery);
+      // Clear any old results for new search
       localStorage.removeItem('searchState');
-      sessionStorage.removeItem('searchState');
-      
       setCurrentQuery(pendingQuery);
-      setCurrentResults(null); // Clear any previous results
+      setCurrentResults(null);
       setIsFromLandingPage(true);
       localStorage.removeItem('pendingSearchQuery');
-      
-      // Mark component as initialized and exit early
       isInitializedRef.current = true;
       return;
     }
     
-    // Priority 2: Load saved state if it exists
+    // Load existing results if available
     const savedState = loadSearchState();
-    if (savedState) {
-      console.log('Loading saved search state:', {
-        query: savedState.currentQuery,
-        resultsCount: savedState.currentResults?.length,
-        companies: savedState.currentResults?.map(c => ({ id: c.id, name: c.name })),
-        wasAnalyzing: savedState.isAnalyzing,
-        wasConsolidatedSearching: savedState.isConsolidatedSearching,
-        lastActiveTime: savedState.lastActiveTime
-      });
-      
-      // Always restore completed search results regardless of age
-      if (savedState.currentResults && savedState.currentResults.length > 0) {
-        console.log('Restoring completed search results');
-        setCurrentQuery(savedState.currentQuery);
-        setCurrentResults(savedState.currentResults);
-        
-        // Only handle recovery notifications for recent sessions
-        const now = Date.now();
-        const lastActive = savedState.lastActiveTime || 0;
-        const timeSinceLastActive = now - lastActive;
-        const fiveMinutesAgo = 5 * 60 * 1000; // 5 minutes in milliseconds
-        
-        if (timeSinceLastActive < fiveMinutesAgo) {
-          if (savedState.isAnalyzing) {
-            // Search was in progress recently - likely completed
-            console.log('Detected interrupted company search - checking for completion...');
-            setIsAnalyzing(false); // Don't show analyzing state
-            
-            console.log('Search appears to have completed while away');
-            toast({
-              title: "Search Completed",
-              description: `Found ${savedState.currentResults.length} companies while you were away`,
-            });
-          }
-          
-          if (savedState.isConsolidatedSearching) {
-            // Email search was in progress recently
-            console.log('Detected interrupted email search - checking for completion...');
-            
-            // Check if companies now have emails (search completed)
-            const companiesWithEmails = savedState.currentResults?.filter(company => 
-              company.contacts?.some(contact => contact.email && contact.email.length > 5)
-            ).length || 0;
-            
-            if (companiesWithEmails > 0) {
-              console.log('Email search appears to have completed while away');
-              toast({
-                title: "Email Search Completed", 
-                description: `Found emails for ${companiesWithEmails} companies while you were away`,
-              });
-            }
-          }
-        }
-      } else {
-        // Only clear if there are no results to preserve
-        console.log('No results found in saved state, clearing');
-        localStorage.removeItem('searchState');
-        sessionStorage.removeItem('searchState');
-      }
+    if (savedState && savedState.currentResults && savedState.currentResults.length > 0) {
+      console.log('Restoring search results:', savedState.currentResults.length, 'companies');
+      setCurrentQuery(savedState.currentQuery);
+      setCurrentResults(savedState.currentResults);
     }
     
-    // Mark component as initialized
     isInitializedRef.current = true;
-    
-    // Cleanup function to prevent localStorage corruption during unmount
-    return () => {
-      isMountedRef.current = false;
-    };
   }, []);
 
-  // Save state to localStorage whenever it changes (including search process state)
+  // Simple state saving whenever results change
   useEffect(() => {
-    // Only save if component is mounted and initialized (prevents corruption during unmount)
-    if (!isMountedRef.current || !isInitializedRef.current) {
-      console.log('Skipping localStorage save - component not ready or unmounting');
-      return;
+    if (!isInitializedRef.current) return;
+    
+    // Save immediately when we have results or query
+    if (currentQuery || (currentResults && currentResults.length > 0)) {
+      const stateToSave = {
+        currentQuery,
+        currentResults,
+        isAnalyzing,
+        isConsolidatedSearching,
+        lastActiveTime: Date.now()
+      };
+      
+      console.log('Saving search state:', currentQuery, currentResults?.length || 0, 'companies');
+      localStorage.setItem('searchState', JSON.stringify(stateToSave));
     }
-    
-    // Save state including search process information
-    const stateToSave: SavedSearchState = {
-      currentQuery,
-      currentResults,
-      isAnalyzing,
-      isConsolidatedSearching,
-      searchProgress: {
-        phase: searchProgress.phase,
-        completed: searchProgress.completed,
-        total: searchProgress.total
-      },
-      sessionStartTime: isAnalyzing || isConsolidatedSearching ? Date.now() : undefined,
-      lastActiveTime: Date.now(),
-      searchSessionId: currentSearchSessionRef.current
-    };
-    
-    console.log('Saving search state:', {
-      query: currentQuery,
-      resultsCount: currentResults?.length,
-      companies: currentResults?.map(c => ({ id: c.id, name: c.name })),
-      isAnalyzing,
-      isConsolidatedSearching,
-      searchPhase: searchProgress.phase
-    });
-    
-    // Save to both localStorage and sessionStorage for redundancy
-    const stateString = JSON.stringify(stateToSave);
-    localStorage.setItem('searchState', stateString);
-    sessionStorage.setItem('searchState', stateString);
-  }, [currentQuery, currentResults, isAnalyzing, isConsolidatedSearching, searchProgress]);
+  }, [currentQuery, currentResults, isAnalyzing, isConsolidatedSearching]);
 
 
 
@@ -406,18 +313,12 @@ export default function Home() {
     setIsAnalyzing(false);
   };
 
-  // New handler for initial companies data
+  // Handler for initial companies data
   const handleCompaniesReceived = (query: string, companies: Company[]) => {
     console.log('Companies received:', companies.length);
-    console.log('Starting new search session');
     
-    // Generate new search session ID
-    const newSessionId = generateSearchSessionId();
-    currentSearchSessionRef.current = newSessionId;
-    
-    // Clear any saved state since this is a new search
+    // Clear any old search state for new search
     localStorage.removeItem('searchState');
-    sessionStorage.removeItem('searchState');
     
     // Update the UI with just the companies data
     setCurrentQuery(query);
@@ -426,8 +327,6 @@ export default function Home() {
     setIsSaved(false);
     setIsLoadingContacts(true);
     setContactsLoaded(false);
-    
-    console.log('New search session initialized:', newSessionId);
   };
 
   // Modified search results handler for the full data with contacts
