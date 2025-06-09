@@ -85,6 +85,7 @@ interface SavedSearchState {
   };
   sessionStartTime?: number;
   lastActiveTime?: number;
+  searchSessionId?: string; // Track unique search sessions
 }
 
 export default function Home() {
@@ -157,41 +158,62 @@ export default function Home() {
     completed: 0,
     total: 0
   });
+  
+  // Track current search session to prevent state overwrites
+  const currentSearchSessionRef = useRef<string | null>(null);
+  
+  // Generate unique search session ID
+  const generateSearchSessionId = () => {
+    return `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  };
 
-  // Load state from localStorage on component mount with search recovery
+  // Load state from localStorage on component mount with proper priority logic
   useEffect(() => {
-    // Check for pending search query from landing page
+    // Priority 1: Check for pending search query from landing page (highest priority)
     const pendingQuery = localStorage.getItem('pendingSearchQuery');
     if (pendingQuery) {
       console.log('Found pending search query:', pendingQuery);
+      console.log('Clearing any saved search state to prioritize new search');
+      
+      // Clear saved state since we have a new search to execute
+      localStorage.removeItem('searchState');
+      sessionStorage.removeItem('searchState');
+      
       setCurrentQuery(pendingQuery);
-      setIsFromLandingPage(true); // Set flag when coming from landing page
+      setCurrentResults(null); // Clear any previous results
+      setIsFromLandingPage(true);
       localStorage.removeItem('pendingSearchQuery');
-      // No longer automatically triggering search - user must click the search button
-    } else {
-      // Load saved search state if no pending query
-      const savedState = loadSearchState();
-      if (savedState) {
-        console.log('Loading saved search state:', {
-          query: savedState.currentQuery,
-          resultsCount: savedState.currentResults?.length,
-          companies: savedState.currentResults?.map(c => ({ id: c.id, name: c.name })),
-          wasAnalyzing: savedState.isAnalyzing,
-          wasConsolidatedSearching: savedState.isConsolidatedSearching,
-          lastActiveTime: savedState.lastActiveTime
-        });
-        
+      
+      // Mark component as initialized and exit early
+      isInitializedRef.current = true;
+      return;
+    }
+    
+    // Priority 2: Only load saved state if no new search is pending
+    const savedState = loadSearchState();
+    if (savedState) {
+      console.log('Loading saved search state:', {
+        query: savedState.currentQuery,
+        resultsCount: savedState.currentResults?.length,
+        companies: savedState.currentResults?.map(c => ({ id: c.id, name: c.name })),
+        wasAnalyzing: savedState.isAnalyzing,
+        wasConsolidatedSearching: savedState.isConsolidatedSearching,
+        lastActiveTime: savedState.lastActiveTime
+      });
+      
+      // Smart recovery: Check if search was in progress and enough time has passed
+      const now = Date.now();
+      const lastActive = savedState.lastActiveTime || 0;
+      const timeSinceLastActive = now - lastActive;
+      const fiveMinutesAgo = 5 * 60 * 1000; // 5 minutes in milliseconds
+      
+      // Only restore state if it's recent and valid
+      if (timeSinceLastActive < fiveMinutesAgo) {
         setCurrentQuery(savedState.currentQuery);
         setCurrentResults(savedState.currentResults);
         
-        // Smart recovery: Check if search was in progress and enough time has passed
-        const now = Date.now();
-        const lastActive = savedState.lastActiveTime || 0;
-        const timeSinceLastActive = now - lastActive;
-        const fiveMinutesAgo = 5 * 60 * 1000; // 5 minutes in milliseconds
-        
-        if (savedState.isAnalyzing && timeSinceLastActive < fiveMinutesAgo) {
-          // Search was in progress recently - likely still running or completed
+        if (savedState.isAnalyzing) {
+          // Search was in progress recently - likely completed
           console.log('Detected interrupted company search - checking for completion...');
           setIsAnalyzing(false); // Don't show analyzing state
           
@@ -205,7 +227,7 @@ export default function Home() {
           }
         }
         
-        if (savedState.isConsolidatedSearching && timeSinceLastActive < fiveMinutesAgo) {
+        if (savedState.isConsolidatedSearching) {
           // Email search was in progress recently
           console.log('Detected interrupted email search - checking for completion...');
           
@@ -222,11 +244,11 @@ export default function Home() {
             });
           }
         }
-        
-        // Clear old session data if more than 5 minutes old
-        if (timeSinceLastActive > fiveMinutesAgo) {
-          console.log('Clearing stale search session data');
-        }
+      } else {
+        // Clear stale data that's more than 5 minutes old
+        console.log('Clearing stale search session data');
+        localStorage.removeItem('searchState');
+        sessionStorage.removeItem('searchState');
       }
     }
     
@@ -259,7 +281,8 @@ export default function Home() {
         total: searchProgress.total
       },
       sessionStartTime: isAnalyzing || isConsolidatedSearching ? Date.now() : undefined,
-      lastActiveTime: Date.now()
+      lastActiveTime: Date.now(),
+      searchSessionId: currentSearchSessionRef.current
     };
     
     console.log('Saving search state:', {
@@ -386,6 +409,16 @@ export default function Home() {
   // New handler for initial companies data
   const handleCompaniesReceived = (query: string, companies: Company[]) => {
     console.log('Companies received:', companies.length);
+    console.log('Starting new search session');
+    
+    // Generate new search session ID
+    const newSessionId = generateSearchSessionId();
+    currentSearchSessionRef.current = newSessionId;
+    
+    // Clear any saved state since this is a new search
+    localStorage.removeItem('searchState');
+    sessionStorage.removeItem('searchState');
+    
     // Update the UI with just the companies data
     setCurrentQuery(query);
     // Convert Company[] to CompanyWithContacts[] with empty contacts arrays
@@ -393,6 +426,8 @@ export default function Home() {
     setIsSaved(false);
     setIsLoadingContacts(true);
     setContactsLoaded(false);
+    
+    console.log('New search session initialized:', newSessionId);
   };
 
   // Modified search results handler for the full data with contacts
