@@ -1667,10 +1667,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       const enrichedDetails = await searchContactDetails(contact.name, company.name);
       console.log('Enriched details found:', enrichedDetails);
 
-      // Update contact with enriched information
-      // Create the update data object
+      // Create update data object with explicit email handling
       const updateData: any = {
-        ...contact,
         linkedinUrl: enrichedDetails.linkedinUrl || contact.linkedinUrl,
         twitterHandle: enrichedDetails.twitterHandle || contact.twitterHandle,
         phoneNumber: enrichedDetails.phoneNumber || contact.phoneNumber,
@@ -1688,8 +1686,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
           contactId: contact.id
         });
         
-        // If we already have a primary email but it's different from the new one
-        if (contact.email && contact.email !== enrichedDetails.email) {
+        // Check if contact has a meaningful existing email (not null, undefined, or empty string)
+        const hasExistingEmail = contact.email && contact.email.trim().length > 0;
+        
+        if (hasExistingEmail && contact.email !== enrichedDetails.email) {
           // Initialize empty array if alternativeEmails is null or undefined
           const existingAlternatives = Array.isArray(contact.alternativeEmails) ? contact.alternativeEmails : [];
           console.log('Current alternative emails:', existingAlternatives);
@@ -1700,7 +1700,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
             console.log('Updated alternative emails:', updateData.alternativeEmails);
           }
         } else {
-          // If no primary email exists, set this as the primary
+          // If no primary email exists or it's the same, set this as the primary
           updateData.email = enrichedDetails.email;
           console.log('Setting as primary email:', enrichedDetails.email);
         }
@@ -2572,9 +2572,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
       console.log('Apollo.io search result:', result);
 
-      // Update the contact with the results, but preserve existing email if no new email found
+      // Create update data object with explicit email handling
       const updateData: any = {
-        ...contact,
         nameConfidenceScore: result.confidence || contact.nameConfidenceScore,
         linkedinUrl: result.linkedinUrl || contact.linkedinUrl,
         role: result.title || contact.role,
@@ -2592,8 +2591,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
           contactId: contact.id
         });
         
-        // If we already have a primary email but it's different from the new one
-        if (contact.email && contact.email !== result.email) {
+        // Check if contact has a meaningful existing email (not null, undefined, or empty string)
+        const hasExistingEmail = contact.email && contact.email.trim().length > 0;
+        
+        if (hasExistingEmail && contact.email !== result.email) {
           // Initialize empty array if alternativeEmails is null or undefined
           const existingAlternatives = Array.isArray(contact.alternativeEmails) ? contact.alternativeEmails : [];
           console.log('Current alternative emails:', existingAlternatives);
@@ -2604,7 +2605,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
             console.log('Updated alternative emails:', updateData.alternativeEmails);
           }
         } else {
-          // If no primary email exists, set this as the primary
+          // If no primary email exists or it's the same, set this as the primary
           updateData.email = result.email;
           console.log('Setting as primary email:', result.email);
         }
@@ -2681,9 +2682,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
       console.log('AeroLeads search result:', result);
 
-      // Update the contact with the results, but preserve existing email if no new email found
+      // Create update data object with explicit email handling
       const updateData: any = {
-        ...contact,
         completedSearches: [...(contact.completedSearches || []), 'aeroleads_search'],
         lastValidated: new Date()
       };
@@ -2697,8 +2697,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
           contactId: contact.id
         });
         
-        // If we already have a primary email but it's different from the new one
-        if (contact.email && contact.email !== result.email) {
+        // Check if contact has a meaningful existing email (not null, undefined, or empty string)
+        const hasExistingEmail = contact.email && contact.email.trim().length > 0;
+        
+        if (hasExistingEmail && contact.email !== result.email) {
           // Initialize empty array if alternativeEmails is null or undefined
           const existingAlternatives = Array.isArray(contact.alternativeEmails) ? contact.alternativeEmails : [];
           console.log('Current alternative emails:', existingAlternatives);
@@ -2709,7 +2711,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
             console.log('Updated alternative emails:', updateData.alternativeEmails);
           }
         } else {
-          // If no primary email exists, set this as the primary
+          // If no primary email exists or it's the same, set this as the primary
           updateData.email = result.email;
           console.log('Setting as primary email:', result.email);
         }
