@@ -317,16 +317,25 @@ export default function Home() {
   const handleCompaniesReceived = (query: string, companies: Company[]) => {
     console.log('Companies received:', companies.length);
     
-    // Clear any old search state for new search
-    localStorage.removeItem('searchState');
-    
     // Update the UI with just the companies data
     setCurrentQuery(query);
     // Convert Company[] to CompanyWithContacts[] with empty contacts arrays
-    setCurrentResults(companies.map(company => ({ ...company, contacts: [] })));
+    const companiesWithEmptyContacts = companies.map(company => ({ ...company, contacts: [] }));
+    setCurrentResults(companiesWithEmptyContacts);
     setIsSaved(false);
     setIsLoadingContacts(true);
     setContactsLoaded(false);
+    
+    // Save immediately to localStorage for navigation persistence
+    const stateToSave = {
+      currentQuery: query,
+      currentResults: companiesWithEmptyContacts,
+      isAnalyzing: false,
+      isConsolidatedSearching: false,
+      lastActiveTime: Date.now()
+    };
+    console.log('Saving company results immediately:', query, companiesWithEmptyContacts.length, 'companies');
+    localStorage.setItem('searchState', JSON.stringify(stateToSave));
   };
 
   // Modified search results handler for the full data with contacts
@@ -351,6 +360,17 @@ export default function Home() {
     setContactsLoaded(true);
     setLastExecutedQuery(query); // Store the last executed query
     setInputHasChanged(false); // Reset the input changed flag
+    
+    // Save complete results immediately to localStorage
+    const stateToSave = {
+      currentQuery: query,
+      currentResults: sortedResults,
+      isAnalyzing: false,
+      isConsolidatedSearching: false,
+      lastActiveTime: Date.now()
+    };
+    console.log('Saving complete results immediately:', query, sortedResults.length, 'companies with contacts');
+    localStorage.setItem('searchState', JSON.stringify(stateToSave));
     
     // Show contact discovery report for any search with companies
     const companiesWithContacts = results.filter(company => 
