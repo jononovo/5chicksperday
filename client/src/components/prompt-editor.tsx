@@ -350,13 +350,35 @@ export default function PromptEditor({
         stableOnSearchSuccess.current?.();
         console.log('onSearchResults callback completed');
       } else if (recentCompleteSession.quickResults) {
-        // Only quick search completed, restore company results
-        console.log('Calling onCompaniesReceived with query:', recentCompleteSession.query);
-        console.log('Calling onCompaniesReceived with companies count:', recentCompleteSession.quickResults?.length || 0);
-        console.log('Quick results data:', recentCompleteSession.quickResults);
+        // Check if localStorage already has contact data to preserve
+        const existingState = localStorage.getItem('searchState');
+        let hasExistingContacts = false;
         
-        stableOnCompaniesReceived.current(recentCompleteSession.query, recentCompleteSession.quickResults);
-        console.log('onCompaniesReceived callback completed');
+        if (existingState) {
+          try {
+            const parsed = JSON.parse(existingState);
+            if (parsed.currentResults && parsed.currentResults.some((company: any) => 
+              company.contacts && company.contacts.length > 0)) {
+              hasExistingContacts = true;
+              console.log('Found existing contact data in localStorage, preserving it');
+            }
+          } catch (error) {
+            console.error('Error checking existing localStorage data:', error);
+          }
+        }
+        
+        if (hasExistingContacts) {
+          // Don't overwrite existing contact data - let localStorage restoration handle it
+          console.log('Skipping onCompaniesReceived to preserve existing contact data');
+        } else {
+          // Only call onCompaniesReceived if no existing contact data exists
+          console.log('Calling onCompaniesReceived with query:', recentCompleteSession.query);
+          console.log('Calling onCompaniesReceived with companies count:', recentCompleteSession.quickResults?.length || 0);
+          console.log('Quick results data:', recentCompleteSession.quickResults);
+          
+          stableOnCompaniesReceived.current(recentCompleteSession.query, recentCompleteSession.quickResults);
+          console.log('onCompaniesReceived callback completed');
+        }
       }
       
       // Clean up the restored session to prevent re-restoration
