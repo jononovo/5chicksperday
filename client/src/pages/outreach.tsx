@@ -88,6 +88,13 @@ export default function Outreach() {
     queryKey: ["/api/lists"],
   });
 
+  // Auto-select newest list if none selected
+  useEffect(() => {
+    if (!selectedListId && lists.length > 0) {
+      setSelectedListId(lists[0].listId.toString());
+    }
+  }, [lists, selectedListId]);
+
   const { data: companies = [] } = useQuery<Company[]>({
     queryKey: [`/api/lists/${selectedListId}/companies`],
     enabled: !!selectedListId,
