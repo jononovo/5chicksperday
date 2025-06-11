@@ -1503,11 +1503,8 @@ export default function Home() {
       if (currentResults && currentResults.length > 0) {
         const refreshedResults = await Promise.all(
           currentResults.map(async (company) => {
-            if (!company.contacts || company.contacts.length === 0) {
-              return company;
-            }
-            
-            // Fetch fresh contact data for each company
+            // Always fetch fresh contact data for ALL companies after email search
+            // This ensures we get the newly enriched emails from the database
             try {
               const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
               const freshContacts = await response.json();
@@ -1902,7 +1899,7 @@ export default function Home() {
                   setCurrentQuery(newValue);
                   setInputHasChanged(newValue !== lastExecutedQuery);
                 }}
-                onEmailSearchTrigger={runConsolidatedEmailSearch}
+                onEmailSearchTrigger={() => runConsolidatedEmailSearch(handleAnalysisComplete)}
                 onSearchSuccess={() => {
                   // Highlight only the email search button for 25 seconds
                 setHighlightEmailButton(true);
