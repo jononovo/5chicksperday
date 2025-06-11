@@ -597,7 +597,7 @@ export default function Outreach() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full lg:container lg:mx-auto lg:py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6">
         {/* Left Column */}
         <div>
