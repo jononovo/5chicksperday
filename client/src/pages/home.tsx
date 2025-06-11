@@ -1592,7 +1592,7 @@ export default function Home() {
   };
   
   // Backend-orchestrated email search function with session persistence
-  const runConsolidatedEmailSearch = async () => {
+  const runConsolidatedEmailSearch = async (onComplete?: () => void) => {
     if (!currentResults || currentResults.length === 0) return;
     
     setIsConsolidatedSearching(true);
@@ -1691,6 +1691,11 @@ export default function Home() {
 
       // Call finishSearch without auto-save trigger
       await finishSearchWithoutSave();
+      
+      // If this email search was triggered automatically, call the completion callback
+      if (onComplete) {
+        onComplete();
+      }
       
     } catch (error) {
       console.error("Backend email orchestration error:", error);

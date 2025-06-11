@@ -413,9 +413,9 @@ export default function PromptEditor({
   const triggerAutomaticEmailSearch = useCallback(() => {
     if (onEmailSearchTrigger) {
       console.log("Triggering automatic email search after contact search completion");
-      onEmailSearchTrigger();
+      onEmailSearchTrigger(onComplete); // Pass the completion callback
     }
-  }, [onEmailSearchTrigger]);
+  }, [onEmailSearchTrigger, onComplete]);
 
   // Track input changes to update UI accordingly
   useEffect(() => {
