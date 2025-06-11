@@ -224,6 +224,11 @@ export default function Home() {
         try {
           const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
           const freshContacts = await response.json();
+          
+          // Log contact data for debugging
+          const emailCount = freshContacts.filter((c: any) => c.email).length;
+          console.log(`${company.name}: ${freshContacts.length} contacts, ${emailCount} with emails`);
+          
           return {
             ...company,
             contacts: freshContacts
@@ -234,6 +239,12 @@ export default function Home() {
         }
       })
     );
+    
+    // Log total email count
+    const totalEmails = refreshedResults.reduce((sum, company) => {
+      return sum + (company.contacts?.filter((c: any) => c.email).length || 0);
+    }, 0);
+    console.log(`Database refresh complete: ${totalEmails} total contacts with emails`);
     
     return refreshedResults;
   };
@@ -321,17 +332,49 @@ export default function Home() {
         } else {
           // Always refresh all contact data on page load to ensure emails are preserved
           console.log('Page load - refreshing all contact data to preserve emails');
+          
+          // First set the current results immediately to show companies
+          setCurrentResults(savedState.currentResults);
+          setCurrentQuery(savedState.currentQuery);
+          setCurrentListId(savedState.currentListId);
+          
+          // Then refresh contact data in the background and force update
           refreshAllContactData(savedState.currentResults).then(refreshedResults => {
-            setCurrentResults(refreshedResults);
+            console.log('Contact data refreshed, forcing state update');
             
-            // Update localStorage with complete refreshed data
-            const updatedState = {
-              currentQuery: savedState.currentQuery,
-              currentResults: refreshedResults,
-              currentListId: savedState.currentListId
-            };
-            localStorage.setItem('searchState', JSON.stringify(updatedState));
-            sessionStorage.setItem('searchState', JSON.stringify(updatedState));
+            // Log what we got back for debugging
+            refreshedResults.forEach(company => {
+              const emailContacts = company.contacts?.filter(c => c.email) || [];
+              if (emailContacts.length > 0) {
+                console.log(`${company.name} has ${emailContacts.length} contacts with emails:`, 
+                  emailContacts.map(c => ({ name: c.name, email: c.email })));
+              }
+            });
+            
+            // Force a complete state refresh with a more aggressive approach
+            console.log('Forcing complete UI refresh with email data...');
+            
+            // Clear state completely
+            setCurrentResults([]);
+            setCurrentQuery(null);
+            setCurrentListId(null);
+            
+            // Force a DOM re-render by using a longer timeout
+            setTimeout(() => {
+              setCurrentQuery(savedState.currentQuery);
+              setCurrentListId(savedState.currentListId);
+              setCurrentResults(refreshedResults);
+              console.log('State fully updated with refreshed email data');
+              
+              // Update localStorage with complete refreshed data
+              const updatedState = {
+                currentQuery: savedState.currentQuery,
+                currentResults: refreshedResults,
+                currentListId: savedState.currentListId
+              };
+              localStorage.setItem('searchState', JSON.stringify(updatedState));
+              sessionStorage.setItem('searchState', JSON.stringify(updatedState));
+            }, 100);
           });
         }
       } else {
