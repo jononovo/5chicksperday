@@ -41,6 +41,7 @@ interface PromptEditorProps {
   onSearchSuccess?: () => void; // Callback when search completes successfully
   hasSearchResults?: boolean; // Flag to indicate if search results exist
   onSessionIdChange?: (sessionId: string | null) => void; // Callback for session ID changes
+  onEmailSearchTrigger?: () => void; // Callback to trigger automatic email search
 }
 
 export default function PromptEditor({ 
@@ -56,7 +57,8 @@ export default function PromptEditor({
   onInputChange,
   onSearchSuccess,
   hasSearchResults = false,
-  onSessionIdChange
+  onSessionIdChange,
+  onEmailSearchTrigger
 }: PromptEditorProps) {
   const [query, setQuery] = useState(initialPrompt);
   const { toast } = useToast();
@@ -407,6 +409,14 @@ export default function PromptEditor({
     setContactSearchConfig(config);
   }, []);
 
+  // Function to trigger automatic email search after contact search completes
+  const triggerAutomaticEmailSearch = useCallback(() => {
+    if (onEmailSearchTrigger) {
+      console.log("Triggering automatic email search after contact search completion");
+      onEmailSearchTrigger();
+    }
+  }, [onEmailSearchTrigger]);
+
   // Track input changes to update UI accordingly
   useEffect(() => {
     if (lastExecutedQuery !== null && query !== lastExecutedQuery) {
@@ -732,6 +742,14 @@ export default function PromptEditor({
       if (onSearchSuccess) {
         onSearchSuccess();
       }
+      
+      // Check if we should automatically trigger email search
+      if (searchType === 'emails') {
+        console.log("Full search selected - triggering automatic email search");
+        triggerAutomaticEmailSearch();
+        return; // Don't call onComplete() yet - email search will handle completion
+      }
+      
       onComplete();
     },
     onError: (error: Error) => {

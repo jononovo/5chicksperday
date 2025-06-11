@@ -1897,6 +1897,7 @@ export default function Home() {
                   setCurrentQuery(newValue);
                   setInputHasChanged(newValue !== lastExecutedQuery);
                 }}
+                onEmailSearchTrigger={runConsolidatedEmailSearch}
                 onSearchSuccess={() => {
                   // Highlight only the email search button for 25 seconds
                 setHighlightEmailButton(true);
