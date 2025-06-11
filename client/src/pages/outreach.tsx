@@ -597,11 +597,11 @@ export default function Outreach() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="grid grid-cols-2 gap-6">
+    <div className="w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-6">
         {/* Left Column */}
         <div>
-          <Card>
+          <Card className="border-none">
             <CardHeader>
               <div className="space-y-3">
                 {/* List Selection Row */}
@@ -834,7 +834,7 @@ export default function Outreach() {
 
         {/* Right Column - Email Creation */}
         <div>
-          <Card>
+          <Card className="border-none">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="flex items-center gap-2">
