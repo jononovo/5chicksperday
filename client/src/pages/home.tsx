@@ -1735,6 +1735,7 @@ export default function Home() {
     if (!currentResults || currentResults.length === 0) return;
     
     setIsConsolidatedSearching(true);
+    setIsEmailSearchActive(true);
     isAutomatedSearchRef.current = true;
     setSummaryVisible(false);
     
