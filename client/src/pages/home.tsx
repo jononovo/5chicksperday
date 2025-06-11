@@ -252,80 +252,91 @@ export default function Home() {
     return refreshedResults;
   };
 
-  // Prime React Query cache exactly like outreach dropdown interaction does
-  const primeReactQueryCacheAfterEmailSearch = async () => {
-    console.log('🔄 EMAIL SEARCH COMPLETE - PRIMING REACT QUERY CACHE');
+  // Replicate exact outreach dropdown query sequence for email persistence
+  const replicateOutreachDropdownBehavior = async () => {
+    console.log('EMAIL SEARCH COMPLETE - REPLICATING OUTREACH DROPDOWN BEHAVIOR');
     
     if (!currentListId) {
-      console.log('No list ID - cannot prime cache');
+      console.log('No list ID - cannot replicate outreach behavior');
       return;
     }
     
     try {
-      console.log(`📊 Priming React Query cache for list ${currentListId}...`);
+      console.log(`Replicating outreach dropdown sequence for list ${currentListId}...`);
       
-      // 1. PRIME LISTS CACHE (exactly like outreach dropdown)
-      console.log('📋 Priming lists cache...');
-      await queryClient.prefetchQuery({
+      // 1. INVALIDATE EXISTING CACHE (force fresh queries)
+      console.log('Invalidating existing React Query cache...');
+      await queryClient.invalidateQueries({ queryKey: ["/api/lists"] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/lists/${currentListId}/companies`] });
+      
+      // Invalidate all contact queries for current companies
+      if (currentResults) {
+        for (const company of currentResults) {
+          await queryClient.invalidateQueries({ queryKey: [`/api/companies/${company.id}/contacts`] });
+        }
+      }
+      
+      // 2. TRIGGER LISTS QUERY (exactly like outreach useQuery)
+      console.log('Triggering lists query...');
+      const listsData = await queryClient.fetchQuery({
         queryKey: ["/api/lists"],
         queryFn: async () => {
           const response = await apiRequest("GET", "/api/lists");
           return response.json();
         }
       });
+      console.log(`Lists loaded: ${listsData.length} lists`);
       
-      // 2. PRIME COMPANIES CACHE (exactly like outreach dropdown)
-      console.log('🏢 Priming companies cache...');
-      await queryClient.prefetchQuery({
+      // 3. TRIGGER COMPANIES QUERY (exactly like outreach useQuery with enabled condition)
+      console.log('Triggering companies query...');
+      const companiesData = await queryClient.fetchQuery({
         queryKey: [`/api/lists/${currentListId}/companies`],
         queryFn: async () => {
           const response = await apiRequest("GET", `/api/lists/${currentListId}/companies`);
           return response.json();
         }
       });
+      console.log(`Companies loaded: ${companiesData.length} companies`);
       
-      // 3. PRIME CONTACTS CACHE FOR ALL COMPANIES (exactly like outreach dropdown)
-      console.log('👥 Priming contacts cache for all companies...');
-      if (currentResults) {
-        const contactCachePromises = currentResults.map(async (company) => {
-          return queryClient.prefetchQuery({
-            queryKey: [`/api/companies/${company.id}/contacts`],
-            queryFn: async () => {
-              const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
-              const contacts = await response.json();
-              const emailCount = contacts.filter((c: any) => c.email).length;
-              console.log(`✅ Cached ${company.name}: ${contacts.length} contacts, ${emailCount} with emails`);
-              return contacts;
-            }
-          });
+      // 4. TRIGGER CONTACTS QUERIES FOR ALL COMPANIES (exactly like outreach useQuery dependency pattern)
+      console.log('Triggering contacts queries for all companies...');
+      const contactPromises = companiesData.map(async (company: any) => {
+        const contactsData = await queryClient.fetchQuery({
+          queryKey: [`/api/companies/${company.id}/contacts`],
+          queryFn: async () => {
+            const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
+            const contacts = await response.json();
+            const emailCount = contacts.filter((c: any) => c.email).length;
+            console.log(`Loaded ${company.name}: ${contacts.length} contacts, ${emailCount} with emails`);
+            return contacts;
+          }
         });
         
-        await Promise.all(contactCachePromises);
-      }
+        return {
+          ...company,
+          contacts: contactsData
+        };
+      });
       
-      console.log('✅ REACT QUERY CACHE PRIMED - Now refresh functions will work perfectly');
+      const refreshedCompanies = await Promise.all(contactPromises);
       
-      // 4. TRIGGER EXISTING REFRESH LOGIC (which now has fresh cache to work with)
-      console.log('🔄 Triggering existing refresh logic with primed cache...');
-      if (currentResults) {
-        const refreshedResults = await refreshContactDataFromDatabase(currentResults);
+      console.log('OUTREACH DROPDOWN BEHAVIOR REPLICATED - Updating UI with fresh data');
+      
+      // 5. UPDATE STATE WITH FRESH DATA (exactly like React Query would)
+      setCurrentResults([]);
+      setTimeout(() => {
+        setCurrentResults(refreshedCompanies);
+        setTableKey(prev => prev + 1);
         
-        // Force UI update with refreshed data
-        setCurrentResults([]);
-        setTimeout(() => {
-          setCurrentResults(refreshedResults);
-          setTableKey(prev => prev + 1);
-          
-          const totalEmails = refreshedResults.reduce((sum, company) => {
-            return sum + (company.contacts?.filter((c: any) => c.email).length || 0);
-          }, 0);
-          
-          console.log(`✅ CACHE PRIMING COMPLETE: ${totalEmails} total emails loaded and visible`);
-        }, 100);
-      }
+        const totalEmails = refreshedCompanies.reduce((sum, company) => {
+          return sum + (company.contacts?.filter((c: any) => c.email).length || 0);
+        }, 0);
+        
+        console.log(`OUTREACH BEHAVIOR REPLICATION COMPLETE: ${totalEmails} total emails loaded and persistent`);
+      }, 100);
       
     } catch (error) {
-      console.error('❌ REACT QUERY CACHE PRIMING FAILED:', error);
+      console.error('OUTREACH DROPDOWN BEHAVIOR REPLICATION FAILED:', error);
     }
   };
 
@@ -1651,14 +1662,14 @@ export default function Home() {
       progressTimerRef.current = null;
     }
     
-    // Mark email search as completing and prime React Query cache
+    // Mark email search as completing and replicate outreach dropdown behavior
     setIsEmailSearchActive(false);
     setEmailSearchCompleted(true);
     
-    // CACHE PRIMING: Replicate outreach dropdown behavior to fix persistence
-    await primeReactQueryCacheAfterEmailSearch();
+    // OUTREACH DROPDOWN REPLICATION: Fix persistence by replicating exact outreach behavior
+    await replicateOutreachDropdownBehavior();
     
-    // Reset completion flag after cache priming
+    // Reset completion flag after behavior replication
     setTimeout(() => setEmailSearchCompleted(false), 1000);
     
     // Original finish logic
@@ -1670,47 +1681,18 @@ export default function Home() {
   // Helper function to finish search without triggering list creation
   const finishSearchWithoutSave = async () => {
     try {
-      // All the cache refresh logic from finishSearch() but without save operations
-      if (currentResults && currentResults.length > 0) {
-        const refreshedResults = await Promise.all(
-          currentResults.map(async (company) => {
-            // Always fetch fresh contact data for ALL companies after email search
-            // This ensures we get the newly enriched emails from the database
-            try {
-              const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
-              const freshContacts = await response.json();
-              
-              return {
-                ...company,
-                contacts: freshContacts
-              };
-            } catch (error) {
-              console.error(`Failed to refresh contacts for ${company.name}:`, error);
-              return company; // Return original if refresh fails
-            }
-          })
-        );
-        
-        // Brief UI refresh to show updated data
-        setCurrentResults([]);
-        setTimeout(() => {
-          setCurrentResults(refreshedResults);
-        }, 100);
-        
-        // Update localStorage with fresh data
-        const stateToSave = {
-          currentQuery,
-          currentResults: refreshedResults,
-          currentListId
-        };
-        const stateString = JSON.stringify(stateToSave);
-        localStorage.setItem('searchState', stateString);
-        sessionStorage.setItem('searchState', stateString);
-        
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
+      // Mark email search as completing and replicate outreach dropdown behavior
+      setIsEmailSearchActive(false);
+      setEmailSearchCompleted(true);
+      
+      // OUTREACH DROPDOWN REPLICATION: Fix persistence by replicating exact outreach behavior
+      await replicateOutreachDropdownBehavior();
+      
+      // Reset completion flag after behavior replication
+      setTimeout(() => setEmailSearchCompleted(false), 1000);
+      
     } catch (error) {
-      console.error("Cache refresh failed:", error);
+      console.error("Outreach behavior replication failed:", error);
     }
     
     // Clean up progress timer and complete search UI
