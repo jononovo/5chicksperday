@@ -77,7 +77,6 @@ interface SavedSearchState {
   currentQuery: string | null;
   currentResults: CompanyWithContacts[] | null;
   currentListId: number | null;
-  emailEnrichedContactIds?: number[]; // Track which contacts have been email-enriched
 }
 
 // Define SourceBreakdown interface
@@ -216,38 +215,12 @@ export default function Home() {
     );
   };
 
-  // Helper to get all enriched contact IDs from current results
-  const getEnrichedContactIds = (companies: CompanyWithContacts[] | null) => {
-    if (!companies) return [];
-    
-    const enrichedIds: number[] = [];
-    companies.forEach(company => {
-      if (company.contacts) {
-        company.contacts.forEach(contact => {
-          if (contact.email || contact.completedSearches?.length) {
-            enrichedIds.push(contact.id);
-          }
-        });
-      }
-    });
-    return enrichedIds;
-  };
-
-  // Helper to refresh only email-enriched contacts
-  const refreshEmailEnrichedContacts = async (companies: CompanyWithContacts[], enrichedContactIds: number[]) => {
-    if (!enrichedContactIds.length) return companies;
-    
-    console.log(`Refreshing ${enrichedContactIds.length} email-enriched contacts`);
+  // Simple helper to always refresh all contact data from database
+  const refreshAllContactData = async (companies: CompanyWithContacts[]) => {
+    console.log('Refreshing all contact data from database...');
     
     const refreshedResults = await Promise.all(
       companies.map(async (company) => {
-        // Check if this company has any enriched contacts
-        const hasEnrichedContacts = company.contacts?.some(c => enrichedContactIds.includes(c.id));
-        
-        if (!hasEnrichedContacts) {
-          return company; // Skip companies without enriched contacts
-        }
-        
         try {
           const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
           const freshContacts = await response.json();
@@ -335,43 +308,31 @@ export default function Home() {
               console.log('Successfully refreshed contact data - updating state');
               setCurrentResults(refreshedResults);
               
-              // Update localStorage with complete data and email enrichment tracking
-              const enrichedContactIds = getEnrichedContactIds(refreshedResults);
+              // Update localStorage with complete data
               const updatedState = {
                 currentQuery: savedState.currentQuery,
                 currentResults: refreshedResults,
-                currentListId: savedState.currentListId,
-                emailEnrichedContactIds: enrichedContactIds
+                currentListId: savedState.currentListId
               };
               localStorage.setItem('searchState', JSON.stringify(updatedState));
               sessionStorage.setItem('searchState', JSON.stringify(updatedState));
             }
           });
         } else {
-          // Check if we have email-enriched contacts that need refreshing
-          if (savedState.emailEnrichedContactIds?.length) {
-            console.log('Refreshing email-enriched contacts from localStorage');
-            refreshEmailEnrichedContacts(savedState.currentResults, savedState.emailEnrichedContactIds).then(refreshedResults => {
-              if (refreshedResults !== savedState.currentResults) {
-                setCurrentResults(refreshedResults);
-                
-                // Update localStorage with refreshed email data
-                const updatedState = {
-                  ...savedState,
-                  currentResults: refreshedResults
-                };
-                localStorage.setItem('searchState', JSON.stringify(updatedState));
-                sessionStorage.setItem('searchState', JSON.stringify(updatedState));
-              }
-            });
-          } else {
-            // Check for recent email search refresh (legacy)
-            refreshContactDataIfNeeded(savedState.currentResults).then(refreshedResults => {
-              if (refreshedResults !== savedState.currentResults) {
-                setCurrentResults(refreshedResults);
-              }
-            });
-          }
+          // Always refresh all contact data on page load to ensure emails are preserved
+          console.log('Page load - refreshing all contact data to preserve emails');
+          refreshAllContactData(savedState.currentResults).then(refreshedResults => {
+            setCurrentResults(refreshedResults);
+            
+            // Update localStorage with complete refreshed data
+            const updatedState = {
+              currentQuery: savedState.currentQuery,
+              currentResults: refreshedResults,
+              currentListId: savedState.currentListId
+            };
+            localStorage.setItem('searchState', JSON.stringify(updatedState));
+            sessionStorage.setItem('searchState', JSON.stringify(updatedState));
+          });
         }
       } else {
         console.log('No saved search state found or session data already restored');
@@ -397,18 +358,15 @@ export default function Home() {
     
     // Only save if we have meaningful data (prevents saving null states)
     if (currentQuery || (currentResults && currentResults.length > 0)) {
-      const enrichedContactIds = getEnrichedContactIds(currentResults);
       const stateToSave: SavedSearchState = {
         currentQuery,
         currentResults,
-        currentListId,
-        emailEnrichedContactIds: enrichedContactIds.length > 0 ? enrichedContactIds : undefined
+        currentListId
       };
       console.log('Saving search state:', {
         query: currentQuery,
         resultsCount: currentResults?.length,
         listId: currentListId,
-        enrichedContacts: enrichedContactIds.length,
         companies: currentResults?.map(c => ({ id: c.id, name: c.name }))
       });
       
@@ -1599,13 +1557,11 @@ export default function Home() {
           setCurrentResults(refreshedResults);
         }, 100);
         
-        // Update localStorage with fresh data and email enrichment tracking
-        const enrichedContactIds = getEnrichedContactIds(refreshedResults);
+        // Update localStorage with fresh data
         const stateToSave = {
           currentQuery,
           currentResults: refreshedResults,
-          currentListId,
-          emailEnrichedContactIds: enrichedContactIds.length > 0 ? enrichedContactIds : undefined
+          currentListId
         };
         const stateString = JSON.stringify(stateToSave);
         localStorage.setItem('searchState', stateString);
