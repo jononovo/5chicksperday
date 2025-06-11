@@ -91,6 +91,8 @@ export default function Home() {
   const [isSaved, setIsSaved] = useState(false);
   const [currentListId, setCurrentListId] = useState<number | null>(null);
   const [tableKey, setTableKey] = useState(0); // Force table re-render when data changes
+  const [isEmailSearchActive, setIsEmailSearchActive] = useState(false);
+  const [emailSearchCompleted, setEmailSearchCompleted] = useState(false);
   const [pendingContactIds, setPendingContactIds] = useState<Set<number>>(new Set());
   // State for selected contacts (for multi-select checkboxes)
   const [selectedContacts, setSelectedContacts] = useState<Set<number>>(new Set());
@@ -250,6 +252,54 @@ export default function Home() {
     return refreshedResults;
   };
 
+  // Complete database reload after email search completion
+  const reloadFromDatabaseAfterEmailSearch = async () => {
+    console.log('Email search complete - clearing localStorage and reloading from database');
+    
+    // Clear all cached data
+    localStorage.removeItem('searchState');
+    sessionStorage.removeItem('searchState');
+    
+    // Force complete state reset
+    setCurrentResults([]);
+    setCurrentQuery(null);
+    setCurrentListId(null);
+    setTableKey(prev => prev + 1);
+    
+    // Reload from database with current list ID
+    if (currentListId) {
+      try {
+        const response = await apiRequest("GET", `/api/lists/${currentListId}`);
+        const listData = await response.json();
+        
+        // Get companies with fresh contact data
+        const companiesResponse = await apiRequest("GET", `/api/lists/${currentListId}/companies`);
+        const freshCompanies = await companiesResponse.json();
+        
+        // Rebuild state from fresh database data
+        setCurrentQuery(listData.prompt || currentQuery);
+        setCurrentResults(freshCompanies);
+        setCurrentListId(currentListId);
+        setTableKey(prev => prev + 1);
+        
+        console.log('Database reload complete - state rebuilt with fresh email data');
+        
+        // Save clean data to localStorage
+        const cleanState = {
+          currentQuery: listData.prompt || currentQuery,
+          currentResults: freshCompanies,
+          currentListId: currentListId
+        };
+        localStorage.setItem('searchState', JSON.stringify(cleanState));
+        sessionStorage.setItem('searchState', JSON.stringify(cleanState));
+        
+      } catch (error) {
+        console.error('Failed to reload from database:', error);
+        // Fallback to current data if reload fails
+      }
+    }
+  };
+
   // Enhanced data refresh logic for navigation persistence
   const refreshContactDataFromDatabase = async (companies: CompanyWithContacts[]): Promise<CompanyWithContacts[]> => {
     try {
@@ -395,6 +445,12 @@ export default function Home() {
 
   // Save state to localStorage whenever it changes (but prevent corruption during unmount)
   useEffect(() => {
+    // Skip saves during email search to prevent corruption
+    if (isEmailSearchActive) {
+      console.log('Skipping localStorage save - email search in progress');
+      return;
+    }
+    
     // Only save if component is mounted and initialized (prevents corruption during unmount)
     if (!isMountedRef.current || !isInitializedRef.current) {
       console.log('Skipping localStorage save - component not ready or unmounting');
@@ -422,7 +478,7 @@ export default function Home() {
     } else {
       console.log('Skipping localStorage save - no meaningful data to save');
     }
-  }, [currentQuery, currentResults, currentListId]);
+  }, [currentQuery, currentResults, currentListId, isEmailSearchActive]);
 
 
 
@@ -1565,6 +1621,16 @@ export default function Home() {
       clearTimeout(progressTimerRef.current);
       progressTimerRef.current = null;
     }
+    
+    // Mark email search as completing and trigger database reload
+    setIsEmailSearchActive(false);
+    setEmailSearchCompleted(true);
+    
+    // Complete database reload instead of partial refresh
+    await reloadFromDatabaseAfterEmailSearch();
+    
+    // Reset completion flag after reload
+    setTimeout(() => setEmailSearchCompleted(false), 1000);
     
     // Original finish logic
     setIsConsolidatedSearching(false);
