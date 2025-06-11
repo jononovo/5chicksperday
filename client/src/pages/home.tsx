@@ -44,7 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { EggAnimation } from "@/components/egg-animation";
 import {
   Table,
@@ -252,51 +252,116 @@ export default function Home() {
     return refreshedResults;
   };
 
-  // Complete database reload after email search completion
+  // Radical localStorage clearing and complete database reload after email search
   const reloadFromDatabaseAfterEmailSearch = async () => {
-    console.log('Email search complete - clearing localStorage and reloading from database');
+    console.log('🔄 EMAIL SEARCH COMPLETE - RADICAL RELOAD FROM DATABASE');
     
-    // Clear all cached data
-    localStorage.removeItem('searchState');
-    sessionStorage.removeItem('searchState');
+    // 1. NUCLEAR OPTION: Clear ALL localStorage for this domain
+    console.log('📝 Clearing all localStorage data...');
+    try {
+      // Clear all search-related localStorage
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('search') || key.includes('State') || key.includes('contact') || key.includes('company')) {
+          localStorage.removeItem(key);
+          console.log(`🗑️ Cleared localStorage key: ${key}`);
+        }
+      });
+      
+      // Clear all sessionStorage
+      sessionStorage.clear();
+      console.log('🗑️ Cleared all sessionStorage');
+    } catch (error) {
+      console.warn('⚠️ LocalStorage clear failed:', error);
+    }
     
-    // Force complete state reset
+    // 2. FORCE COMPLETE STATE RESET
+    console.log('🔥 Forcing complete React state reset...');
     setCurrentResults([]);
     setCurrentQuery(null);
     setCurrentListId(null);
     setTableKey(prev => prev + 1);
     
-    // Reload from database with current list ID
+    // 3. INVALIDATE ALL REACT QUERY CACHE
+    console.log('🔄 Invalidating all React Query cache...');
+    queryClient.clear();
+    
+    // 4. RELOAD EVERYTHING FROM DATABASE
     if (currentListId) {
       try {
-        const response = await apiRequest("GET", `/api/lists/${currentListId}`);
-        const listData = await response.json();
+        console.log(`📊 Reloading list ${currentListId} from database...`);
         
-        // Get companies with fresh contact data
-        const companiesResponse = await apiRequest("GET", `/api/lists/${currentListId}/companies`);
+        // Force fresh database queries with cache busting
+        const timestamp = Date.now();
+        
+        // Get list data
+        const listResponse = await apiRequest("GET", `/api/lists/${currentListId}?t=${timestamp}`);
+        const listData = await listResponse.json();
+        console.log('📋 List data loaded:', listData.name);
+        
+        // Get companies with ALL contact data
+        const companiesResponse = await apiRequest("GET", `/api/lists/${currentListId}/companies?t=${timestamp}`);
         const freshCompanies = await companiesResponse.json();
+        console.log(`🏢 ${freshCompanies.length} companies loaded from database`);
         
-        // Rebuild state from fresh database data
-        setCurrentQuery(listData.prompt || currentQuery);
-        setCurrentResults(freshCompanies);
-        setCurrentListId(currentListId);
-        setTableKey(prev => prev + 1);
+        // Get fresh contact data for each company to ensure emails are included
+        const companiesWithContacts = await Promise.all(
+          freshCompanies.map(async (company) => {
+            try {
+              const contactsResponse = await apiRequest("GET", `/api/companies/${company.id}/contacts?t=${timestamp}`);
+              const contacts = await contactsResponse.json();
+              const emailCount = contacts.filter(c => c.email).length;
+              console.log(`👥 ${company.name}: ${contacts.length} contacts, ${emailCount} with emails`);
+              return {
+                ...company,
+                contacts: contacts
+              };
+            } catch (error) {
+              console.error(`❌ Failed to load contacts for ${company.name}:`, error);
+              return company;
+            }
+          })
+        );
         
-        console.log('Database reload complete - state rebuilt with fresh email data');
+        // 5. REBUILD STATE WITH FRESH DATA
+        console.log('🏗️ Rebuilding state with fresh database data...');
         
-        // Save clean data to localStorage
-        const cleanState = {
-          currentQuery: listData.prompt || currentQuery,
-          currentResults: freshCompanies,
-          currentListId: currentListId
-        };
-        localStorage.setItem('searchState', JSON.stringify(cleanState));
-        sessionStorage.setItem('searchState', JSON.stringify(cleanState));
+        // Delay to ensure clean state reset
+        setTimeout(() => {
+          setCurrentQuery(listData.prompt);
+          setCurrentListId(currentListId);
+          setCurrentResults(companiesWithContacts);
+          setTableKey(prev => prev + 1);
+          
+          // Count total emails for verification
+          const totalEmails = companiesWithContacts.reduce((sum, company) => {
+            return sum + (company.contacts?.filter(c => c.email).length || 0);
+          }, 0);
+          
+          console.log(`✅ DATABASE RELOAD COMPLETE: ${totalEmails} total emails loaded`);
+          
+          // 6. SAVE CLEAN STATE TO LOCALSTORAGE
+          const cleanState = {
+            currentQuery: listData.prompt,
+            currentResults: companiesWithContacts,
+            currentListId: currentListId
+          };
+          
+          try {
+            localStorage.setItem('searchState', JSON.stringify(cleanState));
+            sessionStorage.setItem('searchState', JSON.stringify(cleanState));
+            console.log('💾 Clean state saved to localStorage');
+          } catch (error) {
+            console.warn('⚠️ Failed to save clean state:', error);
+          }
+          
+        }, 200);
         
       } catch (error) {
-        console.error('Failed to reload from database:', error);
-        // Fallback to current data if reload fails
+        console.error('❌ DATABASE RELOAD FAILED:', error);
+        // Don't fallback to corrupted data - stay clean
       }
+    } else {
+      console.log('ℹ️ No list ID - skipping database reload');
     }
   };
 
@@ -1622,11 +1687,11 @@ export default function Home() {
       progressTimerRef.current = null;
     }
     
-    // Mark email search as completing and trigger database reload
+    // Mark email search as completing and trigger radical database reload
     setIsEmailSearchActive(false);
     setEmailSearchCompleted(true);
     
-    // Complete database reload instead of partial refresh
+    // RADICAL RELOAD: Complete localStorage clearing and database reload
     await reloadFromDatabaseAfterEmailSearch();
     
     // Reset completion flag after reload
