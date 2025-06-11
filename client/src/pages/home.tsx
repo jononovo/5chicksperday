@@ -90,6 +90,7 @@ export default function Home() {
   const [currentResults, setCurrentResults] = useState<CompanyWithContacts[] | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [currentListId, setCurrentListId] = useState<number | null>(null);
+  const [tableKey, setTableKey] = useState(0); // Force table re-render when data changes
   const [pendingContactIds, setPendingContactIds] = useState<Set<number>>(new Set());
   // State for selected contacts (for multi-select checkboxes)
   const [selectedContacts, setSelectedContacts] = useState<Set<number>>(new Set());
@@ -364,6 +365,7 @@ export default function Home() {
               setCurrentQuery(savedState.currentQuery);
               setCurrentListId(savedState.currentListId);
               setCurrentResults(refreshedResults);
+              setTableKey(prev => prev + 1); // Force table re-render with new key
               console.log('State fully updated with refreshed email data');
               
               // Update localStorage with complete refreshed data
@@ -2174,6 +2176,7 @@ export default function Home() {
                 <div className="overflow-x-auto">
                   <Suspense fallback={<TableSkeleton />}>
                     <CompanyTable
+                      key={tableKey} // Force re-render when data changes
                       companies={currentResults || []}
                       handleCompanyView={handleCompanyView}
                       handleHunterSearch={handleHunterSearch}
