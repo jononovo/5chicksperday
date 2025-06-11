@@ -252,116 +252,80 @@ export default function Home() {
     return refreshedResults;
   };
 
-  // Radical localStorage clearing and complete database reload after email search
-  const reloadFromDatabaseAfterEmailSearch = async () => {
-    console.log('🔄 EMAIL SEARCH COMPLETE - RADICAL RELOAD FROM DATABASE');
+  // Prime React Query cache exactly like outreach dropdown interaction does
+  const primeReactQueryCacheAfterEmailSearch = async () => {
+    console.log('🔄 EMAIL SEARCH COMPLETE - PRIMING REACT QUERY CACHE');
     
-    // 1. NUCLEAR OPTION: Clear ALL localStorage for this domain
-    console.log('📝 Clearing all localStorage data...');
+    if (!currentListId) {
+      console.log('No list ID - cannot prime cache');
+      return;
+    }
+    
     try {
-      // Clear all search-related localStorage
-      Object.keys(localStorage).forEach(key => {
-        if (key.includes('search') || key.includes('State') || key.includes('contact') || key.includes('company')) {
-          localStorage.removeItem(key);
-          console.log(`🗑️ Cleared localStorage key: ${key}`);
+      console.log(`📊 Priming React Query cache for list ${currentListId}...`);
+      
+      // 1. PRIME LISTS CACHE (exactly like outreach dropdown)
+      console.log('📋 Priming lists cache...');
+      await queryClient.prefetchQuery({
+        queryKey: ["/api/lists"],
+        queryFn: async () => {
+          const response = await apiRequest("GET", "/api/lists");
+          return response.json();
         }
       });
       
-      // Clear all sessionStorage
-      sessionStorage.clear();
-      console.log('🗑️ Cleared all sessionStorage');
-    } catch (error) {
-      console.warn('⚠️ LocalStorage clear failed:', error);
-    }
-    
-    // 2. FORCE COMPLETE STATE RESET
-    console.log('🔥 Forcing complete React state reset...');
-    setCurrentResults([]);
-    setCurrentQuery(null);
-    setCurrentListId(null);
-    setTableKey(prev => prev + 1);
-    
-    // 3. INVALIDATE ALL REACT QUERY CACHE
-    console.log('🔄 Invalidating all React Query cache...');
-    queryClient.clear();
-    
-    // 4. RELOAD EVERYTHING FROM DATABASE
-    if (currentListId) {
-      try {
-        console.log(`📊 Reloading list ${currentListId} from database...`);
-        
-        // Force fresh database queries with cache busting
-        const timestamp = Date.now();
-        
-        // Get list data
-        const listResponse = await apiRequest("GET", `/api/lists/${currentListId}?t=${timestamp}`);
-        const listData = await listResponse.json();
-        console.log('📋 List data loaded:', listData.name);
-        
-        // Get companies with ALL contact data
-        const companiesResponse = await apiRequest("GET", `/api/lists/${currentListId}/companies?t=${timestamp}`);
-        const freshCompanies = await companiesResponse.json();
-        console.log(`🏢 ${freshCompanies.length} companies loaded from database`);
-        
-        // Get fresh contact data for each company to ensure emails are included
-        const companiesWithContacts = await Promise.all(
-          freshCompanies.map(async (company) => {
-            try {
-              const contactsResponse = await apiRequest("GET", `/api/companies/${company.id}/contacts?t=${timestamp}`);
-              const contacts = await contactsResponse.json();
-              const emailCount = contacts.filter(c => c.email).length;
-              console.log(`👥 ${company.name}: ${contacts.length} contacts, ${emailCount} with emails`);
-              return {
-                ...company,
-                contacts: contacts
-              };
-            } catch (error) {
-              console.error(`❌ Failed to load contacts for ${company.name}:`, error);
-              return company;
+      // 2. PRIME COMPANIES CACHE (exactly like outreach dropdown)
+      console.log('🏢 Priming companies cache...');
+      await queryClient.prefetchQuery({
+        queryKey: [`/api/lists/${currentListId}/companies`],
+        queryFn: async () => {
+          const response = await apiRequest("GET", `/api/lists/${currentListId}/companies`);
+          return response.json();
+        }
+      });
+      
+      // 3. PRIME CONTACTS CACHE FOR ALL COMPANIES (exactly like outreach dropdown)
+      console.log('👥 Priming contacts cache for all companies...');
+      if (currentResults) {
+        const contactCachePromises = currentResults.map(async (company) => {
+          return queryClient.prefetchQuery({
+            queryKey: [`/api/companies/${company.id}/contacts`],
+            queryFn: async () => {
+              const response = await apiRequest("GET", `/api/companies/${company.id}/contacts`);
+              const contacts = await response.json();
+              const emailCount = contacts.filter((c: any) => c.email).length;
+              console.log(`✅ Cached ${company.name}: ${contacts.length} contacts, ${emailCount} with emails`);
+              return contacts;
             }
-          })
-        );
+          });
+        });
         
-        // 5. REBUILD STATE WITH FRESH DATA
-        console.log('🏗️ Rebuilding state with fresh database data...');
+        await Promise.all(contactCachePromises);
+      }
+      
+      console.log('✅ REACT QUERY CACHE PRIMED - Now refresh functions will work perfectly');
+      
+      // 4. TRIGGER EXISTING REFRESH LOGIC (which now has fresh cache to work with)
+      console.log('🔄 Triggering existing refresh logic with primed cache...');
+      if (currentResults) {
+        const refreshedResults = await refreshContactDataFromDatabase(currentResults);
         
-        // Delay to ensure clean state reset
+        // Force UI update with refreshed data
+        setCurrentResults([]);
         setTimeout(() => {
-          setCurrentQuery(listData.prompt);
-          setCurrentListId(currentListId);
-          setCurrentResults(companiesWithContacts);
+          setCurrentResults(refreshedResults);
           setTableKey(prev => prev + 1);
           
-          // Count total emails for verification
-          const totalEmails = companiesWithContacts.reduce((sum, company) => {
-            return sum + (company.contacts?.filter(c => c.email).length || 0);
+          const totalEmails = refreshedResults.reduce((sum, company) => {
+            return sum + (company.contacts?.filter((c: any) => c.email).length || 0);
           }, 0);
           
-          console.log(`✅ DATABASE RELOAD COMPLETE: ${totalEmails} total emails loaded`);
-          
-          // 6. SAVE CLEAN STATE TO LOCALSTORAGE
-          const cleanState = {
-            currentQuery: listData.prompt,
-            currentResults: companiesWithContacts,
-            currentListId: currentListId
-          };
-          
-          try {
-            localStorage.setItem('searchState', JSON.stringify(cleanState));
-            sessionStorage.setItem('searchState', JSON.stringify(cleanState));
-            console.log('💾 Clean state saved to localStorage');
-          } catch (error) {
-            console.warn('⚠️ Failed to save clean state:', error);
-          }
-          
-        }, 200);
-        
-      } catch (error) {
-        console.error('❌ DATABASE RELOAD FAILED:', error);
-        // Don't fallback to corrupted data - stay clean
+          console.log(`✅ CACHE PRIMING COMPLETE: ${totalEmails} total emails loaded and visible`);
+        }, 100);
       }
-    } else {
-      console.log('ℹ️ No list ID - skipping database reload');
+      
+    } catch (error) {
+      console.error('❌ REACT QUERY CACHE PRIMING FAILED:', error);
     }
   };
 
@@ -1687,14 +1651,14 @@ export default function Home() {
       progressTimerRef.current = null;
     }
     
-    // Mark email search as completing and trigger radical database reload
+    // Mark email search as completing and prime React Query cache
     setIsEmailSearchActive(false);
     setEmailSearchCompleted(true);
     
-    // RADICAL RELOAD: Complete localStorage clearing and database reload
-    await reloadFromDatabaseAfterEmailSearch();
+    // CACHE PRIMING: Replicate outreach dropdown behavior to fix persistence
+    await primeReactQueryCacheAfterEmailSearch();
     
-    // Reset completion flag after reload
+    // Reset completion flag after cache priming
     setTimeout(() => setEmailSearchCompleted(false), 1000);
     
     // Original finish logic
