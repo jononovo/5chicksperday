@@ -100,21 +100,7 @@
   opacity: 1 !important;
 }
 
-/* Mobile contact cards slide down animation */
-.slide-down-enter {
-  animation: slideDown 0.2s ease-out;
-}
 
-@keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 /* Gradient text effect for highlighting the landing page prompt */
 @keyframes gradientFadeIn {

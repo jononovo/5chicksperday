@@ -760,9 +760,9 @@ export default function Outreach() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-6">
-        {/* Left Column - Hidden on mobile when collapsed */}
+        {/* Left Column - Always visible on desktop, motion controlled on mobile */}
         <div 
-          className={`md:block ${!isMobileExpanded ? 'hidden' : 'block'}`}
+          className="md:block"
           onClick={handleMobileColumnInteraction}
           onTouchStart={handleMobileColumnInteraction}
         >
@@ -824,25 +824,26 @@ export default function Outreach() {
             </div>
             <div className="px-6 pb-6 md:px-6 md:pb-6">
 
-              {/* Key Members Section */}
-              {topContacts && topContacts.length > 0 && (
-                <div className={`space-y-2 ${isMobileExpanded ? 'slide-down-enter' : ''}`}>
-                  {topContacts.map((contact) => (
-                      <div
-                        key={contact.id}
-                        className={cn(
-                          "w-full text-left p-3 relative cursor-pointer rounded-lg",
-                          selectedContactId === contact.id 
-                            ? "border-l-4 border-dashed border-gray-600 border-4 border-blue-200/60 border-dashed shadow-md transition-all duration-200" 
-                            : "bg-card border-l-2 border-transparent hover:border-l-4 hover:border-dashed hover:border-gray-400 hover:border-4 hover:border-gray-300/60 hover:border-dashed hover:shadow-sm transition-all duration-50"
-                        )}
-                        onClick={() => {
-                          setSelectedContactId(contact.id);
-                          if (isMobileExpanded) {
-                            setIsMobileExpanded(false);
-                          }
-                        }}
-                      >
+              {/* Desktop Key Members Section */}
+              <div className="hidden md:block">
+                {topContacts && topContacts.length > 0 && (
+                  <div className="space-y-2">
+                    {topContacts.map((contact) => (
+                        <div
+                          key={contact.id}
+                          className={cn(
+                            "w-full text-left p-3 relative cursor-pointer rounded-lg",
+                            selectedContactId === contact.id 
+                              ? "border-l-4 border-dashed border-gray-600 border-4 border-blue-200/60 border-dashed shadow-md transition-all duration-200" 
+                              : "bg-card border-l-2 border-transparent hover:border-l-4 hover:border-dashed hover:border-gray-400 hover:border-4 hover:border-gray-300/60 hover:border-dashed hover:shadow-sm transition-all duration-50"
+                          )}
+                          onClick={() => {
+                            setSelectedContactId(contact.id);
+                            if (isMobileExpanded) {
+                              setIsMobileExpanded(false);
+                            }
+                          }}
+                        >
                         <div className="flex items-center justify-between">
                           <span className="font-medium">{contact.name}</span>
                           <div className="flex items-center gap-2">
@@ -901,9 +902,110 @@ export default function Outreach() {
                           )}
                         </Button>
                       </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Key Members Section with Motion */}
+              <div className="md:hidden">
+                <AnimatePresence>
+                  {isMobileExpanded && topContacts && topContacts.length > 0 && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <div className="space-y-2">
+                        {topContacts.map((contact, index) => (
+                          <motion.div
+                            key={contact.id}
+                            initial={{ y: -30, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ 
+                              delay: index * 0.05,
+                              duration: 0.2 
+                            }}
+                          >
+                            <div
+                              className={cn(
+                                "w-full text-left p-3 relative cursor-pointer rounded-lg",
+                                selectedContactId === contact.id 
+                                  ? "border-l-4 border-dashed border-gray-600 border-4 border-blue-200/60 border-dashed shadow-md transition-all duration-200" 
+                                  : "bg-card border-l-2 border-transparent hover:border-l-4 hover:border-dashed hover:border-gray-400 hover:border-4 hover:border-gray-300/60 hover:border-dashed hover:shadow-sm transition-all duration-50"
+                              )}
+                              onClick={() => {
+                                setSelectedContactId(contact.id);
+                                if (isMobileExpanded) {
+                                  setIsMobileExpanded(false);
+                                }
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium">{contact.name}</span>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant={
+                                    (contact.probability || 0) >= 90 ? "default" :
+                                    (contact.probability || 0) >= 70 ? "secondary" : "outline"
+                                  }>
+                                    {contact.probability || 0}
+                                  </Badge>
+                                  <ContactActionColumn
+                                    contact={contact as any}
+                                    standalone={true}
+                                    displayMode="mobile"
+                                    className="p-0"
+                                    handleEnrichContact={handleEnrichContact}
+                                    handleHunterSearch={handleHunterSearch}
+                                    handleAeroLeadsSearch={handleAeroLeadsSearch}
+                                    handleApolloSearch={handleApolloSearch}
+                                    pendingContactIds={pendingContactIds}
+                                    pendingHunterIds={pendingHunterIds}
+                                    pendingAeroLeadsIds={pendingAeroLeadsIds}
+                                    pendingApolloIds={pendingApolloIds}
+                                  />
+                                </div>
+                              </div>
+                              <div className="text-sm text-muted-foreground mt-1">
+                                {contact.role && (
+                                  <span className="block">{contact.role}</span>
+                                )}
+                                {contact.email && (
+                                  <span className="block">{contact.email}</span>
+                                )}
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                  "absolute bottom-2 right-2 p-1.5",
+                                  "hover:bg-background/80 transition-colors",
+                                  copiedContactIds.has(contact.id) 
+                                    ? "text-green-600 hover:text-green-700" 
+                                    : "text-muted-foreground hover:text-foreground",
+                                  selectedContactId === contact.id && "hover:bg-primary-foreground/20"
+                                )}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyContact(contact, e);
+                                }}
+                              >
+                                {copiedContactIds.has(contact.id) ? (
+                                  <Check className="w-4 h-4" />
+                                ) : (
+                                  <Copy className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               <div className="mt-6">
                 <div>
