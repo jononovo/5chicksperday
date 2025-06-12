@@ -836,7 +836,12 @@ export default function Outreach() {
                             ? "border-l-4 border-dashed border-gray-600 border-4 border-blue-200/60 border-dashed shadow-md transition-all duration-200" 
                             : "bg-card border-l-2 border-transparent hover:border-l-4 hover:border-dashed hover:border-gray-400 hover:border-4 hover:border-gray-300/60 hover:border-dashed hover:shadow-sm transition-all duration-50"
                         )}
-                        onClick={() => setSelectedContactId(contact.id)}
+                        onClick={() => {
+                          setSelectedContactId(contact.id);
+                          if (isMobileExpanded) {
+                            setIsMobileExpanded(false);
+                          }
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-medium">{contact.name}</span>
