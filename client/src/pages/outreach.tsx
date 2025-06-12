@@ -826,7 +826,7 @@ export default function Outreach() {
 
               {/* Key Members Section */}
               {topContacts && topContacts.length > 0 && (
-                <div className="space-y-2">
+                <div className={`space-y-2 ${isMobileExpanded ? 'slide-down-enter' : ''}`}>
                   {topContacts.map((contact) => (
                       <div
                         key={contact.id}
