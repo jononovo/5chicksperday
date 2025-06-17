@@ -121,7 +121,9 @@ export interface IStorage {
   // User Auth
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
-  createUser(data: { email: string; password: string; username?: string }): Promise<User>;
+  createUser(data: { email: string; password: string; username?: string; firebaseUid?: string }): Promise<User>;
+  createTemporaryUser(): Promise<number>;
+  linkTemporaryUserToFirebase(tempUserId: number, firebaseData: {email: string; firebaseUid: string}): Promise<User>;
 
   // Lists
   listLists(userId: number): Promise<List[]>;

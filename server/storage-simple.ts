@@ -4,7 +4,9 @@ export interface User {
   username: string;
   password: string;
   email: string;
+  firebaseUid?: string;
   createdAt: string;
+  registeredAt?: string;
 }
 
 export interface UserCredits {
@@ -203,14 +205,16 @@ class SimpleStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
+  async createUser(data: { email: string; password: string; username?: string; firebaseUid?: string }): Promise<User> {
     const id = this.getNextId('user');
     const user: User = {
       id,
       username: data.username || data.email.split('@')[0],
       password: data.password,
       email: data.email,
-      createdAt: new Date().toISOString()
+      firebaseUid: data.firebaseUid,
+      createdAt: new Date().toISOString(),
+      registeredAt: new Date().toISOString()
     };
     
     this.users.set(id, user);
@@ -220,6 +224,49 @@ class SimpleStorage implements IStorage {
     await this.createUserCredits(id, 500);
     
     return user;
+  }
+
+  async createTemporaryUser(): Promise<number> {
+    const id = this.getNextId('user');
+    const user: User = {
+      id,
+      username: `temp_user_${id}`,
+      password: '', // Empty for temp users
+      email: '', // Empty until registration
+      createdAt: new Date().toISOString()
+    };
+    
+    this.users.set(id, user);
+    
+    // Initialize with 100 credits for trial users
+    await this.createUserCredits(id, 100);
+    
+    return id;
+  }
+
+  async linkTemporaryUserToFirebase(tempUserId: number, firebaseData: {email: string; firebaseUid: string}): Promise<User> {
+    const user = this.users.get(tempUserId);
+    if (!user) {
+      throw new Error('Temporary user not found');
+    }
+    
+    // Update user with Firebase data
+    const updatedUser: User = {
+      ...user,
+      email: firebaseData.email,
+      firebaseUid: firebaseData.firebaseUid,
+      username: firebaseData.email.split('@')[0],
+      password: '', // Keep empty for Firebase auth
+      registeredAt: new Date().toISOString()
+    };
+    
+    this.users.set(tempUserId, updatedUser);
+    this.usersByEmail.set(firebaseData.email, updatedUser);
+    
+    // Upgrade to full user credits (500 instead of 100)
+    await this.addCredits(tempUserId, 400, 'registration_bonus', 'Bonus credits for completing registration');
+    
+    return updatedUser;
   }
 
   // Credits System

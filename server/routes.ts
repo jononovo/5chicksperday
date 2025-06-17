@@ -711,7 +711,8 @@ export function registerRoutes(app: Express) {
               // If no companyId but company name is provided, try to find or create the company
               if (!companyId && contact.companyName) {
                 // Find existing company or create a new one
-                const companies = await storage.listCompanies(req.user!.id);
+                const userId = await getOrCreateSessionUserId(req);
+                const companies = await storage.listCompanies(userId);
                 const existingCompany = companies.find(c => 
                   c.name.toLowerCase() === contact.companyName.toLowerCase()
                 );
@@ -734,6 +735,7 @@ export function registerRoutes(app: Express) {
               }
               
               // Create contact in database
+              const userId = await getOrCreateSessionUserId(req);
               const createdContact = await storage.createContact({
                 name: contact.name,
                 email: contact.email || null,
@@ -1201,9 +1203,7 @@ export function registerRoutes(app: Express) {
 
   // Quick company search endpoint - returns companies immediately without waiting for contacts
   app.post("/api/companies/quick-search", async (req, res) => {
-    // For compatibility with the existing search functionality
-    // This temporary fix uses a default user ID if authentication fails
-    const userId = req.isAuthenticated() && req.user ? (req.user as any).id : 1;
+    const userId = await getOrCreateSessionUserId(req);
     
     const { query, strategyId, contactSearchConfig, sessionId, searchType } = req.body;
 
