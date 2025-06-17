@@ -1,0 +1,50 @@
+[vite] connecting...
+[vite] connected.
+Starting Firebase initialization... 
+Object {timestamp: "2025-06-17T06:37:22.886Z", domain: "4d208f68-6f49-4969-8844-102bb042860f-00-2f2u3qqe6syuf.kirk.replit.dev"}
+Raw environment variables: 
+Object {apiKey: "....aDbuzU", projectId: "fire-5-ducks", appId: "....b133e8", mode: "development", dev: true, …}
+Firebase Configuration: 
+Object {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: "fire-5-ducks.firebaseapp.com", environment: "development", …}
+Firebase initialized successfully: 
+Object {domain: "4d208f68-6f49-4969-8844-102bb042860f-00-2f2u3qqe6syuf.kirk.replit.dev", isAuth: true, isProvider: true, authDomain: "fire-5-ducks.firebaseapp.com", timestamp: "2025-06-17T06:37:22.887Z"}
+Setting up Firebase auth state listener
+Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID
+Firebase auth state changed: test152@test.com
+Making backend sync request 
+Object {endpoint: "/api/google-auth", hasAccessToken: false, domain: "4d208f68-6f49-4969-8844-102bb042860f-00-2f2u3qqe6syuf.kirk.replit.dev"}
+Firebase persistence set to LOCAL
+Auth token set successfully: 
+Object {uid: "HVMiUWOxbJawtb1PK8FwqymrhbN2", email: "test152@...", timestamp: "2025-06-17T06:37:23.254Z"}
+Backend sync error response: 
+Object {status: 500, statusText: "Internal Server Error", responseText: "{"error":"Failed to create user account"}"}
+
+Error syncing with backend: 
+Object {error: Error, domain: "4d208f68-6f49-4969-8844-102bb042860f-00-2f2u3qqe6syuf.kirk.replit.dev", environment: "development"}
+
+Error during auth state sync: 
+Error {}
+
+Found pending search query: Automotive component suppliers in Boston
+SearchStateManager: Saved atomic state 
+Object {query: "Automotive component suppliers in Boston", companiesCount: 0, contactCount: 0, emailCount: 0, sessionId: "session_1750139953624_zrxdxj8l6"}
+Atomic state save completed: 
+Object {query: "Automotive component suppliers in Boston", resultsCount: undefined, listId: null, contactCount: undefined}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: false, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+Analyzing search query...
+Preparing to search for companies, contacts, and emails...
+Initiating company search process...
+Sending request to company discovery API...
+[Session Management] Cleaning up active sessions before starting new search...
+Created search session: search_1750142253928_y7r2llx5k for query: Automotive component suppliers in Boston
+[Session Cleanup] Found 1 active sessions, terminating...
+Created session search_1750142253928_y7r2llx5k for query: Automotive component suppliers in Boston
