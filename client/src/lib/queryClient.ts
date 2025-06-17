@@ -44,17 +44,8 @@ export async function apiRequest(
     // Get Firebase token from localStorage if available
     const authToken = localStorage.getItem('authToken');
     
-    // Get guest user ID from localStorage if available
-    const guestUserData = localStorage.getItem('guest_user_data');
-    let guestUserId: string | null = null;
-    if (guestUserData) {
-      try {
-        const parsed = JSON.parse(guestUserData);
-        guestUserId = parsed.id?.toString();
-      } catch (error) {
-        console.warn('Failed to parse guest user data:', error);
-      }
-    }
+    // Get anonymous user ID from localStorage if available
+    const anonymousUserId = localStorage.getItem('anonymousUserId');
     
     // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
@@ -64,13 +55,10 @@ export async function apiRequest(
       headers['Authorization'] = `Bearer ${authToken}`;
     }
     
-    // Add guest user ID header if available and no auth token
-    if (guestUserId && !authToken) {
-      // Multiple header strategies for maximum compatibility
-      headers['X-Guest-User-Id'] = guestUserId;      // Standard Pascal-Case
-      headers['x-guest-user-id'] = guestUserId;      // Lowercase fallback
-      headers['Guest-User-ID'] = guestUserId;        // Alternative format
-      console.log('Adding guest user headers:', { guestUserId, headers: Object.keys(headers) });
+    // Always include user ID header (anonymous or authenticated)
+    if (anonymousUserId) {
+      headers['X-User-ID'] = anonymousUserId;
+      console.log('Adding user ID header:', anonymousUserId);
     }
     
     const res = await fetch(url, {

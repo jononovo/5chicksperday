@@ -85,40 +85,30 @@ async function getUserId(req: express.Request): Promise<number> {
     return -1; // This ID won't match any real user, preventing data leakage
   }
   
-  // Check if there's a guest user ID in the request headers (multiple formats for compatibility)
-  const guestUserId = req.headers['x-guest-user-id'] || 
-                     req.headers['X-Guest-User-Id'] || 
-                     req.headers['guest-user-id'] ||
-                     req.get('X-Guest-User-Id');
+  // Check for anonymous user ID in the request headers
+  const anonymousUserId = req.headers['x-user-id'] || 
+                         req.headers['X-User-ID'] || 
+                         req.get('X-User-ID');
   
-  console.log('Guest header check:', {
-    'x-guest-user-id': req.headers['x-guest-user-id'],
-    'X-Guest-User-Id': req.headers['X-Guest-User-Id'],
-    'guest-user-id': req.headers['guest-user-id'],
-    'via-get': req.get('X-Guest-User-Id'),
-    resolved: guestUserId,
-    allHeaders: Object.keys(req.headers).filter(h => h.toLowerCase().includes('guest'))
-  });
-  
-  if (guestUserId && typeof guestUserId === 'string') {
-    const parsedGuestId = parseInt(guestUserId, 10);
-    if (!isNaN(parsedGuestId)) {
-      console.log('Using guest user ID from headers:', parsedGuestId);
-      return parsedGuestId;
+  if (anonymousUserId && typeof anonymousUserId === 'string') {
+    const parsedUserId = parseInt(anonymousUserId, 10);
+    if (!isNaN(parsedUserId)) {
+      console.log('Using anonymous user ID from headers:', parsedUserId);
+      return parsedUserId;
     }
   }
   
-  console.log('No authenticated user found - using fallback demo user ID', {
+  console.log('No user ID found in headers or auth - using fallback demo user ID', {
     isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
     hasUser: !!req.user,
     hasFirebaseUser: !!(req as any).firebaseUser,
-    hasGuestHeader: !!guestUserId,
+    hasUserIdHeader: !!anonymousUserId,
     path: req.path,
     method: req.method,
     timestamp: new Date().toISOString()
   });
   
-  // For regular unauthenticated users without guest ID, return demo user ID
+  // For cases where no user ID is provided, return demo user ID
   return 1;
 }
 

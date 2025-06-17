@@ -204,18 +204,21 @@ class SimpleStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
+  async createUser(data: { email: string | null; password: string; username?: string; isAnonymous?: boolean }): Promise<User> {
     const id = this.getNextId('user');
     const user: User = {
       id,
-      username: data.username || data.email.split('@')[0],
+      username: data.username || (data.email ? data.email.split('@')[0] : `user_${id}`),
       password: data.password,
       email: data.email,
+      isAnonymous: data.isAnonymous || false,
       createdAt: new Date().toISOString()
     };
     
     this.users.set(id, user);
-    this.usersByEmail.set(data.email, user);
+    if (data.email) {
+      this.usersByEmail.set(data.email, user);
+    }
     
     // Initialize with 500 credits
     await this.createUserCredits(id, 500);
