@@ -8,7 +8,9 @@ export interface User {
   username: string;
   password: string;
   email: string;
+  firebaseUid?: string;
   createdAt: string;
+  registeredAt?: string;
 }
 
 export interface UserCredits {
@@ -224,14 +226,16 @@ class ReplitDBStorage implements IStorage {
     }
   }
 
-  async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
+  async createUser(data: { email: string; password: string; username?: string; firebaseUid?: string }): Promise<User> {
     const id = await this.getNextId('user');
     const user: User = {
       id,
       username: data.username || data.email.split('@')[0],
       password: data.password,
       email: data.email,
-      createdAt: new Date().toISOString()
+      firebaseUid: data.firebaseUid,
+      createdAt: new Date().toISOString(),
+      registeredAt: new Date().toISOString()
     };
 
     const users = (await db.get('users') as any) || {};
@@ -239,6 +243,39 @@ class ReplitDBStorage implements IStorage {
     await db.set('users', users);
     
     return user;
+  }
+
+  async createTemporaryUser(): Promise<number> {
+    const id = await this.getNextId('user');
+    const user: User = {
+      id,
+      username: `temp_user_${id}`,
+      password: '', // Empty for temp users
+      email: '', // Empty until registration
+      createdAt: new Date().toISOString()
+    };
+    
+    const users = (await db.get('users') as any) || {};
+    users[id] = user;
+    await db.set('users', users);
+    return id;
+  }
+
+  async linkTemporaryUserToFirebase(tempUserId: number, firebaseData: {email: string; firebaseUid: string}): Promise<User> {
+    const users = (await db.get('users') as any) || {};
+    if (users[tempUserId]) {
+      users[tempUserId] = {
+        ...users[tempUserId],
+        email: firebaseData.email,
+        firebaseUid: firebaseData.firebaseUid,
+        username: firebaseData.email.split('@')[0],
+        password: '', // Keep empty for Firebase auth
+        registeredAt: new Date().toISOString()
+      };
+      await db.set('users', users);
+      return users[tempUserId];
+    }
+    throw new Error('Temporary user not found');
   }
 
   // Lists

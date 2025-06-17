@@ -57,6 +57,25 @@ declare global {
 // Initialize global search sessions storage
 global.searchSessions = global.searchSessions || new Map();
 
+// Helper function to get or create session-based user ID
+async function getOrCreateSessionUserId(req: any): Promise<number> {
+  if (req.isAuthenticated() && req.user) {
+    return req.user.id; // Existing authenticated user
+  }
+  
+  // For unauthenticated users, create/retrieve session-based user ID
+  let sessionUserId = req.session.userId;
+  if (!sessionUserId) {
+    console.log('Creating new temporary user for session');
+    sessionUserId = await storage.createTemporaryUser();
+    req.session.userId = sessionUserId;
+    console.log(`Created temporary user ID: ${sessionUserId}`);
+  } else {
+    console.log(`Using existing session user ID: ${sessionUserId}`);
+  }
+  return sessionUserId;
+}
+
 
 
 // Helper function to safely get user ID from request
