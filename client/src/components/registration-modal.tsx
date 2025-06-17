@@ -152,13 +152,14 @@ export function RegistrationModal() {
         console.log("Registration successful with Firebase");
         
         // Migrate temporary user data if needed
-        if (tempUserId) {
+        if (tempUserId && firebaseAuth?.currentUser) {
           try {
+            const token = await firebaseAuth.currentUser.getIdToken();
             const response = await fetch('/api/auth/migrate-temp-user', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await user?.getIdToken()}`
+                'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify({ tempUserId: parseInt(tempUserId) })
             });
