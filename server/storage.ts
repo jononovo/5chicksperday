@@ -21,8 +21,7 @@ export interface IStorage {
   // User Auth
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
-  createUser(data: { email: string; password: string; username?: string; isGuest?: boolean; expiresAt?: Date }): Promise<User>;
-  cleanupExpiredGuests(): Promise<{ deletedUsers: number; deletedCompanies: number; deletedContacts: number }>;
+  createUser(data: { email: string; password: string; username?: string }): Promise<User>;
 
   // User Preferences
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
@@ -101,22 +100,17 @@ class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async createUser(data: { email: string; password: string; username?: string; isGuest?: boolean; expiresAt?: Date }): Promise<User> {
+  async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
     const [user] = await db
       .insert(users)
       .values({
         email: data.email,
         username: data.username || data.email.split('@')[0],
-        password: data.password,
-        isGuest: data.isGuest || false,
-        expiresAt: data.expiresAt
+        password: data.password
       })
       .returning();
 
-    // Only initialize preferences for non-guest users
-    if (!data.isGuest) {
-      await this.initializeUserPreferences(user.id);
-    }
+    await this.initializeUserPreferences(user.id);
 
     return user;
   }
@@ -526,61 +520,6 @@ class DatabaseStorage implements IStorage {
         )
       ))
       .orderBy(desc(searchJobs.completedAt));
-  }
-
-  async cleanupExpiredGuests(): Promise<{ deletedUsers: number; deletedCompanies: number; deletedContacts: number }> {
-    const now = new Date();
-    
-    // Find expired guest users
-    const expiredGuests = await db
-      .select({ id: users.id })
-      .from(users)
-      .where(and(
-        eq(users.isGuest, true),
-        sql`${users.expiresAt} < ${now}`
-      ));
-
-    if (expiredGuests.length === 0) {
-      return { deletedUsers: 0, deletedCompanies: 0, deletedContacts: 0 };
-    }
-
-    const expiredUserIds = expiredGuests.map(user => user.id);
-
-    // Delete related data first (due to foreign key constraints)
-    
-    // Delete contacts for expired guests
-    const deletedContacts = await db
-      .delete(contacts)
-      .where(sql`${contacts.userId} = ANY(${expiredUserIds})`)
-      .returning({ id: contacts.id });
-
-    // Delete companies for expired guests
-    const deletedCompanies = await db
-      .delete(companies)
-      .where(sql`${companies.userId} = ANY(${expiredUserIds})`)
-      .returning({ id: companies.id });
-
-    // Delete lists for expired guests
-    await db
-      .delete(lists)
-      .where(sql`${lists.userId} = ANY(${expiredUserIds})`);
-
-    // Delete search jobs for expired guests
-    await db
-      .delete(searchJobs)
-      .where(sql`${searchJobs.userId} = ANY(${expiredUserIds})`);
-
-    // Finally delete the expired guest users
-    const deletedUsers = await db
-      .delete(users)
-      .where(sql`${users.id} = ANY(${expiredUserIds})`)
-      .returning({ id: users.id });
-
-    return {
-      deletedUsers: deletedUsers.length,
-      deletedCompanies: deletedCompanies.length,
-      deletedContacts: deletedContacts.length
-    };
   }
 }
 
