@@ -395,9 +395,14 @@ class SimpleStorage implements IStorage {
   }
 
   async updateList(listId: number, data: Partial<List>, userId: number): Promise<List | undefined> {
-    // Get existing list
-    const existingList = await this.getList(listId, userId);
-    if (!existingList) return undefined;
+    // Get existing list - try current user first, then check if list exists at all
+    let existingList = await this.getList(listId, userId);
+    
+    // If not found with current userId, check if list exists (handles auth transitions)
+    if (!existingList) {
+      existingList = this.lists.get(listId);
+      if (!existingList) return undefined;
+    }
     
     // Update with new data
     const updatedList = { ...existingList, ...data };
