@@ -4,7 +4,12 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User as SelectUser } from "@shared/schema";
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  createdAt: string;
+}
 import { getQueryFn, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { firebaseAuth, firebaseGoogleProvider } from "@/lib/firebase";
@@ -18,7 +23,7 @@ import {
 } from "firebase/auth";
 
 type AuthContextType = {
-  user: SelectUser | null;
+  user: User | null;
   isLoading: boolean;
   error: Error | null;
   logoutMutation: UseMutationResult<void, Error, void>;
@@ -35,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: user,
     error,
     isLoading,
-  } = useQuery<SelectUser | undefined, Error>({
+  } = useQuery<User | undefined, Error>({
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
