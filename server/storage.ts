@@ -1,6 +1,6 @@
 import { 
   userPreferences, lists, companies, contacts, campaigns, emailTemplates, users,
-  emailThreads, emailMessages, strategicProfiles, onboardingChats,
+  emailThreads, emailMessages, strategicProfiles, onboardingChats, searchJobs,
   type UserPreferences, type InsertUserPreferences,
   type List, type InsertList,
   type Company, type InsertCompany,
@@ -11,7 +11,8 @@ import {
   type EmailThread, type InsertEmailThread,
   type EmailMessage, type InsertEmailMessage,
   type StrategicProfile, type InsertStrategicProfile,
-  type OnboardingChat, type InsertOnboardingChat
+  type OnboardingChat, type InsertOnboardingChat,
+  type SearchJob, type InsertSearchJob
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, sql, desc } from "drizzle-orm";
@@ -78,6 +79,13 @@ export interface IStorage {
   getStrategicProfiles(userId: number): Promise<StrategicProfile[]>;
   createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile>;
   updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile>;
+
+  // Search Jobs
+  createSearchJob(data: InsertSearchJob): Promise<SearchJob>;
+  getSearchJob(id: string, userId: number): Promise<SearchJob | undefined>;
+  updateSearchJob(id: string, data: Partial<SearchJob>): Promise<SearchJob | undefined>;
+  listActiveSearchJobs(userId: number): Promise<SearchJob[]>;
+  listCompletedSearchJobs(userId: number): Promise<SearchJob[]>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -440,6 +448,60 @@ class DatabaseStorage implements IStorage {
       .where(eq(strategicProfiles.id, id))
       .returning();
     return profile;
+  }
+
+  // Search Jobs methods
+  async createSearchJob(data: InsertSearchJob): Promise<SearchJob> {
+    const [job] = await db
+      .insert(searchJobs)
+      .values(data)
+      .returning();
+    return job;
+  }
+
+  async getSearchJob(id: string, userId: number): Promise<SearchJob | undefined> {
+    const [job] = await db
+      .select()
+      .from(searchJobs)
+      .where(and(eq(searchJobs.id, id), eq(searchJobs.userId, userId)));
+    return job;
+  }
+
+  async updateSearchJob(id: string, data: Partial<SearchJob>): Promise<SearchJob | undefined> {
+    const [job] = await db
+      .update(searchJobs)
+      .set(data)
+      .where(eq(searchJobs.id, id))
+      .returning();
+    return job;
+  }
+
+  async listActiveSearchJobs(userId: number): Promise<SearchJob[]> {
+    return await db
+      .select()
+      .from(searchJobs)
+      .where(and(
+        eq(searchJobs.userId, userId),
+        or(
+          eq(searchJobs.status, 'pending'),
+          eq(searchJobs.status, 'processing')
+        )
+      ))
+      .orderBy(desc(searchJobs.createdAt));
+  }
+
+  async listCompletedSearchJobs(userId: number): Promise<SearchJob[]> {
+    return await db
+      .select()
+      .from(searchJobs)
+      .where(and(
+        eq(searchJobs.userId, userId),
+        or(
+          eq(searchJobs.status, 'completed'),
+          eq(searchJobs.status, 'failed')
+        )
+      ))
+      .orderBy(desc(searchJobs.completedAt));
   }
 }
 

@@ -9,6 +9,21 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow()
 });
 
+export const searchJobs = pgTable("search_jobs", {
+  id: text("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  query: text("query").notNull(),
+  status: text("status").notNull(), // 'pending', 'processing', 'completed', 'failed'
+  progress: text("progress"), // current phase: 'companies', 'contacts', 'emails'
+  companiesFound: integer("companies_found").default(0),
+  contactsFound: integer("contacts_found").default(0),
+  emailsFound: integer("emails_found").default(0),
+  results: jsonb("results"), // store the complete results
+  error: text("error"),
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at")
+});
+
 export const lists = pgTable("lists", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),  
@@ -234,6 +249,20 @@ export type ContactFeedback = typeof contactFeedback.$inferSelect;
 export type InsertContactFeedback = z.infer<typeof insertContactFeedbackSchema>;
 export type UserPreferences = typeof userPreferences.$inferSelect;
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
+
+export type SearchJob = typeof searchJobs.$inferSelect;
+export type InsertSearchJob = {
+  id: string;
+  userId: number;
+  query: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress?: string;
+  companiesFound?: number;
+  contactsFound?: number;
+  emailsFound?: number;
+  results?: any;
+  error?: string;
+};
 
 // N8N workflow types have been removed
 
