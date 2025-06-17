@@ -48,12 +48,292 @@ interface SearchSessionResult {
   emailSearchCompleted?: number;
 }
 
+// Background search queue for complete pipeline processing
+interface BackgroundSearchJob {
+  sessionId: string;
+  userId: number;
+  query: string;
+  searchType?: string;
+  contactConfig?: any;
+  timestamp: number;
+  status: 'queued' | 'processing' | 'completed' | 'failed';
+  companies?: any[];
+  totalContacts?: number;
+  totalEmails?: number;
+  error?: string;
+}
+
 declare global {
   var searchSessions: Map<string, SearchSessionResult>;
+  var backgroundSearchQueue: BackgroundSearchJob[];
+  var backgroundSearchProcessing: boolean;
 }
 
 // Initialize global search sessions storage
 global.searchSessions = global.searchSessions || new Map();
+global.backgroundSearchQueue = global.backgroundSearchQueue || [];
+global.backgroundSearchProcessing = global.backgroundSearchProcessing || false;
+
+// Queue a complete search pipeline for background processing
+function queueBackgroundSearch(sessionId: string, userId: number, query: string, searchType?: string, contactConfig?: any) {
+  const job: BackgroundSearchJob = {
+    sessionId,
+    userId,
+    query,
+    searchType,
+    contactConfig,
+    timestamp: Date.now(),
+    status: 'queued'
+  };
+  
+  global.backgroundSearchQueue.push(job);
+  console.log(`[Background Search] Queued complete search pipeline for session: ${sessionId}`);
+  
+  // Process queue asynchronously (non-blocking)
+  setImmediate(() => processBackgroundSearchQueue());
+}
+
+// Background search processor that runs complete pipelines
+async function processBackgroundSearchQueue() {
+  if (global.backgroundSearchProcessing || global.backgroundSearchQueue.length === 0) {
+    return;
+  }
+  
+  global.backgroundSearchProcessing = true;
+  console.log(`[Background Search] Processing ${global.backgroundSearchQueue.length} search jobs`);
+  
+  try {
+    while (global.backgroundSearchQueue.length > 0) {
+      const job = global.backgroundSearchQueue.shift()!;
+      console.log(`[Background Search] Processing complete search pipeline for session: ${job.sessionId}`);
+      
+      // Update job status
+      job.status = 'processing';
+      
+      try {
+        await executeCompleteSearchPipeline(job);
+        job.status = 'completed';
+        console.log(`[Background Search] Completed search pipeline for session: ${job.sessionId}`);
+        
+      } catch (error) {
+        console.error(`[Background Search] Error processing search for session ${job.sessionId}:`, error);
+        job.status = 'failed';
+        job.error = error instanceof Error ? error.message : 'Unknown error';
+      }
+    }
+  } catch (error) {
+    console.error('[Background Search] Queue processing error:', error);
+  } finally {
+    global.backgroundSearchProcessing = false;
+  }
+}
+
+// Execute complete search pipeline: companies → contacts → emails
+async function executeCompleteSearchPipeline(job: BackgroundSearchJob) {
+  console.log(`[Search Pipeline] Starting complete pipeline for: ${job.query}`);
+  
+  // Phase 1: Company Discovery
+  console.log(`[Search Pipeline] Phase 1: Company discovery`);
+  const companyResults = await searchCompanies(job.query);
+  
+  if (!companyResults || companyResults.length === 0) {
+    throw new Error('No companies found');
+  }
+  
+  // Create companies in database
+  const companies = [];
+  for (const result of companyResults) {
+    const companyData = parseCompanyData(result);
+    const createdCompany = await storage.createCompany({
+      name: companyData.name,
+      website: companyData.website || null,
+      description: companyData.description || null,
+      size: null,
+      listId: null,
+      age: null,
+      alternativeProfileUrl: null,
+      defaultContactEmail: null,
+      userId: job.userId,
+      industry: null,
+      location: null,
+      phoneNumber: null,
+      linkedinUrl: null,
+      twitterHandle: null,
+      snapshot: companyData
+    });
+    companies.push(createdCompany);
+  }
+  
+  job.companies = companies;
+  console.log(`[Search Pipeline] Created ${companies.length} companies`);
+  
+  // Phase 2: Contact Discovery
+  console.log(`[Search Pipeline] Phase 2: Contact discovery`);
+  let totalContacts = 0;
+  
+  for (const company of companies) {
+    const contacts = await findKeyDecisionMakers(company.name, {
+      industry: 'technology',
+      minimumConfidence: 30,
+      maxContacts: 20,
+      includeMiddleManagement: true,
+      prioritizeLeadership: true,
+      useMultipleQueries: true,
+    });
+    
+    // Create contact records
+    const createdContacts = await Promise.all(
+      contacts.map(contact =>
+        storage.createContact({
+          companyId: company.id,
+          name: contact.name!,
+          role: contact.role ?? null,
+          email: contact.email ?? null,
+          probability: contact.probability ?? null,
+          linkedinUrl: null,
+          twitterHandle: null,
+          phoneNumber: null,
+          department: null,
+          location: null,
+          verificationSource: 'Contact Search',
+          nameConfidenceScore: contact.nameConfidenceScore ?? null,
+          userFeedbackScore: null,
+          feedbackCount: 0,
+        })
+      )
+    );
+    
+    totalContacts += createdContacts.length;
+  }
+  
+  job.totalContacts = totalContacts;
+  console.log(`[Search Pipeline] Created ${totalContacts} contacts`);
+  
+  // Phase 3: Email Discovery
+  console.log(`[Search Pipeline] Phase 3: Email discovery`);
+  const companyIds = companies.map(c => c.id);
+  await executeEmailSearchForCompanies(companyIds, job.userId, job.sessionId);
+  
+  // Update final session status
+  const session = global.searchSessions?.get(job.sessionId);
+  if (session) {
+    session.status = 'contacts_complete';
+    session.fullResults = companies;
+    session.emailSearchStatus = 'completed';
+    session.emailSearchCompleted = Date.now();
+    global.searchSessions.set(job.sessionId, session);
+  }
+  
+  console.log(`[Search Pipeline] Complete pipeline finished for session: ${job.sessionId}`);
+}
+
+// Execute email search for companies (similar to previous implementation)
+async function executeEmailSearchForCompanies(companyIds: number[], userId: number, sessionId?: string) {
+  console.log(`[Email Search] Starting email search for ${companyIds.length} companies`);
+  
+  // Get companies that need email searches (only check top 3 contacts)
+  const companiesNeedingEmails = [];
+  
+  for (const companyId of companyIds) {
+    const contacts = await storage.listContactsByCompany(companyId, userId);
+    const topContacts = contacts.slice(0, 3);
+    const hasEmails = topContacts.some(contact => contact.email && contact.email.length > 5);
+    
+    if (!hasEmails) {
+      companiesNeedingEmails.push(companyId);
+    }
+  }
+  
+  if (companiesNeedingEmails.length === 0) {
+    console.log(`[Email Search] No companies need email searches - all have sufficient emails`);
+    return;
+  }
+  
+  console.log(`[Email Search] Processing ${companiesNeedingEmails.length} companies needing emails`);
+  
+  // Parallel email search processing
+  let totalEmailsFound = 0;
+  let totalProcessed = 0;
+  const sourceBreakdown = { Perplexity: 0, Apollo: 0, Hunter: 0 };
+  
+  // Process companies in batches
+  const batchSize = 4;
+  async function processBatch<T, R>(items: T[], processor: (item: T) => Promise<R>, batchSize: number = 4): Promise<R[]> {
+    const results: R[] = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      const batchResults = await Promise.all(batch.map(processor));
+      results.push(...batchResults);
+    }
+    return results;
+  }
+  
+  await processBatch(companiesNeedingEmails, async (companyId) => {
+    const contacts = await storage.listContactsByCompany(companyId, userId);
+    const topContacts = contacts.slice(0, 3);
+    
+    // Filter contacts without emails
+    const validContacts = topContacts.filter((contact: any) => 
+      contact && 
+      contact.name && 
+      contact.name.trim().length > 0 &&
+      (!contact.email || contact.email.length <= 5)
+    );
+    
+    if (validContacts.length === 0) return;
+    
+    // Parallel Tier 1&2 search (Apollo + Perplexity)
+    const apolloPromise = validContacts.length >= 1 ? 
+      emailEnrichmentService.searchApolloEmails([validContacts[0]], companyId, userId) : 
+      Promise.resolve([]);
+    
+    const perplexityPromise = validContacts.length >= 1 ?
+      emailEnrichmentService.searchPerplexityEmails([validContacts[0]], companyId, userId) :
+      Promise.resolve([]);
+    
+    const [apolloResults, perplexityResults] = await Promise.all([
+      apolloPromise, perplexityPromise
+    ]);
+    
+    const allResults = [...apolloResults, ...perplexityResults];
+    let companyEmailsFound = 0;
+    
+    // Process results and update source breakdown
+    for (const result of allResults) {
+      if (result && result.email) {
+        companyEmailsFound++;
+        
+        if (result.source.includes('Apollo')) {
+          sourceBreakdown.Apollo++;
+        } else if (result.source.includes('Perplexity')) {
+          sourceBreakdown.Perplexity++;
+        } else if (result.source.includes('Hunter')) {
+          sourceBreakdown.Hunter++;
+        }
+      }
+    }
+    
+    // Tier 3: Hunter search if insufficient emails found
+    if (companyEmailsFound < 1) {
+      console.log(`[Email Search] Company ${companyId}: Insufficient emails (${companyEmailsFound}), triggering Hunter search`);
+      
+      const hunterResults = await emailEnrichmentService.searchHunterEmails(validContacts, companyId, userId);
+      
+      for (const result of hunterResults) {
+        if (result && result.email) {
+          companyEmailsFound++;
+          sourceBreakdown.Hunter++;
+        }
+      }
+    }
+    
+    totalEmailsFound += companyEmailsFound;
+    totalProcessed += validContacts.length;
+    
+  }, batchSize);
+  
+  console.log(`[Email Search] Completed: ${totalEmailsFound} emails found from ${totalProcessed} searches`);
+}
 
 
 
