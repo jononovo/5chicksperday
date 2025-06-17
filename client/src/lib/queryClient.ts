@@ -44,59 +44,12 @@ export async function apiRequest(
     // Get Firebase token from localStorage if available
     const authToken = localStorage.getItem('authToken');
     
-    // Get or create real user ID from backend
-    const getUserId = async (): Promise<string | null> => {
-      // For authenticated users, we don't need to send guest headers
-      if (authToken) {
-        return null;
-      }
-      
-      // For unauthenticated users, get real user ID from backend
-      let tempUserId = localStorage.getItem('tempUserId');
-      if (!tempUserId) {
-        try {
-          // Create a real temporary user via backend
-          const response = await fetch('/api/auth/create-temp-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include'
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            tempUserId = result.userId.toString();
-            localStorage.setItem('tempUserId', tempUserId);
-            console.log('Created temporary user ID:', tempUserId);
-          }
-        } catch (error) {
-          console.error('Failed to create temporary user:', error);
-        }
-      }
-      
-      return tempUserId;
-    };
-    
-    // Get user ID synchronously if available, or null if we need to create one
-    let guestUserId: string | null = null;
-    if (!authToken) {
-      guestUserId = localStorage.getItem('tempUserId');
-    }
-    
     // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
     
     // Add auth token if available
     if (authToken) {
       headers['Authorization'] = `Bearer ${authToken}`;
-    }
-    
-    // Add guest user ID header if available and no auth token
-    if (guestUserId && !authToken) {
-      // Multiple header strategies for maximum compatibility
-      headers['X-Guest-User-Id'] = guestUserId;      // Standard Pascal-Case
-      headers['x-guest-user-id'] = guestUserId;      // Lowercase fallback
-      headers['Guest-User-ID'] = guestUserId;        // Alternative format
-      console.log('Adding guest user headers:', { guestUserId, headers: Object.keys(headers) });
     }
     
     const res = await fetch(url, {

@@ -8,10 +8,11 @@ import { storage } from "./storage-simple";
 import { User } from "./storage-simple";
 import admin from "firebase-admin";
 
-// Extend the session type to include gmailToken
+// Extend the session type to include gmailToken and userId
 declare module 'express-session' {
   interface SessionData {
     gmailToken?: string;
+    userId?: number;
   }
 }
 
@@ -104,11 +105,31 @@ async function verifyFirebaseToken(req: Request): Promise<User | null> {
         timestamp: new Date().toISOString()
       });
 
-      user = await storage.createUser({
-        email: decodedToken.email,
-        username: decodedToken.name || decodedToken.email.split('@')[0],
-        password: '',  // Not used for Firebase auth
-      });
+      // Check if this is a session upgrade
+      const sessionUserId = req.session?.userId;
+      if (sessionUserId) {
+        // Upgrade session user to registered user
+        console.log(`Upgrading session user ${sessionUserId} to registered user`);
+        user = await storage.createUserWithId(sessionUserId, {
+          email: decodedToken.email,
+          username: decodedToken.name || decodedToken.email.split('@')[0],
+          password: '',  // Not used for Firebase auth
+          firebaseUid: decodedToken.uid
+        });
+        
+        // Initialize with trial credits if they don't have any
+        const currentCredits = await storage.getUserCredits(sessionUserId);
+        if (currentCredits === 0) {
+          await storage.createUserCredits(sessionUserId, 100);
+        }
+      } else {
+        // Create new user normally
+        user = await storage.createUser({
+          email: decodedToken.email,
+          username: decodedToken.name || decodedToken.email.split('@')[0],
+          password: '',  // Not used for Firebase auth
+        });
+      }
     }
 
     return user;

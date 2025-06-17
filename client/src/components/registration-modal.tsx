@@ -144,37 +144,9 @@ export function RegistrationModal() {
         // Register user with Firebase authentication
         console.log("Attempting registration with:", { email, name });
         
-        // Store temporary user ID before registration for data migration
-        const tempUserId = localStorage.getItem('tempUserId');
-        
         await registerWithEmail(email, password, name);
         
         console.log("Registration successful with Firebase");
-        
-        // Migrate temporary user data if needed
-        if (tempUserId && firebaseAuth?.currentUser) {
-          try {
-            const token = await firebaseAuth.currentUser.getIdToken();
-            const response = await fetch('/api/auth/migrate-temp-user', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-              body: JSON.stringify({ tempUserId: parseInt(tempUserId) })
-            });
-            
-            if (response.ok) {
-              const result = await response.json();
-              console.log('Data migration completed:', result);
-              localStorage.removeItem('tempUserId');
-            } else {
-              console.error('Data migration failed:', await response.text());
-            }
-          } catch (migrationError) {
-            console.error('Data migration error:', migrationError);
-          }
-        }
         
         closeModal();
       } catch (error: any) {

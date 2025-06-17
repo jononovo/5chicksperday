@@ -51,41 +51,7 @@ function Router() {
   // Track page views when routes change
   useAnalytics();
   
-  // Initialize temporary user system for all visitors
-  useEffect(() => {
-    const initializeTempUser = async () => {
-      try {
-        // Check if we already have a temp user ID
-        const existingTempUserId = localStorage.getItem('tempUserId');
-        if (existingTempUserId) {
-          console.log('Using existing temp user ID:', existingTempUserId);
-          return;
-        }
 
-        // Create new temporary user via backend
-        const response = await fetch('/api/auth/create-temp-user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to create temporary user: ${response.status}`);
-        }
-
-        const { userId } = await response.json();
-        localStorage.setItem('tempUserId', userId.toString());
-        console.log('Created new temporary user:', userId);
-      } catch (error) {
-        console.error('Error initializing temporary user:', error);
-        // Fallback to a default user ID if backend fails
-        localStorage.setItem('tempUserId', '1');
-      }
-    };
-
-    initializeTempUser();
-  }, []);
   
   return (
     <>
