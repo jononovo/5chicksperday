@@ -3,6 +3,7 @@ import { LogOut, User, Menu, LayoutDashboard, ListTodo, Mail, MessageCircle } fr
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { CreditCounter } from "@/components/credits/CreditCounter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,7 +63,8 @@ export function MainNav() {
         })}
       </div>
       {user && (
-        <div className="flex items-center ml-auto">
+        <div className="flex items-center ml-auto gap-3">
+          <CreditCounter />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">

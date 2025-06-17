@@ -1,24 +1,119 @@
-import { 
-  userPreferences, lists, companies, contacts, campaigns, emailTemplates, users,
-  emailThreads, emailMessages, strategicProfiles, onboardingChats, searchJobs,
-  userCredits, creditTransactions,
-  type UserPreferences, type InsertUserPreferences,
-  type List, type InsertList,
-  type Company, type InsertCompany,
-  type Contact, type InsertContact,
-  type Campaign, type InsertCampaign,
-  type EmailTemplate, type InsertEmailTemplate,
-  type User, type InsertUser,
-  type EmailThread, type InsertEmailThread,
-  type EmailMessage, type InsertEmailMessage,
-  type StrategicProfile, type InsertStrategicProfile,
-  type OnboardingChat, type InsertOnboardingChat,
-  type SearchJob, type InsertSearchJob,
-  type UserCredits, type InsertUserCredits,
-  type CreditTransaction, type InsertCreditTransaction
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, and, or, sql, desc } from "drizzle-orm";
+// Using Replit DB instead of PostgreSQL
+import Database from "@replit/database";
+const db = new Database();
+
+// Type definitions for our data structures
+export interface User {
+  id: number;
+  username: string;
+  password: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface UserCredits {
+  userId: number;
+  credits: number;
+  lastUpdated: string;
+}
+
+export interface CreditTransaction {
+  id: string;
+  userId: number;
+  type: 'purchase' | 'deduction';
+  amount: number;
+  operation: string;
+  description?: string;
+  balanceAfter: number;
+  stripePaymentIntentId?: string;
+  createdAt: string;
+}
+
+export interface SearchJob {
+  id: string;
+  userId: number;
+  query: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress?: string;
+  companiesFound: number;
+  contactsFound: number;
+  emailsFound: number;
+  results?: any;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface Company {
+  id: number;
+  userId: number;
+  name: string;
+  listId?: number;
+  description?: string;
+  age?: number;
+  size?: number;
+  website?: string;
+  alternativeProfileUrl?: string;
+  defaultContactEmail?: string;
+  ranking?: number;
+  linkedinProminence?: number;
+  customerCount?: number;
+  location?: string;
+  industry?: string;
+  snapshot?: Record<string, any>;
+  createdAt: string;
+}
+
+export interface Contact {
+  id: number;
+  userId: number;
+  companyId: number;
+  name: string;
+  email?: string;
+  role?: string;
+  probability?: number;
+  linkedinUrl?: string;
+  twitterHandle?: string;
+  phoneNumber?: string;
+  location?: string;
+  alternativeEmails?: string[];
+  confidenceScore?: number;
+  validationStatus?: string;
+  completedSearches?: string[];
+  createdAt: string;
+}
+
+export interface List {
+  id: number;
+  userId: number;
+  listId: number;
+  prompt: string;
+  resultCount: number;
+  customSearchTargets?: string[];
+  createdAt: string;
+}
+
+export interface Campaign {
+  id: number;
+  userId: number;
+  name: string;
+  status?: string;
+  description?: string;
+  campaignId: number;
+  startDate?: string;
+  totalCompanies?: number;
+  createdAt: string;
+}
+
+export interface EmailTemplate {
+  id: number;
+  userId: number;
+  name: string;
+  subject: string;
+  body: string;
+  description?: string;
+  createdAt: string;
+}
 
 export interface IStorage {
   // User Auth
@@ -26,65 +121,42 @@ export interface IStorage {
   getUserById(id: number): Promise<User | undefined>;
   createUser(data: { email: string; password: string; username?: string }): Promise<User>;
 
-  // User Preferences
-  getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
-  updateUserPreferences(userId: number, data: Partial<InsertUserPreferences>): Promise<UserPreferences>;
-  initializeUserPreferences(userId: number): Promise<UserPreferences>;
-
   // Lists
   listLists(userId: number): Promise<List[]>;
   getList(listId: number, userId: number): Promise<List | undefined>;
   listCompaniesByList(listId: number, userId: number): Promise<Company[]>;
   getNextListId(): Promise<number>;
-  createList(data: InsertList): Promise<List>;
+  createList(data: Omit<List, 'id' | 'createdAt'>): Promise<List>;
   updateCompanyList(companyId: number, listId: number): Promise<void>;
 
   // Companies
   listCompanies(userId: number): Promise<Company[]>;
   getCompany(id: number, userId: number): Promise<Company | undefined>;
-  createCompany(data: InsertCompany): Promise<Company>;
+  createCompany(data: Omit<Company, 'id' | 'createdAt'>): Promise<Company>;
   updateCompany(id: number, data: Partial<Company>): Promise<Company | undefined>;
 
   // Contacts
   listContactsByCompany(companyId: number, userId: number): Promise<Contact[]>;
   getContact(id: number, userId: number): Promise<Contact | undefined>;
-  createContact(data: InsertContact): Promise<Contact>;
+  createContact(data: Omit<Contact, 'id' | 'createdAt'>): Promise<Contact>;
   updateContact(id: number, data: Partial<Contact>): Promise<Contact>;
   deleteContactsByCompany(companyId: number, userId: number): Promise<void>;
 
-  // Email Conversations
-  listActiveContactsWithThreads(userId: number): Promise<(Contact & { lastMessage: string, lastMessageDate: Date, unread: boolean })[]>;
-  listThreadsByContact(contactId: number, userId: number): Promise<EmailThread[]>;
-  getThread(id: number, userId: number): Promise<EmailThread | undefined>;
-  createThread(data: InsertEmailThread): Promise<EmailThread>;
-  updateThread(id: number, data: Partial<EmailThread>): Promise<EmailThread>;
-  listMessagesByThread(threadId: number): Promise<EmailMessage[]>;
-  getThreadMessage(id: number): Promise<EmailMessage | undefined>;
-  createMessage(data: InsertEmailMessage): Promise<EmailMessage>;
-  markThreadMessagesAsRead(threadId: number): Promise<void>;
-  
   // Campaigns
   listCampaigns(userId: number): Promise<Campaign[]>;
   getCampaign(id: number, userId: number): Promise<Campaign | undefined>;
   getNextCampaignId(): Promise<number>;
-  createCampaign(data: InsertCampaign): Promise<Campaign>;
+  createCampaign(data: Omit<Campaign, 'id' | 'createdAt'>): Promise<Campaign>;
   updateCampaign(id: number, data: Partial<Campaign>, userId: number): Promise<Campaign>;
 
   // Email Templates
   listEmailTemplates(userId: number): Promise<EmailTemplate[]>;
   getEmailTemplate(id: number, userId: number): Promise<EmailTemplate | undefined>;
-  createEmailTemplate(data: InsertEmailTemplate): Promise<EmailTemplate>;
-  updateEmailTemplate(id: number, data: InsertEmailTemplate): Promise<EmailTemplate>;
-
-
-
-  // Strategic Profiles
-  getStrategicProfiles(userId: number): Promise<StrategicProfile[]>;
-  createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile>;
-  updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile>;
+  createEmailTemplate(data: Omit<EmailTemplate, 'id' | 'createdAt'>): Promise<EmailTemplate>;
+  updateEmailTemplate(id: number, data: Omit<EmailTemplate, 'createdAt'>): Promise<EmailTemplate>;
 
   // Search Jobs
-  createSearchJob(data: InsertSearchJob): Promise<SearchJob>;
+  createSearchJob(data: Omit<SearchJob, 'createdAt'>): Promise<SearchJob>;
   getSearchJob(id: string, userId: number): Promise<SearchJob | undefined>;
   updateSearchJob(id: string, data: Partial<SearchJob>): Promise<SearchJob | undefined>;
   listActiveSearchJobs(userId: number): Promise<SearchJob[]>;
@@ -95,455 +167,324 @@ export interface IStorage {
   createUserCredits(userId: number, initialCredits?: number): Promise<void>;
   deductCredits(userId: number, amount: number, operation: string, description?: string): Promise<boolean>;
   addCredits(userId: number, amount: number, operation: string, description?: string, stripePaymentIntentId?: string): Promise<void>;
-  getCreditTransactions(userId: number, limit?: number): Promise<any[]>;
-  updateUserCredentials(userId: number, data: { email: string; password: string; username: string }): Promise<any>;
+  getCreditTransactions(userId: number, limit?: number): Promise<CreditTransaction[]>;
+  updateUserCredentials(userId: number, data: { email: string; password: string; username: string }): Promise<User>;
+
+  // Stub methods for compatibility
+  getUserPreferences(userId: number): Promise<any>;
+  updateUserPreferences(userId: number, data: any): Promise<any>;
+  initializeUserPreferences(userId: number): Promise<any>;
+  getStrategicProfiles(userId: number): Promise<any[]>;
+  createStrategicProfile(data: any): Promise<any>;
+  updateStrategicProfile(id: number, data: any): Promise<any>;
+  listActiveContactsWithThreads(userId: number): Promise<any[]>;
+  listThreadsByContact(contactId: number, userId: number): Promise<any[]>;
+  getThread(id: number, userId: number): Promise<any>;
+  createThread(data: any): Promise<any>;
+  updateThread(id: number, data: any): Promise<any>;
+  listMessagesByThread(threadId: number): Promise<any[]>;
+  getThreadMessage(id: number): Promise<any>;
+  createMessage(data: any): Promise<any>;
+  markThreadMessagesAsRead(threadId: number): Promise<void>;
 }
 
-class DatabaseStorage implements IStorage {
+class ReplitDBStorage implements IStorage {
+  private async getNextId(prefix: string): Promise<number> {
+    const key = `${prefix}_counter`;
+    const current = await db.get(key) || 0;
+    const next = current + 1;
+    await db.set(key, next);
+    return next;
+  }
+
   // User Auth methods
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+    const users = await db.get('users') || {};
+    return Object.values(users).find((user: any) => user.email === email);
   }
 
   async getUserById(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    const users = await db.get('users') || {};
+    return users[id];
   }
 
   async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values({
-        email: data.email,
-        username: data.username || data.email.split('@')[0],
-        password: data.password
-      })
-      .returning();
+    const id = await this.getNextId('user');
+    const user: User = {
+      id,
+      username: data.username || data.email.split('@')[0],
+      password: data.password,
+      email: data.email,
+      createdAt: new Date().toISOString()
+    };
 
-    await this.initializeUserPreferences(user.id);
-
+    const users = await db.get('users') || {};
+    users[id] = user;
+    await db.set('users', users);
+    
     return user;
-  }
-
-  async updateUserCredentials(userId: number, credentials: { email: string; password: string; username: string }): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        email: credentials.email,
-        password: credentials.password,
-        username: credentials.username
-      })
-      .where(eq(users.id, userId))
-      .returning();
-
-    if (!user) {
-      throw new Error('User not found for credential update');
-    }
-
-    return user;
-  }
-
-  // User Preferences
-  async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {
-    const [prefs] = await db
-      .select()
-      .from(userPreferences)
-      .where(eq(userPreferences.userId, userId));
-
-    if (!prefs) {
-      return this.initializeUserPreferences(userId);
-    }
-
-    return prefs;
-  }
-
-  async updateUserPreferences(userId: number, data: Partial<InsertUserPreferences>): Promise<UserPreferences> {
-    const [existing] = await db
-      .select()
-      .from(userPreferences)
-      .where(eq(userPreferences.userId, userId));
-
-    if (existing) {
-      const [updated] = await db
-        .update(userPreferences)
-        .set({ ...data, updatedAt: new Date() })
-        .where(eq(userPreferences.userId, userId))
-        .returning();
-      return updated;
-    }
-
-    return this.initializeUserPreferences(userId);
-  }
-
-  async initializeUserPreferences(userId: number): Promise<UserPreferences> {
-    console.log('DatabaseStorage.initializeUserPreferences - Creating preferences for userId:', userId);
-    const [prefs] = await db
-      .insert(userPreferences)
-      .values({ userId, hasSeenTour: false })
-      .returning();
-
-    return prefs;
   }
 
   // Lists
   async listLists(userId: number): Promise<List[]> {
-    return db.select().from(lists).where(eq(lists.userId, userId)).orderBy(desc(lists.createdAt));
+    const lists = await db.get('lists') || {};
+    return Object.values(lists).filter((list: any) => list.userId === userId);
   }
 
   async getList(listId: number, userId: number): Promise<List | undefined> {
-    const [list] = await db
-      .select()
-      .from(lists)
-      .where(and(eq(lists.listId, listId), eq(lists.userId, userId)));
-    return list;
+    const lists = await db.get('lists') || {};
+    return Object.values(lists).find((list: any) => list.listId === listId && list.userId === userId);
   }
 
   async listCompaniesByList(listId: number, userId: number): Promise<Company[]> {
-    return db.select()
-      .from(companies)
-      .where(and(eq(companies.listId, listId), eq(companies.userId, userId)));
+    const companies = await db.get('companies') || {};
+    return Object.values(companies).filter((company: any) => company.listId === listId && company.userId === userId);
   }
 
   async getNextListId(): Promise<number> {
-    const allLists = await db.select().from(lists);
-    let maxId = 1000;
-    
-    for (const list of allLists) {
-      if (list.listId > maxId) {
-        maxId = list.listId;
-      }
-    }
-    
-    return maxId + 1;
+    return await this.getNextId('list');
   }
 
-  async createList(data: InsertList): Promise<List> {
-    const [list] = await db.insert(lists).values(data).returning();
+  async createList(data: Omit<List, 'id' | 'createdAt'>): Promise<List> {
+    const id = await this.getNextId('list');
+    const list: List = {
+      ...data,
+      id,
+      createdAt: new Date().toISOString()
+    };
+
+    const lists = await db.get('lists') || {};
+    lists[id] = list;
+    await db.set('lists', lists);
+    
     return list;
   }
 
   async updateCompanyList(companyId: number, listId: number): Promise<void> {
-    await db.update(companies)
-      .set({ listId })
-      .where(eq(companies.id, companyId));
-  }
-
-  async updateList(listId: number, data: Partial<InsertList>, userId: number): Promise<List | undefined> {
-    const [updated] = await db.update(lists)
-      .set(data)
-      .where(and(eq(lists.listId, listId), eq(lists.userId, userId)))
-      .returning();
-    return updated;
+    const companies = await db.get('companies') || {};
+    if (companies[companyId]) {
+      companies[companyId].listId = listId;
+      await db.set('companies', companies);
+    }
   }
 
   // Companies
   async listCompanies(userId: number): Promise<Company[]> {
-    console.log('DatabaseStorage.listCompanies - Fetching companies for userId:', userId);
-    return db.select().from(companies).where(eq(companies.userId, userId));
+    const companies = await db.get('companies') || {};
+    return Object.values(companies).filter((company: any) => company.userId === userId);
   }
 
   async getCompany(id: number, userId: number): Promise<Company | undefined> {
-    console.log('DatabaseStorage.getCompany - Fetching company:', { id, userId });
-    try {
-      const result = await db
-        .select()
-        .from(companies)
-        .where(and(eq(companies.id, id), eq(companies.userId, userId)))
-        .limit(1);
-
-      console.log('DatabaseStorage.getCompany - Result:', {
-        requested: { id, userId },
-        found: result[0] ? { id: result[0].id, name: result[0].name } : null
-      });
-
-      return result[0];
-    } catch (error) {
-      console.error('Error fetching company:', error);
-      return undefined;
-    }
+    const companies = await db.get('companies') || {};
+    const company = companies[id];
+    return company && company.userId === userId ? company : undefined;
   }
 
-  async createCompany(data: InsertCompany): Promise<Company> {
-    const [company] = await db.insert(companies).values(data as any).returning();
+  async createCompany(data: Omit<Company, 'id' | 'createdAt'>): Promise<Company> {
+    const id = await this.getNextId('company');
+    const company: Company = {
+      ...data,
+      id,
+      createdAt: new Date().toISOString()
+    };
+
+    const companies = await db.get('companies') || {};
+    companies[id] = company;
+    await db.set('companies', companies);
+    
     return company;
   }
 
   async updateCompany(id: number, data: Partial<Company>): Promise<Company | undefined> {
-    const [updated] = await db
-      .update(companies)
-      .set(data)
-      .where(eq(companies.id, id))
-      .returning();
-    return updated;
+    const companies = await db.get('companies') || {};
+    if (companies[id]) {
+      companies[id] = { ...companies[id], ...data };
+      await db.set('companies', companies);
+      return companies[id];
+    }
+    return undefined;
   }
 
   // Contacts
   async listContactsByCompany(companyId: number, userId: number): Promise<Contact[]> {
-    try {
-      return await db
-        .select()
-        .from(contacts)
-        .where(and(eq(contacts.companyId, companyId), eq(contacts.userId, userId)));
-    } catch (error) {
-      console.error('Error fetching contacts by company:', error);
-      return [];
-    }
+    const contacts = await db.get('contacts') || {};
+    return Object.values(contacts).filter((contact: any) => contact.companyId === companyId && contact.userId === userId);
   }
 
   async getContact(id: number, userId: number): Promise<Contact | undefined> {
-    console.log('DatabaseStorage.getContact - Fetching contact:', { id, userId });
-    try {
-      const result = await db
-        .select()
-        .from(contacts)
-        .where(and(eq(contacts.id, id), eq(contacts.userId, userId)))
-        .limit(1);
-
-      console.log('DatabaseStorage.getContact - Result:', {
-        requested: { id, userId },
-        found: result[0] ? { id: result[0].id, name: result[0].name } : null
-      });
-
-      return result[0];
-    } catch (error) {
-      console.error('Error fetching contact:', error);
-      return undefined;
-    }
+    const contacts = await db.get('contacts') || {};
+    const contact = contacts[id];
+    return contact && contact.userId === userId ? contact : undefined;
   }
 
-  async createContact(data: InsertContact): Promise<Contact> {
-    // Clean contact data to prevent duplicate emails
-    const { cleanContactData } = await import('./lib/email-utils');
-    const cleanedData = cleanContactData(data);
+  async createContact(data: Omit<Contact, 'id' | 'createdAt'>): Promise<Contact> {
+    const id = await this.getNextId('contact');
+    const contact: Contact = {
+      ...data,
+      id,
+      createdAt: new Date().toISOString()
+    };
+
+    const contacts = await db.get('contacts') || {};
+    contacts[id] = contact;
+    await db.set('contacts', contacts);
     
-    const [contact] = await db.insert(contacts).values(cleanedData as any).returning();
     return contact;
   }
 
   async updateContact(id: number, data: Partial<Contact>): Promise<Contact> {
-    // Clean contact data to prevent duplicate emails
-    const { cleanContactData } = await import('./lib/email-utils');
-    const cleanedData = cleanContactData(data);
-    
-    const [updated] = await db.update(contacts)
-      .set(cleanedData)
-      .where(eq(contacts.id, id))
-      .returning();
-    return updated;
+    const contacts = await db.get('contacts') || {};
+    if (contacts[id]) {
+      contacts[id] = { ...contacts[id], ...data };
+      await db.set('contacts', contacts);
+    }
+    return contacts[id];
   }
 
   async deleteContactsByCompany(companyId: number, userId: number): Promise<void> {
-    await db.delete(contacts)
-      .where(and(eq(contacts.companyId, companyId), eq(contacts.userId, userId)));
+    const contacts = await db.get('contacts') || {};
+    const filtered = Object.fromEntries(
+      Object.entries(contacts).filter(([_, contact]: [string, any]) => 
+        !(contact.companyId === companyId && contact.userId === userId)
+      )
+    );
+    await db.set('contacts', filtered);
   }
 
   // Campaigns
   async listCampaigns(userId: number): Promise<Campaign[]> {
-    return db.select().from(campaigns).where(eq(campaigns.userId, userId));
+    const campaigns = await db.get('campaigns') || {};
+    return Object.values(campaigns).filter((campaign: any) => campaign.userId === userId);
   }
 
   async getCampaign(id: number, userId: number): Promise<Campaign | undefined> {
-    const [campaign] = await db
-      .select()
-      .from(campaigns)
-      .where(and(eq(campaigns.campaignId, id), eq(campaigns.userId, userId)));
-    return campaign;
+    const campaigns = await db.get('campaigns') || {};
+    const campaign = campaigns[id];
+    return campaign && campaign.userId === userId ? campaign : undefined;
   }
 
   async getNextCampaignId(): Promise<number> {
-    const [result] = await db.select({ maxId: campaigns.campaignId }).from(campaigns);
-    return (result?.maxId || 2000) + 1;
+    return await this.getNextId('campaign');
   }
 
-  async createCampaign(data: InsertCampaign): Promise<Campaign> {
-    const [campaign] = await db.insert(campaigns).values(data as any).returning();
+  async createCampaign(data: Omit<Campaign, 'id' | 'createdAt'>): Promise<Campaign> {
+    const id = await this.getNextId('campaign');
+    const campaign: Campaign = {
+      ...data,
+      id,
+      createdAt: new Date().toISOString()
+    };
+
+    const campaigns = await db.get('campaigns') || {};
+    campaigns[id] = campaign;
+    await db.set('campaigns', campaigns);
+    
     return campaign;
   }
 
   async updateCampaign(id: number, data: Partial<Campaign>, userId: number): Promise<Campaign> {
-    const [updated] = await db.update(campaigns)
-      .set(data)
-      .where(and(eq(campaigns.campaignId, id), eq(campaigns.userId, userId)))
-      .returning();
-    return updated;
+    const campaigns = await db.get('campaigns') || {};
+    if (campaigns[id] && campaigns[id].userId === userId) {
+      campaigns[id] = { ...campaigns[id], ...data };
+      await db.set('campaigns', campaigns);
+    }
+    return campaigns[id];
   }
 
   // Email Templates
   async listEmailTemplates(userId: number): Promise<EmailTemplate[]> {
-    console.log('DatabaseStorage.listEmailTemplates called for userId:', userId);
-    
-    // If this is not userId=1, get both the default templates and the user's templates
-    if (userId !== 1) {
-      console.log(`Fetching both default templates (userId=1) and user templates (userId=${userId})`);
-      return db
-        .select()
-        .from(emailTemplates)
-        .where(or(
-          eq(emailTemplates.userId, 1),  // Default templates (userId=1)
-          eq(emailTemplates.userId, userId)  // User's personal templates
-        ))
-        .orderBy(emailTemplates.createdAt);
-    }
-    
-    // If it is userId=1, just return their templates (which are the defaults)
-    console.log('Fetching only templates for userId=1 (defaults)');
-    return db
-      .select()
-      .from(emailTemplates)
-      .where(eq(emailTemplates.userId, userId))
-      .orderBy(emailTemplates.createdAt);
+    const templates = await db.get('email_templates') || {};
+    return Object.values(templates).filter((template: any) => template.userId === userId);
   }
 
   async getEmailTemplate(id: number, userId: number): Promise<EmailTemplate | undefined> {
-    console.log('DatabaseStorage.getEmailTemplate called with:', { id, userId });
-    const [template] = await db
-      .select()
-      .from(emailTemplates)
-      .where(and(eq(emailTemplates.id, id), eq(emailTemplates.userId, userId)));
+    const templates = await db.get('email_templates') || {};
+    const template = templates[id];
+    return template && template.userId === userId ? template : undefined;
+  }
+
+  async createEmailTemplate(data: Omit<EmailTemplate, 'id' | 'createdAt'>): Promise<EmailTemplate> {
+    const id = await this.getNextId('email_template');
+    const template: EmailTemplate = {
+      ...data,
+      id,
+      createdAt: new Date().toISOString()
+    };
+
+    const templates = await db.get('email_templates') || {};
+    templates[id] = template;
+    await db.set('email_templates', templates);
+    
     return template;
   }
 
-  async createEmailTemplate(data: InsertEmailTemplate): Promise<EmailTemplate> {
-    console.log('DatabaseStorage.createEmailTemplate called with:', {
-      name: data.name,
-      userId: data.userId
-    });
-    try {
-      const [template] = await db
-        .insert(emailTemplates)
-        .values({
-          ...data,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-        .returning();
-      console.log('Created template:', { id: template.id, name: template.name });
-      return template;
-    } catch (error) {
-      console.error('Error creating email template:', error);
-      throw error;
+  async updateEmailTemplate(id: number, data: Omit<EmailTemplate, 'createdAt'>): Promise<EmailTemplate> {
+    const templates = await db.get('email_templates') || {};
+    if (templates[id]) {
+      templates[id] = { ...templates[id], ...data };
+      await db.set('email_templates', templates);
     }
+    return templates[id];
   }
 
-  async updateEmailTemplate(id: number, data: InsertEmailTemplate): Promise<EmailTemplate> {
-    console.log('DatabaseStorage.updateEmailTemplate called with:', {
-      id,
-      name: data.name,
-      userId: data.userId
-    });
-    try {
-      const [template] = await db
-        .update(emailTemplates)
-        .set({
-          ...data,
-          updatedAt: new Date()
-        })
-        .where(eq(emailTemplates.id, id))
-        .returning();
-      
-      if (!template) {
-        throw new Error(`Template with id ${id} not found`);
-      }
-      
-      console.log('Updated template:', { id: template.id, name: template.name });
-      return template;
-    } catch (error) {
-      console.error('Error updating email template:', error);
-      throw error;
-    }
-  }
+  // Search Jobs
+  async createSearchJob(data: Omit<SearchJob, 'createdAt'>): Promise<SearchJob> {
+    const job: SearchJob = {
+      ...data,
+      createdAt: new Date().toISOString()
+    };
 
-  // Strategic Profiles methods
-  async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
-    return await db
-      .select()
-      .from(strategicProfiles)
-      .where(eq(strategicProfiles.userId, userId));
-  }
-
-  async createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile> {
-    const [profile] = await db
-      .insert(strategicProfiles)
-      .values(data)
-      .returning();
-    return profile;
-  }
-
-  async updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile> {
-    const [profile] = await db
-      .update(strategicProfiles)
-      .set(data)
-      .where(eq(strategicProfiles.id, id))
-      .returning();
-    return profile;
-  }
-
-  // Search Jobs methods
-  async createSearchJob(data: InsertSearchJob): Promise<SearchJob> {
-    const [job] = await db
-      .insert(searchJobs)
-      .values(data)
-      .returning();
+    const jobs = await db.get('search_jobs') || {};
+    jobs[data.id] = job;
+    await db.set('search_jobs', jobs);
+    
     return job;
   }
 
   async getSearchJob(id: string, userId: number): Promise<SearchJob | undefined> {
-    const [job] = await db
-      .select()
-      .from(searchJobs)
-      .where(and(eq(searchJobs.id, id), eq(searchJobs.userId, userId)));
-    return job;
+    const jobs = await db.get('search_jobs') || {};
+    const job = jobs[id];
+    return job && job.userId === userId ? job : undefined;
   }
 
   async updateSearchJob(id: string, data: Partial<SearchJob>): Promise<SearchJob | undefined> {
-    const [job] = await db
-      .update(searchJobs)
-      .set(data)
-      .where(eq(searchJobs.id, id))
-      .returning();
-    return job;
+    const jobs = await db.get('search_jobs') || {};
+    if (jobs[id]) {
+      jobs[id] = { ...jobs[id], ...data };
+      await db.set('search_jobs', jobs);
+      return jobs[id];
+    }
+    return undefined;
   }
 
   async listActiveSearchJobs(userId: number): Promise<SearchJob[]> {
-    return await db
-      .select()
-      .from(searchJobs)
-      .where(and(
-        eq(searchJobs.userId, userId),
-        or(
-          eq(searchJobs.status, 'pending'),
-          eq(searchJobs.status, 'processing')
-        )
-      ))
-      .orderBy(desc(searchJobs.createdAt));
+    const jobs = await db.get('search_jobs') || {};
+    return Object.values(jobs).filter((job: any) => 
+      job.userId === userId && (job.status === 'pending' || job.status === 'processing')
+    );
   }
 
   async listCompletedSearchJobs(userId: number): Promise<SearchJob[]> {
-    return await db
-      .select()
-      .from(searchJobs)
-      .where(and(
-        eq(searchJobs.userId, userId),
-        or(
-          eq(searchJobs.status, 'completed'),
-          eq(searchJobs.status, 'failed')
-        )
-      ))
-      .orderBy(desc(searchJobs.completedAt));
+    const jobs = await db.get('search_jobs') || {};
+    return Object.values(jobs).filter((job: any) => 
+      job.userId === userId && (job.status === 'completed' || job.status === 'failed')
+    );
   }
 
   // Credits System implementation
   async getUserCredits(userId: number): Promise<number> {
-    const [userCredit] = await db.select().from(userCredits).where(eq(userCredits.userId, userId));
-    return userCredit?.credits || 0;
+    const credits = await db.get('user_credits') || {};
+    return credits[userId]?.credits || 0;
   }
 
   async createUserCredits(userId: number, initialCredits: number = 500): Promise<void> {
-    await db.insert(userCredits).values({
+    const credits = await db.get('user_credits') || {};
+    credits[userId] = {
       userId,
-      credits: initialCredits
-    });
+      credits: initialCredits,
+      lastUpdated: new Date().toISOString()
+    };
+    await db.set('user_credits', credits);
   }
 
   async deductCredits(userId: number, amount: number, operation: string, description?: string): Promise<boolean> {
@@ -556,22 +497,30 @@ class DatabaseStorage implements IStorage {
     const newBalance = currentCredits - amount;
 
     // Update user credits
-    await db.update(userCredits)
-      .set({ 
-        credits: newBalance,
-        lastUpdated: new Date()
-      })
-      .where(eq(userCredits.userId, userId));
+    const credits = await db.get('user_credits') || {};
+    credits[userId] = {
+      userId,
+      credits: newBalance,
+      lastUpdated: new Date().toISOString()
+    };
+    await db.set('user_credits', credits);
 
     // Record transaction
-    await db.insert(creditTransactions).values({
+    const transactionId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const transaction: CreditTransaction = {
+      id: transactionId,
       userId,
       type: 'deduction',
       amount: -amount,
-      operation: operation as any,
+      operation,
       description,
-      balanceAfter: newBalance
-    });
+      balanceAfter: newBalance,
+      createdAt: new Date().toISOString()
+    };
+
+    const transactions = await db.get('credit_transactions') || {};
+    transactions[transactionId] = transaction;
+    await db.set('credit_transactions', transactions);
 
     return true;
   }
@@ -581,80 +530,105 @@ class DatabaseStorage implements IStorage {
     const newBalance = currentCredits + amount;
 
     // Update user credits
-    await db.update(userCredits)
-      .set({ 
-        credits: newBalance,
-        lastUpdated: new Date()
-      })
-      .where(eq(userCredits.userId, userId));
+    const credits = await db.get('user_credits') || {};
+    credits[userId] = {
+      userId,
+      credits: newBalance,
+      lastUpdated: new Date().toISOString()
+    };
+    await db.set('user_credits', credits);
 
     // Record transaction
-    await db.insert(creditTransactions).values({
+    const transactionId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const transaction: CreditTransaction = {
+      id: transactionId,
       userId,
       type: 'purchase',
       amount,
-      operation: operation as any,
+      operation,
       description,
       balanceAfter: newBalance,
-      stripePaymentIntentId
-    });
+      stripePaymentIntentId,
+      createdAt: new Date().toISOString()
+    };
+
+    const transactions = await db.get('credit_transactions') || {};
+    transactions[transactionId] = transaction;
+    await db.set('credit_transactions', transactions);
   }
 
   async getCreditTransactions(userId: number, limit: number = 20): Promise<CreditTransaction[]> {
-    return await db.select()
-      .from(creditTransactions)
-      .where(eq(creditTransactions.userId, userId))
-      .orderBy(desc(creditTransactions.createdAt))
-      .limit(limit);
+    const transactions = await db.get('credit_transactions') || {};
+    return Object.values(transactions)
+      .filter((tx: any) => tx.userId === userId)
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
   }
 
   async updateUserCredentials(userId: number, data: { email: string; password: string; username: string }): Promise<User> {
-    const [updatedUser] = await db.update(users)
-      .set({
-        email: data.email,
-        password: data.password,
-        username: data.username
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    
-    return updatedUser;
+    const users = await db.get('users') || {};
+    if (users[userId]) {
+      users[userId] = { ...users[userId], ...data };
+      await db.set('users', users);
+    }
+    return users[userId];
   }
 
-  // Missing interface methods - implementing stubs for now
-  async listActiveContactsWithThreads(userId: number): Promise<(Contact & { lastMessage: string, lastMessageDate: Date, unread: boolean })[]> {
+  // Stub methods for compatibility
+  async getUserPreferences(userId: number): Promise<any> {
+    return {};
+  }
+
+  async updateUserPreferences(userId: number, data: any): Promise<any> {
+    return data;
+  }
+
+  async initializeUserPreferences(userId: number): Promise<any> {
+    return {};
+  }
+
+  async getStrategicProfiles(userId: number): Promise<any[]> {
     return [];
   }
 
-  async listThreadsByContact(contactId: number, userId: number): Promise<EmailThread[]> {
+  async createStrategicProfile(data: any): Promise<any> {
+    return data;
+  }
+
+  async updateStrategicProfile(id: number, data: any): Promise<any> {
+    return data;
+  }
+
+  async listActiveContactsWithThreads(userId: number): Promise<any[]> {
     return [];
   }
 
-  async getThread(id: number, userId: number): Promise<EmailThread | undefined> {
+  async listThreadsByContact(contactId: number, userId: number): Promise<any[]> {
+    return [];
+  }
+
+  async getThread(id: number, userId: number): Promise<any> {
     return undefined;
   }
 
-  async createThread(data: InsertEmailThread): Promise<EmailThread> {
-    const [thread] = await db.insert(emailThreads).values(data).returning();
-    return thread;
+  async createThread(data: any): Promise<any> {
+    return data;
   }
 
-  async updateThread(id: number, data: Partial<EmailThread>): Promise<EmailThread> {
-    const [updated] = await db.update(emailThreads).set(data).where(eq(emailThreads.id, id)).returning();
-    return updated;
+  async updateThread(id: number, data: any): Promise<any> {
+    return data;
   }
 
-  async listMessagesByThread(threadId: number): Promise<EmailMessage[]> {
+  async listMessagesByThread(threadId: number): Promise<any[]> {
     return [];
   }
 
-  async getThreadMessage(id: number): Promise<EmailMessage | undefined> {
+  async getThreadMessage(id: number): Promise<any> {
     return undefined;
   }
 
-  async createMessage(data: InsertEmailMessage): Promise<EmailMessage> {
-    const [message] = await db.insert(emailMessages).values(data).returning();
-    return message;
+  async createMessage(data: any): Promise<any> {
+    return data;
   }
 
   async markThreadMessagesAsRead(threadId: number): Promise<void> {
@@ -662,4 +636,4 @@ class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new ReplitDBStorage();
