@@ -676,7 +676,7 @@ export default function Home() {
     console.log('Complete results received with contacts:', results.length);
     
     // Store temporary user ID for data migration during authentication transition
-    if (!user && results.length > 0) {
+    if (!auth.user && results.length > 0) {
       // Extract user ID from first result if available
       const firstResult = results[0];
       if (firstResult && firstResult.userId) {
