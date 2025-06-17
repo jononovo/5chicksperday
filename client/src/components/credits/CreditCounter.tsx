@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BuyCreditsDialog } from "./BuyCreditsDialog";
-import { HowCreditsWorkDialog } from "./HowCreditsWorkDialog";
+import { BuyCreditsDialog } from "@/components/credits/BuyCreditsDialog";
+import { HowCreditsWorkDialog } from "@/components/credits/HowCreditsWorkDialog";
 
 export function CreditCounter() {
   const [showBuyCredits, setShowBuyCredits] = useState(false);

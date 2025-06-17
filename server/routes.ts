@@ -3,7 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { storage } from "./storage";
+import { storage } from "./storage-simple";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -4485,6 +4485,71 @@ Respond in this exact JSON format:
         error: 'Failed to list completed jobs',
         message: error instanceof Error ? error.message : String(error)
       });
+    }
+  });
+
+  // Credits API endpoints
+  app.get("/api/credits", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const credits = await storage.getUserCredits(userId);
+      res.json({ credits });
+    } catch (error) {
+      console.error('Get credits error:', error);
+      res.status(500).json({ error: 'Failed to get credits' });
+    }
+  });
+
+  app.post("/api/credits/purchase", requireAuth, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ error: 'Stripe not configured' });
+      }
+
+      // For now, return a mock client secret until Stripe is properly integrated
+      // In production, this would create a real Stripe payment intent
+      const mockClientSecret = `pi_mock_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`;
+      
+      res.json({ 
+        clientSecret: mockClientSecret,
+        amount: amount || 4000 // $40.00 for 1000 credits
+      });
+    } catch (error) {
+      console.error('Create payment intent error:', error);
+      res.status(500).json({ error: 'Failed to create payment intent' });
+    }
+  });
+
+  app.post("/api/credits/add", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const { amount, operation, description, stripePaymentIntentId } = req.body;
+      
+      await storage.addCredits(userId, amount, operation, description, stripePaymentIntentId);
+      const newBalance = await storage.getUserCredits(userId);
+      
+      res.json({ 
+        success: true, 
+        credits: newBalance,
+        message: `${amount} credits added successfully`
+      });
+    } catch (error) {
+      console.error('Add credits error:', error);
+      res.status(500).json({ error: 'Failed to add credits' });
+    }
+  });
+
+  app.get("/api/credits/transactions", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const limit = parseInt(req.query.limit as string) || 20;
+      const transactions = await storage.getCreditTransactions(userId, limit);
+      res.json(transactions);
+    } catch (error) {
+      console.error('Get transactions error:', error);
+      res.status(500).json({ error: 'Failed to get transactions' });
     }
   });
 
