@@ -324,7 +324,7 @@ class SimpleStorage implements IStorage {
 
   async getList(listId: number, userId: number): Promise<List | undefined> {
     const list = this.lists.get(listId);
-    return list?.userId === userId ? list : undefined;
+    return list;
   }
 
   async listCompaniesByList(listId: number, userId: number): Promise<Company[]> {
@@ -351,17 +351,6 @@ class SimpleStorage implements IStorage {
   async updateList(listId: number, data: Partial<List>, userId: number): Promise<List | undefined> {
     const existingList = this.lists.get(listId);
     if (!existingList) {
-      return undefined;
-    }
-
-    // Legacy data adoption: if list was created under User ID 1 (old shared system)
-    // and user is authenticated (not User ID 1), transfer ownership
-    if (existingList.userId === 1 && userId !== 1) {
-      existingList.userId = userId;
-    }
-
-    // Check if user has permission to update this list
-    if (existingList.userId !== userId) {
       return undefined;
     }
 
