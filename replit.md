@@ -16,16 +16,16 @@
 
 ### Backend Architecture
 - **Express.js** server with TypeScript
-- **Drizzle ORM** for database operations with strong type safety
-- **PostgreSQL** as primary database (with Replit DB migration option available)
-- **Passport.js** for authentication with Firebase Auth integration
+- **In-memory storage** for rapid development iteration
+- **Dual storage infrastructure** ready for production (PostgreSQL + Replit DB)
+- **Firebase Authentication** with session management via Passport.js
 - **Modular API design** with separate route handlers and business logic
 
 ### Database Design
-- **PostgreSQL** with Drizzle ORM for type-safe database operations
-- **Schema-first approach** using Zod for validation
-- **Normalized relational structure** with proper foreign key relationships
-- **Storage abstraction layer** allowing for backend switching (PostgreSQL/Replit DB)
+- **In-memory storage** currently active for development speed
+- **Dual storage infrastructure** ready for migration (PostgreSQL + Replit DB)
+- **Storage abstraction layer** with IStorage interface for future switching
+- **Schema-first approach** using Zod validation and Drizzle ORM (prepared but not active)
 
 ## Key Components
 
@@ -81,7 +81,10 @@
 
 ### Infrastructure
 - **Firebase**: Authentication and user management
-- **PostgreSQL**: Primary database (Neon/Replit)
+- **In-memory storage**: Current active storage for development speed
+- **Replit Database**: Key-value storage (provisioned but not actively used)
+- **PostgreSQL**: Relational database (provisioned but not actively used)
+- **Stripe API**: Payment processing for credit purchases
 - **N8N Workflows**: External automation integration
 - **Google APIs**: Gmail integration for email campaigns
 
@@ -105,10 +108,12 @@
 - **Workflow integration**: N8N webhooks for external automation
 
 ### Storage Migration Strategy
-- **Dual storage support**: PostgreSQL and Replit Database compatibility
-- **Migration utilities**: Scripts for data migration between storage backends
-- **Storage abstraction**: IStorage interface allows runtime switching
-- **Cleanup tools**: Scripts to remove migration infrastructure when complete
+- **Current status**: In-memory storage active for rapid development iteration
+- **Infrastructure ready**: PostgreSQL (Neon) and Replit Database both provisioned
+- **Storage switcher**: `storage-switching/storage-switcher.ts` with `USE_REPLIT_DB = true`
+- **Migration gap**: Main application (`server/routes.ts`) uses `storage-simple.ts` (in-memory)
+- **Next phase**: Connect storage switcher to main application for persistent storage
+- **IStorage interface**: Abstraction layer enables seamless backend switching
 
 ## Changelog
 - June 13, 2025. Initial setup
