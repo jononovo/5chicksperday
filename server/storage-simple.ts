@@ -118,6 +118,8 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
   createUser(data: { email: string; password: string; username?: string }): Promise<User>;
+  createTemporaryUser(): Promise<number>;
+  linkTemporaryUserToFirebase(tempUserId: number, firebaseData: {email: string; firebaseUid: string}): Promise<User>;
 
   // Credits System
   getUserCredits(userId: number): Promise<number>;
