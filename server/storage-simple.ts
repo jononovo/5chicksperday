@@ -118,8 +118,9 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
   createUser(data: { email: string; password: string; username?: string }): Promise<User>;
-  createTemporaryUser(): Promise<number>;
-  linkTemporaryUserToFirebase(tempUserId: number, firebaseData: {email: string; firebaseUid: string}): Promise<User>;
+  getMaxUserId(): Promise<number>;
+  createUserWithId(id: number, userData: {email: string; password: string; username?: string; firebaseUid?: string}): Promise<User>;
+  updateUserCredentials(id: number, credentials: {email: string; password: string; username?: string; firebaseUid?: string}): Promise<User>;
 
   // Credits System
   getUserCredits(userId: number): Promise<number>;
@@ -228,45 +229,61 @@ class SimpleStorage implements IStorage {
     return user;
   }
 
-  async createTemporaryUser(): Promise<number> {
-    const id = this.getNextId('user');
-    const user: User = {
-      id,
-      username: `temp_user_${id}`,
-      password: '', // Empty for temp users
-      email: '', // Empty until registration
-      createdAt: new Date().toISOString()
-    };
-    
-    this.users.set(id, user);
-    
-    // Initialize with 100 credits for trial users
-    await this.createUserCredits(id, 100);
-    
-    return id;
+
+
+  async getMaxUserId(): Promise<number> {
+    let maxId = 0;
+    for (const [id] of this.users) {
+      if (id > maxId) {
+        maxId = id;
+      }
+    }
+    return maxId;
   }
 
-  async linkTemporaryUserToFirebase(tempUserId: number, firebaseData: {email: string; firebaseUid: string}): Promise<User> {
-    const user = this.users.get(tempUserId);
-    if (!user) {
-      throw new Error('Temporary user not found');
-    }
-    
-    // Update user with Firebase data
-    const updatedUser: User = {
-      ...user,
-      email: firebaseData.email,
-      firebaseUid: firebaseData.firebaseUid,
-      username: firebaseData.email.split('@')[0],
-      password: '', // Keep empty for Firebase auth
+  async createUserWithId(id: number, userData: {email: string; password: string; username?: string; firebaseUid?: string}): Promise<User> {
+    const user: User = {
+      id,
+      username: userData.username || userData.email.split('@')[0],
+      password: userData.password,
+      email: userData.email,
+      firebaseUid: userData.firebaseUid,
+      createdAt: new Date().toISOString(),
       registeredAt: new Date().toISOString()
     };
     
-    this.users.set(tempUserId, updatedUser);
-    this.usersByEmail.set(firebaseData.email, updatedUser);
+    this.users.set(id, user);
+    this.usersByEmail.set(userData.email, user);
     
-    // Upgrade to full user credits (500 instead of 100)
-    await this.addCredits(tempUserId, 400, 'registration_bonus', 'Bonus credits for completing registration');
+    // Initialize with 500 credits for new registered users
+    await this.createUserCredits(id, 500);
+    
+    return user;
+  }
+
+  async updateUserCredentials(id: number, credentials: {email: string; password: string; username?: string; firebaseUid?: string}): Promise<User> {
+    const existingUser = this.users.get(id);
+    if (!existingUser) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+    
+    const updatedUser: User = {
+      ...existingUser,
+      email: credentials.email,
+      password: credentials.password,
+      username: credentials.username || credentials.email.split('@')[0],
+      firebaseUid: credentials.firebaseUid,
+      registeredAt: new Date().toISOString()
+    };
+    
+    this.users.set(id, updatedUser);
+    this.usersByEmail.set(credentials.email, updatedUser);
+    
+    // Upgrade to full user credits if they had trial credits
+    const currentCredits = await this.getUserCredits(id);
+    if (currentCredits === 100) {
+      await this.addCredits(id, 400, 'registration_bonus', 'Bonus credits for completing registration');
+    }
     
     return updatedUser;
   }
