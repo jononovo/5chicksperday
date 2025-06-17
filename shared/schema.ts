@@ -251,18 +251,7 @@ export type UserPreferences = typeof userPreferences.$inferSelect;
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 
 export type SearchJob = typeof searchJobs.$inferSelect;
-export type InsertSearchJob = {
-  id: string;
-  userId: number;
-  query: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  progress?: string;
-  companiesFound?: number;
-  contactsFound?: number;
-  emailsFound?: number;
-  results?: any;
-  error?: string;
-};
+export type InsertSearchJob = typeof searchJobs.$inferInsert;
 
 // N8N workflow types have been removed
 
