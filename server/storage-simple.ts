@@ -395,17 +395,16 @@ class SimpleStorage implements IStorage {
   }
 
   async updateList(listId: number, data: Partial<List>, userId: number): Promise<List | undefined> {
-    // Get existing list - try current user first, then check if list exists at all
-    let existingList = await this.getList(listId, userId);
+    // Get existing list (regardless of current ownership)
+    const existingList = this.lists.get(listId);
+    if (!existingList) return undefined;
     
-    // If not found with current userId, check if list exists (handles auth transitions)
-    if (!existingList) {
-      existingList = this.lists.get(listId);
-      if (!existingList) return undefined;
-    }
-    
-    // Update with new data
-    const updatedList = { ...existingList, ...data };
+    // Update with new data and transfer ownership to current user
+    const updatedList = { 
+      ...existingList, 
+      ...data,
+      userId: userId // Transfer ownership to current user
+    };
     
     // Save back to storage
     this.lists.set(listId, updatedList);
