@@ -66,10 +66,11 @@ async function getOrCreateSessionUserId(req: any): Promise<number> {
   // For unauthenticated users, create/retrieve session-based user ID
   let sessionUserId = req.session.userId;
   if (!sessionUserId) {
-    console.log('Creating new temporary user for session');
-    sessionUserId = await storage.createTemporaryUser();
+    console.log('Creating new session user ID');
+    const maxUserId = await storage.getMaxUserId();
+    sessionUserId = maxUserId + 1;
     req.session.userId = sessionUserId;
-    console.log(`Created temporary user ID: ${sessionUserId}`);
+    console.log(`Created session user ID: ${sessionUserId}`);
   } else {
     console.log(`Using existing session user ID: ${sessionUserId}`);
   }
@@ -4591,99 +4592,9 @@ Respond in this exact JSON format:
     }
   });
 
-  // Authentication transition endpoint to handle temporary user data migration
-  app.post("/api/auth/migrate-temp-user", requireAuth, async (req, res) => {
-    try {
-      const authenticatedUserId = await getUserId(req);
-      const { tempUserId } = req.body;
-      
-      if (!tempUserId || tempUserId === authenticatedUserId) {
-        return res.json({ success: true, message: 'No migration needed' });
-      }
-      
-      console.log(`Migrating data from temp user ${tempUserId} to authenticated user ${authenticatedUserId}`);
-      
-      // Migrate companies
-      const tempCompanies = await storage.listCompanies(tempUserId);
-      for (const company of tempCompanies) {
-        const updatedCompany = await storage.updateCompany(company.id, {
-          ...company,
-          userId: authenticatedUserId
-        });
-        console.log(`Migrated company ${company.name} (ID: ${company.id})`);
-      }
-      
-      // Migrate contacts
-      const tempContacts = await storage.listContacts(tempUserId);
-      for (const contact of tempContacts) {
-        const updatedContact = await storage.updateContact(contact.id, {
-          ...contact,
-          userId: authenticatedUserId
-        });
-        console.log(`Migrated contact ${contact.name} (ID: ${contact.id})`);
-      }
-      
-      // Migrate lists
-      const tempLists = await storage.listLists(tempUserId);
-      for (const list of tempLists) {
-        const updatedList = await storage.updateList(list.id, {
-          ...list,
-          userId: authenticatedUserId
-        });
-        console.log(`Migrated list ${list.name} (ID: ${list.id})`);
-      }
-      
-      // Transfer remaining credits from temp user
-      const tempCredits = await storage.getUserCredits(tempUserId);
-      if (tempCredits > 0) {
-        await storage.addCredits(authenticatedUserId, tempCredits, 'migration', 'Credits transferred from temporary account');
-        console.log(`Transferred ${tempCredits} credits from temp user`);
-      }
-      
-      res.json({ 
-        success: true, 
-        message: 'Data migration completed successfully',
-        migratedItems: {
-          companies: tempCompanies.length,
-          contacts: tempContacts.length,
-          lists: tempLists.length,
-          credits: tempCredits
-        }
-      });
-      
-    } catch (error) {
-      console.error('User data migration error:', error);
-      res.status(500).json({ 
-        error: 'Failed to migrate user data',
-        message: error instanceof Error ? error.message : String(error)
-      });
-    }
-  });
 
-  // Create temporary user endpoint for unauthenticated guests
-  app.post("/api/auth/create-temp-user", async (req, res) => {
-    try {
-      console.log('Creating temporary user for guest session');
-      
-      // Create a temporary user with a unique identifier
-      const tempUserId = await storage.createTemporaryUser();
-      
-      console.log(`Created temporary user with ID: ${tempUserId}`);
-      
-      res.json({ 
-        success: true, 
-        userId: tempUserId,
-        message: 'Temporary user created successfully'
-      });
-      
-    } catch (error) {
-      console.error('Temporary user creation error:', error);
-      res.status(500).json({ 
-        error: 'Failed to create temporary user',
-        message: error instanceof Error ? error.message : String(error)
-      });
-    }
-  });
+
+
 
   // All N8N Workflow Management Endpoints and proxies have been removed
 

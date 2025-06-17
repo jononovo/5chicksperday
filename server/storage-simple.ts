@@ -233,11 +233,11 @@ class SimpleStorage implements IStorage {
 
   async getMaxUserId(): Promise<number> {
     let maxId = 0;
-    for (const [id] of this.users) {
+    this.users.forEach((_, id) => {
       if (id > maxId) {
         maxId = id;
       }
-    }
+    });
     return maxId;
   }
 
@@ -566,22 +566,7 @@ class SimpleStorage implements IStorage {
     );
   }
 
-  async updateUserCredentials(userId: number, data: { email: string; password: string; username: string }): Promise<User> {
-    const user = this.users.get(userId);
-    if (user) {
-      // Remove old email mapping
-      this.usersByEmail.delete(user.email);
-      
-      // Update user
-      Object.assign(user, data);
-      
-      // Add new email mapping
-      this.usersByEmail.set(data.email, user);
-      
-      return user;
-    }
-    throw new Error('User not found');
-  }
+
 
   // Stub methods for compatibility
   async getUserPreferences(userId: number): Promise<any> {
