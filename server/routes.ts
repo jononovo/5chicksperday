@@ -99,46 +99,12 @@ async function getUserId(req: express.Request): Promise<number> {
     (Date.now() - (req.session as any).logoutTime < 60000); // Within last minute
   
   if (recentlyLoggedOut) {
-    // For recently logged out users, return a non-existent user ID
     console.log('Recently logged out user - returning non-existent user ID');
     return -1; // This ID won't match any real user, preventing data leakage
   }
   
-  // Check if there's a guest user ID in the request headers (multiple formats for compatibility)
-  const guestUserId = req.headers['x-guest-user-id'] || 
-                     req.headers['X-Guest-User-Id'] || 
-                     req.headers['guest-user-id'] ||
-                     req.get('X-Guest-User-Id');
-  
-  console.log('Guest header check:', {
-    'x-guest-user-id': req.headers['x-guest-user-id'],
-    'X-Guest-User-Id': req.headers['X-Guest-User-Id'],
-    'guest-user-id': req.headers['guest-user-id'],
-    'via-get': req.get('X-Guest-User-Id'),
-    resolved: guestUserId,
-    allHeaders: Object.keys(req.headers).filter(h => h.toLowerCase().includes('guest'))
-  });
-  
-  if (guestUserId && typeof guestUserId === 'string') {
-    const parsedGuestId = parseInt(guestUserId, 10);
-    if (!isNaN(parsedGuestId)) {
-      console.log('Using guest user ID from headers:', parsedGuestId);
-      return parsedGuestId;
-    }
-  }
-  
-  console.log('No authenticated user found - using fallback demo user ID', {
-    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-    hasUser: !!req.user,
-    hasFirebaseUser: !!(req as any).firebaseUser,
-    hasGuestHeader: !!guestUserId,
-    path: req.path,
-    method: req.method,
-    timestamp: new Date().toISOString()
-  });
-  
-  // For regular unauthenticated users without guest ID, return demo user ID
-  return 1;
+  // Use the session-based temporary user system
+  return await getOrCreateSessionUserId(req);
 }
 
 // Helper functions for improved search test scoring and AI agent support
@@ -4689,6 +4655,31 @@ Respond in this exact JSON format:
       console.error('User data migration error:', error);
       res.status(500).json({ 
         error: 'Failed to migrate user data',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Create temporary user endpoint for unauthenticated guests
+  app.post("/api/auth/create-temp-user", async (req, res) => {
+    try {
+      console.log('Creating temporary user for guest session');
+      
+      // Create a temporary user with a unique identifier
+      const tempUserId = await storage.createTemporaryUser();
+      
+      console.log(`Created temporary user with ID: ${tempUserId}`);
+      
+      res.json({ 
+        success: true, 
+        userId: tempUserId,
+        message: 'Temporary user created successfully'
+      });
+      
+    } catch (error) {
+      console.error('Temporary user creation error:', error);
+      res.status(500).json({ 
+        error: 'Failed to create temporary user',
         message: error instanceof Error ? error.message : String(error)
       });
     }

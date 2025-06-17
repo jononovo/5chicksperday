@@ -44,31 +44,43 @@ export async function apiRequest(
     // Get Firebase token from localStorage if available
     const authToken = localStorage.getItem('authToken');
     
-    // Get guest user ID from GuestUserManager data or create fallback
-    const getGuestUserId = (): string => {
-      // First try to get from GuestUserManager's storage
-      const guestUserData = localStorage.getItem('guest_user_data');
-      if (guestUserData) {
+    // Get or create real user ID from backend
+    const getUserId = async (): Promise<string | null> => {
+      // For authenticated users, we don't need to send guest headers
+      if (authToken) {
+        return null;
+      }
+      
+      // For unauthenticated users, get real user ID from backend
+      let tempUserId = localStorage.getItem('tempUserId');
+      if (!tempUserId) {
         try {
-          const parsed = JSON.parse(guestUserData);
-          if (parsed.id && typeof parsed.id === 'number') {
-            return parsed.id.toString();
+          // Create a real temporary user via backend
+          const response = await fetch('/api/auth/create-temp-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            tempUserId = result.userId.toString();
+            localStorage.setItem('tempUserId', tempUserId);
+            console.log('Created temporary user ID:', tempUserId);
           }
         } catch (error) {
-          console.warn('Failed to parse guest user data:', error);
+          console.error('Failed to create temporary user:', error);
         }
       }
       
-      // Fallback to simple guest ID system
-      let guestUserId = localStorage.getItem('guestUserId');
-      if (!guestUserId) {
-        guestUserId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem('guestUserId', guestUserId);
-      }
-      return guestUserId;
+      return tempUserId;
     };
     
-    const guestUserId = getGuestUserId();
+    // Get user ID synchronously if available, or null if we need to create one
+    let guestUserId: string | null = null;
+    if (!authToken) {
+      guestUserId = localStorage.getItem('tempUserId');
+    }
     
     // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
