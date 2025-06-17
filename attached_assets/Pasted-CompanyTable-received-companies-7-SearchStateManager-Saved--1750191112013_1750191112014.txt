@@ -1,0 +1,38 @@
+CompanyTable received companies: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SearchStateManager: Saved 4 contacts for company 15
+SearchStateManager: Saved 6 contacts for company 16
+SearchStateManager: Saved 8 contacts for company 17
+SearchStateManager: Saved 2 contacts for company 18
+SearchStateManager: Saved 7 contacts for company 19
+SearchStateManager: Saved 4 contacts for company 20
+SearchStateManager: Saved 4 contacts for company 21
+SearchStateManager: Saved atomic state 
+Object {query: "Series-A Fintech companies in LA", companiesCount: 7, contactCount: 35, emailCount: 10, sessionId: "session_1750175813143_8q4syhq7l"}
+Atomic state save completed: 
+Object {query: "Series-A Fintech companies in LA", resultsCount: 7, listId: 5, contactCount: 35}
+finishSearchWithoutSave: Updated localStorage with refreshed data
+SearchStateManager: Saved atomic state 
+Object {query: "Series-A Fintech companies in LA", companiesCount: 0, contactCount: 0, emailCount: 0, sessionId: "session_1750175813143_8q4syhq7l"}
+Atomic state save completed: 
+Object {query: "Series-A Fintech companies in LA", resultsCount: 0, listId: 5, contactCount: 0}
+API Request Error: PUT /api/lists/5 
+Object {error: "404: {"message":"List not found or you don't have permission to update it"}", timestamp: "2025-06-17T20:10:28.428Z"}
+
+List update failed: 
+Error {}
+
+CompanyTable received companies: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Auto-expanding first company to show contacts: Cash App
+SearchStateManager: Saved 4 contacts for company 15
+SearchStateManager: Saved 6 contacts for company 16
+SearchStateManager: Saved 8 contacts for company 17
+SearchStateManager: Saved 2 contacts for company 18
+SearchStateManager: Saved 7 contacts for company 19
+SearchStateManager: Saved 4 contacts for company 20
+SearchStateManager: Saved 4 contacts for company 21
+SearchStateManager: Saved atomic state 
+Object {query: "Series-A Fintech companies in LA", companiesCount: 7, contactCount: 35, emailCount: 10, sessionId: "session_1750175813143_8q4syhq7l"}
+Atomic state save completed: 
+Object {query: "Series-A Fintech companies in LA", resultsCount: 7, listId: 5, contactCount: 35}

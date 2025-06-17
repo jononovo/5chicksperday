@@ -675,6 +675,16 @@ export default function Home() {
     console.log('Current component state - results count:', currentResults?.length || 0);
     console.log('Complete results received with contacts:', results.length);
     
+    // Store temporary user ID for data migration during authentication transition
+    if (!user && results.length > 0) {
+      // Extract user ID from first result if available
+      const firstResult = results[0];
+      if (firstResult && firstResult.userId) {
+        localStorage.setItem('tempUserId', firstResult.userId.toString());
+        console.log('Stored temporary user ID for migration:', firstResult.userId);
+      }
+    }
+    
     // Clear any stale localStorage data that might conflict with new search results
     if (currentQuery !== query) {
       console.log('New search detected - clearing stale localStorage data');
