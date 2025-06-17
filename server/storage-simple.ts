@@ -596,6 +596,82 @@ class SimpleStorage implements IStorage {
   async markThreadMessagesAsRead(threadId: number): Promise<void> {
     // No-op
   }
+
+  // Phase 4: User cleanup system methods
+  async deleteUser(id: number): Promise<void> {
+    const user = this.users.get(id);
+    if (user) {
+      // Clean up all related data first
+      await this.deleteUserData(id);
+      
+      // Remove user and indexes
+      this.users.delete(id);
+      this.usersByEmail.delete(user.email);
+      this.credits.delete(id);
+      this.transactions.delete(id);
+      
+      console.log('Deleted user and all related data:', {
+        userId: id,
+        email: user.email.split('@')[0] + '@...',
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+
+  private async deleteUserData(userId: number): Promise<void> {
+    // Delete companies and their contacts
+    const userCompanies = Array.from(this.companies.values())
+      .filter(company => company.userId === userId);
+    
+    for (const company of userCompanies) {
+      await this.deleteContactsByCompany(company.id, userId);
+      this.companies.delete(company.id);
+    }
+    
+    // Delete lists
+    this.lists.forEach((list, id) => {
+      if (list.userId === userId) this.lists.delete(id);
+    });
+    
+    // Delete campaigns
+    this.campaigns.forEach((campaign, id) => {
+      if (campaign.userId === userId) this.campaigns.delete(id);
+    });
+    
+    // Delete email templates
+    this.emailTemplates.forEach((template, id) => {
+      if (template.userId === userId) this.emailTemplates.delete(id);
+    });
+    
+    // Delete search jobs
+    this.searchJobs.forEach((job, id) => {
+      if (job.userId === userId) this.searchJobs.delete(id);
+    });
+  }
+
+  async cleanupOrphanedGuestUsers(): Promise<number> {
+    const cutoffTime = Date.now() - (48 * 60 * 60 * 1000); // 48 hours
+    const cutoffDate = new Date(cutoffTime).toISOString();
+    
+    const guestUsers = Array.from(this.users.values())
+      .filter(user => 
+        user.isGuest !== false && 
+        user.createdAt < cutoffDate &&
+        !user.registeredAt
+      );
+    
+    let cleanedCount = 0;
+    for (const user of guestUsers) {
+      await this.deleteUser(user.id);
+      cleanedCount++;
+    }
+    
+    if (cleanedCount > 0) {
+      console.log(`Cleanup completed: removed ${cleanedCount} orphaned guest users`);
+    }
+    
+    return cleanedCount;
+  }
 }
 
 export const storage = new SimpleStorage();

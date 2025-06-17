@@ -3,7 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import Stripe from 'stripe';
+// Stripe will be imported dynamically where needed
 import { storage } from "./storage-simple";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -4619,6 +4619,73 @@ Respond in this exact JSON format:
       res.status(500).json({ error: 'Webhook failed' });
     }
   });
+
+  // User registration linking endpoint - Phase 3 of immediate user creation
+  app.patch("/api/user/link-auth", async (req, res) => {
+    try {
+      const currentUserId = await getUserId(req); // Gets existing guest user ID
+      const { email, firebaseUid, username } = req.body;
+      
+      console.log('Linking Firebase auth to existing user:', {
+        userId: currentUserId,
+        email: email.split('@')[0] + '@...',
+        hasFirebaseUid: !!firebaseUid,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Update existing user with real credentials
+      const updatedUser = await storage.updateUser(currentUserId, {
+        email,
+        firebaseUid,
+        username: username || email.split('@')[0],
+        isGuest: false,
+        registeredAt: new Date().toISOString()
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      res.json({
+        success: true,
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          createdAt: updatedUser.createdAt,
+          registeredAt: updatedUser.registeredAt
+        }
+      });
+    } catch (error) {
+      console.error('User auth linking error:', error);
+      res.status(500).json({ error: 'Failed to link authentication' });
+    }
+  });
+
+  // Phase 4: Start TTL cleanup job for orphaned guest users
+  const startCleanupJob = () => {
+    // Run cleanup daily at 2 AM
+    const runCleanup = async () => {
+      try {
+        const cleanedCount = await storage.cleanupOrphanedGuestUsers();
+        if (cleanedCount > 0) {
+          console.log(`Daily cleanup: removed ${cleanedCount} orphaned guest users`);
+        }
+      } catch (error) {
+        console.error('Cleanup job failed:', error);
+      }
+    };
+    
+    // Run initial cleanup after 1 minute, then every 24 hours
+    setTimeout(() => {
+      runCleanup();
+      setInterval(runCleanup, 24 * 60 * 60 * 1000);
+    }, 60 * 1000);
+    
+    console.log('Guest user cleanup job started - runs daily at startup + 1 minute');
+  };
+  
+  startCleanupJob();
 
   // All N8N Workflow Management Endpoints and proxies have been removed
 

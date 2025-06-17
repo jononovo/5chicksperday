@@ -153,8 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       }
 
-      console.log('Email registration successful, syncing with backend');
-      await syncWithBackend(result.user);
+      console.log('Email registration successful, linking to existing user');
+      await linkUserAuth(result.user, username);
 
     } catch (error: any) {
       console.error("Email registration error:", {
@@ -296,6 +296,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(`Failed to parse JSON response: ${error instanceof Error ? error.message : 'Unknown parsing error'}`);
     }
   }
+
+  // Phase 5: Function to link Firebase auth to existing guest user
+  const linkUserAuth = async (firebaseUser: FirebaseUser, username?: string) => {
+    try {
+      console.log('Linking Firebase auth to existing user', {
+        email: firebaseUser.email?.split('@')[0] + '@...',
+        hasUsername: !!username,
+        timestamp: new Date().toISOString()
+      });
+
+      // Get the ID token for authentication
+      const idToken = await firebaseUser.getIdToken(true);
+
+      const linkRes = await fetch("/api/user/link-auth", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          email: firebaseUser.email,
+          firebaseUid: firebaseUser.uid,
+          username: username || firebaseUser.displayName || firebaseUser.email?.split('@')[0]
+        })
+      });
+
+      if (!linkRes.ok) {
+        let errorText;
+        try {
+          errorText = await linkRes.text();
+        } catch (textError) {
+          errorText = 'Could not read error response';
+        }
+        
+        console.error('User auth linking error response:', {
+          status: linkRes.status,
+          statusText: linkRes.statusText,
+          responseText: errorText
+        });
+        throw new Error(`Failed to link user authentication: ${linkRes.status}`);
+      }
+
+      console.log('Successfully linked Firebase auth to existing user');
+      
+      try {
+        const response = await safeJsonParse(linkRes);
+        if (response.user) {
+          queryClient.setQueryData(["/api/user"], response.user);
+        }
+      } catch (parseError) {
+        console.warn('Could not parse link response, but operation may have succeeded:', parseError);
+      }
+      
+      // Invalidate user queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      
+    } catch (error) {
+      console.error('Link user auth error:', error);
+      throw error;
+    }
+  };
 
   // Function to get Firebase ID token and sync with backend
   const syncWithBackend = async (firebaseUser: FirebaseUser) => {
