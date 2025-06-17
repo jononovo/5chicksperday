@@ -44,17 +44,31 @@ export async function apiRequest(
     // Get Firebase token from localStorage if available
     const authToken = localStorage.getItem('authToken');
     
-    // Get guest user ID from localStorage if available
-    const guestUserData = localStorage.getItem('guest_user_data');
-    let guestUserId: string | null = null;
-    if (guestUserData) {
-      try {
-        const parsed = JSON.parse(guestUserData);
-        guestUserId = parsed.id?.toString();
-      } catch (error) {
-        console.warn('Failed to parse guest user data:', error);
+    // Get guest user ID from GuestUserManager data or create fallback
+    const getGuestUserId = (): string => {
+      // First try to get from GuestUserManager's storage
+      const guestUserData = localStorage.getItem('guest_user_data');
+      if (guestUserData) {
+        try {
+          const parsed = JSON.parse(guestUserData);
+          if (parsed.id && typeof parsed.id === 'number') {
+            return parsed.id.toString();
+          }
+        } catch (error) {
+          console.warn('Failed to parse guest user data:', error);
+        }
       }
-    }
+      
+      // Fallback to simple guest ID system
+      let guestUserId = localStorage.getItem('guestUserId');
+      if (!guestUserId) {
+        guestUserId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('guestUserId', guestUserId);
+      }
+      return guestUserId;
+    };
+    
+    const guestUserId = getGuestUserId();
     
     // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
