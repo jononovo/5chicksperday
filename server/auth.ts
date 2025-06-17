@@ -4,8 +4,8 @@ import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
-import { User, User as SelectUser } from "@shared/schema";
+import { storage } from "./storage-simple";
+import { User } from "./storage-simple";
 import admin from "firebase-admin";
 
 // Extend the session type to include gmailToken
@@ -17,7 +17,13 @@ declare module 'express-session' {
 
 declare global {
   namespace Express {
-    interface User extends SelectUser {}
+    interface User {
+      id: number;
+      username: string;
+      password: string;
+      email: string;
+      createdAt: string;
+    }
   }
 }
 
@@ -37,7 +43,7 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 // Firebase token verification middleware
-async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
+async function verifyFirebaseToken(req: Request): Promise<User | null> {
   // Try to get token from various sources
   let token: string | null = null;
   
@@ -162,6 +168,11 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => {
+    console.log('Serializing user:', { id: user.id, email: user.email, hasId: !!user.id });
+    if (!user.id) {
+      console.error('User serialization failed: user.id is null/undefined', user);
+      return done(new Error('User ID is required for serialization'));
+    }
     done(null, user.id);
   });
 
@@ -360,7 +371,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err: Error | null, user: SelectUser | false, info: { message: string } | undefined) => {
+    passport.authenticate("local", (err: Error | null, user: User | false, info: { message: string } | undefined) => {
       if (err) return next(err);
       if (!user) {
         return res.status(401).json({ error: info?.message || "Invalid credentials" });
