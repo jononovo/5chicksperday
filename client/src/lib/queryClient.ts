@@ -119,6 +119,15 @@ export const getQueryFn: <T>(options: {
         headers['Authorization'] = `Bearer ${authToken}`;
       }
       
+      // Add guest user ID header if available and no auth token
+      if (guestUserId && !authToken) {
+        // Multiple header strategies for maximum compatibility
+        headers['X-Guest-User-Id'] = guestUserId;      // Standard Pascal-Case
+        headers['x-guest-user-id'] = guestUserId;      // Lowercase fallback
+        headers['Guest-User-ID'] = guestUserId;        // Alternative format
+        console.log('TanStack Query adding guest user headers:', { guestUserId, headers: Object.keys(headers) });
+      }
+      
       const res = await fetch(queryKey[0] as string, {
         credentials: "include",
         headers
