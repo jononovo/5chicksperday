@@ -237,13 +237,48 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Guest user creation endpoint
+  app.post("/api/guest-user", async (req, res) => {
+    try {
+      const { createGuest } = req.body;
+      
+      if (!createGuest) {
+        return res.status(400).json({ error: "Invalid request" });
+      }
+
+      // Create guest user (user with no email/password)
+      const guestUser = await storage.createUser({
+        email: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}@guest.local`,
+        password: '', // Empty password for guest
+        username: `guest_user_${Date.now()}`
+      });
+
+      console.log('Guest user created:', {
+        id: guestUser.id,
+        isGuest: true,
+        timestamp: new Date().toISOString()
+      });
+
+      return res.json({
+        id: guestUser.id,
+        isGuest: true,
+        createdAt: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Guest user creation error:', error);
+      return res.status(500).json({ error: "Failed to create guest user" });
+    }
+  });
+
   app.post("/api/register", async (req, res, next) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, guestUserId } = req.body;
 
       console.log('Registration request received:', {
         hasEmail: !!email,
         hasPassword: !!password,
+        hasGuestId: !!guestUserId,
         timestamp: new Date().toISOString()
       });
 
@@ -260,37 +295,66 @@ export function setupAuth(app: Express) {
       // Hash password
       const hashedPassword = await hashPassword(password);
 
-      // Create user
-      try {
-        const user = await storage.createUser({
+      let user;
+
+      // If guestUserId provided, update existing guest user
+      if (guestUserId) {
+        try {
+          const existingGuestUser = await storage.getUserById(guestUserId);
+          if (existingGuestUser && existingGuestUser.email.includes('@guest.local')) {
+            // Update guest user with real credentials
+            user = await storage.updateUserCredentials(guestUserId, {
+              email,
+              password: hashedPassword,
+              username: email.split('@')[0]
+            });
+            
+            console.log('Guest user upgraded to registered user:', {
+              id: user.id,
+              email: email.split('@')[0] + '@...',
+              wasGuest: true,
+              timestamp: new Date().toISOString()
+            });
+          } else {
+            throw new Error('Invalid guest user ID');
+          }
+        } catch (guestError) {
+          console.warn('Guest user upgrade failed, creating new user:', guestError);
+          // Fallback to creating new user
+          user = await storage.createUser({
+            email,
+            password: hashedPassword,
+          });
+        }
+      } else {
+        // Create new user (no guest upgrade)
+        user = await storage.createUser({
           email,
           password: hashedPassword,
         });
-
-        console.log('User created successfully:', {
-          id: user.id,
-          email: email.split('@')[0] + '@...',
-          timestamp: new Date().toISOString()
-        });
-
-        // Login the user
-        req.login(user, (err) => {
-          if (err) {
-            console.error('Login error after registration:', err);
-            return next(err);
-          }
-          
-          // Return success response with user data
-          console.log('User logged in after registration');
-          return res.status(201).json(user);
-        });
-      } catch (createError) {
-        console.error('User creation error:', createError);
-        return res.status(500).json({ error: "Failed to create user account" });
       }
+
+      console.log('User registration completed:', {
+        id: user.id,
+        email: email.split('@')[0] + '@...',
+        method: guestUserId ? 'guest_upgrade' : 'new_user',
+        timestamp: new Date().toISOString()
+      });
+
+      // Login the user
+      req.login(user, (err) => {
+        if (err) {
+          console.error('Login error after registration:', err);
+          return next(err);
+        }
+        
+        // Return success response with user data
+        console.log('User logged in after registration');
+        return res.status(201).json(user);
+      });
+
     } catch (err) {
       console.error('Registration error:', err);
-      // Send proper JSON response instead of passing to generic error handler
       return res.status(500).json({ error: "Registration failed", details: err instanceof Error ? err.message : "Unknown error" });
     }
   });

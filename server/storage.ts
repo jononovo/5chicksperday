@@ -115,6 +115,24 @@ class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async updateUserCredentials(userId: number, credentials: { email: string; password: string; username: string }): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        email: credentials.email,
+        password: credentials.password,
+        username: credentials.username
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (!user) {
+      throw new Error('User not found for credential update');
+    }
+
+    return user;
+  }
+
   // User Preferences
   async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {
     const [prefs] = await db

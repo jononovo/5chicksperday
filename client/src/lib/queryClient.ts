@@ -44,12 +44,29 @@ export async function apiRequest(
     // Get Firebase token from localStorage if available
     const authToken = localStorage.getItem('authToken');
     
+    // Get guest user ID from localStorage if available
+    const guestUserData = localStorage.getItem('guest_user_data');
+    let guestUserId: string | null = null;
+    if (guestUserData) {
+      try {
+        const parsed = JSON.parse(guestUserData);
+        guestUserId = parsed.id?.toString();
+      } catch (error) {
+        console.warn('Failed to parse guest user data:', error);
+      }
+    }
+    
     // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
     
     // Add auth token if available
     if (authToken) {
       headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    // Add guest user ID header if available and no auth token
+    if (guestUserId && !authToken) {
+      headers['x-guest-user-id'] = guestUserId;
     }
     
     const res = await fetch(url, {
