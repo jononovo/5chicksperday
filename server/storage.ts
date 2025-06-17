@@ -21,7 +21,8 @@ export interface IStorage {
   // User Auth
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
-  createUser(data: { email: string; password: string; username?: string }): Promise<User>;
+  createUser(data: { email: string; password: string; username?: string; isGuest?: boolean; expiresAt?: Date }): Promise<User>;
+  cleanupExpiredGuests(): Promise<{ deletedUsers: number; deletedCompanies: number; deletedContacts: number }>;
 
   // User Preferences
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
@@ -100,17 +101,22 @@ class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
+  async createUser(data: { email: string; password: string; username?: string; isGuest?: boolean; expiresAt?: Date }): Promise<User> {
     const [user] = await db
       .insert(users)
       .values({
         email: data.email,
         username: data.username || data.email.split('@')[0],
-        password: data.password
+        password: data.password,
+        isGuest: data.isGuest || false,
+        expiresAt: data.expiresAt
       })
       .returning();
 
-    await this.initializeUserPreferences(user.id);
+    // Only initialize preferences for non-guest users
+    if (!data.isGuest) {
+      await this.initializeUserPreferences(user.id);
+    }
 
     return user;
   }

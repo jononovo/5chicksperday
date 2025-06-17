@@ -6,6 +6,8 @@ export const users = pgTable("users", {
   username: text("username").notNull(),
   password: text("password").notNull(),
   email: text("email").notNull(),
+  isGuest: boolean("is_guest").default(false),
+  expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow()
 });
 
