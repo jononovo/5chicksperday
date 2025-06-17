@@ -133,6 +133,7 @@ export interface IStorage {
   listCompaniesByList(listId: number, userId: number): Promise<Company[]>;
   getNextListId(): Promise<number>;
   createList(data: Omit<List, 'id' | 'createdAt'>): Promise<List>;
+  updateList(listId: number, data: Partial<List>, userId: number): Promise<List | undefined>;
   updateCompanyList(companyId: number, listId: number): Promise<void>;
   listCompanies(userId: number): Promise<Company[]>;
   getCompany(id: number, userId: number): Promise<Company | undefined>;
