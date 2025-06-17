@@ -88,6 +88,25 @@ export const contactFeedback = pgTable("contact_feedback", {
   createdAt: timestamp("created_at").defaultNow()
 });
 
+export const userCredits = pgTable("user_credits", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  credits: integer("credits").notNull().default(0),
+  lastUpdated: timestamp("last_updated").defaultNow()
+});
+
+export const creditTransactions = pgTable("credit_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  type: text("type").notNull(), // 'purchase', 'deduction', 'refund'
+  amount: integer("amount").notNull(), // positive for credits added, negative for deducted
+  operation: text("operation"), // 'company_search', 'contact_search', 'email_search', 'individual_email_search', 'full_search', 'credit_purchase'
+  description: text("description"),
+  balanceAfter: integer("balance_after").notNull(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
 
 
 export const campaigns = pgTable("campaigns", {
@@ -214,6 +233,21 @@ const userPreferencesSchema = z.object({
   // hasSeenTour field removed
 });
 
+const userCreditsSchema = z.object({
+  userId: z.number(),
+  credits: z.number().min(0)
+});
+
+const creditTransactionSchema = z.object({
+  userId: z.number(),
+  type: z.enum(['purchase', 'deduction', 'refund']),
+  amount: z.number(),
+  operation: z.enum(['company_search', 'contact_search', 'email_search', 'individual_email_search', 'full_search', 'credit_purchase']).optional(),
+  description: z.string().optional(),
+  balanceAfter: z.number(),
+  stripePaymentIntentId: z.string().optional()
+});
+
 
 
 // N8N Workflow schemas have been removed
@@ -232,6 +266,8 @@ export const insertEmailTemplateSchema = emailTemplateSchema.extend({
 });
 export const insertContactFeedbackSchema = contactFeedbackSchema;
 export const insertUserPreferencesSchema = userPreferencesSchema;
+export const insertUserCreditsSchema = userCreditsSchema;
+export const insertCreditTransactionSchema = creditTransactionSchema;
 
 export type List = typeof lists.$inferSelect;
 export type InsertList = z.infer<typeof insertListSchema>;
@@ -252,6 +288,10 @@ export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 
 export type SearchJob = typeof searchJobs.$inferSelect;
 export type InsertSearchJob = typeof searchJobs.$inferInsert;
+export type UserCredits = typeof userCredits.$inferSelect;
+export type InsertUserCredits = z.infer<typeof insertUserCreditsSchema>;
+export type CreditTransaction = typeof creditTransactions.$inferSelect;
+export type InsertCreditTransaction = z.infer<typeof insertCreditTransactionSchema>;
 
 // N8N workflow types have been removed
 
