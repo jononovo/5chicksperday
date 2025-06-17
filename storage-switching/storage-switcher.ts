@@ -1,7 +1,7 @@
 /**
  * Storage switcher - allows easy transition between PostgreSQL and Replit DB
  */
-import { ReplitStorage } from './simplified-storage-replit';
+import { ReplitStorage } from './replit-storage-final';
 import { IStorage } from '../server/storage/index';
 
 // Set to true to use Replit DB, false to use PostgreSQL

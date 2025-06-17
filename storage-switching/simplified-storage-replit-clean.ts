@@ -3,7 +3,7 @@
  * This replaces the corrupted simplified-storage-replit.ts file
  */
 
-import { Database } from "@replit/database";
+import Database from "@replit/database";
 import type { IStorage } from "../server/storage";
 import type {
   User, InsertUser,
@@ -26,8 +26,9 @@ export class ReplitStorage implements IStorage {
 
   private async get<T>(key: string): Promise<T | undefined> {
     try {
-      const value = await this.db.get(key);
-      return value ? JSON.parse(value) : undefined;
+      const result = await this.db.get(key);
+      if (!result || result.error) return undefined;
+      return result ? JSON.parse(result as string) : undefined;
     } catch (error) {
       console.error(`Error getting key ${key}:`, error);
       return undefined;
@@ -53,8 +54,11 @@ export class ReplitStorage implements IStorage {
 
   private async list(prefix: string): Promise<string[]> {
     try {
-      const keys = await this.db.list(prefix);
-      return keys;
+      const result = await this.db.list(prefix);
+      if (result && !result.error && Array.isArray(result)) {
+        return result as string[];
+      }
+      return [];
     } catch (error) {
       console.error(`Error listing keys with prefix ${prefix}:`, error);
       return [];
@@ -87,8 +91,8 @@ export class ReplitStorage implements IStorage {
     const user: User = {
       ...data,
       id,
-      createdAt: now,
-      updatedAt: now
+      createdAt: new Date(now),
+      updatedAt: new Date(now)
     };
 
     await this.set(`user:${id}`, user);
