@@ -84,8 +84,21 @@ async function getUserId(req: express.Request): Promise<number> {
     return -1; // This ID won't match any real user, preventing data leakage
   }
   
-  // Check if there's a guest user ID in the request headers
-  const guestUserId = req.headers['x-guest-user-id'];
+  // Check if there's a guest user ID in the request headers (multiple formats for compatibility)
+  const guestUserId = req.headers['x-guest-user-id'] || 
+                     req.headers['X-Guest-User-Id'] || 
+                     req.headers['guest-user-id'] ||
+                     req.get('X-Guest-User-Id');
+  
+  console.log('Guest header check:', {
+    'x-guest-user-id': req.headers['x-guest-user-id'],
+    'X-Guest-User-Id': req.headers['X-Guest-User-Id'],
+    'guest-user-id': req.headers['guest-user-id'],
+    'via-get': req.get('X-Guest-User-Id'),
+    resolved: guestUserId,
+    allHeaders: Object.keys(req.headers).filter(h => h.toLowerCase().includes('guest'))
+  });
+  
   if (guestUserId && typeof guestUserId === 'string') {
     const parsedGuestId = parseInt(guestUserId, 10);
     if (!isNaN(parsedGuestId)) {
