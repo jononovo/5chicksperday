@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -24,6 +24,7 @@ import {
 
 type AuthContextType = {
   user: User | null;
+  anonymousUserId: number | null;
   isLoading: boolean;
   error: Error | null;
   logoutMutation: UseMutationResult<void, Error, void>;
@@ -36,6 +37,8 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const [anonymousUserId, setAnonymousUserId] = useState<number | null>(null);
+  
   const {
     data: user,
     error,
@@ -44,6 +47,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryKey: ["/api/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
+
+  // Create anonymous user on first visit
+  useEffect(() => {
+    const initializeAnonymousUser = async () => {
+      // Skip if user is authenticated
+      if (user) return;
+      
+      // Check if we already have an anonymous user ID
+      const existingUserId = localStorage.getItem('anonymousUserId');
+      if (existingUserId) {
+        setAnonymousUserId(parseInt(existingUserId, 10));
+        return;
+      }
+      
+      try {
+        // Create new anonymous user
+        const response = await fetch('/api/create-anonymous-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ createAnonymous: true })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const userId = data.userId;
+          localStorage.setItem('anonymousUserId', userId.toString());
+          setAnonymousUserId(userId);
+          console.log('Anonymous user created:', userId);
+        }
+      } catch (error) {
+        console.error('Failed to create anonymous user:', error);
+      }
+    };
+
+    initializeAnonymousUser();
+  }, [user]);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -393,6 +432,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user: user ?? null,
+        anonymousUserId,
         isLoading,
         error,
         logoutMutation,

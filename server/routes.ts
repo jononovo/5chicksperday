@@ -4608,6 +4608,40 @@ Respond in this exact JSON format:
 
   // All N8N Workflow Management Endpoints and proxies have been removed
 
+  // Anonymous user creation endpoint
+  app.post("/api/create-anonymous-user", async (req, res) => {
+    try {
+      const { createAnonymous } = req.body;
+      
+      if (!createAnonymous) {
+        return res.status(400).json({ error: "Invalid request" });
+      }
+
+      // Create anonymous user (user with no email yet)
+      const anonymousUser = await storage.createUser({
+        email: `anonymous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}@temp.local`,
+        password: '', // Empty password for anonymous
+        username: `user_${Date.now()}`,
+        isAnonymous: true
+      });
+
+      console.log('Anonymous user created:', {
+        id: anonymousUser.id,
+        isAnonymous: true,
+        timestamp: new Date().toISOString()
+      });
+
+      return res.json({
+        userId: anonymousUser.id,
+        createdAt: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Anonymous user creation error:', error);
+      return res.status(500).json({ error: "Failed to create anonymous user" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
