@@ -4502,19 +4502,30 @@ Respond in this exact JSON format:
 
   app.post("/api/credits/purchase", requireAuth, async (req, res) => {
     try {
-      const { amount } = req.body;
+      const { amount = 4000 } = req.body; // Default $40.00 for 1000 credits
       
       if (!process.env.STRIPE_SECRET_KEY) {
         return res.status(500).json({ error: 'Stripe not configured' });
       }
 
-      // For now, return a mock client secret until Stripe is properly integrated
-      // In production, this would create a real Stripe payment intent
-      const mockClientSecret = `pi_mock_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`;
+      const Stripe = require('stripe');
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount, // Amount in cents
+        currency: 'usd',
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          userId: (await getUserId(req)).toString(),
+          credits: '1000', // 1000 credits for $40
+        },
+      });
       
       res.json({ 
-        clientSecret: mockClientSecret,
-        amount: amount || 4000 // $40.00 for 1000 credits
+        clientSecret: paymentIntent.client_secret,
+        amount: amount
       });
     } catch (error) {
       console.error('Create payment intent error:', error);
@@ -4550,6 +4561,49 @@ Respond in this exact JSON format:
     } catch (error) {
       console.error('Get transactions error:', error);
       res.status(500).json({ error: 'Failed to get transactions' });
+    }
+  });
+
+  // Stripe webhook to handle successful payments
+  app.post("/api/stripe/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+      const Stripe = require('stripe');
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      
+      const sig = req.headers['stripe-signature'];
+      let event;
+
+      try {
+        // In production, you should set STRIPE_WEBHOOK_SECRET
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+      } catch (err) {
+        console.log(`Webhook signature verification failed.`, err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+      }
+
+      // Handle the event
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object;
+        const userId = parseInt(paymentIntent.metadata.userId);
+        const credits = parseInt(paymentIntent.metadata.credits || '1000');
+
+        console.log('Payment successful for user:', userId, 'Adding credits:', credits);
+
+        await storage.addCredits(
+          userId,
+          credits,
+          'stripe_payment',
+          `Payment for ${credits} credits ($${(paymentIntent.amount / 100).toFixed(2)})`,
+          paymentIntent.id
+        );
+
+        console.log('Credits added successfully for user:', userId);
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ error: 'Webhook failed' });
     }
   });
 

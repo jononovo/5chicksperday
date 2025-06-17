@@ -123,8 +123,10 @@ export function BuyCreditsDialog({ open, onOpenChange, onHowCreditsWork }: BuyCr
   };
 
   const handleSuccess = () => {
+    // Refresh credit balance after successful payment
     queryClient.invalidateQueries({ queryKey: ["/api/credits"] });
     onOpenChange(false);
+    setClientSecret(null);
   };
 
   const stripeOptions = clientSecret ? {
