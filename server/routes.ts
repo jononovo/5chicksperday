@@ -156,7 +156,10 @@ async function executeCompleteSearchPipeline(job: BackgroundSearchJob) {
       age: null,
       alternativeProfileUrl: null,
       defaultContactEmail: null,
-      userId: job.userId,
+      ranking: null,
+      linkedinProminence: null,
+      customerCount: null,
+      rating: null,
       location: null,
       phoneNumber: null,
       linkedinUrl: null,
@@ -607,7 +610,7 @@ export function registerRoutes(app: Express) {
       const userSessions = Array.from(global.searchSessions.values());
       let cleanedCount = 0;
       
-      for (const [sessionId, session] of global.searchSessions.entries()) {
+      for (const [sessionId, session] of Array.from(global.searchSessions.entries())) {
         // Clean up sessions older than 1 hour or completed email searches
         const isOld = Date.now() - session.timestamp > (60 * 60 * 1000); // 1 hour
         const isEmailComplete = session.emailSearchStatus === 'completed';
@@ -1029,12 +1032,12 @@ export function registerRoutes(app: Express) {
     try {
       const activeSessions = [];
       
-      for (const [sessionId, session] of global.searchSessions.entries()) {
+      for (const [sessionId, session] of Array.from(global.searchSessions.entries())) {
         // Check if session belongs to user and is not expired
         const isExpired = Date.now() - session.timestamp > session.ttl;
         if (!isExpired && session.quickResults && session.quickResults.length > 0) {
           // Check if any companies belong to this user
-          const userCompanies = session.quickResults.filter(company => 
+          const userCompanies = session.quickResults.filter((company: any) => 
             company.userId === userId
           );
           
