@@ -1,0 +1,64 @@
+Warning: Encountered two children with the same key, &#x60;45&#x60;. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at tbody
+    at _c5 (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/table.tsx:53:12)
+    at table
+    at div
+    at _c (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/table.tsx:20:11)
+    at div
+    at div
+    at _c9 (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/card.tsx:106:12)
+    at div
+    at _c (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at Home (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/pages/home.tsx:79:41)
+    at Suspense
+    at component
+    at Route (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:323:16)
+    at SemiProtectedRoute (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/lib/semi-protected-route.tsx:22:3)
+    at Switch (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:379:17)
+    at div
+    at div
+    at div
+    at AppLayout (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/layout.tsx:38:29)
+    at Route (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:323:16)
+    at Switch (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:379:17)
+    at Router (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/App.tsx?v=mAcOW-WS4igp0Q5ArHbrT:80:3)
+    at SearchStrategyProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/lib/search-strategy-context.tsx:24:42)
+    at RegistrationModalProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/hooks/use-registration-modal.tsx:35:45)
+    at AuthProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/hooks/use-auth.tsx:34:32)
+    at QueryClientProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=22d15cdc:2805:3)
+    at App (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/App.tsx?v=mAcOW-WS4igp0Q5ArHbrT:609:3)
+Warning: Encountered two children with the same key, &#x60;47&#x60;. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at tbody
+    at _c5 (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/table.tsx:53:12)
+    at table
+    at div
+    at _c (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/table.tsx:20:11)
+    at div
+    at div
+    at _c9 (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/card.tsx:106:12)
+    at div
+    at _c (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at Home (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/pages/home.tsx:79:41)
+    at Suspense
+    at component
+    at Route (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:323:16)
+    at SemiProtectedRoute (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/lib/semi-protected-route.tsx:22:3)
+    at Switch (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:379:17)
+    at div
+    at div
+    at div
+    at AppLayout (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/components/layout.tsx:38:29)
+    at Route (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:323:16)
+    at Switch (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=22d15cdc:379:17)
+    at Router (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/App.tsx?v=mAcOW-WS4igp0Q5ArHbrT:80:3)
+    at SearchStrategyProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/lib/search-strategy-context.tsx:24:42)
+    at RegistrationModalProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/hooks/use-registration-modal.tsx:35:45)
+    at AuthProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/hooks/use-auth.tsx:34:32)
+    at QueryClientProvider (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=22d15cdc:2805:3)
+    at App (https://e3854944-8bc3-4ccb-95a3-554b84b1a661-00-19vbc0k4pm5a9.worf.replit.dev/src/App.tsx?v=mAcOW-WS4igp0Q5ArHbrT:609:3)
