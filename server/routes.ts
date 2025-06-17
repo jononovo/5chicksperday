@@ -3,6 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import Stripe from 'stripe';
 import { storage } from "./storage-simple";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -4508,7 +4509,6 @@ Respond in this exact JSON format:
         return res.status(500).json({ error: 'Stripe not configured' });
       }
 
-      const Stripe = require('stripe');
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
       const paymentIntent = await stripe.paymentIntents.create({
@@ -4567,7 +4567,6 @@ Respond in this exact JSON format:
   // Stripe webhook to handle successful payments
   app.post("/api/stripe/webhook", express.raw({ type: 'application/json' }), async (req, res) => {
     try {
-      const Stripe = require('stripe');
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
       
       const sig = req.headers['stripe-signature'];
