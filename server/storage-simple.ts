@@ -394,6 +394,20 @@ class SimpleStorage implements IStorage {
     return list;
   }
 
+  async updateList(listId: number, data: Partial<List>, userId: number): Promise<List | undefined> {
+    // Get existing list
+    const existingList = await this.getList(listId, userId);
+    if (!existingList) return undefined;
+    
+    // Update with new data
+    const updatedList = { ...existingList, ...data };
+    
+    // Save back to storage
+    this.lists.set(listId, updatedList);
+    
+    return updatedList;
+  }
+
   async updateCompanyList(companyId: number, listId: number): Promise<void> {
     const company = this.companies.get(companyId);
     if (company) {

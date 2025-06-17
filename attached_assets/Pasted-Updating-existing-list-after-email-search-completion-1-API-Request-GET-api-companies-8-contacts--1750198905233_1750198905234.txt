@@ -1,0 +1,52 @@
+Updating existing list after email search completion: 1
+API Request: GET /api/companies/8/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.101Z"}
+API Request: GET /api/companies/9/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.102Z"}
+API Request: GET /api/companies/10/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.102Z"}
+API Request: GET /api/companies/11/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.102Z"}
+API Request: GET /api/companies/12/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.102Z"}
+API Request: GET /api/companies/13/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.103Z"}
+API Request: GET /api/companies/14/contacts 
+Object {hasData: false, timestamp: "2025-06-17T22:18:20.103Z"}
+Starting list update: 
+Object {listId: 3, query: "Automotive component suppliers in Miami", companyCount: 7, companyIds: Array(7)}
+API Request: PUT /api/lists/3 
+Object {hasData: true, timestamp: "2025-06-17T22:18:20.104Z"}
+CompanyTable received companies: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SearchStateManager: Saved 7 contacts for company 10
+SearchStateManager: Saved 4 contacts for company 11
+SearchStateManager: Saved 4 contacts for company 12
+SearchStateManager: Saved 6 contacts for company 13
+SearchStateManager: Saved 1 contacts for company 14
+SearchStateManager: Saved atomic state 
+Object {query: "Automotive component suppliers in Miami", companiesCount: 7, contactCount: 22, emailCount: 7, sessionId: "session_1750197586986_sw8y4nlp0"}
+Atomic state save completed: 
+Object {query: "Automotive component suppliers in Miami", resultsCount: 7, listId: 3, contactCount: 22}
+API Request Error: PUT /api/lists/3 
+Object {error: "404: {"message":"List not found or you don't have permission to update it"}", timestamp: "2025-06-17T22:18:20.223Z"}
+
+List update failed: 
+Error {}
+
+finishSearchWithoutSave: Updated localStorage with refreshed data
+SearchStateManager: Saved atomic state 
+Object {query: "Automotive component suppliers in Miami", companiesCount: 0, contactCount: 0, emailCount: 0, sessionId: "session_1750197586986_sw8y4nlp0"}
+Atomic state save completed: 
+Object {query: "Automotive component suppliers in Miami", resultsCount: 0, listId: 3, contactCount: 0}
+CompanyTable received companies: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SearchStateManager: Saved 7 contacts for company 10
+SearchStateManager: Saved 4 contacts for company 11
+SearchStateManager: Saved 4 contacts for company 12
+SearchStateManager: Saved 6 contacts for company 13
+SearchStateManager: Saved 1 contacts for company 14
+SearchStateManager: Saved atomic state 
+Object {query: "Automotive component suppliers in Miami", companiesCount: 7, contactCount: 22, emailCount: 7, sessionId: "session_1750197586986_sw8y4nlp0"}
+Atomic state save completed: 
+Object {query: "Automotive component suppliers in Miami", resultsCount: 7, listId: 3, contactCount: 22}
