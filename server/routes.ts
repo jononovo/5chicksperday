@@ -4304,7 +4304,7 @@ Respond in this exact JSON format:
         });
       }
 
-      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
       
       const paymentIntent = await stripe.paymentIntents.create({
         amount,
