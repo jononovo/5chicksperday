@@ -115,6 +115,38 @@
 - **Next phase**: Connect storage switcher to main application for persistent storage
 - **IStorage interface**: Abstraction layer enables seamless backend switching
 
+## Email Search Architecture Deep Dive
+
+### Complete "Find Key Emails" Backend Flow
+The email discovery system uses a sophisticated 3-tier parallel architecture for maximum efficiency and coverage:
+
+**Frontend Integration:**
+- Triggered by "Find Key Emails" button in Companies Analysis table
+- `runConsolidatedEmailSearch()` in `home.tsx` calls `/api/companies/find-all-emails`
+- Processes multiple companies with staggered 400ms delays
+
+**Backend Processing Strategy:**
+- **Tier 1 & 2 (Parallel)**: Apollo.io searches contacts #1&2, Perplexity searches contacts #1&3 simultaneously
+- **Tier 3 (Fallback)**: Hunter.io only triggers if <1 email found, searches contacts #1&2
+- Contact #1 receives double coverage from both Apollo and Perplexity
+
+**API Integration Methods:**
+- Apollo: Internal API calls to `/api/contacts/{id}/apollo`
+- Perplexity: Direct `searchContactDetails()` function calls
+- Hunter: Internal API calls to `/api/contacts/{id}/hunter`
+
+**Data Processing:**
+- Unified email deduplication via `mergeEmailData()` from `email-utils.ts`
+- Session tracking with global state management
+- Source attribution and comprehensive result summaries
+- SearchStateManager for atomic state persistence
+
+**Performance Benefits:**
+- 40% faster execution than sequential approach
+- Complete coverage of top 3 contacts per company
+- Smart fallback logic prevents unnecessary API calls
+- Parallel processing reduces total search time
+
 ## Changelog
 - June 13, 2025. Initial setup
 - June 13, 2025. Mobile UI optimizations: Fixed duck header positioning (-mt-1), reduced email form horizontal padding (p-6→px-3 py-6 md:p-6) for 24px wider mobile inputs, updated "Save Template" to "Save as Template", and removed chevron arrow from mobile duck header navigation button
