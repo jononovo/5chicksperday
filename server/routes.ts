@@ -160,10 +160,13 @@ async function executeCompleteSearchPipeline(job: BackgroundSearchJob) {
       linkedinProminence: null,
       customerCount: null,
       rating: null,
-      location: null,
       phoneNumber: null,
       linkedinUrl: null,
       twitterHandle: null,
+      services: null,
+      validationPoints: null,
+      differentiation: null,
+      totalScore: null,
       snapshot: result
     });
     companies.push(createdCompany);
