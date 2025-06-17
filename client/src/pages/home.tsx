@@ -130,6 +130,64 @@ export default function Home() {
   const isInitializedRef = useRef(false);
   const hasSessionRestoredDataRef = useRef(false);
 
+  // Background search restoration: Check for completed background searches
+  const checkForBackgroundSearchResults = async () => {
+    try {
+      const userId = auth.user?.id || 1; // Use authenticated user or demo user
+      const response = await apiRequest("GET", `/api/search-sessions/active/${userId}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success && data.activeSessions.length > 0) {
+          const latestSession = data.activeSessions[0]; // Get most recent session
+          
+          console.log(`[Background Restoration] Found active session: ${latestSession.sessionId}`);
+          console.log(`[Background Restoration] Query: ${latestSession.query}, Status: ${latestSession.status}`);
+          
+          // Check if this session has completed email search
+          if (latestSession.emailSearchStatus === 'completed') {
+            console.log('[Background Restoration] Session has completed email search - restoring results');
+            
+            // Fetch the latest companies and contacts from database
+            const companiesResponse = await apiRequest("GET", "/api/companies");
+            if (companiesResponse.ok) {
+              const companies = await companiesResponse.json();
+              
+              // Filter companies from this session and add contacts
+              const sessionCompanies = companies.slice(0, latestSession.companiesCount);
+              const companiesWithContacts = await Promise.all(
+                sessionCompanies.map(async (company: any) => {
+                  const contactsResponse = await apiRequest("GET", `/api/companies/${company.id}/contacts?t=${Date.now()}`);
+                  const contacts = contactsResponse.ok ? await contactsResponse.json() : [];
+                  return { ...company, contacts };
+                })
+              );
+              
+              // Restore the search state
+              setCurrentQuery(latestSession.query);
+              setCurrentResults(companiesWithContacts);
+              setLastExecutedQuery(latestSession.query);
+              setContactsLoaded(true);
+              
+              // Show restoration notification
+              toast({
+                title: "Search Results Restored",
+                description: `Found ${companiesWithContacts.length} companies with completed email search from your previous session.`,
+              });
+              
+              return true; // Indicate restoration occurred
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('[Background Restoration] Error checking for background results:', error);
+    }
+    
+    return false; // No restoration occurred
+  };
+
   // Helper function to load valid search state with atomic recovery
   const loadSearchState = (): SavedSearchState | null => {
     try {
@@ -340,6 +398,12 @@ export default function Home() {
           setCurrentResults(savedState.currentResults);
         });
       } else {
+        // Check for background search results if no localStorage state
+        checkForBackgroundSearchResults().then(restored => {
+          if (!restored) {
+            console.log('[Background Restoration] No background search results found');
+          }
+        });
         console.log('No saved search state found or session data already restored');
       }
     }

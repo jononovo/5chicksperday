@@ -143,23 +143,25 @@ async function executeCompleteSearchPipeline(job: BackgroundSearchJob) {
   // Create companies in database
   const companies = [];
   for (const result of companyResults) {
-    const companyData = parseCompanyData(result);
+    const companyName = typeof result === 'string' ? result : result.name;
+    const companyWebsite = typeof result === 'string' ? null : (result.website || null);
+    const companyDescription = typeof result === 'string' ? null : (result.description || null);
+    
     const createdCompany = await storage.createCompany({
-      name: companyData.name,
-      website: companyData.website || null,
-      description: companyData.description || null,
+      name: companyName,
+      website: companyWebsite,
+      description: companyDescription,
       size: null,
       listId: null,
       age: null,
       alternativeProfileUrl: null,
       defaultContactEmail: null,
       userId: job.userId,
-      industry: null,
       location: null,
       phoneNumber: null,
       linkedinUrl: null,
       twitterHandle: null,
-      snapshot: companyData
+      snapshot: result
     });
     companies.push(createdCompany);
   }
@@ -1020,6 +1022,49 @@ export function registerRoutes(app: Express) {
     res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Active sessions endpoint for restoration
+  app.get("/api/search-sessions/active/:userId", (req, res) => {
+    const userId = parseInt(req.params.userId);
+    
+    try {
+      const activeSessions = [];
+      
+      for (const [sessionId, session] of global.searchSessions.entries()) {
+        // Check if session belongs to user and is not expired
+        const isExpired = Date.now() - session.timestamp > session.ttl;
+        if (!isExpired && session.quickResults && session.quickResults.length > 0) {
+          // Check if any companies belong to this user
+          const userCompanies = session.quickResults.filter(company => 
+            company.userId === userId
+          );
+          
+          if (userCompanies.length > 0) {
+            activeSessions.push({
+              sessionId: session.sessionId,
+              query: session.query,
+              status: session.status,
+              companiesCount: userCompanies.length,
+              timestamp: session.timestamp,
+              emailSearchStatus: session.emailSearchStatus || 'none'
+            });
+          }
+        }
+      }
+      
+      res.json({
+        success: true,
+        activeSessions
+      });
+      
+    } catch (error) {
+      console.error('Error fetching active sessions:', error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch active sessions"
+      });
+    }
+  });
+
   // Session status endpoint for polling
   app.get("/api/search-sessions/:sessionId/status", (req, res) => {
     const { sessionId } = req.params;
@@ -1521,6 +1566,10 @@ export function registerRoutes(app: Express) {
         };
         global.searchSessions.set(sessionId, session);
         console.log(`[Quick Search] Session ${sessionId} updated with companies`);
+        
+        // AUTOMATIC BACKGROUND SEARCH: Queue complete pipeline for background processing
+        console.log(`[Quick Search] Auto-queuing background search for session: ${sessionId}`);
+        queueBackgroundSearch(sessionId, userId, query, searchType, contactSearchConfig);
       }
       
       // Return the quick company data
