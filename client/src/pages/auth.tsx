@@ -87,7 +87,7 @@ export default function AuthPage() {
     setIsRegisterSubmitting(true);
     try {
       // Get guest user ID to maintain persistent data through registration
-      const guestUserId = GuestUserManager.getGuestUserId();
+      const guestUserId = GuestUserManager.getCurrentGuestId();
       
       // Add a default username based on email
       const username = data.email.split('@')[0];

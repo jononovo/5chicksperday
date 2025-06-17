@@ -51,6 +51,11 @@ function Router() {
   // Track page views when routes change
   useAnalytics();
   
+  // Initialize guest user system for all visitors
+  useEffect(() => {
+    GuestUserManager.getOrCreateGuestUser();
+  }, []);
+  
   return (
     <>
       <Switch>
