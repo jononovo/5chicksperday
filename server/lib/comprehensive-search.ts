@@ -32,9 +32,9 @@ export class ComprehensiveSearchOrchestrator {
 
       // Phase 1: Find companies
       console.log(`[${jobId}] Phase 1: Finding companies for query: ${query}`);
-      const companiesResult = await searchCompanies(query, userId);
+      const companiesResult = await searchCompanies(query);
       
-      const companies = companiesResult.companies || [];
+      const companies = companiesResult || [];
       console.log(`[${jobId}] Found ${companies.length} companies`);
 
       await storage.updateSearchJob(jobId, {
@@ -57,29 +57,33 @@ export class ComprehensiveSearchOrchestrator {
       let totalContacts = 0;
 
       const companiesWithContacts = await Promise.all(
-        companies.map(async (company) => {
+        companies.map(async (company: any) => {
           try {
             console.log(`[${jobId}] Finding contacts for: ${company.name}`);
             
             const contacts = await findKeyDecisionMakers(
               company.name,
-              company.description || '',
-              {
-                maxContacts: 5,
-                targetRoles: ['CEO', 'CTO', 'VP', 'Director', 'Manager'],
-                confidenceThreshold: 50
-              }
+              company.description || ''
             );
 
             // Save contacts to database
             const savedContacts = await Promise.all(
               contacts.map(contact => 
                 storage.createContact({
-                  ...contact,
-                  userId,
-                  companyId: company.id,
+                  name: contact.name,
                   email: contact.email || null,
-                  alternativeEmails: contact.alternativeEmails || null
+                  role: contact.role || null,
+                  companyId: company.id,
+                  probability: contact.probability || null,
+                  linkedinUrl: contact.linkedinUrl || null,
+                  twitterHandle: contact.twitterHandle || null,
+                  phoneNumber: contact.phoneNumber || null,
+                  location: contact.location || null,
+                  alternativeEmails: contact.alternativeEmails || null,
+                  isDecisionMaker: contact.isDecisionMaker || false,
+                  isInfluencer: contact.isInfluencer || false,
+                  keyInsights: contact.keyInsights || null,
+                  completedSearches: contact.completedSearches || null
                 })
               )
             );
@@ -111,32 +115,32 @@ export class ComprehensiveSearchOrchestrator {
       let totalEmails = 0;
 
       const finalResults = await Promise.all(
-        companiesWithContacts.map(async (company) => {
+        companiesWithContacts.map(async (company: any) => {
           if (!company.contacts || company.contacts.length === 0) {
             return company;
           }
 
           const enrichedContacts = await Promise.all(
-            company.contacts.map(async (contact) => {
+            company.contacts.map(async (contact: any) => {
               if (contact.email) {
                 totalEmails++;
                 return contact; // Already has email
               }
 
               try {
-                // Try email enrichment
-                const enrichedData = await emailEnrichmentService.enrichContact(
-                  contact,
+                // Try email enrichment using existing service methods
+                const huntResult = await emailEnrichmentService.searchHunterContact(
+                  contact.name,
                   company.name,
                   company.website || ''
                 );
 
-                if (enrichedData.email) {
+                if (huntResult.email) {
                   totalEmails++;
                   // Update contact in database
                   const updatedContact = await storage.updateContact(contact.id, {
-                    email: enrichedData.email,
-                    alternativeEmails: enrichedData.alternativeEmails || contact.alternativeEmails
+                    email: huntResult.email,
+                    alternativeEmails: huntResult.alternativeEmails || contact.alternativeEmails
                   });
                   return updatedContact;
                 }

@@ -33,6 +33,7 @@ import { eq, and } from "drizzle-orm";
 import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow-service";
 import { logIncomingWebhook } from "./lib/webhook-logger";
 import { getEmailProvider } from "./services/emailService";
+import { ComprehensiveSearchOrchestrator } from "./lib/comprehensive-search";
 
 // Global session storage for search results
 interface SearchSessionResult {
@@ -4220,6 +4221,137 @@ Respond in this exact JSON format:
       res.status(500).json({ 
         message: "Failed to fetch search approaches",
         error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Comprehensive Search API Endpoints
+  
+  // Start a comprehensive search job
+  app.post("/api/search/comprehensive", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const { query } = req.body;
+
+      if (!query) {
+        return res.status(400).json({ error: "Query is required" });
+      }
+
+      // Generate unique job ID
+      const jobId = `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      // Create search job in database
+      await storage.createSearchJob({
+        id: jobId,
+        userId,
+        query,
+        status: 'pending',
+        progress: 'initializing'
+      });
+
+      // Start search in background (don't await)
+      ComprehensiveSearchOrchestrator.startSearch(jobId, query, userId).catch(error => {
+        console.error(`Background search ${jobId} failed:`, error);
+      });
+
+      res.json({
+        jobId,
+        status: 'pending',
+        message: 'Search started in background'
+      });
+
+    } catch (error) {
+      console.error('Comprehensive search start error:', error);
+      res.status(500).json({
+        error: 'Failed to start search',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Get search job status
+  app.get("/api/search/job/:jobId", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const { jobId } = req.params;
+
+      const job = await storage.getSearchJob(jobId, userId);
+      
+      if (!job) {
+        return res.status(404).json({ error: "Search job not found" });
+      }
+
+      res.json({
+        id: job.id,
+        status: job.status,
+        progress: job.progress,
+        companiesFound: job.companiesFound,
+        contactsFound: job.contactsFound,
+        emailsFound: job.emailsFound,
+        error: job.error,
+        results: job.results,
+        createdAt: job.createdAt,
+        completedAt: job.completedAt
+      });
+
+    } catch (error) {
+      console.error('Get search job error:', error);
+      res.status(500).json({
+        error: 'Failed to get search job',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // List active search jobs for user
+  app.get("/api/search/jobs/active", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const jobs = await storage.listActiveSearchJobs(userId);
+      
+      res.json(jobs.map(job => ({
+        id: job.id,
+        query: job.query,
+        status: job.status,
+        progress: job.progress,
+        companiesFound: job.companiesFound,
+        contactsFound: job.contactsFound,
+        emailsFound: job.emailsFound,
+        createdAt: job.createdAt
+      })));
+
+    } catch (error) {
+      console.error('List active jobs error:', error);
+      res.status(500).json({
+        error: 'Failed to list active jobs',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // List completed search jobs for user
+  app.get("/api/search/jobs/completed", requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const jobs = await storage.listCompletedSearchJobs(userId);
+      
+      res.json(jobs.map(job => ({
+        id: job.id,
+        query: job.query,
+        status: job.status,
+        companiesFound: job.companiesFound,
+        contactsFound: job.contactsFound,
+        emailsFound: job.emailsFound,
+        error: job.error,
+        createdAt: job.createdAt,
+        completedAt: job.completedAt
+      })));
+
+    } catch (error) {
+      console.error('List completed jobs error:', error);
+      res.status(500).json({
+        error: 'Failed to list completed jobs',
+        message: error instanceof Error ? error.message : String(error)
       });
     }
   });
