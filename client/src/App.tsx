@@ -15,6 +15,7 @@ import { useAnalytics } from "./hooks/use-analytics";
 import { SEOHead } from "@/components/ui/seo-head";
 import { MainNav } from "@/components/main-nav";
 import { LoadingScreen } from "@/components/ui/loading-screen";
+import GuestUserManager from "@/lib/guest-user-manager";
 
 // Immediate imports for landing pages and critical components
 import LandingPage from "@/pages/landing";

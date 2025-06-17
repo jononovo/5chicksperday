@@ -905,7 +905,7 @@ export function registerRoutes(app: Express) {
 
   // Lists
   app.get("/api/lists", requireAuth, async (req, res) => {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     
     // Check if the user is authenticated with their own ID
     const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
@@ -976,7 +976,7 @@ export function registerRoutes(app: Express) {
     }
 
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const listId = await storage.getNextListId();
       
       // Extract custom search targets from contactSearchConfig
@@ -1016,7 +1016,7 @@ export function registerRoutes(app: Express) {
   // Update list endpoint
   app.put("/api/lists/:listId", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const listId = parseInt(req.params.listId);
       const { companies, prompt, contactSearchConfig } = req.body;
       
@@ -1578,7 +1578,7 @@ export function registerRoutes(app: Express) {
   // Contacts
   app.get("/api/companies/:companyId/contacts", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const companyId = parseInt(req.params.companyId);
       
       // Handle cache invalidation for fresh data requests
@@ -1604,7 +1604,7 @@ export function registerRoutes(app: Express) {
 
   app.post("/api/companies/:companyId/enrich-contacts", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const companyId = parseInt(req.params.companyId);
       const company = await storage.getCompany(companyId, userId);
 
@@ -1735,7 +1735,7 @@ export function registerRoutes(app: Express) {
   // Add new route for getting a single contact
   app.get("/api/contacts/:id", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       
       console.log('GET /api/contacts/:id - Request params:', {
         id: req.params.id,
@@ -1867,13 +1867,13 @@ export function registerRoutes(app: Express) {
 
   // Email Templates
   app.get("/api/email-templates", requireAuth, async (req, res) => {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     const templates = await storage.listEmailTemplates(userId);
     res.json(templates);
   });
 
   app.get("/api/email-templates/:id", requireAuth, async (req, res) => {
-    const userId = getUserId(req);
+    const userId = await getUserId(req);
     const template = await storage.getEmailTemplate(parseInt(req.params.id), userId);
     if (!template) {
       res.status(404).json({ message: "Template not found" });
@@ -1884,7 +1884,7 @@ export function registerRoutes(app: Express) {
 
   app.post("/api/email-templates", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       
       console.log('POST /api/email-templates - Request body:', {
         ...req.body,
@@ -1925,7 +1925,7 @@ export function registerRoutes(app: Express) {
 
   app.put("/api/email-templates/:id", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const templateId = parseInt(req.params.id);
       
       if (isNaN(templateId)) {
@@ -2035,7 +2035,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   app.post("/api/contacts/:contactId/enrich", requireAuth, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       console.log('Starting enrichment for contact:', contactId);
 
       const contact = await storage.getContact(contactId, userId);
@@ -2447,7 +2447,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   // Backend Email Search Orchestration Endpoint
   app.post("/api/companies/find-all-emails", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const { companyIds, sessionId } = req.body;
       
       if (!companyIds || !Array.isArray(companyIds) || companyIds.length === 0) {
@@ -3059,7 +3059,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   app.post("/api/contacts/:contactId/hunter", requireAuth, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       console.log('Starting Hunter.io search for contact ID:', contactId);
       console.log('User ID:', userId);
 
@@ -3154,7 +3154,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   app.post("/api/contacts/:contactId/apollo", requireAuth, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       console.log('Starting Apollo.io search for contact ID:', contactId);
       console.log('User ID:', userId);
 
@@ -3248,7 +3248,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   app.post("/api/contacts/:contactId/aeroleads", requireAuth, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       console.log('Starting AeroLeads search for contact ID:', contactId);
       console.log('User ID:', userId);
 
@@ -3571,7 +3571,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       // If user is authenticated, save profile to database
       if (req.user) {
         try {
-          const userId = getUserId(req);
+          const userId = await getUserId(req);
           
           // Create or update strategic profile
           const existingProfiles = await storage.getStrategicProfiles?.(userId) || [];
@@ -3889,7 +3889,7 @@ High-level strategic guidance for email generation.`;
       // Save reports to database if user is authenticated
       if (req.user) {
         try {
-          const userId = getUserId(req);
+          const userId = await getUserId(req);
           
           if (result.type === 'product_summary') {
             await storage.updateStrategicProfile?.(userId, { 
@@ -4011,7 +4011,7 @@ Return only the final boundary statement, no additional text.`;
       // Save boundary to database if user is authenticated
       if (req.user) {
         try {
-          const userId = getUserId(req);
+          const userId = await getUserId(req);
           await storage.updateStrategicProfile?.(userId, { 
             strategyHighLevelBoundary: finalBoundary
           });
@@ -4051,7 +4051,7 @@ Return only the final boundary statement, no additional text.`;
       // Save sprint prompt to database if user is authenticated
       if (req.user) {
         try {
-          const userId = getUserId(req);
+          const userId = await getUserId(req);
           await storage.updateStrategicProfile?.(userId, { 
             exampleSprintPlanningPrompt: sprintPrompt
           });
@@ -4090,7 +4090,7 @@ Return only the final boundary statement, no additional text.`;
       // Save daily queries and complete strategy to database if user is authenticated
       if (req.user) {
         try {
-          const userId = getUserId(req);
+          const userId = await getUserId(req);
           
           // Format complete strategy report
           const fullStrategy = {
@@ -4236,7 +4236,7 @@ Respond in this exact JSON format:
   // Start a comprehensive search job
   app.post("/api/search/comprehensive", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const { query } = req.body;
 
       if (!query) {
@@ -4278,7 +4278,7 @@ Respond in this exact JSON format:
   // Get search job status
   app.get("/api/search/job/:jobId", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const { jobId } = req.params;
 
       const job = await storage.getSearchJob(jobId, userId);
@@ -4312,7 +4312,7 @@ Respond in this exact JSON format:
   // List active search jobs for user
   app.get("/api/search/jobs/active", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const jobs = await storage.listActiveSearchJobs(userId);
       
       res.json(jobs.map(job => ({
@@ -4338,7 +4338,7 @@ Respond in this exact JSON format:
   // List completed search jobs for user
   app.get("/api/search/jobs/completed", requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const jobs = await storage.listCompletedSearchJobs(userId);
       
       res.json(jobs.map(job => ({

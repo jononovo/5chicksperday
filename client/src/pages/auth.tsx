@@ -13,6 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { firebaseAuth, firebaseGoogleProvider } from "@/lib/firebase";
+import GuestUserManager from "@/lib/guest-user-manager";
 
 // Helper function remains unchanged
 function getFirebaseErrorMessage(): string {
@@ -85,9 +86,15 @@ export default function AuthPage() {
     setRegisterError(null);
     setIsRegisterSubmitting(true);
     try {
+      // Get guest user ID to maintain persistent data through registration
+      const guestUserId = GuestUserManager.getGuestUserId();
+      
       // Add a default username based on email
       const username = data.email.split('@')[0];
       await registerWithEmail(data.email, data.password, username);
+      
+      // Guest user data will be automatically migrated by the backend
+      // when the Firebase token is verified and matched to the guest ID
     } catch (error: any) {
       console.error("Registration error:", error);
       
