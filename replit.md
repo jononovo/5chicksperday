@@ -107,13 +107,12 @@
 - **Environment variables**: Database URLs and API keys via environment
 - **Workflow integration**: N8N webhooks for external automation
 
-### Storage Migration Strategy
-- **Current status**: In-memory storage active for rapid development iteration
-- **Infrastructure ready**: PostgreSQL (Neon) and Replit Database both provisioned
-- **Storage switcher**: `storage-switching/storage-switcher.ts` with `USE_REPLIT_DB = true`
-- **Migration gap**: Main application (`server/routes.ts`) uses `storage-simple.ts` (in-memory)
-- **Next phase**: Connect storage switcher to main application for persistent storage
-- **IStorage interface**: Abstraction layer enables seamless backend switching
+### Storage Architecture
+- **Current implementation**: Single in-memory storage (`server/storage-simple.ts`)
+- **Interface**: IStorage abstraction with comprehensive method definitions
+- **Data persistence**: In-memory for rapid development, ready for future migration
+- **User isolation**: Complete separation with user-specific data access
+- **Legacy support**: Automatic adoption of User ID 1 data for authenticated users
 
 ## Changelog
 - June 13, 2025. Initial setup
@@ -188,6 +187,7 @@
 - June 17, 2025. Backend-driven comprehensive search architecture implementation: Completely refactored search system from frontend-coordinated to backend-driven processing. Created SearchJob database schema with persistent search tracking, ComprehensiveSearchOrchestrator for full pipeline execution (companies → contacts → emails), and comprehensive API endpoints (/api/search/comprehensive, /api/search/job/:id). Implemented ComprehensiveSearchClient for frontend integration with job polling and status tracking. This enables searches to complete even when users navigate away from the page, solving the critical navigation interruption issue. Search jobs persist in database with full progress tracking and result storage
 - June 17, 2025. Critical user registration bug fix: Resolved PostgreSQL constraint violation "null value in column 'id' violates not-null constraint" that was preventing new user registration. Root cause was missing auto-increment sequence on users.id column despite Drizzle schema defining serial type. Fixed by creating users_id_seq sequence, setting ownership to users.id, updating column default to nextval('users_id_seq'), and syncing sequence to current max ID (237). Database now properly auto-generates user IDs, enabling successful Firebase authentication → backend user creation flow
 - June 17, 2025. Complete Stripe payment integration: Integrated real Stripe API keys for secure payment processing with live payment intents instead of mock data. Added comprehensive Stripe webhook endpoint for automatic credit allocation after successful payments, enhanced payment success handling to refresh user credit balance, and configured payment metadata to track user ID and credit amounts. Fixed all ES6 import issues by replacing require statements with proper Stripe imports. Payment system now fully operational with real $40/1000 credits transactions
+- June 17, 2025. Storage architecture cleanup and updateList implementation: Added missing updateList method to SimpleStorage class with legacy data adoption logic for seamless user data migration. Removed obsolete storage-switching directory entirely and cleaned up all references in server/index.ts, server/lib/test-runner.ts, and replit.md documentation. Simplified storage architecture to single in-memory implementation with IStorage abstraction ready for future migration. All list update operations now functional with proper user permission checking
 
 
 ## User Preferences

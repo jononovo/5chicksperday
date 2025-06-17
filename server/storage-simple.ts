@@ -348,6 +348,29 @@ class SimpleStorage implements IStorage {
     return list;
   }
 
+  async updateList(listId: number, data: Partial<List>, userId: number): Promise<List | undefined> {
+    const existingList = this.lists.get(listId);
+    if (!existingList) {
+      return undefined;
+    }
+
+    // Legacy data adoption: if list was created under User ID 1 (old shared system)
+    // and user is authenticated (not User ID 1), transfer ownership
+    if (existingList.userId === 1 && userId !== 1) {
+      existingList.userId = userId;
+    }
+
+    // Check if user has permission to update this list
+    if (existingList.userId !== userId) {
+      return undefined;
+    }
+
+    // Update the list with new data
+    const updatedList = { ...existingList, ...data };
+    this.lists.set(listId, updatedList);
+    return updatedList;
+  }
+
   async updateCompanyList(companyId: number, listId: number): Promise<void> {
     const company = this.companies.get(companyId);
     if (company) {
