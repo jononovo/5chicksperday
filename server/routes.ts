@@ -108,7 +108,7 @@ async function getUserId(req: express.Request): Promise<number> {
     }
   }
   
-  console.log('No authenticated user found - using fallback demo user ID', {
+  console.log('No authenticated user found - creating immediate guest user', {
     isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
     hasUser: !!req.user,
     hasFirebaseUser: !!(req as any).firebaseUser,
@@ -118,8 +118,22 @@ async function getUserId(req: express.Request): Promise<number> {
     timestamp: new Date().toISOString()
   });
   
-  // For regular unauthenticated users without guest ID, return demo user ID
-  return 1;
+  // Create new user immediately for unauthenticated requests
+  const timestamp = Date.now();
+  const randomId = Math.random().toString(36).substr(2, 9);
+  const newUser = await storage.createUser({
+    email: `guest_${timestamp}_${randomId}@temp.local`,
+    password: 'temp_password',
+    username: `guest_${timestamp}`
+  });
+  
+  console.log('Created immediate user for guest:', {
+    userId: newUser.id,
+    email: newUser.email.split('@')[0] + '@...',
+    timestamp: new Date().toISOString()
+  });
+  
+  return newUser.id;
 }
 
 // Helper functions for improved search test scoring and AI agent support

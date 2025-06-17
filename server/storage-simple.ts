@@ -4,6 +4,9 @@ export interface User {
   username: string;
   password: string;
   email: string;
+  firebaseUid?: string;
+  isGuest?: boolean;
+  registeredAt?: string;
   createdAt: string;
 }
 
@@ -220,6 +223,22 @@ class SimpleStorage implements IStorage {
     await this.createUserCredits(id, 500);
     
     return user;
+  }
+
+  async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (user) {
+      const oldEmail = user.email;
+      Object.assign(user, data);
+      
+      // Update email index if email changed
+      if (data.email && data.email !== oldEmail) {
+        this.usersByEmail.delete(oldEmail);
+        this.usersByEmail.set(data.email, user);
+      }
+      return user;
+    }
+    return undefined;
   }
 
   // Credits System
