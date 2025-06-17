@@ -1,6 +1,7 @@
 import { 
   userPreferences, lists, companies, contacts, campaigns, emailTemplates, users,
   emailThreads, emailMessages, strategicProfiles, onboardingChats, searchJobs,
+  userCredits, creditTransactions,
   type UserPreferences, type InsertUserPreferences,
   type List, type InsertList,
   type Company, type InsertCompany,
@@ -12,7 +13,9 @@ import {
   type EmailMessage, type InsertEmailMessage,
   type StrategicProfile, type InsertStrategicProfile,
   type OnboardingChat, type InsertOnboardingChat,
-  type SearchJob, type InsertSearchJob
+  type SearchJob, type InsertSearchJob,
+  type UserCredits, type InsertUserCredits,
+  type CreditTransaction, type InsertCreditTransaction
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, sql, desc } from "drizzle-orm";
@@ -86,6 +89,14 @@ export interface IStorage {
   updateSearchJob(id: string, data: Partial<SearchJob>): Promise<SearchJob | undefined>;
   listActiveSearchJobs(userId: number): Promise<SearchJob[]>;
   listCompletedSearchJobs(userId: number): Promise<SearchJob[]>;
+
+  // Credits System
+  getUserCredits(userId: number): Promise<number>;
+  createUserCredits(userId: number, initialCredits?: number): Promise<void>;
+  deductCredits(userId: number, amount: number, operation: string, description?: string): Promise<boolean>;
+  addCredits(userId: number, amount: number, operation: string, description?: string, stripePaymentIntentId?: string): Promise<void>;
+  getCreditTransactions(userId: number, limit?: number): Promise<any[]>;
+  updateUserCredentials(userId: number, data: { email: string; password: string; username: string }): Promise<any>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -520,6 +531,134 @@ class DatabaseStorage implements IStorage {
         )
       ))
       .orderBy(desc(searchJobs.completedAt));
+  }
+
+  // Credits System implementation
+  async getUserCredits(userId: number): Promise<number> {
+    const [userCredit] = await db.select().from(userCredits).where(eq(userCredits.userId, userId));
+    return userCredit?.credits || 0;
+  }
+
+  async createUserCredits(userId: number, initialCredits: number = 500): Promise<void> {
+    await db.insert(userCredits).values({
+      userId,
+      credits: initialCredits
+    });
+  }
+
+  async deductCredits(userId: number, amount: number, operation: string, description?: string): Promise<boolean> {
+    const currentCredits = await this.getUserCredits(userId);
+    
+    if (currentCredits < amount) {
+      return false; // Insufficient credits
+    }
+
+    const newBalance = currentCredits - amount;
+
+    // Update user credits
+    await db.update(userCredits)
+      .set({ 
+        credits: newBalance,
+        lastUpdated: new Date()
+      })
+      .where(eq(userCredits.userId, userId));
+
+    // Record transaction
+    await db.insert(creditTransactions).values({
+      userId,
+      type: 'deduction',
+      amount: -amount,
+      operation: operation as any,
+      description,
+      balanceAfter: newBalance
+    });
+
+    return true;
+  }
+
+  async addCredits(userId: number, amount: number, operation: string, description?: string, stripePaymentIntentId?: string): Promise<void> {
+    const currentCredits = await this.getUserCredits(userId);
+    const newBalance = currentCredits + amount;
+
+    // Update user credits
+    await db.update(userCredits)
+      .set({ 
+        credits: newBalance,
+        lastUpdated: new Date()
+      })
+      .where(eq(userCredits.userId, userId));
+
+    // Record transaction
+    await db.insert(creditTransactions).values({
+      userId,
+      type: 'purchase',
+      amount,
+      operation: operation as any,
+      description,
+      balanceAfter: newBalance,
+      stripePaymentIntentId
+    });
+  }
+
+  async getCreditTransactions(userId: number, limit: number = 20): Promise<CreditTransaction[]> {
+    return await db.select()
+      .from(creditTransactions)
+      .where(eq(creditTransactions.userId, userId))
+      .orderBy(desc(creditTransactions.createdAt))
+      .limit(limit);
+  }
+
+  async updateUserCredentials(userId: number, data: { email: string; password: string; username: string }): Promise<User> {
+    const [updatedUser] = await db.update(users)
+      .set({
+        email: data.email,
+        password: data.password,
+        username: data.username
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return updatedUser;
+  }
+
+  // Missing interface methods - implementing stubs for now
+  async listActiveContactsWithThreads(userId: number): Promise<(Contact & { lastMessage: string, lastMessageDate: Date, unread: boolean })[]> {
+    return [];
+  }
+
+  async listThreadsByContact(contactId: number, userId: number): Promise<EmailThread[]> {
+    return [];
+  }
+
+  async getThread(id: number, userId: number): Promise<EmailThread | undefined> {
+    return undefined;
+  }
+
+  async createThread(data: InsertEmailThread): Promise<EmailThread> {
+    const [thread] = await db.insert(emailThreads).values(data).returning();
+    return thread;
+  }
+
+  async updateThread(id: number, data: Partial<EmailThread>): Promise<EmailThread> {
+    const [updated] = await db.update(emailThreads).set(data).where(eq(emailThreads.id, id)).returning();
+    return updated;
+  }
+
+  async listMessagesByThread(threadId: number): Promise<EmailMessage[]> {
+    return [];
+  }
+
+  async getThreadMessage(id: number): Promise<EmailMessage | undefined> {
+    return undefined;
+  }
+
+  async createMessage(data: InsertEmailMessage): Promise<EmailMessage> {
+    const [message] = await db.insert(emailMessages).values(data).returning();
+    return message;
+  }
+
+  async markThreadMessagesAsRead(threadId: number): Promise<void> {
+    // Implementation needed
   }
 }
 

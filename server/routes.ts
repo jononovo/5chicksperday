@@ -4244,6 +4244,119 @@ Respond in this exact JSON format:
     }
   });
 
+  // Credits System API Endpoints
+  
+  // Get user credits
+  app.get("/api/credits", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const credits = await storage.getUserCredits(userId);
+      
+      // Initialize credits if user doesn't have any yet
+      if (credits === 0) {
+        try {
+          await storage.createUserCredits(userId, 500); // Give 500 initial credits
+          res.json({ credits: 500 });
+        } catch (error) {
+          // Credits might already exist, just return current balance
+          const currentCredits = await storage.getUserCredits(userId);
+          res.json({ credits: currentCredits });
+        }
+      } else {
+        res.json({ credits });
+      }
+    } catch (error) {
+      console.error('Get credits error:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch credits',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Get credit transactions history
+  app.get("/api/credits/transactions", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const limit = parseInt(req.query.limit as string) || 20;
+      const transactions = await storage.getCreditTransactions(userId, limit);
+      res.json({ transactions });
+    } catch (error) {
+      console.error('Get credit transactions error:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch credit transactions',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Create Stripe payment intent for credit purchase
+  app.post("/api/credits/purchase", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const { amount = 4000 } = req.body; // Default $40.00 in cents
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ 
+          error: 'Stripe not configured',
+          message: 'Payment processing is not available'
+        });
+      }
+
+      const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+      
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency: 'usd',
+        metadata: {
+          userId: userId.toString(),
+          type: 'credit_purchase',
+          credits: '1000' // $40 = 1000 credits
+        }
+      });
+
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
+    } catch (error) {
+      console.error('Create payment intent error:', error);
+      res.status(500).json({ 
+        error: 'Failed to create payment intent',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  // Confirm credit purchase (webhook or manual confirmation)
+  app.post("/api/credits/confirm", requireAuth, async (req, res) => {
+    try {
+      const userId = await getUserId(req);
+      const { paymentIntentId, credits = 1000 } = req.body;
+      
+      await storage.addCredits(
+        userId, 
+        credits, 
+        'credit_purchase', 
+        `Purchased ${credits} credits`,
+        paymentIntentId
+      );
+
+      const newBalance = await storage.getUserCredits(userId);
+      res.json({ 
+        success: true,
+        credits: newBalance,
+        message: `${credits} credits added successfully`
+      });
+    } catch (error) {
+      console.error('Confirm credit purchase error:', error);
+      res.status(500).json({ 
+        error: 'Failed to confirm credit purchase',
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Comprehensive Search API Endpoints
   
   // Start a comprehensive search job
