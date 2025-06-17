@@ -47,7 +47,7 @@ export class ComprehensiveSearchClient {
    * Get status of a search job
    */
   static async getJobStatus(jobId: string): Promise<SearchJobResponse> {
-    const response = await apiRequest(`/api/search/job/${jobId}`);
+    const response = await fetch(`/api/search/job/${jobId}`);
 
     if (!response.ok) {
       const error = await response.json();
@@ -61,7 +61,7 @@ export class ComprehensiveSearchClient {
    * List active search jobs
    */
   static async getActiveJobs(): Promise<SearchJobResponse[]> {
-    const response = await apiRequest('/api/search/jobs/active');
+    const response = await fetch('/api/search/jobs/active');
 
     if (!response.ok) {
       const error = await response.json();
@@ -75,7 +75,7 @@ export class ComprehensiveSearchClient {
    * List completed search jobs
    */
   static async getCompletedJobs(): Promise<SearchJobResponse[]> {
-    const response = await apiRequest('/api/search/jobs/completed');
+    const response = await fetch('/api/search/jobs/completed');
 
     if (!response.ok) {
       const error = await response.json();

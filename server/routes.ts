@@ -34,7 +34,6 @@ import { eq, and } from "drizzle-orm";
 import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow-service";
 import { logIncomingWebhook } from "./lib/webhook-logger";
 import { getEmailProvider } from "./services/emailService";
-import { ComprehensiveSearchOrchestrator } from "./lib/comprehensive-search";
 
 // Global session storage for search results
 interface SearchSessionResult {
