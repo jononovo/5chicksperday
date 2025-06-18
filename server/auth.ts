@@ -144,6 +144,19 @@ async function verifyFirebaseToken(req: Request): Promise<User | null> {
 
 // Simplified session-only authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  console.log('Auth check:', {
+    url: req.url,
+    hasSession: !!req.session,
+    hasUser: !!req.user,
+    sessionID: req.sessionID,
+    isAuthenticated: req.isAuthenticated(),
+    cookies: Object.keys(req.cookies || {}),
+    headers: {
+      cookie: req.headers.cookie ? 'present' : 'missing',
+      userAgent: req.headers['user-agent']?.substring(0, 50)
+    }
+  });
+  
   if (!req.isAuthenticated()) {
     console.log('Authentication failed:', {
       hasSession: !!req.session,
@@ -161,13 +174,15 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || 'temporary-secret-key',
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Force session save to fix Replit persistence
+    saveUninitialized: true, // Create session immediately
+    rolling: true, // Refresh session on each request
     cookie: {
       secure: false, // Disabled for Replit development environment
       httpOnly: true,
       sameSite: 'lax', // Important for Replit cross-origin requests
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/' // Explicit path for all routes
     }
   };
 
