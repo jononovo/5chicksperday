@@ -145,7 +145,14 @@ async function verifyFirebaseToken(req: Request): Promise<User | null> {
 // Simplified session-only authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.isAuthenticated()) {
-    res.status(401).json({ message: "Unauthorized" });
+    console.log('Authentication failed:', {
+      hasSession: !!req.session,
+      hasUser: !!req.user,
+      sessionID: req.sessionID,
+      url: req.url,
+      method: req.method
+    });
+    res.status(401).json({ error: "Authentication required" });
     return;
   }
   next();
@@ -157,8 +164,9 @@ export function setupAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Disabled for Replit development environment
       httpOnly: true,
+      sameSite: 'lax', // Important for Replit cross-origin requests
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
   };
