@@ -142,7 +142,7 @@ async function verifyFirebaseToken(req: Request): Promise<User | null> {
   }
 }
 
-// Add requireAuth middleware
+// Simplified session-only authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.isAuthenticated()) {
     res.status(401).json({ message: "Unauthorized" });
@@ -240,34 +240,8 @@ export function setupAuth(app: Express) {
   }
 
 
-  // Add Firebase token verification to all authenticated routes
-  app.use(async (req, res, next) => {
-    if (!req.isAuthenticated()) {
-      const firebaseUser = await verifyFirebaseToken(req);
-      if (firebaseUser) {
-        // Attach the Firebase user to the request for other middleware to access
-        (req as any).firebaseUser = firebaseUser;
-        
-        // Also log the user in to create a session - WAIT for completion
-        req.login(firebaseUser, (err) => {
-          if (err) return next(err);
-          console.log('Firebase user logged in:', {
-            id: firebaseUser.id,
-            email: firebaseUser.email?.split('@')[0] + '@...',
-            timestamp: new Date().toISOString()
-          });
-          next(); // Only call next() after login completes
-        });
-        // Remove the return here - wait for req.login to complete
-      } else {
-        // No Firebase user found, continue without authentication
-        next();
-      }
-    } else {
-      // Already authenticated via session
-      next();
-    }
-  });
+  // Session-only authentication - no global Firebase token verification
+  // Firebase login only happens at specific endpoints
 
   // Guest user creation endpoint
   app.post("/api/guest-user", async (req, res) => {
