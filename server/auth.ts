@@ -240,8 +240,34 @@ export function setupAuth(app: Express) {
   }
 
 
-  // Session-only authentication - no global Firebase token verification
-  // Firebase login only happens at specific endpoints
+  // Firebase login endpoint - converts Firebase token to backend session
+  app.post("/api/auth/firebase-login", async (req, res) => {
+    try {
+      const firebaseUser = await verifyFirebaseToken(req);
+      if (!firebaseUser) {
+        return res.status(401).json({ error: "Invalid Firebase token" });
+      }
+
+      // Log user in to create session
+      req.login(firebaseUser, (err) => {
+        if (err) {
+          console.error('Session creation failed:', err);
+          return res.status(500).json({ error: "Failed to create session" });
+        }
+        
+        console.log('Firebase user logged in:', {
+          id: firebaseUser.id,
+          email: firebaseUser.email?.split('@')[0] + '@...',
+          timestamp: new Date().toISOString()
+        });
+        
+        res.json(firebaseUser);
+      });
+    } catch (error) {
+      console.error('Firebase login endpoint error:', error);
+      res.status(500).json({ error: "Authentication failed" });
+    }
+  });
 
   // Guest user creation endpoint
   app.post("/api/guest-user", async (req, res) => {
