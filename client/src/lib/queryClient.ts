@@ -41,14 +41,22 @@ export async function apiRequest(
       timestamp: new Date().toISOString()
     });
     
-    // Prepare headers - session-only authentication
+    // Get Firebase token from localStorage if available
+    const authToken = localStorage.getItem('authToken');
+    
+    // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
+    
+    // Add auth token if available
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
     
     const res = await fetch(url, {
       method: method,
       headers,
       body: data ? JSON.stringify(data) : undefined,
-      credentials: "include", // This sends session cookies
+      credentials: "include",
     });
 
     await throwIfResNotOk(res);
@@ -69,8 +77,39 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     try {
+      // Get Firebase token from localStorage if available
+      const authToken = localStorage.getItem('authToken');
+      
+      // Get guest user ID from localStorage if available
+      const guestUserData = localStorage.getItem('guest_user_data');
+      let guestUserId: string | null = null;
+      if (guestUserData) {
+        try {
+          const parsed = JSON.parse(guestUserData);
+          guestUserId = parsed.id?.toString();
+        } catch (error) {
+          console.warn('Failed to parse guest user data:', error);
+        }
+      }
+      
+      // Set up headers with auth token if available
+      const headers: HeadersInit = {};
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      // Add guest user ID header if available and no auth token
+      if (guestUserId && !authToken) {
+        // Multiple header strategies for maximum compatibility
+        headers['X-Guest-User-Id'] = guestUserId;      // Standard Pascal-Case
+        headers['x-guest-user-id'] = guestUserId;      // Lowercase fallback
+        headers['Guest-User-ID'] = guestUserId;        // Alternative format
+        console.log('TanStack Query adding guest user headers:', { guestUserId, headers: Object.keys(headers) });
+      }
+      
       const res = await fetch(queryKey[0] as string, {
-        credentials: "include", // Session-only authentication
+        credentials: "include",
+        headers
       });
 
       if (unauthorizedBehavior === "returnNull" && res.status === 401) {
