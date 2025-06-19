@@ -300,30 +300,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Function to get Firebase ID token and sync with backend
   const syncWithBackend = async (firebaseUser: FirebaseUser) => {
     try {
-      // Get the access token for Gmail API
-      const credential = firebaseUser.providerData[0];
-      const accessToken = (credential as any)?.accessToken;
-
-      console.log('Making backend sync request', {
-        endpoint: '/api/google-auth',
-        hasAccessToken: !!accessToken,
-        domain: window.location.hostname
-      });
+      console.log('Creating backend session from Firebase login');
 
       // Get the ID token for authentication
       const idToken = await firebaseUser.getIdToken(true);
 
-      const createRes = await fetch("/api/google-auth", {
+      const createRes = await fetch("/api/auth/firebase-login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${idToken}`
         },
-        body: JSON.stringify({
-          email: firebaseUser.email,
-          username: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
-          accessToken // Add the access token to the request
-        })
+        credentials: "include" // Essential for session creation
       });
 
       if (!createRes.ok) {
@@ -334,26 +322,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           errorText = 'Could not read error response';
         }
         
-        console.error('Backend sync error response:', {
+        console.error('Backend session creation failed:', {
           status: createRes.status,
           statusText: createRes.statusText,
           responseText: errorText
         });
-        throw new Error(`Failed to sync with backend: ${createRes.status}`);
+        throw new Error(`Failed to create session: ${createRes.status}`);
       }
 
-      console.log('Successfully synced with backend');
+      console.log('Backend session created successfully');
       
       try {
         const user = await safeJsonParse(createRes);
         queryClient.setQueryData(["/api/user"], user);
+        
+        // Invalidate all queries to refresh with new session
+        queryClient.invalidateQueries();
       } catch (parseError) {
-        console.error('Error parsing user data from sync response:', parseError);
+        console.error('Error parsing user data from session response:', parseError);
         throw new Error('Failed to parse user data from backend response');
       }
 
     } catch (error) {
-      console.error("Error syncing with backend:", {
+      console.error("Error creating backend session:", {
         error,
         domain: window.location.hostname,
         environment: import.meta.env.MODE

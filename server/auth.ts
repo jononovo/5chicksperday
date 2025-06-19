@@ -142,10 +142,30 @@ async function verifyFirebaseToken(req: Request): Promise<User | null> {
   }
 }
 
-// Add requireAuth middleware
+// Simplified session-only authentication middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  console.log('Auth check:', {
+    url: req.url,
+    hasSession: !!req.session,
+    hasUser: !!req.user,
+    sessionID: req.sessionID,
+    isAuthenticated: req.isAuthenticated(),
+    cookies: Object.keys(req.cookies || {}),
+    headers: {
+      cookie: req.headers.cookie ? 'present' : 'missing',
+      userAgent: req.headers['user-agent']?.substring(0, 50)
+    }
+  });
+  
   if (!req.isAuthenticated()) {
-    res.status(401).json({ message: "Unauthorized" });
+    console.log('Authentication failed:', {
+      hasSession: !!req.session,
+      hasUser: !!req.user,
+      sessionID: req.sessionID,
+      url: req.url,
+      method: req.method
+    });
+    res.status(401).json({ error: "Authentication required" });
     return;
   }
   next();
@@ -153,15 +173,34 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
+    name: 'fiveDucksSession', // Explicit cookie name for consistency
     secret: process.env.SESSION_SECRET || 'temporary-secret-key',
-    resave: false,
-    saveUninitialized: false,
+    resave: true, // Force session save to fix Replit persistence
+    saveUninitialized: true, // Create session immediately
+    rolling: true, // Refresh session on each request
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      domain: process.env.REPL_SLUG ? undefined : 'localhost', // Auto-detect for Replit
+      secure: false, // Disabled for Replit development environment
+      httpOnly: false, // Allow debugging access in development
+      sameSite: 'lax', // Important for Replit cross-origin requests
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/' // Explicit path for all routes
     }
   };
+
+  // Add session debugging middleware
+  app.use((req, res, next) => {
+    console.log('Session Debug:', {
+      url: req.url,
+      method: req.method,
+      sessionID: req.sessionID,
+      hasSession: !!req.session,
+      cookieHeader: req.headers.cookie ? 'present' : 'missing',
+      domain: req.get('host'),
+      userAgent: req.headers['user-agent']?.substring(0, 30)
+    });
+    next();
+  });
 
   app.use(session(sessionSettings));
   app.use(passport.initialize());
@@ -240,32 +279,70 @@ export function setupAuth(app: Express) {
   }
 
 
-  // Add Firebase token verification to all authenticated routes
-  app.use(async (req, res, next) => {
-    if (!req.isAuthenticated()) {
+  // Session test endpoint (no auth required) for debugging
+  app.get('/api/auth/session-test', (req, res) => {
+    console.log('Session Test Debug:', {
+      hasSession: !!req.session,
+      sessionID: req.sessionID,
+      isAuthenticated: req.isAuthenticated(),
+      hasUser: !!req.user,
+      cookieHeader: req.headers.cookie ? 'present' : 'missing',
+      cookies: Object.keys(req.cookies || {}),
+      userAgent: req.headers['user-agent']?.substring(0, 50),
+      domain: req.get('host')
+    });
+    
+    res.json({
+      hasSession: !!req.session,
+      sessionID: req.sessionID,
+      isAuthenticated: req.isAuthenticated(),
+      hasUser: !!req.user,
+      cookieCount: Object.keys(req.cookies || {}).length,
+      domain: req.get('host')
+    });
+  });
+
+  // Firebase login endpoint - converts Firebase token to backend session
+  app.post("/api/auth/firebase-login", async (req, res) => {
+    try {
       const firebaseUser = await verifyFirebaseToken(req);
-      if (firebaseUser) {
-        // Attach the Firebase user to the request for other middleware to access
-        (req as any).firebaseUser = firebaseUser;
-        
-        // Also log the user in to create a session - WAIT for completion
-        req.login(firebaseUser, (err) => {
-          if (err) return next(err);
-          console.log('Firebase user logged in:', {
-            id: firebaseUser.id,
-            email: firebaseUser.email?.split('@')[0] + '@...',
-            timestamp: new Date().toISOString()
-          });
-          next(); // Only call next() after login completes
-        });
-        // Remove the return here - wait for req.login to complete
-      } else {
-        // No Firebase user found, continue without authentication
-        next();
+      if (!firebaseUser) {
+        return res.status(401).json({ error: "Invalid Firebase token" });
       }
-    } else {
-      // Already authenticated via session
-      next();
+
+      // Log user in to create session
+      req.login(firebaseUser, (err) => {
+        if (err) {
+          console.error('Session creation failed:', err);
+          return res.status(500).json({ error: "Failed to create session" });
+        }
+        
+        console.log('Firebase user logged in:', {
+          id: firebaseUser.id,
+          email: firebaseUser.email?.split('@')[0] + '@...',
+          timestamp: new Date().toISOString()
+        });
+        
+        // Enhanced session debugging after login
+        console.log('Post-login session state:', {
+          hasSession: !!req.session,
+          sessionID: req.sessionID,
+          isAuthenticated: req.isAuthenticated(),
+          hasUser: !!req.user,
+          userId: req.user?.id,
+          domain: req.get('host'),
+          cookieOptions: {
+            domain: req.sessionStore?.cookie?.domain,
+            path: req.sessionStore?.cookie?.path,
+            httpOnly: req.sessionStore?.cookie?.httpOnly
+          }
+        });
+        
+        res.json(firebaseUser);
+      });
+    } catch (error) {
+      console.error('Firebase login endpoint error:', error);
+      res.status(500).json({ error: "Authentication failed" });
     }
   });
 
