@@ -1216,8 +1216,8 @@ export default function Home() {
     hunterMutation.mutate({ contactId, searchContext });
   };
   
-  // Add AeroLeads mutation with Set-based state management
-  const aeroLeadsMutation = useMutation({
+  // AeroLeads mutation - HIDDEN
+  /* const aeroLeadsMutation = useMutation({
     mutationFn: async ({ contactId, searchContext = 'manual' }: { contactId: number; searchContext?: 'manual' | 'automated' }) => {
       // Add this contact ID to the set of pending searches
       setPendingAeroLeadsIds(prev => {
@@ -1293,9 +1293,10 @@ export default function Home() {
         });
       }
     },
-  });
+  }); */
 
-  const handleAeroLeadsSearch = (contactId: number, searchContext: 'manual' | 'automated' = 'manual') => {
+  // AeroLeads handler functions - HIDDEN
+  /* const handleAeroLeadsSearch = (contactId: number, searchContext: 'manual' | 'automated' = 'manual') => {
     // Allow multiple searches to run in parallel
     if (pendingAeroLeadsIds.has(contactId)) return; // Only prevent if this specific contact is already being processed
     aeroLeadsMutation.mutate({ contactId, searchContext });
@@ -1314,7 +1315,7 @@ export default function Home() {
       return contact.email ? "text-yellow-500" : "text-muted-foreground opacity-50";
     }
     return "";
-  };
+  }; */
   
   // Hunter.io helpers
   const isHunterSearchComplete = (contact: Contact) => {
@@ -2232,11 +2233,11 @@ export default function Home() {
                       companies={currentResults || []}
                       handleCompanyView={handleCompanyView}
                       handleHunterSearch={handleHunterSearch}
-                      handleAeroLeadsSearch={handleAeroLeadsSearch}
+                      // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
                       handleApolloSearch={handleApolloSearch}
                       handleEnrichContact={handleEnrichContact}
                       pendingHunterIds={pendingHunterIds}
-                      pendingAeroLeadsIds={pendingAeroLeadsIds}
+                      // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
                       pendingApolloIds={pendingApolloIds}
                     pendingContactIds={pendingContactIds}
                   />
@@ -2389,11 +2390,11 @@ export default function Home() {
                                 handleContactView={handleContactView}
                                 handleEnrichContact={handleEnrichContact}
                                 handleHunterSearch={handleHunterSearch}
-                                handleAeroLeadsSearch={handleAeroLeadsSearch}
+                                // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
                                 handleApolloSearch={handleApolloSearch}
                                 pendingContactIds={pendingContactIds}
                                 pendingHunterIds={pendingHunterIds}
-                                pendingAeroLeadsIds={pendingAeroLeadsIds}
+                                // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
                                 pendingApolloIds={pendingApolloIds}
                                 standalone={true}
                               />

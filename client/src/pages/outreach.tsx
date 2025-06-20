@@ -1038,11 +1038,11 @@ export default function Outreach() {
                         className="p-0"
                         handleEnrichContact={handleEnrichContact}
                         handleHunterSearch={handleHunterSearch}
-                        handleAeroLeadsSearch={handleAeroLeadsSearch}
+                        // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
                         handleApolloSearch={handleApolloSearch}
                         pendingContactIds={pendingContactIds}
                         pendingHunterIds={pendingHunterIds}
-                        pendingAeroLeadsIds={pendingAeroLeadsIds}
+                        // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
                         pendingApolloIds={pendingApolloIds}
                       />
                     </div>
@@ -1170,11 +1170,11 @@ export default function Outreach() {
                               className="p-0"
                               handleEnrichContact={handleEnrichContact}
                               handleHunterSearch={handleHunterSearch}
-                              handleAeroLeadsSearch={handleAeroLeadsSearch}
+                              // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
                               handleApolloSearch={handleApolloSearch}
                               pendingContactIds={pendingContactIds}
                               pendingHunterIds={pendingHunterIds}
-                              pendingAeroLeadsIds={pendingAeroLeadsIds}
+                              // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
                               pendingApolloIds={pendingApolloIds}
                             />
                           </div>
