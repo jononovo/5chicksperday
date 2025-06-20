@@ -114,7 +114,7 @@ export default function Home() {
   const [hasShownEmailTooltip, setHasShownEmailTooltip] = useState(false);
   const [showStartSellingTooltip, setShowStartSellingTooltip] = useState(false);
   // Tour modal has been removed
-  const [pendingAeroLeadsIds, setPendingAeroLeadsIds] = useState<Set<number>>(new Set());
+  // const [pendingAeroLeadsIds, setPendingAeroLeadsIds] = useState<Set<number>>(new Set()); // HIDDEN
   const [pendingHunterIds, setPendingHunterIds] = useState<Set<number>>(new Set());
   const [pendingApolloIds, setPendingApolloIds] = useState<Set<number>>(new Set());
   const [savedSearchesDrawerOpen, setSavedSearchesDrawerOpen] = useState(false);

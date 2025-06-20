@@ -325,8 +325,8 @@ export function ContactActionColumn({
               </DropdownMenuItem>
             )}
             
-            {/* AeroLeads search menu item */}
-            {handleAeroLeadsSearch && (
+            {/* AeroLeads search menu item - HIDDEN */}
+            {/* {handleAeroLeadsSearch && (
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation();
@@ -343,7 +343,7 @@ export function ContactActionColumn({
                 )}
                 AeroLeads Search
               </DropdownMenuItem>
-            )}
+            )} */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -832,7 +832,8 @@ export default function Outreach() {
     }
   };
 
-  const handleAeroLeadsSearch = async (contactId: number) => {
+  // AeroLeads handler - HIDDEN
+  /* const handleAeroLeadsSearch = async (contactId: number) => {
     setPendingAeroLeadsIds(prev => new Set(prev).add(contactId));
     
     try {
@@ -863,7 +864,7 @@ export default function Outreach() {
         return newSet;
       });
     }
-  };
+  }; */
 
   const handleApolloSearch = async (contactId: number) => {
     setPendingApolloIds(prev => new Set(prev).add(contactId));
