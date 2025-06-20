@@ -84,7 +84,7 @@ export function ContactActionColumn({
   const getSuccessColor = {
     contact: "text-green-500",
     hunter: "text-green-500",
-    aeroLeads: "text-yellow-500",
+    aeroLeads: "text-yellow-500", 
     apollo: "text-purple-500"
   };
   
@@ -212,8 +212,8 @@ export function ContactActionColumn({
             </Tooltip>
           )}
           
-          {/* AeroLeads search button - HIDDEN */}
-          {/* {handleAeroLeadsSearch && (
+          {/* AeroLeads search button */}
+          {handleAeroLeadsSearch && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -239,7 +239,7 @@ export function ContactActionColumn({
                 <p>AeroLeads email search</p>
               </TooltipContent>
             </Tooltip>
-          )} */}
+          )}
         </TooltipProvider>
       </div>
       
@@ -325,8 +325,8 @@ export function ContactActionColumn({
               </DropdownMenuItem>
             )}
             
-            {/* AeroLeads search menu item - HIDDEN */}
-            {/* {handleAeroLeadsSearch && (
+            {/* AeroLeads search menu item */}
+            {handleAeroLeadsSearch && (
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation();
@@ -343,7 +343,7 @@ export function ContactActionColumn({
                 )}
                 AeroLeads Search
               </DropdownMenuItem>
-            )} */}
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

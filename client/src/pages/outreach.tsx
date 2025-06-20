@@ -832,8 +832,7 @@ export default function Outreach() {
     }
   };
 
-  // AeroLeads handler - HIDDEN
-  /* const handleAeroLeadsSearch = async (contactId: number) => {
+  const handleAeroLeadsSearch = async (contactId: number) => {
     setPendingAeroLeadsIds(prev => new Set(prev).add(contactId));
     
     try {
@@ -864,7 +863,7 @@ export default function Outreach() {
         return newSet;
       });
     }
-  }; */
+  };
 
   const handleApolloSearch = async (contactId: number) => {
     setPendingApolloIds(prev => new Set(prev).add(contactId));
@@ -1038,11 +1037,11 @@ export default function Outreach() {
                         className="p-0"
                         handleEnrichContact={handleEnrichContact}
                         handleHunterSearch={handleHunterSearch}
-                        // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
+                        handleAeroLeadsSearch={handleAeroLeadsSearch}
                         handleApolloSearch={handleApolloSearch}
                         pendingContactIds={pendingContactIds}
                         pendingHunterIds={pendingHunterIds}
-                        // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
+                        pendingAeroLeadsIds={pendingAeroLeadsIds}
                         pendingApolloIds={pendingApolloIds}
                       />
                     </div>
@@ -1170,11 +1169,11 @@ export default function Outreach() {
                               className="p-0"
                               handleEnrichContact={handleEnrichContact}
                               handleHunterSearch={handleHunterSearch}
-                              // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
+                              handleAeroLeadsSearch={handleAeroLeadsSearch}
                               handleApolloSearch={handleApolloSearch}
                               pendingContactIds={pendingContactIds}
                               pendingHunterIds={pendingHunterIds}
-                              // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
+                              pendingAeroLeadsIds={pendingAeroLeadsIds}
                               pendingApolloIds={pendingApolloIds}
                             />
                           </div>

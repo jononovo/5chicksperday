@@ -1216,7 +1216,7 @@ export default function Home() {
     hunterMutation.mutate({ contactId, searchContext });
   };
   
-  // AeroLeads mutation
+  // Add AeroLeads mutation with Set-based state management
   const aeroLeadsMutation = useMutation({
     mutationFn: async ({ contactId, searchContext = 'manual' }: { contactId: number; searchContext?: 'manual' | 'automated' }) => {
       // Add this contact ID to the set of pending searches
