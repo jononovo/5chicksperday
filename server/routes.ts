@@ -3,7 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { storage } from "./storage";
+import { storage } from "../storage-switching/storage-switcher";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
