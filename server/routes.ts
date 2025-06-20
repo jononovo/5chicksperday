@@ -31,6 +31,7 @@ import { findKeyDecisionMakers } from "./lib/search-logic/contact-discovery/enha
 import { registerCreditRoutes } from "./routes/credits";
 import { CreditService } from "./lib/credits";
 import { SearchType } from "./lib/credits/types";
+import { requireCredits, deductCreditsOnSuccess } from "./middleware/credit-middleware";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow-service";
@@ -2479,7 +2480,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Backend Email Search Orchestration Endpoint
-  app.post("/api/companies/find-all-emails", requireAuth, async (req, res) => {
+  app.post("/api/companies/find-all-emails", 
+    requireAuth, 
+    requireCredits('email_search'),
+    async (req, res) => {
     try {
       const userId = getUserId(req);
       const { companyIds, sessionId } = req.body;
@@ -2740,7 +2744,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         message: error instanceof Error ? error.message : "Failed to orchestrate email search"
       });
     }
-  });
+  },
+  deductCreditsOnSuccess());
 
   // Search Quality Testing Endpoint
   app.post("/api/search-test", requireAuth, async (req, res) => {
