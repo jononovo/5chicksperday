@@ -70,21 +70,21 @@ export function ContactActionColumn({
   const isPending = {
     contact: (id: number) => pendingContactIds.has(id),
     hunter: (id: number) => pendingHunterIds.has(id),
-    // aeroLeads: (id: number) => pendingAeroLeadsIds.has(id), // HIDDEN
+    aeroLeads: (id: number) => pendingAeroLeadsIds.has(id),
     apollo: (id: number) => pendingApolloIds.has(id)
   };
   
   const isComplete = {
     contact: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('contact_enrichment') || false,
     hunter: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('hunter') || false,
-    // aeroLeads: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('aeroleads') || false, // HIDDEN
+    aeroLeads: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('aeroleads') || false,
     apollo: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('apollo_search') || false
   };
   
   const getSuccessColor = {
     contact: "text-green-500",
     hunter: "text-green-500",
-    // aeroLeads: "text-yellow-500", // HIDDEN
+    aeroLeads: "text-yellow-500",
     apollo: "text-purple-500"
   };
   

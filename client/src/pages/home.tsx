@@ -114,7 +114,7 @@ export default function Home() {
   const [hasShownEmailTooltip, setHasShownEmailTooltip] = useState(false);
   const [showStartSellingTooltip, setShowStartSellingTooltip] = useState(false);
   // Tour modal has been removed
-  // const [pendingAeroLeadsIds, setPendingAeroLeadsIds] = useState<Set<number>>(new Set()); // HIDDEN
+  const [pendingAeroLeadsIds, setPendingAeroLeadsIds] = useState<Set<number>>(new Set());
   const [pendingHunterIds, setPendingHunterIds] = useState<Set<number>>(new Set());
   const [pendingApolloIds, setPendingApolloIds] = useState<Set<number>>(new Set());
   const [savedSearchesDrawerOpen, setSavedSearchesDrawerOpen] = useState(false);
@@ -1216,8 +1216,8 @@ export default function Home() {
     hunterMutation.mutate({ contactId, searchContext });
   };
   
-  // AeroLeads mutation - HIDDEN
-  /* const aeroLeadsMutation = useMutation({
+  // AeroLeads mutation
+  const aeroLeadsMutation = useMutation({
     mutationFn: async ({ contactId, searchContext = 'manual' }: { contactId: number; searchContext?: 'manual' | 'automated' }) => {
       // Add this contact ID to the set of pending searches
       setPendingAeroLeadsIds(prev => {
@@ -1293,10 +1293,9 @@ export default function Home() {
         });
       }
     },
-  }); */
+  });
 
-  // AeroLeads handler functions - HIDDEN
-  /* const handleAeroLeadsSearch = (contactId: number, searchContext: 'manual' | 'automated' = 'manual') => {
+  const handleAeroLeadsSearch = (contactId: number, searchContext: 'manual' | 'automated' = 'manual') => {
     // Allow multiple searches to run in parallel
     if (pendingAeroLeadsIds.has(contactId)) return; // Only prevent if this specific contact is already being processed
     aeroLeadsMutation.mutate({ contactId, searchContext });
@@ -1315,7 +1314,7 @@ export default function Home() {
       return contact.email ? "text-yellow-500" : "text-muted-foreground opacity-50";
     }
     return "";
-  }; */
+  };
   
   // Hunter.io helpers
   const isHunterSearchComplete = (contact: Contact) => {
@@ -2233,11 +2232,11 @@ export default function Home() {
                       companies={currentResults || []}
                       handleCompanyView={handleCompanyView}
                       handleHunterSearch={handleHunterSearch}
-                      // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
+                      handleAeroLeadsSearch={handleAeroLeadsSearch}
                       handleApolloSearch={handleApolloSearch}
                       handleEnrichContact={handleEnrichContact}
                       pendingHunterIds={pendingHunterIds}
-                      // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
+                      pendingAeroLeadsIds={pendingAeroLeadsIds}
                       pendingApolloIds={pendingApolloIds}
                     pendingContactIds={pendingContactIds}
                   />
@@ -2390,11 +2389,11 @@ export default function Home() {
                                 handleContactView={handleContactView}
                                 handleEnrichContact={handleEnrichContact}
                                 handleHunterSearch={handleHunterSearch}
-                                // handleAeroLeadsSearch={handleAeroLeadsSearch} // HIDDEN
+                                handleAeroLeadsSearch={handleAeroLeadsSearch}
                                 handleApolloSearch={handleApolloSearch}
                                 pendingContactIds={pendingContactIds}
                                 pendingHunterIds={pendingHunterIds}
-                                // pendingAeroLeadsIds={pendingAeroLeadsIds} // HIDDEN
+                                pendingAeroLeadsIds={pendingAeroLeadsIds}
                                 pendingApolloIds={pendingApolloIds}
                                 standalone={true}
                               />
