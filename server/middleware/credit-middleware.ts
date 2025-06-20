@@ -55,23 +55,33 @@ export function requireCredits(searchType: SearchType) {
 
 /**
  * Middleware to deduct credits after successful operation
- * Should be placed after the main operation handler
+ * Uses response interception to ensure execution before response is sent
  */
 export function deductCreditsOnSuccess() {
   return async (req: Request, res: Response, next: NextFunction) => {
-    // Only deduct credits if operation was successful and credit info is available
-    if (req.creditInfo && res.statusCode >= 200 && res.statusCode < 300) {
-      try {
+    // Store original res.json method
+    const originalJson = res.json;
+    
+    // Override res.json to intercept successful responses
+    res.json = function(body: any) {
+      // Check if operation was successful and credit info is available
+      if (req.creditInfo && res.statusCode >= 200 && res.statusCode < 300) {
         const { userId, searchType } = req.creditInfo;
         
-        await CreditService.deductCredits(userId, searchType, true);
-        console.log(`Credits deducted: User ${userId} charged for ${searchType}`);
-      } catch (creditError) {
-        console.error('Credit deduction error:', creditError);
-        // Don't fail the request if credit deduction fails
-        // The operation was successful, just log the credit error
+        // Deduct credits asynchronously without blocking response
+        CreditService.deductCredits(userId, searchType, true)
+          .then(() => {
+            console.log(`Credits deducted: User ${userId} charged for ${searchType}`);
+          })
+          .catch((creditError) => {
+            console.error('Credit deduction error:', creditError);
+            // Don't fail the request if credit deduction fails
+          });
       }
-    }
+      
+      // Call original res.json with the response body
+      return originalJson.call(this, body);
+    };
     
     next();
   };
