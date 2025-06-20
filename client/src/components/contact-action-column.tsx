@@ -70,21 +70,21 @@ export function ContactActionColumn({
   const isPending = {
     contact: (id: number) => pendingContactIds.has(id),
     hunter: (id: number) => pendingHunterIds.has(id),
-    aeroLeads: (id: number) => pendingAeroLeadsIds.has(id),
+    // aeroLeads: (id: number) => pendingAeroLeadsIds.has(id), // HIDDEN
     apollo: (id: number) => pendingApolloIds.has(id)
   };
   
   const isComplete = {
     contact: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('contact_enrichment') || false,
     hunter: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('hunter') || false,
-    aeroLeads: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('aeroleads') || false,
+    // aeroLeads: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('aeroleads') || false, // HIDDEN
     apollo: (c: ContactWithCompanyInfo) => c.completedSearches?.includes('apollo_search') || false
   };
   
   const getSuccessColor = {
     contact: "text-green-500",
     hunter: "text-green-500",
-    aeroLeads: "text-yellow-500", 
+    // aeroLeads: "text-yellow-500", // HIDDEN
     apollo: "text-purple-500"
   };
   
@@ -212,8 +212,8 @@ export function ContactActionColumn({
             </Tooltip>
           )}
           
-          {/* AeroLeads search button */}
-          {handleAeroLeadsSearch && (
+          {/* AeroLeads search button - HIDDEN */}
+          {/* {handleAeroLeadsSearch && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -239,7 +239,7 @@ export function ContactActionColumn({
                 <p>AeroLeads email search</p>
               </TooltipContent>
             </Tooltip>
-          )}
+          )} */}
         </TooltipProvider>
       </div>
       
