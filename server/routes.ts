@@ -2067,7 +2067,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/contacts/:contactId/enrich", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/enrich", 
+    requireAuth, 
+    requireCredits('individual_email'),
+    async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -2134,7 +2137,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         message: error instanceof Error ? error.message : "An unexpected error occurred during contact enrichment"
       });
     }
-  });
+  },
+  deductCreditsOnSuccess());
 
   app.post("/api/contacts/search", requireAuth, async (req, res) => {
     const { name, company } = req.body;
@@ -3095,7 +3099,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Hunter.io email finder endpoint
-  app.post("/api/contacts/:contactId/hunter", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/hunter", 
+    requireAuth, 
+    requireCredits('individual_email'),
+    async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -3190,7 +3197,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
   
   // Apollo.io email finder endpoint
-  app.post("/api/contacts/:contactId/apollo", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/apollo", 
+    requireAuth, 
+    requireCredits('individual_email'),
+    async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -3282,7 +3292,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         details: error instanceof Error ? error.stack : undefined
       });
     }
-  });
+  },
+  deductCreditsOnSuccess());
 
   app.post("/api/contacts/:contactId/aeroleads", requireAuth, async (req, res) => {
     try {
