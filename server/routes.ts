@@ -3102,7 +3102,6 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   app.post("/api/contacts/:contactId/hunter", 
     requireAuth, 
     requireCredits('individual_email'),
-    deductCreditsOnSuccess(),
     async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
