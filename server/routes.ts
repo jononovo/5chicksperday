@@ -3194,7 +3194,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         details: error instanceof Error ? error.stack : undefined
       });
     }
-  });
+  },
+  deductCreditsOnSuccess());
   
   // Apollo.io email finder endpoint
   app.post("/api/contacts/:contactId/apollo", 
@@ -3295,7 +3296,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   },
   deductCreditsOnSuccess());
 
-  app.post("/api/contacts/:contactId/aeroleads", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/aeroleads", 
+    requireAuth, 
+    requireCredits('individual_email'),
+    async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -3401,7 +3405,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         details: error instanceof Error ? error.stack : undefined
       });
     }
-  });
+  },
+  deductCreditsOnSuccess());
 
   app.get("/api/enrichment/:queueId/status", async (req, res) => {
     try {
