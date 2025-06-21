@@ -7,11 +7,13 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, HelpCircle } from "lucide-react";
 
-
 import { useConfetti } from "@/hooks/use-confetti";
 import { useSearchStrategy } from "@/lib/search-strategy-context";
 import SearchSettingsDrawer from "./search-settings-drawer";
 import { SearchSessionManager } from "@/lib/search-session-manager";
+import { NotificationDialog } from "@/components/ui/notification-dialog";
+import { cleanupGuestData } from "@/lib/guest-cleanup";
+import { resetTooltipFlags } from "@/lib/tooltip-manager";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useRegistrationModal } from "@/hooks/use-registration-modal";
@@ -1088,6 +1090,25 @@ export default function PromptEditor({
         </div>
 
       </div>
+
+      {/* Welcome dialog for new registered users */}
+      <NotificationDialog
+        open={showWelcomeDialog}
+        onOpenChange={setShowWelcomeDialog}
+        title="Congrats Hatchling!"
+        description={
+          <>
+            You have joined the <strong>"Wildling-Duck-Family"</strong> and have unlocked access to <strong>Email Search</strong>.
+            <br /><br />
+            Run a search now to see complete results including emails of 1-2 Key Contacts per company.
+          </>
+        }
+        buttonText="Yaaay! I Feel so Alive."
+        badge={{
+          text: "Hatchling",
+          variant: "default"
+        }}
+      />
     </div>
   );
 }
