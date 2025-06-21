@@ -105,20 +105,40 @@ export default function PromptEditor({
     return (saved as SearchType) || 'contacts';
   });
 
+  // Welcome dialog state for new registered users
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
+
   // Set auth-based default and handle guest-to-registered upgrades
   useEffect(() => {
     const saved = localStorage.getItem('searchType');
     const wasGuest = !localStorage.getItem('hasEverBeenRegistered');
     
     if (user && wasGuest) {
-      // User just registered - upgrade from guest default to full feature set
+      console.log('Guest-to-registered user transition detected');
+      
+      // Clean guest data and preserve search query
+      const { preservedQuery } = cleanupGuestData();
+      
+      // Reset tooltips for new user onboarding experience
+      resetTooltipFlags();
+      
+      // Set preserved query in search input if available
+      if (preservedQuery && onQueryChange) {
+        console.log('Setting preserved query:', preservedQuery);
+        onQueryChange(preservedQuery);
+      }
+      
+      // Show welcome dialog
+      setShowWelcomeDialog(true);
+      
+      // Mark as registered user and upgrade search type
       localStorage.setItem('hasEverBeenRegistered', 'true');
       setSearchType('emails');
     } else if (!saved) {
       // First-time defaults based on auth status
       setSearchType(user ? 'emails' : 'contacts');
     }
-  }, [user]);
+  }, [user, onQueryChange]);
 
   // Save search type to localStorage when it changes
   useEffect(() => {
