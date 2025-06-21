@@ -12,9 +12,6 @@ import { useSearchStrategy } from "@/lib/search-strategy-context";
 import SearchSettingsDrawer from "./search-settings-drawer";
 import { SearchSessionManager } from "@/lib/search-session-manager";
 import { NotificationDialog } from "@/components/ui/notification-dialog";
-import { cleanupGuestData } from "@/lib/guest-cleanup";
-import { resetTooltipFlags } from "@/lib/tooltip-manager";
-
 import { useAuth } from "@/hooks/use-auth";
 import { useRegistrationModal } from "@/hooks/use-registration-modal";
 import { SearchProgress } from "./search-progress";
@@ -117,22 +114,6 @@ export default function PromptEditor({
     
     if (user && wasGuest) {
       console.log('Guest-to-registered user transition detected');
-      
-      // Clean guest data and preserve search query
-      const { preservedQuery } = cleanupGuestData();
-      
-      // Reset tooltips for new user onboarding experience
-      resetTooltipFlags();
-      
-      // Set preserved query in search input if available
-      if (preservedQuery) {
-        console.log('Setting preserved query:', preservedQuery);
-        setQuery(preservedQuery);
-        // Also notify parent component if callback exists
-        if (onInputChange) {
-          onInputChange(preservedQuery);
-        }
-      }
       
       // Show welcome dialog
       setShowWelcomeDialog(true);
