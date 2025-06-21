@@ -125,9 +125,13 @@ export default function PromptEditor({
       resetTooltipFlags();
       
       // Set preserved query in search input if available
-      if (preservedQuery && onQueryChange) {
+      if (preservedQuery) {
         console.log('Setting preserved query:', preservedQuery);
-        onQueryChange(preservedQuery);
+        setQuery(preservedQuery);
+        // Also notify parent component if callback exists
+        if (onInputChange) {
+          onInputChange(preservedQuery);
+        }
       }
       
       // Show welcome dialog
@@ -140,7 +144,7 @@ export default function PromptEditor({
       // First-time defaults based on auth status
       setSearchType(user ? 'emails' : 'contacts');
     }
-  }, [user, onQueryChange]);
+  }, [user, onInputChange]);
 
   // Save search type to localStorage when it changes
   useEffect(() => {
