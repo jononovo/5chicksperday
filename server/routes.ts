@@ -372,9 +372,10 @@ export function registerRoutes(app: Express) {
   // Deployment verification endpoint
   app.get('/api/version', (req, res) => {
     res.json({
-      version: '2025-06-24-protocol-fix-v2',
+      version: '2025-06-24-protocol-fix-v3',
       hasProtocolFix: true,
       hasCallbackProtocolFix: true,
+      hasErrorScopeFix: true,
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       nodeVersion: process.version,
@@ -441,7 +442,6 @@ export function registerRoutes(app: Express) {
         hasClientId: !!process.env.GMAIL_CLIENT_ID,
         hasClientSecret: !!process.env.GMAIL_CLIENT_SECRET,
         hostname: req.hostname,
-        protocol,
         timestamp: new Date().toISOString()
       });
       res.status(500).json({ 
