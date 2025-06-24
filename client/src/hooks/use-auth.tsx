@@ -14,6 +14,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  GoogleAuthProvider,
   type User as FirebaseUser 
 } from "firebase/auth";
 
@@ -293,11 +294,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // Function to get Firebase ID token and sync with backend
-  const syncWithBackend = async (firebaseUser: FirebaseUser) => {
+  const syncWithBackend = async (firebaseUser: FirebaseUser, signInResult?: any) => {
     try {
-      // Get the access token for Gmail API
-      const credential = firebaseUser.providerData[0];
-      const accessToken = (credential as any)?.accessToken;
+      // Get the Gmail access token from the Google credential
+      const googleCredential = signInResult ? GoogleAuthProvider.credentialFromResult(signInResult) : null;
+      const accessToken = googleCredential?.accessToken;
 
       console.log('Making backend sync request', {
         endpoint: '/api/google-auth',
