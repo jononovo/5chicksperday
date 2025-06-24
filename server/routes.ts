@@ -373,12 +373,24 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/auth', requireAuth, (req, res) => {
     try {
       const userId = (req as any).user.id;
+      const redirectUri = `${req.protocol}://${req.hostname}/api/gmail/callback`;
+      
+      console.log('Gmail authorization initiated:', {
+        userId,
+        protocol: req.protocol,
+        hostname: req.hostname,
+        redirectUri,
+        hasClientId: !!process.env.GMAIL_CLIENT_ID,
+        hasClientSecret: !!process.env.GMAIL_CLIENT_SECRET,
+        clientIdPrefix: process.env.GMAIL_CLIENT_ID?.substring(0, 20) + '...',
+        timestamp: new Date().toISOString()
+      });
       
       // Create OAuth2 client
       const oauth2Client = new google.auth.OAuth2(
         process.env.GMAIL_CLIENT_ID,
         process.env.GMAIL_CLIENT_SECRET,
-        `${req.protocol}://${req.hostname}/api/gmail/callback`
+        redirectUri
       );
       
       // Generate authentication URL
@@ -393,6 +405,14 @@ export function registerRoutes(app: Express) {
         scope: scopes,
         prompt: 'consent', // Force to get refresh token
         state: userId.toString() // Pass user ID to callback
+      });
+      
+      console.log('Generated Gmail auth URL:', {
+        authUrlLength: authUrl.length,
+        authUrlStart: authUrl.substring(0, 100) + '...',
+        scopes: scopes.length,
+        userId,
+        timestamp: new Date().toISOString()
       });
       
       // Redirect the user to the auth URL
