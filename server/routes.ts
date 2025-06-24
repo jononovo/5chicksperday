@@ -3624,6 +3624,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       }
       
       console.log('[Send Email] Gmail token found, proceeding with email send');
+      
+      console.log('[Send Email] Gmail token found, proceeding with email send');
 
       // Create Gmail API client
       const oauth2Client = new google.auth.OAuth2();
