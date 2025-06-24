@@ -1,0 +1,81 @@
+index-p9flkWxr.js:1744 Starting Firebase initialization... {timestamp: '2025-06-24T17:16:22.025Z', domain: '5ducks.ai'}
+index-p9flkWxr.js:1744 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-p9flkWxr.js:1744 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-p9flkWxr.js:1746 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-24T17:16:22.027Z'}
+index-p9flkWxr.js:1746 Setting up Firebase auth state listener
+index-p9flkWxr.js:49 
+            
+            
+           GET https://5ducks.ai/api/user 401 (Unauthorized)
+(anonymous) @ index-p9flkWxr.js:49
+i @ index-p9flkWxr.js:49
+x @ index-p9flkWxr.js:49
+start @ index-p9flkWxr.js:49
+fetch @ index-p9flkWxr.js:49
+gl @ index-p9flkWxr.js:49
+onSubscribe @ index-p9flkWxr.js:49
+subscribe @ index-p9flkWxr.js:49
+(anonymous) @ index-p9flkWxr.js:49
+Dk @ index-p9flkWxr.js:39
+Qf @ index-p9flkWxr.js:41
+Ho @ index-p9flkWxr.js:41
+ew @ index-p9flkWxr.js:41
+ui @ index-p9flkWxr.js:39
+sF @ index-p9flkWxr.js:41
+vi @ index-p9flkWxr.js:41
+hP @ index-p9flkWxr.js:41
+_ @ index-p9flkWxr.js:26
+F @ index-p9flkWxr.js:26
+index-p9flkWxr.js:1746 Firebase auth state changed: undefined
+index-p9flkWxr.js:1746 Firebase persistence set to LOCAL
+index-p9flkWxr.js:1746 User signed out, removed auth token
+index-p9flkWxr.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-p9flkWxr.js:1746 Calling signInWithPopup...
+index-p9flkWxr.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-p9flkWxr.js:1564
+index-p9flkWxr.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-p9flkWxr.js:1564
+index-p9flkWxr.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-p9flkWxr.js:1564
+index-p9flkWxr.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-p9flkWxr.js:1564
+index-p9flkWxr.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-p9flkWxr.js:1564
+index-p9flkWxr.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-p9flkWxr.js:1564
+index-p9flkWxr.js:1746 Firebase auth state changed: ale@codetribe.com
+index-p9flkWxr.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-p9flkWxr.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-p9flkWxr.js:1669
+cleanUp @ index-p9flkWxr.js:1564
+unregisterAndCleanUp @ index-p9flkWxr.js:1549
+resolve @ index-p9flkWxr.js:1549
+onAuthEvent @ index-p9flkWxr.js:1549
+index-p9flkWxr.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-p9flkWxr.js:1669
+cleanUp @ index-p9flkWxr.js:1564
+unregisterAndCleanUp @ index-p9flkWxr.js:1549
+resolve @ index-p9flkWxr.js:1549
+onAuthEvent @ index-p9flkWxr.js:1549
+index-p9flkWxr.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-p9flkWxr.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-06-24T17:17:22.314Z'}
+index-p9flkWxr.js:1746 Google sign-in successful, syncing with backend {email: 'ale@...', displayName: 'Alejandro @ CodeTribe'}
+index-p9flkWxr.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-p9flkWxr.js:1746 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T17:17:22.553Z'}
+index-p9flkWxr.js:1746 Successfully synced with backend
+index-p9flkWxr.js:1746 Successfully synced with backend
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: []
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: []
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 Prefetching contacts for companies 0 to 3 (current: 0)
+index-p9flkWxr.js:49 API Request: GET /api/companies/9763/contacts {hasData: false, timestamp: '2025-06-24T17:17:23.677Z'}
+index-p9flkWxr.js:49 API Request: GET /api/companies/9760/contacts {hasData: false, timestamp: '2025-06-24T17:17:23.678Z'}
+index-p9flkWxr.js:49 API Request: GET /api/companies/9759/contacts {hasData: false, timestamp: '2025-06-24T17:17:23.678Z'}
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-DuClMAA9.js:55 Page focused - invalidating contact caches for fresh data
