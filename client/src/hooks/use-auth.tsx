@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('Email sign-in successful, syncing with backend');
-      await syncWithBackend(result.user);
+      await syncWithBackend(result.user, null);
 
     } catch (error: any) {
       console.error("Email sign-in error:", {
@@ -150,7 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       console.log('Email registration successful, syncing with backend');
-      await syncWithBackend(result.user);
+      await syncWithBackend(result.user, null);
 
     } catch (error: any) {
       console.error("Email registration error:", {
@@ -227,10 +227,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         timestamp: new Date().toISOString()
       });
 
-      //Added logging for Gmail scopes verification on frontend
-      console.log("Gmail API scopes granted (Frontend):", {
-        hasScope: tokenResult.claims.scope !== undefined,
-        scopeType: typeof tokenResult.claims.scope,
+      // Get the Gmail access token from the Google credential  
+      const googleCredential = GoogleAuthProvider.credentialFromResult(result);
+      const accessToken = googleCredential?.accessToken;
+      
+      console.log('Gmail API scopes granted (Frontend):', {
+        hasGoogleCredential: !!googleCredential,
+        hasAccessToken: !!accessToken,
+        accessTokenLength: accessToken?.length || 0,
+        scopeType: typeof accessToken,
         timestamp: new Date().toISOString()
       });
 
@@ -243,7 +248,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         displayName: result.user.displayName
       });
 
-      await syncWithBackend(result.user);
+      await syncWithBackend(result.user, result);
 
     } catch (error: any) {
       console.error("Google sign-in error:", {
@@ -303,6 +308,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Making backend sync request', {
         endpoint: '/api/google-auth',
         hasAccessToken: !!accessToken,
+        accessTokenLength: accessToken?.length || 0,
+        hasSignInResult: !!signInResult,
         domain: window.location.hostname
       });
 

@@ -1,0 +1,121 @@
+index-DlwAZA2l.js:1744 Starting Firebase initialization... {timestamp: '2025-06-24T15:06:43.612Z', domain: '5ducks.ai'}
+index-DlwAZA2l.js:1744 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-DlwAZA2l.js:1744 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-DlwAZA2l.js:1746 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-24T15:06:43.614Z'}
+index-DlwAZA2l.js:1746 Setting up Firebase auth state listener
+index-DlwAZA2l.js:1746 Firebase auth state changed: ale@codetribe.com
+index-DlwAZA2l.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-DlwAZA2l.js:1746 Firebase persistence set to LOCAL
+index-DlwAZA2l.js:1746 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T15:06:44.482Z'}
+index-DlwAZA2l.js:1746 Successfully synced with backend
+index-DlwAZA2l.js:1746 Firebase auth state changed: undefined
+index-DlwAZA2l.js:1746 User signed out, removed auth token
+index-DlwAZA2l.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-DlwAZA2l.js:1746 Calling signInWithPopup...
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DlwAZA2l.js:1564
+index-DlwAZA2l.js:1746 Firebase auth state changed: ale@codetribe.com
+index-DlwAZA2l.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-DlwAZA2l.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-DlwAZA2l.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-06-24T15:07:00.079Z'}
+index-DlwAZA2l.js:1746 Google sign-in successful, syncing with backend {email: 'ale@...', displayName: 'Alejandro @ CodeTribe'}
+index-DlwAZA2l.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-DlwAZA2l.js:1746 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T15:07:00.145Z'}
+index-DlwAZA2l.js:1746 Successfully synced with backend
+index-DlwAZA2l.js:1746 Successfully synced with backend
+prompt-editor-CySR0d82.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-CySR0d82.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-CCeYkYOq.js:29 No saved search state found or session data already restored
+prompt-editor-CySR0d82.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-CCeYkYOq.js:29 Registration success detected, triggering welcome notification
+home-CCeYkYOq.js:29 Extracted guest data: {originalQuery: null}
+home-CCeYkYOq.js:29 Guest data cleared successfully
+index-DlwAZA2l.js:49 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-06-24T15:07:03.077Z'}
+index-DlwAZA2l.js:49 
+            
+            
+           POST https://5ducks.ai/api/notifications/trigger 409 (Conflict)
+ld @ index-DlwAZA2l.js:49
+triggerNotification @ home-CCeYkYOq.js:27
+s @ home-CCeYkYOq.js:29
+(anonymous) @ index-DlwAZA2l.js:1746
+setTimeout
+(anonymous) @ index-DlwAZA2l.js:1746
+Qf @ index-DlwAZA2l.js:41
+Ho @ index-DlwAZA2l.js:41
+ew @ index-DlwAZA2l.js:41
+ui @ index-DlwAZA2l.js:39
+sF @ index-DlwAZA2l.js:41
+vi @ index-DlwAZA2l.js:41
+hP @ index-DlwAZA2l.js:41
+_ @ index-DlwAZA2l.js:26
+F @ index-DlwAZA2l.js:26
+index-DlwAZA2l.js:49 API Request Error: POST /api/notifications/trigger {error: '409: {"shouldShow":false,"message":"Notification already shown or not found"}', timestamp: '2025-06-24T15:07:03.271Z'}
+ld @ index-DlwAZA2l.js:49
+await in ld
+triggerNotification @ home-CCeYkYOq.js:27
+s @ home-CCeYkYOq.js:29
+(anonymous) @ index-DlwAZA2l.js:1746
+setTimeout
+(anonymous) @ index-DlwAZA2l.js:1746
+Qf @ index-DlwAZA2l.js:41
+Ho @ index-DlwAZA2l.js:41
+ew @ index-DlwAZA2l.js:41
+ui @ index-DlwAZA2l.js:39
+sF @ index-DlwAZA2l.js:41
+vi @ index-DlwAZA2l.js:41
+hP @ index-DlwAZA2l.js:41
+_ @ index-DlwAZA2l.js:26
+F @ index-DlwAZA2l.js:26
+home-CCeYkYOq.js:27 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at ZP (index-DlwAZA2l.js:49:42832)
+    at async ld (index-DlwAZA2l.js:49:43612)
+    at async triggerNotification (home-CCeYkYOq.js:27:4606)
+    at async s (home-CCeYkYOq.js:29:21071)
+triggerNotification @ home-CCeYkYOq.js:27
+await in triggerNotification
+s @ home-CCeYkYOq.js:29
+(anonymous) @ index-DlwAZA2l.js:1746
+setTimeout
+(anonymous) @ index-DlwAZA2l.js:1746
+Qf @ index-DlwAZA2l.js:41
+Ho @ index-DlwAZA2l.js:41
+ew @ index-DlwAZA2l.js:41
+ui @ index-DlwAZA2l.js:39
+sF @ index-DlwAZA2l.js:41
+vi @ index-DlwAZA2l.js:41
+hP @ index-DlwAZA2l.js:41
+_ @ index-DlwAZA2l.js:26
+F @ index-DlwAZA2l.js:26
+home-CCeYkYOq.js:29 Skipping localStorage save - no meaningful data to save
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: []
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: []
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-CWBk14x7.js:55 Prefetching contacts for companies 0 to 3 (current: 0)
+index-DlwAZA2l.js:49 API Request: GET /api/companies/9763/contacts {hasData: false, timestamp: '2025-06-24T15:07:05.362Z'}
+index-DlwAZA2l.js:49 API Request: GET /api/companies/9760/contacts {hasData: false, timestamp: '2025-06-24T15:07:05.363Z'}
+index-DlwAZA2l.js:49 API Request: GET /api/companies/9759/contacts {hasData: false, timestamp: '2025-06-24T15:07:05.363Z'}
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+index-DlwAZA2l.js:49 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-06-24T15:07:10.764Z'}
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+index-DlwAZA2l.js:49 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-06-24T15:07:15.748Z'}hasData: falsetimestamp: "2025-06-24T15:07:15.748Z"[[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-CWBk14x7.js:55 QuickTemplates - Loaded templates: [{…}]
