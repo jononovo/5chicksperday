@@ -422,8 +422,19 @@ export function registerRoutes(app: Express) {
       // Redirect the user to the auth URL
       res.redirect(authUrl);
     } catch (error) {
-      console.error('Error initiating Gmail authorization:', error);
-      res.status(500).json({ error: 'Failed to start Gmail authorization' });
+      console.error('Error initiating Gmail authorization:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        hasClientId: !!process.env.GMAIL_CLIENT_ID,
+        hasClientSecret: !!process.env.GMAIL_CLIENT_SECRET,
+        hostname: req.hostname,
+        protocol,
+        timestamp: new Date().toISOString()
+      });
+      res.status(500).json({ 
+        error: 'Failed to start Gmail authorization',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
   
@@ -473,8 +484,18 @@ export function registerRoutes(app: Express) {
       // Redirect to replies page
       res.redirect('/replies');
     } catch (error) {
-      console.error('Error handling Gmail callback:', error);
-      res.status(500).json({ error: 'Failed to complete Gmail authorization' });
+      console.error('Error handling Gmail callback:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        hasCode: !!code,
+        hasState: !!state,
+        hostname: req.hostname,
+        timestamp: new Date().toISOString()
+      });
+      res.status(500).json({ 
+        error: 'Failed to complete Gmail authorization',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
   

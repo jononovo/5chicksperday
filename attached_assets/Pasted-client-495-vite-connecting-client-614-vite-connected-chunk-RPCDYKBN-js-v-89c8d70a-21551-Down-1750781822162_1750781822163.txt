@@ -1,0 +1,46 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-RPCDYKBN.js?v=89c8d70a:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:78 Starting Firebase initialization... {timestamp: '2025-06-24T16:15:55.117Z', domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev'}
+firebase.ts:18 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'development', dev: true, …}
+firebase.ts:55 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'development', …}
+firebase.ts:160 Firebase initialized successfully: {domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-24T16:15:55.119Z'}
+use-auth.tsx:362 Setting up Firebase auth state listener
+use-auth.tsx:370 Firebase auth state changed: ale@codetribe.com
+use-auth.tsx:302 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev'}
+firebase.ts:100 Firebase persistence set to LOCAL
+firebase.ts:132 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T16:15:55.469Z'}
+use-auth.tsx:340 Successfully synced with backend
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+outreach.tsx:265 Prefetching contacts for companies 0 to 3 (current: 0)
+queryClient.ts:39 API Request: GET /api/companies/9763/contacts {hasData: false, timestamp: '2025-06-24T16:15:55.957Z'}
+queryClient.ts:39 API Request: GET /api/companies/9760/contacts {hasData: false, timestamp: '2025-06-24T16:15:55.957Z'}
+queryClient.ts:39 API Request: GET /api/companies/9759/contacts {hasData: false, timestamp: '2025-06-24T16:15:55.957Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:295 Page focused - invalidating contact caches for fresh data
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-06-24T16:16:43.563Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: POST /api/send-gmail {hasData: true, timestamp: '2025-06-24T16:16:43.982Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
