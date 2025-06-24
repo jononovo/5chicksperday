@@ -63,46 +63,66 @@ global.searchSessions = global.searchSessions || new Map();
 
 // Helper function to safely get user ID from request
 function getUserId(req: express.Request): number {
-  try {
-    // First check if user is authenticated through session
-    if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user as any).id) {
-      return (req.user as any).id;
-    }
-    
-    // Then check for Firebase authentication - this should now be properly set after the middleware fix
-    if ((req as any).firebaseUser && (req as any).firebaseUser.id) {
-      return (req as any).firebaseUser.id;
-    }
-  } catch (error) {
-    console.error('Error accessing user ID:', error);
-  }
-  
-  // For routes that handle list/company data, we need to determine if this is:
-  // 1. A new user who should see demo data (return 1)
-  // 2. A user who just logged out and needs a clean state (don't return user 1's data)
-  
-  // Check for recent logout by looking at the logout timestamp in the session
-  const recentlyLoggedOut = (req.session as any)?.logoutTime && 
-    (Date.now() - (req.session as any).logoutTime < 60000); // Within last minute
-  
-  if (recentlyLoggedOut) {
-    // For recently logged out users, return a non-existent user ID
-    // This ensures they don't see the previous user's data
-    console.log('Recently logged out user - returning non-existent user ID');
-    return -1; // This ID won't match any real user, preventing data leakage
-  }
-  
-  console.log('No authenticated user found - using demo user ID for compatibility', {
-    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+  console.log('[getUserId] Authentication check:', {
+    isAuthenticated: req.isAuthenticated?.(),
     hasUser: !!req.user,
+    userId: (req.user as any)?.id,
+    userEmail: (req.user as any)?.email,
     hasFirebaseUser: !!(req as any).firebaseUser,
+    firebaseUserId: (req as any).firebaseUser?.id,
+    firebaseEmail: (req as any).firebaseUser?.email,
+    sessionId: req.sessionID,
     path: req.path,
     method: req.method,
     timestamp: new Date().toISOString()
   });
-  
-  // For regular unauthenticated users, return demo user ID
-  return 1;
+
+  try {
+    // First check if user is authenticated through session (Passport.js)
+    if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user as any).id) {
+      const userId = (req.user as any).id;
+      console.log('[getUserId] Session authentication success:', { userId, email: (req.user as any).email });
+      return userId;
+    }
+    
+    // Then check for Firebase authentication
+    if ((req as any).firebaseUser && (req as any).firebaseUser.id) {
+      const userId = (req as any).firebaseUser.id;
+      console.log('[getUserId] Firebase authentication success:', { userId, email: (req as any).firebaseUser.email });
+      return userId;
+    }
+    
+    // For some routes that handle list/company data, we allow fallback to demo data
+    // But for critical routes like Gmail operations, this should throw an error
+    const criticalRoutes = ['/api/gmail/', '/api/send-email'];
+    const isCriticalRoute = criticalRoutes.some(route => req.path.includes(route));
+    
+    if (isCriticalRoute) {
+      console.error('[getUserId] No valid user authentication found for critical route:', req.path);
+      throw new Error('User ID not found - authentication required for ' + req.path);
+    }
+    
+    // Check for recent logout by looking at the logout timestamp in the session
+    const recentlyLoggedOut = (req.session as any)?.logoutTime && 
+      (Date.now() - (req.session as any).logoutTime < 60000); // Within last minute
+    
+    if (recentlyLoggedOut) {
+      console.log('[getUserId] Recently logged out user - returning non-existent user ID');
+      return -1; // This ID won't match any real user, preventing data leakage
+    }
+    
+    console.log('[getUserId] No authenticated user found - using demo user ID for compatibility');
+    return 1; // Demo user for non-critical routes only
+    
+  } catch (error) {
+    console.error('[getUserId] Error extracting user ID:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      path: req.path,
+      timestamp: new Date().toISOString()
+    });
+    throw error;
+  }
 }
 
 // Helper functions for improved search test scoring and AI agent support
