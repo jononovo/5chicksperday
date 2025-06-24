@@ -373,11 +373,15 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/auth', requireAuth, (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const redirectUri = `${req.protocol}://${req.hostname}/api/gmail/callback`;
+      // Fix protocol detection for Replit's reverse proxy
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const redirectUri = `${protocol}://${req.hostname}/api/gmail/callback`;
       
       console.log('Gmail authorization initiated:', {
         userId,
-        protocol: req.protocol,
+        originalProtocol: req.protocol,
+        forwardedProto: req.headers['x-forwarded-proto'],
+        finalProtocol: protocol,
         hostname: req.hostname,
         redirectUri,
         hasClientId: !!process.env.GMAIL_CLIENT_ID,
@@ -438,11 +442,14 @@ export function registerRoutes(app: Express) {
         return res.status(400).json({ error: 'Invalid state parameter' });
       }
       
+      // Fix protocol detection for Replit's reverse proxy
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      
       // Create OAuth2 client
       const oauth2Client = new google.auth.OAuth2(
         process.env.GMAIL_CLIENT_ID,
         process.env.GMAIL_CLIENT_SECRET,
-        `${req.protocol}://${req.hostname}/api/gmail/callback`
+        `${protocol}://${req.hostname}/api/gmail/callback`
       );
       
       // Exchange code for tokens
