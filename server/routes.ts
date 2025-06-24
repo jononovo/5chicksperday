@@ -455,12 +455,22 @@ export function registerRoutes(app: Express) {
       
       // Fix protocol detection for Replit's reverse proxy
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const redirectUri = `${protocol}://${req.hostname}/api/gmail/callback`;
+      
+      console.log('Gmail callback processing:', {
+        hasCode: !!code,
+        hasState: !!state,
+        userId,
+        protocol,
+        redirectUri,
+        timestamp: new Date().toISOString()
+      });
       
       // Create OAuth2 client
       const oauth2Client = new google.auth.OAuth2(
         process.env.GMAIL_CLIENT_ID,
         process.env.GMAIL_CLIENT_SECRET,
-        `${protocol}://${req.hostname}/api/gmail/callback`
+        redirectUri
       );
       
       // Exchange code for tokens
