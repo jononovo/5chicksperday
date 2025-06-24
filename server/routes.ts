@@ -372,12 +372,13 @@ export function registerRoutes(app: Express) {
   // Deployment verification endpoint
   app.get('/api/version', (req, res) => {
     res.json({
-      version: '2025-06-24-gmail-state-persistence-fix',
+      version: '2025-06-24-gmail-database-storage',
       hasProtocolFix: true,
       hasCallbackProtocolFix: true,
       hasErrorScopeFix: true,
       hasUserIdFix: true,
       hasEndpointFix: true,
+      hasDatabaseStorage: true,
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       nodeVersion: process.version,
@@ -493,7 +494,14 @@ export function registerRoutes(app: Express) {
       // Exchange code for tokens
       const { tokens } = await oauth2Client.getToken(code as string);
       
-      // Store token in session
+      // Store tokens in database (reliable across environments)
+      await storage.updateUserGmailTokens(
+        userId,
+        tokens.access_token!,
+        tokens.refresh_token || undefined
+      );
+      
+      // Also store in session for backward compatibility
       (req.session as any).gmailToken = tokens.access_token;
       (req.session as any).gmailRefreshToken = tokens.refresh_token;
       
@@ -526,11 +534,14 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/status', requireAuth, (req, res) => {
+  app.get('/api/gmail/status', requireAuth, async (req, res) => {
     try {
       const userId = getUserId(req);
-      const hasToken = !!(req.session as any)?.gmailToken;
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      
+      // Check database first (reliable), fallback to session (backward compatibility)
+      const user = await storage.getUserById(userId);
+      const hasToken = !!(user?.gmailAccessToken || (req.session as any)?.gmailToken);
       
       res.json({
         connected: hasToken,
@@ -540,6 +551,8 @@ export function registerRoutes(app: Express) {
           hostname: req.hostname,
           hasProtocolFix: true,
           userId,
+          hasDbToken: !!user?.gmailAccessToken,
+          hasSessionToken: !!(req.session as any)?.gmailToken,
           timestamp: new Date().toISOString()
         }
       });
@@ -549,9 +562,14 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/disconnect', requireAuth, (req, res) => {
+  app.get('/api/gmail/disconnect', requireAuth, async (req, res) => {
     try {
-      // Remove Gmail tokens from session
+      const userId = getUserId(req);
+      
+      // Remove Gmail tokens from database
+      await storage.updateUserGmailTokens(userId, '', '');
+      
+      // Also remove from session for backward compatibility
       delete (req.session as any).gmailToken;
       delete (req.session as any).gmailRefreshToken;
       
@@ -573,8 +591,11 @@ export function registerRoutes(app: Express) {
   // Email conversations routes
   app.get('/api/replies/contacts', requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const userId = getUserId(req);
+      
+      // Get Gmail token from database first, fallback to session
+      const user = await storage.getUserById(userId);
+      const gmailToken = user?.gmailAccessToken || (req.session as any)?.gmailToken || null;
       
       // Get the appropriate email provider (Gmail or mock)
       const emailProvider = getEmailProvider(userId, gmailToken);

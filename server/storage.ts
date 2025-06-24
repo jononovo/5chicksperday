@@ -21,6 +21,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserById(id: number): Promise<User | undefined>;
   createUser(data: { email: string; password: string; username?: string }): Promise<User>;
+  updateUserGmailTokens(userId: number, accessToken: string, refreshToken?: string): Promise<User>;
 
   // User Preferences
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
@@ -104,6 +105,19 @@ class DatabaseStorage implements IStorage {
 
     await this.initializeUserPreferences(user.id);
 
+    return user;
+  }
+
+  async updateUserGmailTokens(userId: number, accessToken: string, refreshToken?: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        gmailAccessToken: accessToken,
+        gmailRefreshToken: refreshToken
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
     return user;
   }
 

@@ -1,0 +1,76 @@
+ [vite] connecting...
+ [vite] connected.
+chunk-RPCDYKBN.js?v=89c8d70a:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:78 Starting Firebase initialization... Object
+firebase.ts:18 Raw environment variables: Object
+firebase.ts:55 Firebase Configuration: Object
+firebase.ts:160 Firebase initialized successfully: Object
+use-auth.tsx:362 Setting up Firebase auth state listener
+api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+use-auth.tsx:370 Firebase auth state changed: undefined
+firebase.ts:100 Firebase persistence set to LOCAL
+firebase.ts:153 User signed out, removed auth token
+outreach:1 [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) null
+use-auth.tsx:183 Starting Google sign-in process Object
+use-auth.tsx:213 Calling signInWithPopup...
+firebase_auth.js?v=89c8d70a:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=89c8d70a:6898
+firebase_auth.js?v=89c8d70a:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=89c8d70a:6898
+firebase_auth.js?v=89c8d70a:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=89c8d70a:6898
+firebase_auth.js?v=89c8d70a:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=89c8d70a:6898
+use-auth.tsx:370 Firebase auth state changed: ale@codetribe.com
+use-auth.tsx:302 Making backend sync request Object
+firebase_auth.js?v=89c8d70a:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=89c8d70a:7364
+firebase_auth.js?v=89c8d70a:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=89c8d70a:7364
+use-auth.tsx:219 SignInWithPopup completed Object
+use-auth.tsx:230 Gmail API scopes granted (Frontend): Object
+use-auth.tsx:240 Google sign-in successful, syncing with backend Object
+use-auth.tsx:302 Making backend sync request Object
+firebase.ts:132 Auth token set successfully: Object
+use-auth.tsx:340 Successfully synced with backend
+use-auth.tsx:340 Successfully synced with backend
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(0)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(0)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(0)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+outreach.tsx:265 Prefetching contacts for companies 0 to 3 (current: 0)
+queryClient.ts:39 API Request: GET /api/companies/9763/contacts Object
+queryClient.ts:39 API Request: GET /api/companies/9760/contacts Object
+queryClient.ts:39 API Request: GET /api/companies/9759/contacts Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+outreach.tsx:661 Cross-Origin-Opener-Policy policy would block the window.closed call.
+pollForAuth @ outreach.tsx:661
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
