@@ -369,6 +369,16 @@ export function registerRoutes(app: Express) {
   // Sitemap route
   app.get('/sitemap.xml', generateSitemap);
   
+  // Deployment verification endpoint
+  app.get('/api/version', (req, res) => {
+    res.json({
+      version: '2025-06-24-protocol-fix',
+      hasProtocolFix: true,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    });
+  });
+  
   // Gmail authorization routes
   app.get('/api/gmail/auth', requireAuth, (req, res) => {
     try {
