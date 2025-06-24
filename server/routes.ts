@@ -612,9 +612,12 @@ export function registerRoutes(app: Express) {
   
   app.get('/api/replies/threads/:contactId', requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getUserId(req);
       const contactId = parseInt(req.params.contactId, 10);
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      
+      // Get Gmail token from database first, fallback to session
+      const user = await storage.getUserById(userId);
+      const gmailToken = user?.gmailAccessToken || (req.session as any)?.gmailToken || null;
       
       if (isNaN(contactId)) {
         return res.status(400).json({ error: 'Invalid contact ID' });
@@ -635,9 +638,12 @@ export function registerRoutes(app: Express) {
   
   app.get('/api/replies/thread/:id', requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getUserId(req);
       const threadId = parseInt(req.params.id, 10);
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      
+      // Get Gmail token from database first, fallback to session
+      const user = await storage.getUserById(userId);
+      const gmailToken = user?.gmailAccessToken || (req.session as any)?.gmailToken || null;
       
       if (isNaN(threadId)) {
         return res.status(400).json({ error: 'Invalid thread ID' });
@@ -686,8 +692,11 @@ export function registerRoutes(app: Express) {
   
   app.post('/api/replies/message', requireAuth, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const userId = getUserId(req);
+      
+      // Get Gmail token from database first, fallback to session
+      const user = await storage.getUserById(userId);
+      const gmailToken = user?.gmailAccessToken || (req.session as any)?.gmailToken || null;
       
       // Get the appropriate email provider
       const emailProvider = getEmailProvider(userId, gmailToken);
