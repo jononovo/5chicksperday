@@ -1,0 +1,75 @@
+index-nohb8-Sx.js:1744 Starting Firebase initialization... {timestamp: '2025-06-24T14:52:20.251Z', domain: '5ducks.ai'}
+index-nohb8-Sx.js:1744 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-nohb8-Sx.js:1744 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-nohb8-Sx.js:1746 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-24T14:52:20.253Z'}
+index-nohb8-Sx.js:1746 Setting up Firebase auth state listener
+index-nohb8-Sx.js:1746 Firebase auth state changed: ale@codetribe.com
+index-nohb8-Sx.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-nohb8-Sx.js:1746 Firebase persistence set to LOCAL
+index-nohb8-Sx.js:1746 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T14:52:20.875Z'}
+index-nohb8-Sx.js:1746 Successfully synced with backend
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: []
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: []
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 Prefetching contacts for companies 0 to 3 (current: 0)
+index-nohb8-Sx.js:49 API Request: GET /api/companies/9763/contacts {hasData: false, timestamp: '2025-06-24T14:52:22.220Z'}
+index-nohb8-Sx.js:49 API Request: GET /api/companies/9760/contacts {hasData: false, timestamp: '2025-06-24T14:52:22.221Z'}
+index-nohb8-Sx.js:49 API Request: GET /api/companies/9759/contacts {hasData: false, timestamp: '2025-06-24T14:52:22.221Z'}
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:57 X clicked - closing duck header and restoring expanded view
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+index-nohb8-Sx.js:49 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-06-24T14:52:34.152Z'}hasData: falsetimestamp: "2025-06-24T14:52:34.152Z"[[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 Page focused - invalidating contact caches for fresh data
+outreach-B87lv5iX.js:55 Page focused - invalidating contact caches for fresh data
+outreach-B87lv5iX.js:55 Page focused - invalidating contact caches for fresh data
+outreach-B87lv5iX.js:55 Page focused - invalidating contact caches for fresh data
+outreach-B87lv5iX.js:57 X clicked - closing duck header and restoring expanded view
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
+index-nohb8-Sx.js:1746 Firebase auth state changed: undefined
+index-nohb8-Sx.js:1746 User signed out, removed auth token
+index-nohb8-Sx.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-nohb8-Sx.js:1746 Calling signInWithPopup...
+index-nohb8-Sx.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-nohb8-Sx.js:1564
+index-nohb8-Sx.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-nohb8-Sx.js:1564
+index-nohb8-Sx.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-nohb8-Sx.js:1564
+index-nohb8-Sx.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-nohb8-Sx.js:1564
+index-nohb8-Sx.js:1746 Firebase auth state changed: ale@codetribe.com
+index-nohb8-Sx.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-nohb8-Sx.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-nohb8-Sx.js:1669
+cleanUp @ index-nohb8-Sx.js:1564
+unregisterAndCleanUp @ index-nohb8-Sx.js:1549
+resolve @ index-nohb8-Sx.js:1549
+onAuthEvent @ index-nohb8-Sx.js:1549
+index-nohb8-Sx.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-nohb8-Sx.js:1669
+cleanUp @ index-nohb8-Sx.js:1564
+unregisterAndCleanUp @ index-nohb8-Sx.js:1549
+resolve @ index-nohb8-Sx.js:1549
+onAuthEvent @ index-nohb8-Sx.js:1549
+index-nohb8-Sx.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-nohb8-Sx.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-06-24T14:59:05.376Z'}
+index-nohb8-Sx.js:1746 Google sign-in successful, syncing with backend {email: 'ale@...', displayName: 'Alejandro @ CodeTribe'}
+index-nohb8-Sx.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-nohb8-Sx.js:1746 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T14:59:05.528Z'}
+index-nohb8-Sx.js:1746 Successfully synced with backend
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: []
+index-nohb8-Sx.js:1746 Successfully synced with backend
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: []
+outreach-B87lv5iX.js:55 Prefetching contacts for companies 0 to 3 (current: 0)
+index-nohb8-Sx.js:49 API Request: GET /api/companies/9763/contacts {hasData: false, timestamp: '2025-06-24T14:59:06.200Z'}
+index-nohb8-Sx.js:49 API Request: GET /api/companies/9760/contacts {hasData: false, timestamp: '2025-06-24T14:59:06.201Z'}
+index-nohb8-Sx.js:49 API Request: GET /api/companies/9759/contacts {hasData: false, timestamp: '2025-06-24T14:59:06.201Z'}
+outreach-B87lv5iX.js:55 QuickTemplates - Loaded templates: [{…}]
