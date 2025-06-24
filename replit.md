@@ -123,7 +123,7 @@
 - Webhook verification is optional (fallback to unverified processing)
 
 ## Changelog
-- June 24, 2025. Gmail OAuth production fix completed: Fixed critical "protocol is not defined" error caused by undefined variable reference in Gmail auth error handler. Resolved protocol detection for production deployments, enhanced error logging, added deployment verification endpoint. Production deployment confirmed working with dual OAuth system (Firebase + direct Gmail OAuth)
+- June 24, 2025. Gmail OAuth production fix completed: Fixed critical "protocol is not defined" error and "Cannot read properties of undefined (reading 'id')" error. Replaced direct req.user.id access with robust getUserId() helper function that handles both session-based and Firebase authentication methods. Resolved production environment session persistence issues while maintaining dual OAuth architecture (Firebase + direct Gmail OAuth)
 - June 23, 2025. Fixed deployment configuration: Made Stripe environment variables optional to prevent startup crashes, configured proper port binding for Cloud Run (0.0.0.0), added graceful degradation for missing payment service configuration
 - June 13, 2025. Initial setup
 - June 13, 2025. Mobile UI optimizations: Fixed duck header positioning (-mt-1), reduced email form horizontal padding (p-6→px-3 py-6 md:p-6) for 24px wider mobile inputs, updated "Save Template" to "Save as Template", and removed chevron arrow from mobile duck header navigation button

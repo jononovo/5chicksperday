@@ -372,10 +372,11 @@ export function registerRoutes(app: Express) {
   // Deployment verification endpoint
   app.get('/api/version', (req, res) => {
     res.json({
-      version: '2025-06-24-protocol-fix-v3',
+      version: '2025-06-24-gmail-auth-fix',
       hasProtocolFix: true,
       hasCallbackProtocolFix: true,
       hasErrorScopeFix: true,
+      hasUserIdFix: true,
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       nodeVersion: process.version,
@@ -386,7 +387,7 @@ export function registerRoutes(app: Express) {
   // Gmail authorization routes
   app.get('/api/gmail/auth', requireAuth, (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getUserId(req);
       // Fix protocol detection for Replit's reverse proxy
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       const redirectUri = `${protocol}://${req.hostname}/api/gmail/callback`;
