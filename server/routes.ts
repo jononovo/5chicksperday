@@ -512,10 +512,17 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/status', requireAuth, (req, res) => {
     try {
       const hasToken = !!(req.session as any)?.gmailToken;
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       
       res.json({
         connected: hasToken,
-        authUrl: hasToken ? null : '/api/gmail/auth'
+        authUrl: hasToken ? null : '/api/gmail/auth',
+        debug: {
+          protocol,
+          hostname: req.hostname,
+          hasProtocolFix: true,
+          timestamp: new Date().toISOString()
+        }
       });
     } catch (error) {
       console.error('Error checking Gmail status:', error);
