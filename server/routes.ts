@@ -140,34 +140,48 @@ function calculateImprovement(results: any[]): string | null {
 
 // Authentication middleware
 function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
-  console.log('Auth check:', {
-    isAuthenticated: req.isAuthenticated(),
+  console.log('[requireAuth] Authentication check:', {
+    isAuthenticated: req.isAuthenticated?.(),
     hasUser: !!req.user,
+    userId: (req.user as any)?.id,
     hasFirebaseUser: !!(req as any).firebaseUser,
     path: req.path,
     method: req.method,
     timestamp: new Date().toISOString()
   });
-  
-  // In a production environment, we would require authentication
-  // For now, we'll still allow access but flag it for easier development
-  
-  // If we have either a session user or Firebase user, set proper user context
-  if (req.isAuthenticated() && req.user) {
-    // Already authenticated via session
-    next();
-    return;
+
+  // First check session-based authentication (Passport.js)
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+    console.log('[requireAuth] Session authentication success:', {
+      userId: (req.user as any)?.id,
+      email: (req.user as any)?.email
+    });
+    return next();
   }
   
-  // Firebase token verification would have happened in middleware
-  if ((req as any).firebaseUser) {
-    // User authenticated via Firebase token
-    next();
-    return;
-  }
-  
-  // For development only - we'll still allow the request
-  next();
+  // Check for Firebase token authentication
+  verifyFirebaseToken(req).then(firebaseUser => {
+    if (firebaseUser) {
+      console.log('[requireAuth] Firebase authentication success:', {
+        userId: firebaseUser.id,
+        email: firebaseUser.email
+      });
+      // Set user in request for consistency with session auth
+      req.user = firebaseUser;
+      (req as any).firebaseUser = firebaseUser;
+      return next();
+    } else {
+      console.log('[requireAuth] Authentication failed - no valid session or Firebase token');
+      return res.status(401).json({ error: "Authentication required" });
+    }
+  }).catch(error => {
+    console.error('[requireAuth] Firebase auth error:', {
+      error: error instanceof Error ? error.message : error,
+      path: req.path,
+      timestamp: new Date().toISOString()
+    });
+    return res.status(401).json({ error: "Authentication required" });
+  });
 }
 
 // Generate static sitemap XML
@@ -473,7 +487,7 @@ export function registerRoutes(app: Express) {
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       const redirectUri = `${protocol}://${req.hostname}/api/gmail/callback`;
       
-      console.log('Gmail callback processing [PROTOCOL-FIX-V2]:', {
+      console.log('[Gmail Callback] Processing [USERID-FIX-V1]:', {
         hasCode: !!code,
         hasState: !!state,
         userId,
@@ -494,12 +508,21 @@ export function registerRoutes(app: Express) {
       // Exchange code for tokens
       const { tokens } = await oauth2Client.getToken(code as string);
       
+      console.log('[Gmail Callback] Storing tokens for user:', {
+        userId,
+        hasAccessToken: !!tokens.access_token,
+        hasRefreshToken: !!tokens.refresh_token,
+        timestamp: new Date().toISOString()
+      });
+
       // Store tokens in database (reliable across environments)
       await storage.updateUserGmailTokens(
         userId,
         tokens.access_token!,
         tokens.refresh_token || undefined
       );
+      
+      console.log('[Gmail Callback] Tokens stored successfully for user:', userId);
       
       // Also store in session for backward compatibility
       (req.session as any).gmailToken = tokens.access_token;
@@ -539,9 +562,26 @@ export function registerRoutes(app: Express) {
       const userId = getUserId(req);
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       
+      console.log('[Gmail Status] Processing for user:', {
+        userId,
+        email: (req.user as any)?.email,
+        timestamp: new Date().toISOString()
+      });
+      
       // Check database first (reliable), fallback to session (backward compatibility)
       const user = await storage.getUserById(userId);
-      const hasToken = !!(user?.gmailAccessToken || (req.session as any)?.gmailToken);
+      const hasDbToken = !!user?.gmailAccessToken;
+      const hasSessionToken = !!(req.session as any)?.gmailToken;
+      const hasToken = hasDbToken || hasSessionToken;
+      
+      console.log('[Gmail Status] Token check results:', {
+        userId,
+        userEmail: user?.email,
+        hasDbToken,
+        hasSessionToken,
+        hasToken,
+        timestamp: new Date().toISOString()
+      });
       
       res.json({
         connected: hasToken,
@@ -551,13 +591,18 @@ export function registerRoutes(app: Express) {
           hostname: req.hostname,
           hasProtocolFix: true,
           userId,
-          hasDbToken: !!user?.gmailAccessToken,
-          hasSessionToken: !!(req.session as any)?.gmailToken,
+          userEmail: user?.email,
+          hasDbToken,
+          hasSessionToken,
           timestamp: new Date().toISOString()
         }
       });
     } catch (error) {
-      console.error('Error checking Gmail status:', error);
+      console.error('[Gmail Status] Error:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        timestamp: new Date().toISOString()
+      });
       res.status(500).json({ error: 'Failed to check Gmail connection status' });
     }
   });
@@ -3551,14 +3596,34 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
       const userId = getUserId(req);
       
+      console.log('[Send Email] Processing for user:', {
+        userId,
+        email: (req.user as any)?.email,
+        to,
+        subject: subject?.substring(0, 50) + '...',
+        timestamp: new Date().toISOString()
+      });
+      
       // Get Gmail token from database first, fallback to session
       const user = await storage.getUserById(userId);
       const gmailToken = user?.gmailAccessToken || (req.session as any)?.gmailToken;
       
+      console.log('[Send Email] Token check:', {
+        userId,
+        userEmail: user?.email,
+        hasDbToken: !!user?.gmailAccessToken,
+        hasSessionToken: !!(req.session as any)?.gmailToken,
+        hasToken: !!gmailToken,
+        timestamp: new Date().toISOString()
+      });
+      
       if (!gmailToken) {
+        console.log('[Send Email] No Gmail token found for user:', userId);
         res.status(401).json({ message: "Gmail authorization required" });
         return;
       }
+      
+      console.log('[Send Email] Gmail token found, proceeding with email send');
 
       // Create Gmail API client
       const oauth2Client = new google.auth.OAuth2();
