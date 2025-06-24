@@ -98,7 +98,8 @@ function getUserId(req: express.Request): number {
     const isCriticalRoute = criticalRoutes.some(route => req.path.includes(route));
     
     if (isCriticalRoute) {
-      console.error('[getUserId] No valid user authentication found for critical route:', req.path);
+      console.error('[getUserId] CRITICAL: No valid user authentication found for Gmail route:', req.path);
+      console.error('[getUserId] CRITICAL: Returning error instead of fallback user ID');
       throw new Error('User ID not found - authentication required for ' + req.path);
     }
     
@@ -579,7 +580,31 @@ export function registerRoutes(app: Express) {
   
   app.get('/api/gmail/status', requireAuth, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      console.log('[Gmail Status] Authentication context:', {
+        isAuthenticated: req.isAuthenticated?.(),
+        hasUser: !!req.user,
+        userId: (req.user as any)?.id,
+        userEmail: (req.user as any)?.email,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Direct user ID extraction - bypass getUserId for critical Gmail routes
+      let userId: number;
+      if (req.isAuthenticated?.() && req.user && (req.user as any).id) {
+        userId = (req.user as any).id;
+        console.log('[Gmail Status] Using session user ID:', userId);
+      } else if ((req as any).firebaseUser && (req as any).firebaseUser.id) {
+        userId = (req as any).firebaseUser.id;
+        console.log('[Gmail Status] Using Firebase user ID:', userId);
+      } else {
+        console.error('[Gmail Status] CRITICAL: No authenticated user found');
+        return res.status(401).json({ 
+          error: 'Authentication required',
+          connected: false,
+          authUrl: '/api/gmail/auth'
+        });
+      }
+      
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       
       console.log('[Gmail Status] Processing for user:', {
