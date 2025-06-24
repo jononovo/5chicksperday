@@ -217,7 +217,7 @@ export default function Outreach() {
 
   // Gmail authorization status
   const { data: gmailStatus, refetch: refetchGmailStatus } = useQuery({
-    queryKey: ["/api/gmail/auth-status"],
+    queryKey: ["/api/gmail/status"],
     enabled: !!user,
   });
 
@@ -1487,11 +1487,11 @@ export default function Outreach() {
                     size="sm"
                     className={cn(
                       "w-8 h-8 p-0 rounded-full border-2 transition-all duration-300",
-                      gmailStatus?.authorized 
+                      gmailStatus?.connected 
                         ? "bg-red-500 border-red-500 text-white hover:bg-red-600 hover:border-red-600" 
                         : "bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200 hover:border-gray-400"
                     )}
-                    title={gmailStatus?.authorized ? "Gmail Connected" : "Connect Gmail to send emails"}
+                    title={gmailStatus?.connected ? "Gmail Connected" : "Connect Gmail to send emails"}
                   >
                     {isGmailConnecting ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -1503,14 +1503,14 @@ export default function Outreach() {
                   {/* Send Email Button */}
                   <Button
                     onClick={handleSendEmail}
-                    disabled={sendEmailMutation.isPending || !gmailStatus?.authorized}
+                    disabled={sendEmailMutation.isPending || !gmailStatus?.connected}
                     variant="outline"
                     className={cn(
                       "h-8 px-3 text-xs bg-white text-black border-black hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-out",
                       sendEmailMutation.isSuccess && "bg-pink-500 hover:bg-pink-600 text-white border-pink-500",
-                      !gmailStatus?.authorized && "opacity-50 cursor-not-allowed"
+                      !gmailStatus?.connected && "opacity-50 cursor-not-allowed"
                     )}
-                    title={!gmailStatus?.authorized ? "Connect Gmail first to send emails" : ""}
+                    title={!gmailStatus?.connected ? "Connect Gmail first to send emails" : ""}
                   >
                     {sendEmailMutation.isPending ? (
                       <Loader2 className="w-3 h-3 mr-1 animate-spin" />

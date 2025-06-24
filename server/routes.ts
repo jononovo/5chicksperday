@@ -372,11 +372,12 @@ export function registerRoutes(app: Express) {
   // Deployment verification endpoint
   app.get('/api/version', (req, res) => {
     res.json({
-      version: '2025-06-24-gmail-auth-fix',
+      version: '2025-06-24-gmail-state-persistence-fix',
       hasProtocolFix: true,
       hasCallbackProtocolFix: true,
       hasErrorScopeFix: true,
       hasUserIdFix: true,
+      hasEndpointFix: true,
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       nodeVersion: process.version,
@@ -527,6 +528,7 @@ export function registerRoutes(app: Express) {
   
   app.get('/api/gmail/status', requireAuth, (req, res) => {
     try {
+      const userId = getUserId(req);
       const hasToken = !!(req.session as any)?.gmailToken;
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       
@@ -537,6 +539,7 @@ export function registerRoutes(app: Express) {
           protocol,
           hostname: req.hostname,
           hasProtocolFix: true,
+          userId,
           timestamp: new Date().toISOString()
         }
       });
