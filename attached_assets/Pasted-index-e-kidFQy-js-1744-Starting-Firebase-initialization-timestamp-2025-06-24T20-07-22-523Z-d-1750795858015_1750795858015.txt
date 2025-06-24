@@ -1,0 +1,133 @@
+index-e-kidFQy.js:1744 Starting Firebase initialization... {timestamp: '2025-06-24T20:07:22.523Z', domain: '5ducks.ai'}
+index-e-kidFQy.js:1744 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-e-kidFQy.js:1744 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-e-kidFQy.js:1746 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-24T20:07:22.525Z'}
+index-e-kidFQy.js:1746 Setting up Firebase auth state listener
+index-e-kidFQy.js:1746 Firebase auth state changed: undefined
+index-e-kidFQy.js:1746 Firebase persistence set to LOCAL
+index-e-kidFQy.js:49 
+            
+            
+           GET https://5ducks.ai/api/user 401 (Unauthorized)
+(anonymous) @ index-e-kidFQy.js:49
+i @ index-e-kidFQy.js:49
+x @ index-e-kidFQy.js:49
+start @ index-e-kidFQy.js:49
+fetch @ index-e-kidFQy.js:49
+gl @ index-e-kidFQy.js:49
+onSubscribe @ index-e-kidFQy.js:49
+subscribe @ index-e-kidFQy.js:49
+(anonymous) @ index-e-kidFQy.js:49
+Dk @ index-e-kidFQy.js:39
+Qf @ index-e-kidFQy.js:41
+Ho @ index-e-kidFQy.js:41
+ew @ index-e-kidFQy.js:41
+ui @ index-e-kidFQy.js:39
+sF @ index-e-kidFQy.js:41
+vi @ index-e-kidFQy.js:41
+hP @ index-e-kidFQy.js:41
+_ @ index-e-kidFQy.js:26
+F @ index-e-kidFQy.js:26
+index-e-kidFQy.js:1746 User signed out, removed auth token
+index-e-kidFQy.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-e-kidFQy.js:1746 Calling signInWithPopup...
+index-e-kidFQy.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-e-kidFQy.js:1564
+index-e-kidFQy.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-e-kidFQy.js:1564
+index-e-kidFQy.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-e-kidFQy.js:1564
+index-e-kidFQy.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-e-kidFQy.js:1564
+index-e-kidFQy.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-e-kidFQy.js:1564
+index-e-kidFQy.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-e-kidFQy.js:1564
+index-e-kidFQy.js:1746 Firebase auth state changed: ale@codetribe.com
+index-e-kidFQy.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-e-kidFQy.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-e-kidFQy.js:1669
+cleanUp @ index-e-kidFQy.js:1564
+unregisterAndCleanUp @ index-e-kidFQy.js:1549
+resolve @ index-e-kidFQy.js:1549
+onAuthEvent @ index-e-kidFQy.js:1549
+index-e-kidFQy.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-e-kidFQy.js:1669
+cleanUp @ index-e-kidFQy.js:1564
+unregisterAndCleanUp @ index-e-kidFQy.js:1549
+resolve @ index-e-kidFQy.js:1549
+onAuthEvent @ index-e-kidFQy.js:1549
+index-e-kidFQy.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-e-kidFQy.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-06-24T20:07:31.156Z'}
+index-e-kidFQy.js:1746 Google sign-in successful, syncing with backend {email: 'ale@...', displayName: 'Alejandro @ CodeTribe'}
+index-e-kidFQy.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-e-kidFQy.js:1746 Auth token set successfully: {uid: '1NpuurD6ZfUpZ9ljf1QH6XBpzYD2', email: 'ale@...', timestamp: '2025-06-24T20:07:31.297Z'}
+index-e-kidFQy.js:1746 Successfully synced with backend
+index-e-kidFQy.js:1746 Successfully synced with backend
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: []
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: []
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: []
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: []
+outreach-BcSzPXAx.js:55 Prefetching contacts for companies 0 to 3 (current: 0)
+index-e-kidFQy.js:49 API Request: GET /api/companies/9763/contacts {hasData: false, timestamp: '2025-06-24T20:07:31.959Z'}
+index-e-kidFQy.js:49 API Request: GET /api/companies/9760/contacts {hasData: false, timestamp: '2025-06-24T20:07:31.960Z'}
+index-e-kidFQy.js:49 API Request: GET /api/companies/9759/contacts {hasData: false, timestamp: '2025-06-24T20:07:31.960Z'}
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: []
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: [{…}]
+index-e-kidFQy.js:49 API Request: GET /api/gmail/status {hasData: false, timestamp: '2025-06-24T20:07:34.048Z'}
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: [{…}]
+index-e-kidFQy.js:49 API Request: POST /api/send-email {hasData: true, timestamp: '2025-06-24T20:07:34.215Z'}
+index-e-kidFQy.js:49 
+            
+            
+           POST https://5ducks.ai/api/send-email 500 (Internal Server Error)
+ld @ index-e-kidFQy.js:49
+mutationFn @ outreach-BcSzPXAx.js:55
+await in mutationFn
+fn @ index-e-kidFQy.js:49
+x @ index-e-kidFQy.js:49
+start @ index-e-kidFQy.js:49
+execute @ index-e-kidFQy.js:49
+await in execute
+mutate @ index-e-kidFQy.js:49
+(anonymous) @ index-e-kidFQy.js:49
+la @ outreach-BcSzPXAx.js:55
+_L @ index-e-kidFQy.js:38
+EL @ index-e-kidFQy.js:38
+CL @ index-e-kidFQy.js:38
+Tx @ index-e-kidFQy.js:38
+xk @ index-e-kidFQy.js:38
+(anonymous) @ index-e-kidFQy.js:38
+Zy @ index-e-kidFQy.js:41
+$1 @ index-e-kidFQy.js:38
+tp @ index-e-kidFQy.js:38
+Ty @ index-e-kidFQy.js:38
+zL @ index-e-kidFQy.js:38
+index-e-kidFQy.js:49 API Request Error: POST /api/send-email {error: '500: {"message":"Invalid Credentials"}', timestamp: '2025-06-24T20:07:34.405Z'}
+ld @ index-e-kidFQy.js:49
+await in ld
+mutationFn @ outreach-BcSzPXAx.js:55
+await in mutationFn
+fn @ index-e-kidFQy.js:49
+x @ index-e-kidFQy.js:49
+start @ index-e-kidFQy.js:49
+execute @ index-e-kidFQy.js:49
+await in execute
+mutate @ index-e-kidFQy.js:49
+(anonymous) @ index-e-kidFQy.js:49
+la @ outreach-BcSzPXAx.js:55
+_L @ index-e-kidFQy.js:38
+EL @ index-e-kidFQy.js:38
+CL @ index-e-kidFQy.js:38
+Tx @ index-e-kidFQy.js:38
+xk @ index-e-kidFQy.js:38
+(anonymous) @ index-e-kidFQy.js:38
+Zy @ index-e-kidFQy.js:41
+$1 @ index-e-kidFQy.js:38
+tp @ index-e-kidFQy.js:38
+Ty @ index-e-kidFQy.js:38
+zL @ index-e-kidFQy.js:38
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: [{…}]
+outreach-BcSzPXAx.js:55 QuickTemplates - Loaded templates: [{…}]
