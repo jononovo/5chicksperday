@@ -21,6 +21,7 @@ import {
   Info,
   X
 } from "lucide-react";
+import { SiGmail } from "react-icons/si";
 import {
   Select,
   SelectContent,
@@ -118,6 +119,9 @@ export default function Outreach() {
   // Merge view toggle state (independent from edit mode)
   const [isMergeViewMode, setIsMergeViewMode] = useState(false);
   
+  // Gmail authorization state
+  const [isGmailConnecting, setIsGmailConnecting] = useState(false);
+  
   // Original template versions for merge field conversion
   const [originalEmailPrompt, setOriginalEmailPrompt] = useState("");
   const [originalEmailContent, setOriginalEmailContent] = useState("");
@@ -209,6 +213,12 @@ export default function Outreach() {
     queryKey: ["/api/lists"],
     staleTime: 3 * 60 * 1000, // 3 minutes
     gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Gmail authorization status
+  const { data: gmailStatus, refetch: refetchGmailStatus } = useQuery({
+    queryKey: ["/api/gmail/auth-status"],
+    enabled: !!user,
   });
 
   const { data: companies = [] } = useQuery<Company[]>({
@@ -625,6 +635,70 @@ export default function Outreach() {
     }
 
     generateEmailMutation.mutate();
+  };
+
+  // Gmail authorization handlers
+  const handleGmailAuth = async () => {
+    if (isGmailConnecting) return;
+    
+    setIsGmailConnecting(true);
+    
+    try {
+      // Open Gmail authorization in new window
+      const authWindow = window.open(
+        `/api/gmail/auth?userId=${user?.id}`,
+        'gmailAuth',
+        'width=500,height=600,scrollbars=yes,resizable=yes'
+      );
+
+      if (!authWindow) {
+        throw new Error('Popup blocked. Please allow popups for this site.');
+      }
+
+      // Poll for authorization completion
+      const pollForAuth = () => {
+        try {
+          if (authWindow.closed) {
+            // Window closed, check if authorization succeeded
+            refetchGmailStatus();
+            setIsGmailConnecting(false);
+            return;
+          }
+          
+          // Check if we can access the window (same origin)
+          try {
+            const url = authWindow.location.href;
+            if (url.includes('/replies')) {
+              // Authorization successful, user was redirected
+              authWindow.close();
+              refetchGmailStatus();
+              setIsGmailConnecting(false);
+              toast({
+                title: "Gmail Connected",
+                description: "You can now send emails through Gmail",
+              });
+              return;
+            }
+          } catch (e) {
+            // Cross-origin error is expected during OAuth flow
+          }
+          
+          // Continue polling
+          setTimeout(pollForAuth, 1000);
+        } catch (error) {
+          setIsGmailConnecting(false);
+        }
+      };
+
+      pollForAuth();
+    } catch (error) {
+      setIsGmailConnecting(false);
+      toast({
+        title: "Gmail Authorization Failed",
+        description: error instanceof Error ? error.message : "Failed to authorize Gmail",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCopyContact = (contact: Contact, e: React.MouseEvent) => {
@@ -1404,15 +1478,39 @@ export default function Outreach() {
                   className="mobile-input mobile-input-text-fix resize-none transition-all duration-200 border-0 rounded-none md:border md:rounded-md px-3 md:px-3 pb-12 focus-visible:ring-0 focus-visible:ring-offset-0"
                   style={{ minHeight: '160px', maxHeight: '400px' }}
                 />
-                <div className="absolute bottom-2 right-2">
+                <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                  {/* Gmail Authorization Toggle Button */}
+                  <Button
+                    onClick={handleGmailAuth}
+                    disabled={isGmailConnecting}
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "w-8 h-8 p-0 rounded-full border-2 transition-all duration-300",
+                      gmailStatus?.authorized 
+                        ? "bg-red-500 border-red-500 text-white hover:bg-red-600 hover:border-red-600" 
+                        : "bg-gray-100 border-gray-300 text-gray-500 hover:bg-gray-200 hover:border-gray-400"
+                    )}
+                    title={gmailStatus?.authorized ? "Gmail Connected" : "Connect Gmail to send emails"}
+                  >
+                    {isGmailConnecting ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <SiGmail className="w-3 h-3" />
+                    )}
+                  </Button>
+
+                  {/* Send Email Button */}
                   <Button
                     onClick={handleSendEmail}
-                    disabled={sendEmailMutation.isPending}
+                    disabled={sendEmailMutation.isPending || !gmailStatus?.authorized}
                     variant="outline"
                     className={cn(
                       "h-8 px-3 text-xs bg-white text-black border-black hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-out",
-                      sendEmailMutation.isSuccess && "bg-pink-500 hover:bg-pink-600 text-white border-pink-500"
+                      sendEmailMutation.isSuccess && "bg-pink-500 hover:bg-pink-600 text-white border-pink-500",
+                      !gmailStatus?.authorized && "opacity-50 cursor-not-allowed"
                     )}
+                    title={!gmailStatus?.authorized ? "Connect Gmail first to send emails" : ""}
                   >
                     {sendEmailMutation.isPending ? (
                       <Loader2 className="w-3 h-3 mr-1 animate-spin" />
