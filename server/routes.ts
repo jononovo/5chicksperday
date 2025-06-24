@@ -3540,7 +3540,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/send-gmail", requireAuth, async (req, res) => {
+  app.post("/api/send-email", requireAuth, async (req, res) => {
     try {
       const { to, subject, content } = req.body;
 
@@ -3549,8 +3549,12 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         return;
       }
 
-      // Get Gmail token from session
-      const gmailToken = req.session.gmailToken;
+      const userId = getUserId(req);
+      
+      // Get Gmail token from database first, fallback to session
+      const user = await storage.getUserById(userId);
+      const gmailToken = user?.gmailAccessToken || (req.session as any)?.gmailToken;
+      
       if (!gmailToken) {
         res.status(401).json({ message: "Gmail authorization required" });
         return;

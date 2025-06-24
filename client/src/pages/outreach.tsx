@@ -523,15 +523,15 @@ export default function Outreach() {
 
   const sendEmailMutation = useMutation({
     mutationFn: async () => {
-      // First check Gmail authorization
-      const authResponse = await apiRequest("GET", "/api/gmail/auth-status");
+      // First check Gmail authorization using the database-backed system
+      const authResponse = await apiRequest("GET", "/api/gmail/status");
       if (!authResponse.ok) {
         throw new Error("Failed to check Gmail authorization");
       }
 
       const authStatus = await authResponse.json();
-      if (!authStatus.authorized) {
-        throw new Error("Gmail authorization required. Please sign in with Google to grant email permissions.");
+      if (!authStatus.connected) {
+        throw new Error("Gmail authorization required. Please connect Gmail to send emails.");
       }
 
       // Proceed with sending email
@@ -540,7 +540,7 @@ export default function Outreach() {
         subject: emailSubject,
         content: emailContent
       };
-      const response = await apiRequest("POST", "/api/send-gmail", payload);
+      const response = await apiRequest("POST", "/api/send-email", payload);
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         throw new Error(errorData?.message || "Failed to send email");
