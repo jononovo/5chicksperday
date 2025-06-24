@@ -372,10 +372,13 @@ export function registerRoutes(app: Express) {
   // Deployment verification endpoint
   app.get('/api/version', (req, res) => {
     res.json({
-      version: '2025-06-24-protocol-fix',
+      version: '2025-06-24-protocol-fix-v2',
       hasProtocolFix: true,
+      hasCallbackProtocolFix: true,
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+      platform: process.platform
     });
   });
   
@@ -467,12 +470,14 @@ export function registerRoutes(app: Express) {
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
       const redirectUri = `${protocol}://${req.hostname}/api/gmail/callback`;
       
-      console.log('Gmail callback processing:', {
+      console.log('Gmail callback processing [PROTOCOL-FIX-V2]:', {
         hasCode: !!code,
         hasState: !!state,
         userId,
         protocol,
         redirectUri,
+        xForwardedProto: req.headers['x-forwarded-proto'],
+        reqProtocol: req.protocol,
         timestamp: new Date().toISOString()
       });
       
