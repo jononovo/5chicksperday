@@ -451,12 +451,18 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/status', requireAuth, (req, res) => {
+  app.get('/api/gmail/auth-status', requireAuth, (req, res) => {
     try {
       const hasToken = !!(req.session as any)?.gmailToken;
       
+      console.log('Checking Gmail auth status:', {
+        hasToken,
+        sessionID: req.sessionID,
+        timestamp: new Date().toISOString()
+      });
+      
       res.json({
-        connected: hasToken,
+        authorized: hasToken,
         authUrl: hasToken ? null : '/api/gmail/auth'
       });
     } catch (error) {
@@ -3436,7 +3442,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       }
 
       // Get Gmail token from session
-      const gmailToken = req.session.gmailToken;
+      const gmailToken = (req.session as any).gmailToken;
       if (!gmailToken) {
         res.status(401).json({ message: "Gmail authorization required" });
         return;
