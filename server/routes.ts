@@ -3426,7 +3426,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/send-gmail", requireAuth, async (req, res) => {
+  app.post("/api/send-gmail", async (req, res) => {
     try {
       const { to, subject, content } = req.body;
 

@@ -383,7 +383,7 @@ export function setupAuth(app: Express) {
   });
 
   // Add new route to check Gmail authorization status
-  app.get("/api/gmail/auth-status", requireAuth, (req, res) => {
+  app.get("/api/gmail/auth-status", (req, res) => {
     const hasGmailToken = !!req.session.gmailToken;
     console.log('Checking Gmail auth status:', {
       hasToken: hasGmailToken,
