@@ -62,7 +62,7 @@ export const localAuth = {
       await axios.post('/api/logout');
       
       // Clear auth state in React Query
-      queryClient.setQueryData(["/api/user"], null);
+      queryClient.setQueryData(["/api/firebase/user"], null);
       
     } catch (error) {
       console.error('Logout error:', error);
@@ -79,7 +79,7 @@ export const localAuth = {
       
       // If successful, update the auth state
       if (response.data) {
-        queryClient.setQueryData(["/api/user"], response.data);
+        queryClient.setQueryData(["/api/firebase/user"], response.data);
       }
       
       return response.data;
