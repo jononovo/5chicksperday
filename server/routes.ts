@@ -140,7 +140,7 @@ function calculateImprovement(results: any[]): string | null {
 
 // Authentication middleware
 // Import the new requireAuth from auth module
-import { requireAuth, optionalAuth, verifyFirebaseToken } from "./auth";
+import { requireAuth, optionalAuth, verifyUser } from "./auth";
 
 // Generate static sitemap XML
 function generateSitemap(req: express.Request, res: express.Response) {
@@ -231,39 +231,43 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // Google authentication endpoint - handles Firebase token and stores Gmail tokens
+  // Google authentication endpoint - simplified approach trusting frontend verification
   app.post("/api/google-auth", async (req, res) => {
     try {
-      console.log('=== GOOGLE AUTH DEBUG START ===');
+      console.log('=== SIMPLIFIED GOOGLE AUTH START ===');
       console.log('Request body keys:', Object.keys(req.body));
-      console.log('Has gmailTokens in body:', !!req.body.gmailTokens);
+      console.log('Email provided:', !!req.body.email);
+      console.log('Access token provided:', !!req.body.accessToken);
       
-      const user = await verifyFirebaseToken(req);
+      const user = await verifyUser(req);
       
       if (!user) {
-        console.log('=== FIREBASE TOKEN VERIFICATION FAILED ===');
-        return res.status(401).json({ error: "Invalid Firebase token" });
+        console.log('=== USER VERIFICATION FAILED ===');
+        return res.status(401).json({ error: "Authentication failed - no user data" });
       }
 
-      console.log('=== FIREBASE TOKEN VERIFIED SUCCESSFULLY ===');
+      console.log('=== USER VERIFIED SUCCESSFULLY ===');
       console.log('User found/created:', { id: user.id, email: user.email });
 
-      // Store Gmail tokens if provided in the request body
-      const { gmailTokens } = req.body;
-      if (gmailTokens) {
-        console.log('=== GMAIL TOKENS PROVIDED ===');
-        console.log('Gmail tokens keys:', Object.keys(gmailTokens));
-        console.log('Has access token:', !!gmailTokens.access_token);
+      // Store Gmail access token if provided in the request body
+      const { accessToken } = req.body;
+      if (accessToken) {
+        console.log('=== GMAIL ACCESS TOKEN PROVIDED ===');
         
         try {
-          await (storage as any).storeUserGmailTokens(user.id, gmailTokens);
-          console.log('=== GMAIL TOKENS STORED SUCCESSFULLY ===');
+          // Store the Gmail access token (simplified format)
+          await (storage as any).storeUserGmailTokens(user.id, { 
+            access_token: accessToken,
+            refresh_token: '', // Not available in frontend-only flow
+            expiry_date: Date.now() + (60 * 60 * 1000) // 1 hour expiry
+          });
+          console.log('=== GMAIL ACCESS TOKEN STORED SUCCESSFULLY ===');
         } catch (tokenError) {
           console.error('=== GMAIL TOKEN STORAGE FAILED ===');
           console.error('Token storage error:', tokenError);
         }
       } else {
-        console.log('=== NO GMAIL TOKENS IN REQUEST ===');
+        console.log('=== NO GMAIL ACCESS TOKEN IN REQUEST ===');
       }
 
       console.log('=== GOOGLE AUTH DEBUG END ===');
