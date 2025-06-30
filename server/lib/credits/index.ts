@@ -7,14 +7,14 @@ const db = new Database();
 export class CreditService {
   private static readonly CREDIT_KEY_PREFIX = "user_credits:";
 
-  private static getCreditKey(userId: number): string {
+  private static getCreditKey(userId: string): string {
     return `${this.CREDIT_KEY_PREFIX}${userId}`;
   }
 
   /**
    * Get user credits, creating initial record if needed
    */
-  static async getUserCredits(userId: number): Promise<UserCredits> {
+  static async getUserCredits(userId: string): Promise<UserCredits> {
     const key = this.getCreditKey(userId);
     
     try {
@@ -88,7 +88,7 @@ export class CreditService {
   /**
    * Check if user needs monthly top-up and apply if needed
    */
-  static async checkAndApplyMonthlyTopUp(userId: number): Promise<boolean> {
+  static async checkAndApplyMonthlyTopUp(userId: string): Promise<boolean> {
     const credits = await this.getUserCredits(userId);
     const now = new Date();
     const lastTopUp = new Date(credits.lastTopUp);
@@ -136,7 +136,7 @@ export class CreditService {
    * Deduct credits for a successful search
    */
   static async deductCredits(
-    userId: number, 
+    userId: string, 
     searchType: SearchType, 
     success: boolean = true,
     customAmount?: number
@@ -193,7 +193,7 @@ export class CreditService {
   /**
    * Check if user is blocked
    */
-  static async isUserBlocked(userId: number): Promise<boolean> {
+  static async isUserBlocked(userId: string): Promise<boolean> {
     const credits = await this.getUserCredits(userId);
     return credits.isBlocked;
   }
@@ -201,7 +201,7 @@ export class CreditService {
   /**
    * Get credit balance
    */
-  static async getCreditBalance(userId: number): Promise<number> {
+  static async getCreditBalance(userId: string): Promise<number> {
     const credits = await this.getUserCredits(userId);
     return credits.currentBalance;
   }
@@ -209,7 +209,7 @@ export class CreditService {
   /**
    * Get credit transaction history
    */
-  static async getCreditHistory(userId: number, limit: number = 50): Promise<CreditTransaction[]> {
+  static async getCreditHistory(userId: string, limit: number = 50): Promise<CreditTransaction[]> {
     const credits = await this.getUserCredits(userId);
     return credits.transactions
       .sort((a, b) => b.timestamp - a.timestamp)
@@ -219,7 +219,7 @@ export class CreditService {
   /**
    * Claim Easter Egg bonus credits
    */
-  static async claimEasterEgg(userId: number, query: string): Promise<{
+  static async claimEasterEgg(userId: string, query: string): Promise<{
     success: boolean; 
     message: string; 
     newBalance?: number;
@@ -274,7 +274,7 @@ export class CreditService {
   /**
    * Check if badge has been earned by user
    */
-  static async hasEarnedBadge(userId: number, badgeId: number): Promise<boolean> {
+  static async hasEarnedBadge(userId: string, badgeId: number): Promise<boolean> {
     const credits = await this.getUserCredits(userId);
     const badges = credits.badges || [];
     return badges[badgeId] === 1;
@@ -283,7 +283,7 @@ export class CreditService {
   /**
    * Award badge to user
    */
-  static async awardBadge(userId: number, badgeId: number): Promise<void> {
+  static async awardBadge(userId: string, badgeId: number): Promise<void> {
     const credits = await this.getUserCredits(userId);
     const badges = credits.badges || [];
     
@@ -303,7 +303,7 @@ export class CreditService {
   /**
    * Trigger badge if not already earned
    */
-  static async triggerBadge(userId: number, trigger: string): Promise<{
+  static async triggerBadge(userId: string, trigger: string): Promise<{
     shouldShow: boolean;
     badge?: BadgeConfig;
   }> {
@@ -323,7 +323,7 @@ export class CreditService {
   /**
    * Check if notification has been shown to user
    */
-  static async hasShownNotification(userId: number, notificationId: number): Promise<boolean> {
+  static async hasShownNotification(userId: string, notificationId: number): Promise<boolean> {
     const credits = await this.getUserCredits(userId);
     const notifications = credits.notifications || [];
     return notifications[notificationId] === 1;
@@ -332,7 +332,7 @@ export class CreditService {
   /**
    * Mark notification as shown
    */
-  static async markNotificationShown(userId: number, notificationId: number): Promise<void> {
+  static async markNotificationShown(userId: string, notificationId: number): Promise<void> {
     const credits = await this.getUserCredits(userId);
     const notifications = credits.notifications || [];
     
@@ -352,7 +352,7 @@ export class CreditService {
   /**
    * Trigger notification if not already shown
    */
-  static async triggerNotification(userId: number, trigger: string): Promise<{
+  static async triggerNotification(userId: string, trigger: string): Promise<{
     shouldShow: boolean;
     notification?: NotificationConfig;
     badge?: BadgeConfig;
@@ -385,7 +385,7 @@ export class CreditService {
    * Manual credit adjustment (for admin use)
    */
   static async adjustCredits(
-    userId: number, 
+    userId: string, 
     amount: number, 
     description: string
   ): Promise<CreditDeductionResult> {
@@ -423,7 +423,7 @@ export class CreditService {
   /**
    * Get usage statistics for a user
    */
-  static async getUsageStats(userId: number): Promise<{
+  static async getUsageStats(userId: string): Promise<{
     totalUsed: number;
     thisMonth: number;
     searchCounts: Record<string, number>;
@@ -455,7 +455,7 @@ export class CreditService {
   /**
    * Update Stripe customer ID
    */
-  static async updateStripeCustomerId(userId: number, customerId: string): Promise<void> {
+  static async updateStripeCustomerId(userId: string, customerId: string): Promise<void> {
     const credits = await this.getUserCredits(userId);
     credits.stripeCustomerId = customerId;
     credits.updatedAt = Date.now();
@@ -467,7 +467,7 @@ export class CreditService {
   /**
    * Update subscription details
    */
-  static async updateSubscription(userId: number, subscriptionData: {
+  static async updateSubscription(userId: string, subscriptionData: {
     stripeSubscriptionId?: string;
     subscriptionStatus?: 'active' | 'canceled' | 'past_due' | 'incomplete' | 'trialing';
     currentPlan?: 'ugly-duckling';
@@ -486,7 +486,7 @@ export class CreditService {
   /**
    * Award subscription credits immediately upon successful subscription
    */
-  static async awardSubscriptionCredits(userId: number, planId: 'ugly-duckling'): Promise<void> {
+  static async awardSubscriptionCredits(userId: string, planId: 'ugly-duckling'): Promise<void> {
     const credits = await this.getUserCredits(userId);
     const creditAmount = STRIPE_CONFIG.PLAN_CREDIT_ALLOWANCES[planId];
 

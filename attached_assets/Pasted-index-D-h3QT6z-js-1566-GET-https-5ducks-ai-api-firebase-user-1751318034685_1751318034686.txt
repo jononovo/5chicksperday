@@ -1,0 +1,1312 @@
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/firebase/user 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+hP @ index-D_h3QT6z.js:41
+_ @ index-D_h3QT6z.js:26
+F @ index-D_h3QT6z.js:26
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+hP @ index-D_h3QT6z.js:41
+_ @ index-D_h3QT6z.js:26
+F @ index-D_h3QT6z.js:26
+index-D_h3QT6z.js:1566 Query error for /api/lists: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+hP @ index-D_h3QT6z.js:41
+_ @ index-D_h3QT6z.js:26
+F @ index-D_h3QT6z.js:26
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/search-approaches 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+hP @ index-D_h3QT6z.js:41
+_ @ index-D_h3QT6z.js:26
+F @ index-D_h3QT6z.js:26
+index-D_h3QT6z.js:1566 Query error for /api/search-approaches: Error: 401: {"error":"Authentication required","message":"Valid Firebase token must be provided"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+hP @ index-D_h3QT6z.js:41
+_ @ index-D_h3QT6z.js:26
+F @ index-D_h3QT6z.js:26
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-D_h3QT6z.js:1489
+cleanUp @ index-D_h3QT6z.js:1384
+unregisterAndCleanUp @ index-D_h3QT6z.js:1369
+resolve @ index-D_h3QT6z.js:1369
+onAuthEvent @ index-D_h3QT6z.js:1369
+index-D_h3QT6z.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-D_h3QT6z.js:1489
+cleanUp @ index-D_h3QT6z.js:1384
+unregisterAndCleanUp @ index-D_h3QT6z.js:1369
+resolve @ index-D_h3QT6z.js:1369
+onAuthEvent @ index-D_h3QT6z.js:1369
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/credits 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 Query error for /api/credits: Error: 401: {"message":"Authentication required"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/stripe/subscription-status 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 Query error for /api/stripe/subscription-status: Error: 401: {"message":"Authentication required"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+prompt-editor-BRb2U5r7.js:57 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ prompt-editor-BRb2U5r7.js:57
+(anonymous) @ prompt-editor-BRb2U5r7.js:57
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+home-DJz9oO1E.js:29 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ home-DJz9oO1E.js:29
+(anonymous) @ home-DJz9oO1E.js:29
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 
+            
+            
+           POST https://5ducks.ai/api/notifications/trigger 500 (Internal Server Error)
+fd @ index-D_h3QT6z.js:1566
+await in fd
+triggerNotification @ home-DJz9oO1E.js:27
+s @ home-DJz9oO1E.js:29
+(anonymous) @ index-D_h3QT6z.js:1746
+setTimeout
+(anonymous) @ index-D_h3QT6z.js:1746
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 API Request Error: POST /api/notifications/trigger {error: '500: {"message":"Notification trigger failed"}', timestamp: '2025-06-30T21:13:14.102Z'}
+fd @ index-D_h3QT6z.js:1566
+await in fd
+triggerNotification @ home-DJz9oO1E.js:27
+s @ home-DJz9oO1E.js:29
+(anonymous) @ index-D_h3QT6z.js:1746
+setTimeout
+(anonymous) @ index-D_h3QT6z.js:1746
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+home-DJz9oO1E.js:27 Failed to trigger notification: Error: 500: {"message":"Notification trigger failed"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async fd (index-D_h3QT6z.js:1566:2626)
+    at async triggerNotification (home-DJz9oO1E.js:27:4606)
+    at async s (home-DJz9oO1E.js:29:21071)
+triggerNotification @ home-DJz9oO1E.js:27
+await in triggerNotification
+s @ home-DJz9oO1E.js:29
+(anonymous) @ index-D_h3QT6z.js:1746
+setTimeout
+(anonymous) @ index-D_h3QT6z.js:1746
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+home-DJz9oO1E.js:29 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ home-DJz9oO1E.js:29
+(anonymous) @ home-DJz9oO1E.js:29
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+refetchQueries @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+invalidateQueries @ index-D_h3QT6z.js:49
+s @ home-DJz9oO1E.js:29
+(anonymous) @ index-D_h3QT6z.js:1746
+setTimeout
+(anonymous) @ index-D_h3QT6z.js:1746
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+refetchQueries @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+invalidateQueries @ index-D_h3QT6z.js:49
+s @ home-DJz9oO1E.js:29
+(anonymous) @ index-D_h3QT6z.js:1746
+setTimeout
+(anonymous) @ index-D_h3QT6z.js:1746
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1566 Query error for /api/notifications/status: Error: 500: {"error":"Cannot read properties of undefined (reading 'id')"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+(anonymous) @ index-D_h3QT6z.js:1746
+(anonymous) @ index-D_h3QT6z.js:154
+(anonymous) @ index-D_h3QT6z.js:154
+Promise.then
+sendOne @ index-D_h3QT6z.js:154
+forEachObserver @ index-D_h3QT6z.js:154
+next @ index-D_h3QT6z.js:154
+notifyAuthListeners @ index-D_h3QT6z.js:799
+(anonymous) @ index-D_h3QT6z.js:799
+Promise.then
+queue @ index-D_h3QT6z.js:799
+_updateCurrentUser @ index-D_h3QT6z.js:799
+await in _updateCurrentUser
+AN @ index-D_h3QT6z.js:1114
+await in AN
+AU @ index-D_h3QT6z.js:1354
+onAuthEvent @ index-D_h3QT6z.js:1369
+sendToConsumer @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1414
+onEvent @ index-D_h3QT6z.js:1414
+(anonymous) @ index-D_h3QT6z.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-D_h3QT6z.js:1384
+index-D_h3QT6z.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-D_h3QT6z.js:1489
+cleanUp @ index-D_h3QT6z.js:1384
+unregisterAndCleanUp @ index-D_h3QT6z.js:1369
+resolve @ index-D_h3QT6z.js:1369
+onAuthEvent @ index-D_h3QT6z.js:1369
+index-D_h3QT6z.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-D_h3QT6z.js:1489
+cleanUp @ index-D_h3QT6z.js:1384
+unregisterAndCleanUp @ index-D_h3QT6z.js:1369
+resolve @ index-D_h3QT6z.js:1369
+onAuthEvent @ index-D_h3QT6z.js:1369
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/stripe/subscription-status 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+index-D_h3QT6z.js:1566 Query error for /api/stripe/subscription-status: Error: 401: {"message":"Authentication required"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+prompt-editor-BRb2U5r7.js:57 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ prompt-editor-BRb2U5r7.js:57
+(anonymous) @ prompt-editor-BRb2U5r7.js:57
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/credits 401 (Unauthorized)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+index-D_h3QT6z.js:1566 Query error for /api/credits: Error: 401: {"message":"Authentication required"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+home-DJz9oO1E.js:29 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ home-DJz9oO1E.js:29
+(anonymous) @ home-DJz9oO1E.js:29
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+home-DJz9oO1E.js:29 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ home-DJz9oO1E.js:29
+(anonymous) @ home-DJz9oO1E.js:29
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+index-D_h3QT6z.js:1566 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
+index-D_h3QT6z.js:1566 Query error for /api/notifications/status: Error: 500: {"error":"Cannot read properties of undefined (reading 'id')"}
+    at WN (index-D_h3QT6z.js:1566:1745)
+    at async index-D_h3QT6z.js:1566:3139
+(anonymous) @ index-D_h3QT6z.js:1566
+await in (anonymous)
+i @ index-D_h3QT6z.js:49
+x @ index-D_h3QT6z.js:49
+start @ index-D_h3QT6z.js:49
+fetch @ index-D_h3QT6z.js:49
+gl @ index-D_h3QT6z.js:49
+onSubscribe @ index-D_h3QT6z.js:49
+subscribe @ index-D_h3QT6z.js:49
+(anonymous) @ index-D_h3QT6z.js:49
+Dk @ index-D_h3QT6z.js:39
+Qf @ index-D_h3QT6z.js:41
+Ho @ index-D_h3QT6z.js:41
+sF @ index-D_h3QT6z.js:41
+vi @ index-D_h3QT6z.js:41
+ew @ index-D_h3QT6z.js:41
+ui @ index-D_h3QT6z.js:39
+(anonymous) @ index-D_h3QT6z.js:41
+setTimeout
+s @ index-D_h3QT6z.js:49
+o @ index-D_h3QT6z.js:49
+batch @ index-D_h3QT6z.js:49
+jr @ index-D_h3QT6z.js:49
+setData @ index-D_h3QT6z.js:49
+setQueryData @ index-D_h3QT6z.js:49
+d @ index-D_h3QT6z.js:1746
+await in d
+l @ index-D_h3QT6z.js:1746
+await in l
+C @ index-D_h3QT6z.js:1746
+_L @ index-D_h3QT6z.js:38
+EL @ index-D_h3QT6z.js:38
+CL @ index-D_h3QT6z.js:38
+Tx @ index-D_h3QT6z.js:38
+xk @ index-D_h3QT6z.js:38
+(anonymous) @ index-D_h3QT6z.js:38
+Zy @ index-D_h3QT6z.js:41
+$1 @ index-D_h3QT6z.js:38
+tp @ index-D_h3QT6z.js:38
+Ty @ index-D_h3QT6z.js:38
+zL @ index-D_h3QT6z.js:38
