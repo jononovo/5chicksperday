@@ -42,11 +42,8 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Get credit transaction history
-  app.get("/api/credits/history", async (req: Request, res: Response) => {
+  app.get("/api/credits/history", requireAuth, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
 
       const userId = (req.user as any).id;
       const limit = parseInt(req.query.limit as string) || 50;
@@ -63,11 +60,8 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Get usage statistics
-  app.get("/api/credits/stats", async (req: Request, res: Response) => {
+  app.get("/api/credits/stats", requireAuth, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
 
       const userId = (req.user as any).id;
       const stats = await CreditService.getUsageStats(userId);
@@ -83,12 +77,8 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Check if user is blocked
-  app.get("/api/credits/status", async (req: Request, res: Response) => {
+  app.get("/api/credits/status", requireAuth, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
-
       const userId = (req.user as any).id;
       const isBlocked = await CreditService.isUserBlocked(userId);
 
@@ -103,11 +93,8 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Manual credit adjustment (admin only - for future use)
-  app.post("/api/credits/adjust", async (req: Request, res: Response) => {
+  app.post("/api/credits/adjust", requireAuth, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        return res.status(401).json({ message: "Authentication required" });
-      }
 
       // For now, allow any authenticated user to adjust their own credits
       // In production, this should be admin-only
