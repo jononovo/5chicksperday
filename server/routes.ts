@@ -4375,6 +4375,29 @@ Respond in this exact JSON format:
     }
   });
 
+  // Firebase Authentication Test Route
+  app.get("/api/firebase/test", verifyFirebaseToken, async (req, res) => {
+    try {
+      const firebaseUID = getFirebaseUID(req);
+      const firebaseUser = (req as any).firebaseUser;
+      
+      res.json({
+        message: "Firebase authentication successful",
+        user: {
+          uid: firebaseUID,
+          email: firebaseUser.email,
+          name: firebaseUser.name
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: "Firebase test failed",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Register credit routes
   registerCreditRoutes(app);
   

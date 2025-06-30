@@ -123,6 +123,7 @@
 - Webhook verification is optional (fallback to unverified processing)
 
 ## Changelog
+- June 30, 2025. Firebase-only authentication migration (Phase 1 Complete): Implemented Firebase Admin SDK with JWT token verification middleware, created Firebase-specific storage layer using Firebase UID as primary identifier, updated authentication functions and API routes to use Firebase tokens, established comprehensive Firebase-first architecture eliminating complex hybrid authentication system. Backend token verification operational with proper error handling and security measures.
 - June 23, 2025. Fixed deployment configuration: Made Stripe environment variables optional to prevent startup crashes, configured proper port binding for Cloud Run (0.0.0.0), added graceful degradation for missing payment service configuration
 - June 13, 2025. Initial setup
 - June 13, 2025. Mobile UI optimizations: Fixed duck header positioning (-mt-1), reduced email form horizontal padding (p-6→px-3 py-6 md:p-6) for 24px wider mobile inputs, updated "Save Template" to "Save as Template", and removed chevron arrow from mobile duck header navigation button

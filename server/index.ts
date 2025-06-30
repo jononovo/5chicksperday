@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
 import { storage } from "../storage-switching/storage-switcher";
+import { optionalFirebaseAuth } from "./middleware/firebase-auth";
 
 const app = express();
 
@@ -71,6 +72,9 @@ app.get('/api/health', (_req, res) => {
   try {
     // Setup authentication before registering routes
     setupAuth(app);
+    
+    // Add Firebase authentication middleware for all API routes
+    app.use('/api', optionalFirebaseAuth);
     
     // Database already initialized through Drizzle
     
