@@ -111,7 +111,7 @@ function calculateImprovement(results: any[]): string | null {
   }
 }
 
-// Note: requireAuth middleware has been replaced with verifyFirebaseToken
+// Note: verifyFirebaseToken middleware has been replaced with verifyFirebaseToken
 // This function is kept for reference but is no longer used
 
 // Generate static sitemap XML
@@ -1537,7 +1537,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Contacts
-  app.get("/api/companies/:companyId/contacts", requireAuth, async (req, res) => {
+  app.get("/api/companies/:companyId/contacts", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       const companyId = parseInt(req.params.companyId);
@@ -1563,7 +1563,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/companies/:companyId/enrich-contacts", requireAuth, async (req, res) => {
+  app.post("/api/companies/:companyId/enrich-contacts", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       const companyId = parseInt(req.params.companyId);
@@ -1694,7 +1694,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Add new route for getting a single contact
-  app.get("/api/contacts/:id", requireAuth, async (req, res) => {
+  app.get("/api/contacts/:id", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       
@@ -1723,7 +1723,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/contacts/search", requireAuth, async (req, res) => {
+  app.post("/api/contacts/search", verifyFirebaseToken, async (req, res) => {
     const { name, company } = req.body;
 
     if (!name || !company) {
@@ -1754,12 +1754,12 @@ export function registerRoutes(app: Express) {
 
 
   // Campaigns
-  app.get("/api/campaigns", requireAuth, async (req, res) => {
+  app.get("/api/campaigns", verifyFirebaseToken, async (req, res) => {
     const campaigns = await storage.listCampaigns(req.user!.id);
     res.json(campaigns);
   });
 
-  app.get("/api/campaigns/:campaignId", requireAuth, async (req, res) => {
+  app.get("/api/campaigns/:campaignId", verifyFirebaseToken, async (req, res) => {
     const campaign = await storage.getCampaign(parseInt(req.params.campaignId), req.user!.id);
     if (!campaign) {
       res.status(404).json({ message: "Campaign not found" });
@@ -1768,7 +1768,7 @@ export function registerRoutes(app: Express) {
     res.json(campaign);
   });
 
-  app.post("/api/campaigns", requireAuth, async (req, res) => {
+  app.post("/api/campaigns", verifyFirebaseToken, async (req, res) => {
     try {
       // Get next available campaign ID (starting from 2001)
       const campaignId = await storage.getNextCampaignId();
@@ -1805,7 +1805,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.patch("/api/campaigns/:campaignId", requireAuth, async (req, res) => {
+  app.patch("/api/campaigns/:campaignId", verifyFirebaseToken, async (req, res) => {
     const result = insertCampaignSchema.partial().safeParse(req.body);
     if (!result.success) {
       res.status(400).json({ message: "Invalid request body" });
@@ -1827,13 +1827,13 @@ export function registerRoutes(app: Express) {
   });
 
   // Email Templates
-  app.get("/api/email-templates", requireAuth, async (req, res) => {
+  app.get("/api/email-templates", verifyFirebaseToken, async (req, res) => {
     const userId = getUserId(req);
     const templates = await storage.listEmailTemplates(userId);
     res.json(templates);
   });
 
-  app.get("/api/email-templates/:id", requireAuth, async (req, res) => {
+  app.get("/api/email-templates/:id", verifyFirebaseToken, async (req, res) => {
     const userId = getUserId(req);
     const template = await storage.getEmailTemplate(parseInt(req.params.id), userId);
     if (!template) {
@@ -1843,7 +1843,7 @@ export function registerRoutes(app: Express) {
     res.json(template);
   });
 
-  app.post("/api/email-templates", requireAuth, async (req, res) => {
+  app.post("/api/email-templates", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       
@@ -1884,7 +1884,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.put("/api/email-templates/:id", requireAuth, async (req, res) => {
+  app.put("/api/email-templates/:id", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       const templateId = parseInt(req.params.id);
@@ -1941,8 +1941,8 @@ export function registerRoutes(app: Express) {
   
 
 
-  // Keep other existing routes with requireAuth
-  app.post("/api/generate-email", requireAuth, async (req, res) => {
+  // Keep other existing routes with verifyFirebaseToken
+  app.post("/api/generate-email", verifyFirebaseToken, async (req, res) => {
     const { emailPrompt, contact, company } = req.body;
 
     if (!emailPrompt || !company) {
@@ -1993,7 +1993,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/contacts/:contactId/enrich", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/enrich", verifyFirebaseToken, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -2082,7 +2082,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/contacts/search", requireAuth, async (req, res) => {
+  app.post("/api/contacts/search", verifyFirebaseToken, async (req, res) => {
     const { name, company } = req.body;
 
     if (!name || !company) {
@@ -2111,7 +2111,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/companies/:companyId/enrich-top-prospects", requireAuth, async (req, res) => {
+  app.post("/api/companies/:companyId/enrich-top-prospects", verifyFirebaseToken, async (req, res) => {
     try {
       const companyId = parseInt(req.params.companyId);
       const searchId = `search_${Date.now()}`;
@@ -2150,7 +2150,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/user/preferences", requireAuth, async (req, res) => {
+  app.post("/api/user/preferences", verifyFirebaseToken, async (req, res) => {
     try {
       // Remove hasSeenTour extraction and use other preferences from body
       const preferences = await storage.updateUserPreferences(req.user!.id, {
@@ -2426,7 +2426,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Backend Email Search Orchestration Endpoint
-  app.post("/api/companies/find-all-emails", requireAuth, async (req, res) => {
+  app.post("/api/companies/find-all-emails", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       const { companyIds, sessionId } = req.body;
@@ -2690,7 +2690,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Search Quality Testing Endpoint
-  app.post("/api/search-test", requireAuth, async (req, res) => {
+  app.post("/api/search-test", verifyFirebaseToken, async (req, res) => {
     try {
       const { strategyId, query } = req.body;
       
@@ -3037,7 +3037,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Hunter.io email finder endpoint
-  app.post("/api/contacts/:contactId/hunter", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/hunter", verifyFirebaseToken, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -3132,7 +3132,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
   
   // Apollo.io email finder endpoint
-  app.post("/api/contacts/:contactId/apollo", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/apollo", verifyFirebaseToken, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -3226,7 +3226,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/contacts/:contactId/aeroleads", requireAuth, async (req, res) => {
+  app.post("/api/contacts/:contactId/aeroleads", verifyFirebaseToken, async (req, res) => {
     try {
       const contactId = parseInt(req.params.contactId);
       const userId = getUserId(req);
@@ -3352,7 +3352,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/send-gmail", requireAuth, async (req, res) => {
+  app.post("/api/send-gmail", verifyFirebaseToken, async (req, res) => {
     try {
       const { to, subject, content } = req.body;
 
@@ -3414,7 +3414,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Individual Email Search Credit Deduction Endpoint
-  app.post("/api/credits/deduct-individual-email", requireAuth, async (req, res) => {
+  app.post("/api/credits/deduct-individual-email", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       const { contactId, searchType, emailFound } = req.body;
@@ -4258,7 +4258,7 @@ Respond in this exact JSON format:
   });
 
   // Add missing search-approaches endpoint to fix frontend JSON parsing errors
-  app.get("/api/search-approaches", requireAuth, async (req, res) => {
+  app.get("/api/search-approaches", verifyFirebaseToken, async (req, res) => {
     try {
       // Return empty array since search approaches have been removed
       // This prevents frontend JSON parsing errors
@@ -4275,7 +4275,7 @@ Respond in this exact JSON format:
   // All N8N Workflow Management Endpoints and proxies have been removed
 
   // Easter egg route
-  app.post('/api/credits/easter-egg', requireAuth, async (req, res) => {
+  app.post('/api/credits/easter-egg', verifyFirebaseToken, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const { query } = req.body;
@@ -4293,7 +4293,7 @@ Respond in this exact JSON format:
   });
 
   // Notification routes
-  app.post('/api/notifications/trigger', requireAuth, async (req, res) => {
+  app.post('/api/notifications/trigger', verifyFirebaseToken, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const { trigger } = req.body;
@@ -4310,7 +4310,7 @@ Respond in this exact JSON format:
     }
   });
 
-  app.post('/api/notifications/mark-shown', requireAuth, async (req, res) => {
+  app.post('/api/notifications/mark-shown', verifyFirebaseToken, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const { notificationId, badgeId } = req.body;
@@ -4331,7 +4331,7 @@ Respond in this exact JSON format:
     }
   });
 
-  app.get('/api/notifications/status', requireAuth, async (req, res) => {
+  app.get('/api/notifications/status', verifyFirebaseToken, async (req, res) => {
     try {
       const userId = (req.user as any).id;
       const credits = await CreditService.getUserCredits(userId);
