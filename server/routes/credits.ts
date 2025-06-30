@@ -98,7 +98,7 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Manual credit adjustment (admin only - for future use)
-  app.post("/api/credits/adjust", async (req: Request, res: Response) => {
+  app.post("/api/credits/adjust", verifyFirebaseToken, async (req: Request, res: Response) => {
     try {
       if (!req.firebaseUser) {
         return res.status(401).json({ message: "Authentication required" });
