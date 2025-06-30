@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { storage } from "../storage-switching/storage-switcher";
+import { verifyFirebaseToken } from "./middleware/firebase-auth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -60,48 +61,21 @@ global.searchSessions = global.searchSessions || new Map();
 
 
 
-// Helper function to safely get user ID from request
+// Helper function to get Firebase UID from request
+function getFirebaseUID(req: express.Request): string {
+  const firebaseUser = (req as any).firebaseUser;
+  if (!firebaseUser?.uid) {
+    throw new Error('No Firebase user found in request');
+  }
+  return firebaseUser.uid;
+}
+
+// Legacy helper function for backward compatibility - returns demo user ID
 function getUserId(req: express.Request): number {
-  try {
-    // First check if user is authenticated through session
-    if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user as any).id) {
-      return (req.user as any).id;
-    }
-    
-    // Then check for Firebase authentication - this should now be properly set after the middleware fix
-    if ((req as any).firebaseUser && (req as any).firebaseUser.id) {
-      return (req as any).firebaseUser.id;
-    }
-  } catch (error) {
-    console.error('Error accessing user ID:', error);
-  }
-  
-  // For routes that handle list/company data, we need to determine if this is:
-  // 1. A new user who should see demo data (return 1)
-  // 2. A user who just logged out and needs a clean state (don't return user 1's data)
-  
-  // Check for recent logout by looking at the logout timestamp in the session
-  const recentlyLoggedOut = (req.session as any)?.logoutTime && 
-    (Date.now() - (req.session as any).logoutTime < 60000); // Within last minute
-  
-  if (recentlyLoggedOut) {
-    // For recently logged out users, return a non-existent user ID
-    // This ensures they don't see the previous user's data
-    console.log('Recently logged out user - returning non-existent user ID');
-    return -1; // This ID won't match any real user, preventing data leakage
-  }
-  
-  console.log('No authenticated user found - using demo user ID for compatibility', {
-    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-    hasUser: !!req.user,
-    hasFirebaseUser: !!(req as any).firebaseUser,
-    path: req.path,
-    method: req.method,
-    timestamp: new Date().toISOString()
-  });
-  
-  // For regular unauthenticated users, return demo user ID
-  return 1;
+  // For Firebase-first approach, we should use getFirebaseUID instead
+  // This is kept for backward compatibility during migration
+  console.log('Legacy getUserId called - consider migrating to getFirebaseUID');
+  return 1; // Demo user ID for backward compatibility
 }
 
 // Helper functions for improved search test scoring and AI agent support
@@ -137,35 +111,32 @@ function calculateImprovement(results: any[]): string | null {
   }
 }
 
-// Authentication middleware
+// Firebase-only authentication middleware
 function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
-  console.log('Auth check:', {
-    isAuthenticated: req.isAuthenticated(),
-    hasUser: !!req.user,
-    hasFirebaseUser: !!(req as any).firebaseUser,
+  const firebaseUser = (req as any).firebaseUser;
+  
+  if (!firebaseUser?.uid) {
+    console.log('Firebase auth required but not found:', {
+      path: req.path,
+      method: req.method,
+      hasAuthHeader: !!req.headers.authorization,
+      timestamp: new Date().toISOString()
+    });
+    
+    return res.status(401).json({ 
+      error: 'Authentication required',
+      message: 'Valid Firebase token must be provided'
+    });
+  }
+  
+  console.log('Firebase auth verified:', {
+    uid: firebaseUser.uid,
+    email: firebaseUser.email,
     path: req.path,
     method: req.method,
     timestamp: new Date().toISOString()
   });
   
-  // In a production environment, we would require authentication
-  // For now, we'll still allow access but flag it for easier development
-  
-  // If we have either a session user or Firebase user, set proper user context
-  if (req.isAuthenticated() && req.user) {
-    // Already authenticated via session
-    next();
-    return;
-  }
-  
-  // Firebase token verification would have happened in middleware
-  if ((req as any).firebaseUser) {
-    // User authenticated via Firebase token
-    next();
-    return;
-  }
-  
-  // For development only - we'll still allow the request
   next();
 }
 
@@ -886,20 +857,16 @@ export function registerRoutes(app: Express) {
   });
 
   // Lists
-  app.get("/api/lists", requireAuth, async (req, res) => {
-    const userId = getUserId(req);
-    
-    // Check if the user is authenticated with their own ID
-    const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
-    
-    // If authenticated, return only their lists
-    if (isAuthenticated) {
-      const lists = await storage.listLists(userId);
+  app.get("/api/lists", verifyFirebaseToken, async (req, res) => {
+    try {
+      const firebaseUID = getFirebaseUID(req);
+      const lists = await storage.listLists(firebaseUID);
       res.json(lists);
-    } else {
-      // For unauthenticated users, return only demo lists (userId = 1)
-      const demoLists = await storage.listLists(1);
-      res.json(demoLists);
+    } catch (error) {
+      console.error('Error fetching lists:', error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to fetch lists"
+      });
     }
   });
 
