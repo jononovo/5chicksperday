@@ -2058,11 +2058,11 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         Object.assign(updateData, emailUpdates);
         
         // DETECT EMAIL SUCCESS (same logic as other APIs)
-        emailFound = !!(emailUpdates.email || (emailUpdates.alternativeEmails && emailUpdates.alternativeEmails.length > 0));
+        emailFound = !!(emailUpdates?.email || (emailUpdates?.alternativeEmails && emailUpdates.alternativeEmails.length > 0));
         
-        if (emailUpdates.email) {
+        if (emailUpdates?.email) {
           console.log('Setting as primary email:', enrichedDetails.email);
-        } else if (emailUpdates.alternativeEmails) {
+        } else if (emailUpdates?.alternativeEmails) {
           console.log('Updated alternative emails:', emailUpdates.alternativeEmails);
         }
       }
@@ -3309,9 +3309,9 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         const emailUpdates = mergeEmailData(contact, result.email);
         Object.assign(updateData, emailUpdates);
         
-        if (emailUpdates.email) {
+        if (emailUpdates?.email) {
           console.log('Setting as primary email:', result.email);
-        } else if (emailUpdates.alternativeEmails) {
+        } else if (emailUpdates?.alternativeEmails) {
           console.log('Updated alternative emails:', emailUpdates.alternativeEmails);
         }
         updateData.nameConfidenceScore = result.confidence;

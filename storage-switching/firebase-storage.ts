@@ -151,11 +151,22 @@ export class FirebaseStorage implements FirebaseIStorage {
   }
 
   private async getNextId(entity: string): Promise<number> {
-    const counterKey = `counter:${entity}`;
-    const current = await this.get<number>(counterKey) || 0;
-    const next = current + 1;
-    await this.set(counterKey, next);
-    return next;
+    // Generate unique ID using timestamp + random component to prevent duplicates
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    const uniqueId = parseInt(`${timestamp}${random}`);
+    
+    // Ensure uniqueness by checking if ID already exists
+    const existingKey = `${entity}:${uniqueId}`;
+    const existing = await this.get(existingKey);
+    
+    if (existing) {
+      // If collision occurs, try again with different random component
+      const newRandom = Math.floor(Math.random() * 9999);
+      return parseInt(`${timestamp}${newRandom}`);
+    }
+    
+    return uniqueId;
   }
 
   // User Profile methods
