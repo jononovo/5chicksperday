@@ -123,6 +123,7 @@
 - Webhook verification is optional (fallback to unverified processing)
 
 ## Changelog
+- June 30, 2025. Complete authentication system simplification: Removed Passport.js and session-based authentication entirely, implemented pure Firebase stateless authentication with JWT token verification on each request. Eliminated serialization errors by removing all session complexity. Gmail tokens now stored directly in database after Firebase authentication. Created unified `/api/google-auth` endpoint handling both user authentication and Gmail token storage. Reduced authentication code by ~200 lines and eliminated all session-related crashes and conflicts
 - June 23, 2025. Fixed deployment configuration: Made Stripe environment variables optional to prevent startup crashes, configured proper port binding for Cloud Run (0.0.0.0), added graceful degradation for missing payment service configuration
 - June 13, 2025. Initial setup
 - June 13, 2025. Mobile UI optimizations: Fixed duck header positioning (-mt-1), reduced email form horizontal padding (p-6→px-3 py-6 md:p-6) for 24px wider mobile inputs, updated "Save Template" to "Save as Template", and removed chevron arrow from mobile duck header navigation button
