@@ -428,19 +428,21 @@ export function registerRoutes(app: Express) {
       // Exchange code for tokens
       const { tokens } = await oauth2Client.getToken(code as string);
       
-      // Store token in session
-      (req.session as any).gmailToken = tokens.access_token;
-      (req.session as any).gmailRefreshToken = tokens.refresh_token;
+      // Store tokens directly in user record
+      const expiryDate = tokens.expiry_date ? new Date(tokens.expiry_date) : new Date(Date.now() + 3600000);
+      await (storage as any).updateUserGmailTokens(
+        userId, 
+        tokens.access_token, 
+        tokens.refresh_token,
+        expiryDate
+      );
       
-      // Save session
-      await new Promise<void>((resolve, reject) => {
-        req.session.save(err => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
+      console.log('Gmail OAuth completed successfully:', {
+        userId,
+        hasAccessToken: !!tokens.access_token,
+        hasRefreshToken: !!tokens.refresh_token,
+        expiryDate,
+        timestamp: new Date().toISOString()
       });
       
       // Redirect to replies page

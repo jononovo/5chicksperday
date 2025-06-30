@@ -7,79 +7,7 @@ import { promisify } from "util";
 import { storage } from "../storage-switching/storage-switcher";
 import { User, User as SelectUser } from "@shared/schema";
 import admin from "firebase-admin";
-import Database from '@replit/database';
-
-// Extend the session type to include gmailToken
-declare module 'express-session' {
-  interface SessionData {
-    gmailToken?: string;
-    gmailRefreshToken?: string;
-  }
-}
-
-// Custom Replit Database session store
-class ReplitSessionStore extends session.Store {
-  private db: Database;
-
-  constructor() {
-    super();
-    this.db = new Database();
-  }
-
-  async get(sid: string, callback: (err?: any, session?: session.SessionData | null) => void) {
-    try {
-      const result = await this.db.get(`session:${sid}`) as any;
-      let session: session.SessionData | null = null;
-      
-      if (result) {
-        // Replit DB returns the data directly, not wrapped
-        session = result as session.SessionData;
-      }
-      
-      callback(null, session);
-    } catch (err) {
-      console.error('Session get error:', err);
-      callback(err);
-    }
-  }
-
-  async set(sid: string, session: session.SessionData, callback?: (err?: any) => void) {
-    try {
-      await this.db.set(`session:${sid}`, session);
-      if (session.gmailToken) {
-        console.log('Gmail token stored in Replit DB session:', {
-          sessionId: sid.substring(0, 8) + '...',
-          hasGmailToken: !!session.gmailToken,
-          hasRefreshToken: !!session.gmailRefreshToken,
-          timestamp: new Date().toISOString()
-        });
-      }
-      callback && callback();
-    } catch (err) {
-      console.error('Session set error:', err);
-      callback && callback(err);
-    }
-  }
-
-  async destroy(sid: string, callback?: (err?: any) => void) {
-    try {
-      await this.db.delete(`session:${sid}`);
-      callback && callback();
-    } catch (err) {
-      callback && callback(err);
-    }
-  }
-
-  async touch(sid: string, session: session.SessionData, callback?: (err?: any) => void) {
-    try {
-      // Update the session to refresh its TTL
-      await this.db.set(`session:${sid}`, session);
-      callback && callback();
-    } catch (err) {
-      callback && callback(err);
-    }
-  }
-}
+// Remove session store - Gmail tokens now stored directly in user records
 
 declare global {
   namespace Express {
@@ -195,7 +123,6 @@ export function setupAuth(app: Express) {
     secret: process.env.SESSION_SECRET || 'temporary-secret-key',
     resave: false,
     saveUninitialized: false,
-    store: new ReplitSessionStore(), // Use Replit Database for session persistence
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
@@ -203,7 +130,7 @@ export function setupAuth(app: Express) {
     }
   };
 
-  console.log('Setting up authentication with Replit Database session store');
+  console.log('Setting up authentication with memory sessions (Gmail tokens stored in user records)');
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
@@ -409,12 +336,12 @@ export function setupAuth(app: Express) {
         hasAccessToken: !!accessToken 
       });
 
-      // Store Gmail token in session if provided
-      if (accessToken) {
-        req.session.gmailToken = accessToken;
-        console.log('Stored Gmail token in session:', {
+      // Store Gmail token in user record if provided
+      if (accessToken && user) {
+        await (storage as any).updateUserGmailTokens(user.id, accessToken);
+        console.log('Stored Gmail token in user record:', {
+          userId: user.id,
           hasToken: !!accessToken,
-          sessionID: req.sessionID,
           timestamp: new Date().toISOString()
         });
       }
@@ -452,13 +379,24 @@ export function setupAuth(app: Express) {
   });
 
   // Add new route to check Gmail authorization status
-  app.get("/api/gmail/auth-status", requireAuth, (req, res) => {
-    const hasGmailToken = !!req.session.gmailToken;
-    console.log('Checking Gmail auth status:', {
-      hasToken: hasGmailToken,
-      sessionID: req.sessionID,
-      timestamp: new Date().toISOString()
-    });
-    res.json({ authorized: hasGmailToken });
+  app.get("/api/gmail/auth-status", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+      const gmailTokens = await (storage as any).getUserGmailTokens(userId);
+      const hasGmailToken = !!gmailTokens?.accessToken;
+      
+      console.log('Checking Gmail auth status:', {
+        userId,
+        hasToken: hasGmailToken,
+        hasRefreshToken: !!gmailTokens?.refreshToken,
+        tokenExpiry: gmailTokens?.expiry,
+        timestamp: new Date().toISOString()
+      });
+      
+      res.json({ authorized: hasGmailToken });
+    } catch (error) {
+      console.error('Error checking Gmail auth status:', error);
+      res.status(500).json({ error: 'Failed to check Gmail authorization status' });
+    }
   });
 }

@@ -6,6 +6,9 @@ export const users = pgTable("users", {
   username: text("username").notNull(),
   password: text("password").notNull(),
   email: text("email").notNull(),
+  gmailAccessToken: text("gmail_access_token"),
+  gmailRefreshToken: text("gmail_refresh_token"),
+  gmailTokenExpiry: timestamp("gmail_token_expiry"),
   createdAt: timestamp("created_at").defaultNow()
 });
 

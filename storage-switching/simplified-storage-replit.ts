@@ -136,6 +136,53 @@ export class ReplitStorage implements IStorage {
     return updatedUser;
   }
 
+  // Gmail token management methods
+  // @ts-ignore
+  async updateUserGmailTokens(userId: number, accessToken: string, refreshToken?: string, expiryDate?: Date): Promise<User | undefined> {
+    const updates: any = {
+      gmailAccessToken: accessToken,
+      gmailTokenExpiry: expiryDate || new Date(Date.now() + 3600000) // Default 1 hour
+    };
+    
+    if (refreshToken) {
+      updates.gmailRefreshToken = refreshToken;
+    }
+    
+    console.log('Storing Gmail tokens in user record:', {
+      userId,
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken,
+      expiryDate: updates.gmailTokenExpiry,
+      timestamp: new Date().toISOString()
+    });
+    
+    return this.updateUser(userId, updates);
+  }
+
+  // @ts-ignore
+  async clearUserGmailTokens(userId: number): Promise<User | undefined> {
+    console.log('Clearing Gmail tokens from user record:', { userId });
+    return this.updateUser(userId, {
+      gmailAccessToken: null,
+      gmailRefreshToken: null,
+      gmailTokenExpiry: null
+    });
+  }
+
+  // @ts-ignore
+  async getUserGmailTokens(userId: number): Promise<{ accessToken?: string; refreshToken?: string; expiry?: Date } | null> {
+    const user = await this.getUser(userId);
+    if (!user || !user.gmailAccessToken) {
+      return null;
+    }
+    
+    return {
+      accessToken: user.gmailAccessToken,
+      refreshToken: user.gmailRefreshToken || undefined,
+      expiry: user.gmailTokenExpiry ? new Date(user.gmailTokenExpiry) : undefined
+    };
+  }
+
   // User Preferences
   // @ts-ignore
   async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {
