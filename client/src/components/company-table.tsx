@@ -70,8 +70,16 @@ export default function CompanyTable({
 }: CompanyTableProps) {
   // Move console logging to useEffect to avoid React warnings about state updates during render
   useEffect(() => {
-    console.log('CompanyTable received companies:', 
-      companies.map(c => ({ id: c.id, name: c.name }))
+    console.log('CompanyTable received companies:', companies);
+    console.log('CompanyTable company details:', 
+      companies.map(c => ({ 
+        id: c.id, 
+        name: c.name, 
+        website: c.website,
+        hasContacts: !!c.contacts,
+        contactCount: c.contacts?.length || 0,
+        allFields: Object.keys(c)
+      }))
     );
   }, [companies]);
   

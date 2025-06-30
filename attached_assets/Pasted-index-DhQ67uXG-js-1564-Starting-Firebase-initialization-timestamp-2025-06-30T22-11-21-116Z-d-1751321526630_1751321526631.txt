@@ -1,0 +1,318 @@
+index-DhQ67uXG.js:1564 Starting Firebase initialization... {timestamp: '2025-06-30T22:11:21.116Z', domain: '5ducks.ai'}
+index-DhQ67uXG.js:1564 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-DhQ67uXG.js:1564 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-DhQ67uXG.js:1566 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-30T22:11:21.117Z'}
+index-DhQ67uXG.js:1746 Setting up Firebase auth state listener
+index-DhQ67uXG.js:1746 Firebase auth state changed: undefined
+index-DhQ67uXG.js:1566 Firebase persistence set to LOCAL
+index-DhQ67uXG.js:1566 
+            
+            
+           GET https://5ducks.ai/api/firebase/user 401 (Unauthorized)
+(anonymous) @ index-DhQ67uXG.js:1566
+i @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+fetch @ index-DhQ67uXG.js:49
+yl @ index-DhQ67uXG.js:49
+onSubscribe @ index-DhQ67uXG.js:49
+subscribe @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Dk @ index-DhQ67uXG.js:39
+Qf @ index-DhQ67uXG.js:41
+Ko @ index-DhQ67uXG.js:41
+ew @ index-DhQ67uXG.js:41
+ui @ index-DhQ67uXG.js:39
+sF @ index-DhQ67uXG.js:41
+vi @ index-DhQ67uXG.js:41
+hP @ index-DhQ67uXG.js:41
+_ @ index-DhQ67uXG.js:26
+F @ index-DhQ67uXG.js:26
+index-DhQ67uXG.js:1566 User signed out, removed auth token
+prompt-editor-nSdPRdAs.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-nSdPRdAs.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-BszBXIEP.js:29 No saved search state found or session data already restored
+prompt-editor-nSdPRdAs.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+index-DhQ67uXG.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 401 (Unauthorized)
+(anonymous) @ index-DhQ67uXG.js:1566
+i @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+fetch @ index-DhQ67uXG.js:49
+yl @ index-DhQ67uXG.js:49
+onSubscribe @ index-DhQ67uXG.js:49
+subscribe @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Dk @ index-DhQ67uXG.js:39
+Qf @ index-DhQ67uXG.js:41
+Ko @ index-DhQ67uXG.js:41
+ew @ index-DhQ67uXG.js:41
+ui @ index-DhQ67uXG.js:39
+sF @ index-DhQ67uXG.js:41
+vi @ index-DhQ67uXG.js:41
+hP @ index-DhQ67uXG.js:41
+_ @ index-DhQ67uXG.js:26
+F @ index-DhQ67uXG.js:26
+index-DhQ67uXG.js:1566 Query error for /api/lists: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-DhQ67uXG.js:1566:1745)
+    at async index-DhQ67uXG.js:1566:3139
+(anonymous) @ index-DhQ67uXG.js:1566
+await in (anonymous)
+i @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+fetch @ index-DhQ67uXG.js:49
+yl @ index-DhQ67uXG.js:49
+onSubscribe @ index-DhQ67uXG.js:49
+subscribe @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Dk @ index-DhQ67uXG.js:39
+Qf @ index-DhQ67uXG.js:41
+Ko @ index-DhQ67uXG.js:41
+ew @ index-DhQ67uXG.js:41
+ui @ index-DhQ67uXG.js:39
+sF @ index-DhQ67uXG.js:41
+vi @ index-DhQ67uXG.js:41
+hP @ index-DhQ67uXG.js:41
+_ @ index-DhQ67uXG.js:26
+F @ index-DhQ67uXG.js:26
+index-DhQ67uXG.js:1566 
+            
+            
+           GET https://5ducks.ai/api/search-approaches 401 (Unauthorized)
+(anonymous) @ index-DhQ67uXG.js:1566
+i @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+fetch @ index-DhQ67uXG.js:49
+yl @ index-DhQ67uXG.js:49
+onSubscribe @ index-DhQ67uXG.js:49
+subscribe @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Dk @ index-DhQ67uXG.js:39
+Qf @ index-DhQ67uXG.js:41
+Ko @ index-DhQ67uXG.js:41
+ew @ index-DhQ67uXG.js:41
+ui @ index-DhQ67uXG.js:39
+sF @ index-DhQ67uXG.js:41
+vi @ index-DhQ67uXG.js:41
+hP @ index-DhQ67uXG.js:41
+_ @ index-DhQ67uXG.js:26
+F @ index-DhQ67uXG.js:26
+index-DhQ67uXG.js:1566 Query error for /api/search-approaches: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-DhQ67uXG.js:1566:1745)
+    at async index-DhQ67uXG.js:1566:3139
+(anonymous) @ index-DhQ67uXG.js:1566
+await in (anonymous)
+i @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+fetch @ index-DhQ67uXG.js:49
+yl @ index-DhQ67uXG.js:49
+onSubscribe @ index-DhQ67uXG.js:49
+subscribe @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Dk @ index-DhQ67uXG.js:39
+Qf @ index-DhQ67uXG.js:41
+Ko @ index-DhQ67uXG.js:41
+ew @ index-DhQ67uXG.js:41
+ui @ index-DhQ67uXG.js:39
+sF @ index-DhQ67uXG.js:41
+vi @ index-DhQ67uXG.js:41
+hP @ index-DhQ67uXG.js:41
+_ @ index-DhQ67uXG.js:26
+F @ index-DhQ67uXG.js:26
+home-BszBXIEP.js:29 Skipping localStorage save - no meaningful data to save
+prompt-editor-nSdPRdAs.js:57 Analyzing search query...
+prompt-editor-nSdPRdAs.js:57 Preparing to search for companies and contacts...
+prompt-editor-nSdPRdAs.js:57 Initiating company search process...
+prompt-editor-nSdPRdAs.js:57 Sending request to company discovery API...
+prompt-editor-nSdPRdAs.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-BszBXIEP.js:29 Created search session: search_1751321487348_1ldat99j3 for query: shakeshack
+home-BszBXIEP.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-nSdPRdAs.js:57 Created session search_1751321487348_1ldat99j3 for query: shakeshack
+prompt-editor-nSdPRdAs.js:57 Quick search with strategy: 17
+index-DhQ67uXG.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-06-30T22:11:27.349Z'}
+home-BszBXIEP.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751321487348_1ldat99j3 404 (Not Found)
+cleanupActiveSessions @ home-BszBXIEP.js:29
+createSession @ home-BszBXIEP.js:29
+mutationFn @ prompt-editor-nSdPRdAs.js:57
+await in mutationFn
+fn @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Y @ prompt-editor-nSdPRdAs.js:57
+onKeyDown @ prompt-editor-nSdPRdAs.js:57
+_L @ index-DhQ67uXG.js:38
+EL @ index-DhQ67uXG.js:38
+CL @ index-DhQ67uXG.js:38
+Tx @ index-DhQ67uXG.js:38
+xk @ index-DhQ67uXG.js:38
+(anonymous) @ index-DhQ67uXG.js:38
+Zy @ index-DhQ67uXG.js:41
+$1 @ index-DhQ67uXG.js:38
+tp @ index-DhQ67uXG.js:38
+Ty @ index-DhQ67uXG.js:38
+zL @ index-DhQ67uXG.js:38
+home-BszBXIEP.js:29 Cleaned up session: search_1751321487348_1ldat99j3
+home-BszBXIEP.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+home-BszBXIEP.js:29 Saving search state: {query: 'shakeshack', resultsCount: undefined, listId: null, companies: undefined}
+prompt-editor-nSdPRdAs.js:57 Processing company results...
+prompt-editor-nSdPRdAs.js:57 Found 7 companies matching your search
+prompt-editor-nSdPRdAs.js:57 Started polling for session search_1751321487348_1ldat99j3 completion
+home-BszBXIEP.js:29 Companies received: 7
+prompt-editor-nSdPRdAs.js:57 Starting contact discovery process...
+prompt-editor-nSdPRdAs.js:57 Searching for key decision makers and contacts...
+prompt-editor-nSdPRdAs.js:57 Sending comprehensive search request to API...
+prompt-editor-nSdPRdAs.js:57 This process may take a moment while we find the most relevant contacts...
+index-DhQ67uXG.js:1566 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-06-30T22:11:32.670Z'}
+prompt-editor-nSdPRdAs.js:57 Contact discovery completed successfully
+prompt-editor-nSdPRdAs.js:57 Found 0 contacts across 7 companies
+prompt-editor-nSdPRdAs.js:57 Processing and organizing results...
+prompt-editor-nSdPRdAs.js:57 Session search_1751321487348_1ldat99j3 completed with full results
+prompt-editor-nSdPRdAs.js:57 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor-nSdPRdAs.js:57 Search process completed!
+company-table-BKLvUmv9.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+prompt-editor-nSdPRdAs.js:57 [Database Sync] Cache invalidated, sending results to UI...
+home-BszBXIEP.js:29 === PARENT COMPONENT: handleSearchResults called ===
+home-BszBXIEP.js:29 Received query: shakeshack
+home-BszBXIEP.js:29 Received results count: 7
+home-BszBXIEP.js:29 Current component state - query: shakeshack
+home-BszBXIEP.js:29 Current component state - results count: 7
+home-BszBXIEP.js:29 Complete results received with contacts: 7
+home-BszBXIEP.js:29 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-BszBXIEP.js:29 === PARENT COMPONENT: State updated ===
+home-BszBXIEP.js:29 New state - query: shakeshack
+home-BszBXIEP.js:29 New state - results count: 7
+home-BszBXIEP.js:29 handleSearchResults completed
+home-BszBXIEP.js:29 Companies with contacts: 0 of 7
+company-table-BKLvUmv9.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-DhQ67uXG.js:1566 API Request: POST /api/lists {hasData: true, timestamp: '2025-06-30T22:11:33.828Z'}
+home-BszBXIEP.js:29 Saving search state: {query: 'shakeshack', resultsCount: 7, listId: null, companies: Array(7)}
+index-DhQ67uXG.js:1566 
+            
+            
+           POST https://5ducks.ai/api/lists 401 (Unauthorized)
+fd @ index-DhQ67uXG.js:1566
+mutationFn @ home-BszBXIEP.js:29
+fn @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+(anonymous) @ home-BszBXIEP.js:29
+setTimeout
+Bt @ home-BszBXIEP.js:29
+(anonymous) @ prompt-editor-nSdPRdAs.js:57
+setTimeout
+onSuccess @ prompt-editor-nSdPRdAs.js:57
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+onSuccess @ prompt-editor-nSdPRdAs.js:57
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Y @ prompt-editor-nSdPRdAs.js:57
+onKeyDown @ prompt-editor-nSdPRdAs.js:57
+_L @ index-DhQ67uXG.js:38
+EL @ index-DhQ67uXG.js:38
+CL @ index-DhQ67uXG.js:38
+Tx @ index-DhQ67uXG.js:38
+xk @ index-DhQ67uXG.js:38
+(anonymous) @ index-DhQ67uXG.js:38
+Zy @ index-DhQ67uXG.js:41
+$1 @ index-DhQ67uXG.js:38
+tp @ index-DhQ67uXG.js:38
+Ty @ index-DhQ67uXG.js:38
+zL @ index-DhQ67uXG.js:38
+index-DhQ67uXG.js:1566 API Request Error: POST /api/lists {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-06-30T22:11:33.907Z'}
+fd @ index-DhQ67uXG.js:1566
+await in fd
+mutationFn @ home-BszBXIEP.js:29
+fn @ index-DhQ67uXG.js:49
+x @ index-DhQ67uXG.js:49
+start @ index-DhQ67uXG.js:49
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+(anonymous) @ home-BszBXIEP.js:29
+setTimeout
+Bt @ home-BszBXIEP.js:29
+(anonymous) @ prompt-editor-nSdPRdAs.js:57
+setTimeout
+onSuccess @ prompt-editor-nSdPRdAs.js:57
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+onSuccess @ prompt-editor-nSdPRdAs.js:57
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Y @ prompt-editor-nSdPRdAs.js:57
+onKeyDown @ prompt-editor-nSdPRdAs.js:57
+_L @ index-DhQ67uXG.js:38
+EL @ index-DhQ67uXG.js:38
+CL @ index-DhQ67uXG.js:38
+Tx @ index-DhQ67uXG.js:38
+xk @ index-DhQ67uXG.js:38
+(anonymous) @ index-DhQ67uXG.js:38
+Zy @ index-DhQ67uXG.js:41
+$1 @ index-DhQ67uXG.js:38
+tp @ index-DhQ67uXG.js:38
+Ty @ index-DhQ67uXG.js:38
+zL @ index-DhQ67uXG.js:38
+home-BszBXIEP.js:29 Auto list creation failed: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-DhQ67uXG.js:1566:1745)
+    at async fd (index-DhQ67uXG.js:1566:2626)
+    at async Object.mutationFn (home-BszBXIEP.js:29:22180)
+onError @ home-BszBXIEP.js:29
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+(anonymous) @ home-BszBXIEP.js:29
+setTimeout
+Bt @ home-BszBXIEP.js:29
+(anonymous) @ prompt-editor-nSdPRdAs.js:57
+setTimeout
+onSuccess @ prompt-editor-nSdPRdAs.js:57
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+onSuccess @ prompt-editor-nSdPRdAs.js:57
+execute @ index-DhQ67uXG.js:49
+await in execute
+mutate @ index-DhQ67uXG.js:49
+(anonymous) @ index-DhQ67uXG.js:49
+Y @ prompt-editor-nSdPRdAs.js:57
+onKeyDown @ prompt-editor-nSdPRdAs.js:57
+_L @ index-DhQ67uXG.js:38
+EL @ index-DhQ67uXG.js:38
+CL @ index-DhQ67uXG.js:38
+Tx @ index-DhQ67uXG.js:38
+xk @ index-DhQ67uXG.js:38
+(anonymous) @ index-DhQ67uXG.js:38
+Zy @ index-DhQ67uXG.js:41
+$1 @ index-DhQ67uXG.js:38
+tp @ index-DhQ67uXG.js:38
+Ty @ index-DhQ67uXG.js:38
+zL @ index-DhQ67uXG.js:38

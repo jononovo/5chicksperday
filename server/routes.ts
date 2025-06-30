@@ -1138,8 +1138,11 @@ export function registerRoutes(app: Express) {
           const companyWebsite = typeof company === 'string' ? null : (company.website || null);
           const companyDescription = typeof company === 'string' ? null : (company.description || null);
           
-          // Create the company record with basic info
-          const createdCompany = await storage.createCompany({
+          // Use Firebase UID if available, otherwise use guest user approach
+          const firebaseUID = req.firebaseUser?.uid || 'guest';
+          
+          // Create the company record with basic info using Firebase storage interface
+          const createdCompany = await storage.createCompany(firebaseUID, {
             name: companyName,
             website: companyWebsite,
             description: companyDescription,
@@ -1149,8 +1152,7 @@ export function registerRoutes(app: Express) {
             founded: null,
             revenue: null,
             fundingStatus: null,
-            socialMedia: {},
-            userId
+            socialMedia: {}
           });
           
           return createdCompany;
