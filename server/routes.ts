@@ -3362,7 +3362,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       }
 
       // Get Gmail token from database
-      const userId = getUserId(req);
+      const userId = req.firebaseUser!.uid;
       const tokens = await storage.getUserGmailTokens(userId);
       const gmailToken = tokens?.accessToken;
       

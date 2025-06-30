@@ -1,0 +1,1052 @@
+index-DD7kaI9K.js:1564 Starting Firebase initialization... {timestamp: '2025-06-30T21:55:52.993Z', domain: '5ducks.ai'}
+index-DD7kaI9K.js:1564 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-DD7kaI9K.js:1564 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-DD7kaI9K.js:1566 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-06-30T21:55:52.995Z'}
+index-DD7kaI9K.js:1746 Setting up Firebase auth state listener
+index-DD7kaI9K.js:1746 Firebase auth state changed: undefined
+index-DD7kaI9K.js:1566 Firebase persistence set to LOCAL
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/firebase/user 401 (Unauthorized)
+(anonymous) @ index-DD7kaI9K.js:1566
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 User signed out, removed auth token
+prompt-editor-1gyIzLpv.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-1gyIzLpv.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-C5NxXZcT.js:29 Found pending search query: Recently exited startups in Miami
+prompt-editor-1gyIzLpv.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 401 (Unauthorized)
+(anonymous) @ index-DD7kaI9K.js:1566
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/search-approaches 401 (Unauthorized)
+(anonymous) @ index-DD7kaI9K.js:1566
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 Query error for /api/lists: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 Query error for /api/search-approaches: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+home-C5NxXZcT.js:29 Saving search state: {query: 'Recently exited startups in Miami', resultsCount: undefined, listId: null, companies: undefined}
+index-DD7kaI9K.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-DD7kaI9K.js:1746 Calling signInWithPopup...
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-DD7kaI9K.js:1384
+index-DD7kaI9K.js:1746 Firebase auth state changed: jon@5ducks.ai
+index-DD7kaI9K.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, hasRefreshToken: false, domain: '5ducks.ai'}
+index-DD7kaI9K.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-DD7kaI9K.js:1489
+cleanUp @ index-DD7kaI9K.js:1384
+unregisterAndCleanUp @ index-DD7kaI9K.js:1369
+resolve @ index-DD7kaI9K.js:1369
+onAuthEvent @ index-DD7kaI9K.js:1369
+index-DD7kaI9K.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-DD7kaI9K.js:1489
+cleanUp @ index-DD7kaI9K.js:1384
+unregisterAndCleanUp @ index-DD7kaI9K.js:1369
+resolve @ index-DD7kaI9K.js:1369
+onAuthEvent @ index-DD7kaI9K.js:1369
+index-DD7kaI9K.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-DD7kaI9K.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-06-30T21:56:04.558Z'}
+index-DD7kaI9K.js:1746 Google sign-in successful, syncing with backend {email: 'jon@...', displayName: 'Jon Hamilton'}
+index-DD7kaI9K.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, hasRefreshToken: false, domain: '5ducks.ai'}
+index-DD7kaI9K.js:1566 Auth token set successfully: {uid: 'fy9KZJlzTXdkLkOIqoIxPPmfjb82', email: 'jon@...', timestamp: '2025-06-30T21:56:04.753Z'}
+index-DD7kaI9K.js:1746 Successfully synced with backend
+index-DD7kaI9K.js:1746 Successfully synced with backend
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/stripe/subscription-status 401 (Unauthorized)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+index-DD7kaI9K.js:1566 Query error for /api/stripe/subscription-status: Error: 401: {"message":"Authentication required"}
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+home-C5NxXZcT.js:29 Registration success detected, triggering welcome notification
+home-C5NxXZcT.js:29 Extracted guest data: {originalQuery: 'Recently exited startups in Miami'}
+home-C5NxXZcT.js:29 Guest data cleared successfully
+home-C5NxXZcT.js:29 Restored guest query to input: Recently exited startups in Miami
+index-DD7kaI9K.js:1566 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-06-30T21:56:05.235Z'}
+index-DD7kaI9K.js:1566 
+            
+            
+           POST https://5ducks.ai/api/notifications/trigger 409 (Conflict)
+fd @ index-DD7kaI9K.js:1566
+await in fd
+triggerNotification @ home-C5NxXZcT.js:27
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+index-DD7kaI9K.js:1566 API Request Error: POST /api/notifications/trigger {error: '409: {"shouldShow":false,"message":"Notification already shown or not found"}', timestamp: '2025-06-30T21:56:05.367Z'}
+fd @ index-DD7kaI9K.js:1566
+await in fd
+triggerNotification @ home-C5NxXZcT.js:27
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+home-C5NxXZcT.js:27 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async fd (index-DD7kaI9K.js:1566:2626)
+    at async triggerNotification (home-C5NxXZcT.js:27:4606)
+    at async s (home-C5NxXZcT.js:29:21071)
+triggerNotification @ home-C5NxXZcT.js:27
+await in triggerNotification
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+refetchQueries @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+invalidateQueries @ index-DD7kaI9K.js:49
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+index-DD7kaI9K.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+refetchQueries @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+invalidateQueries @ index-DD7kaI9K.js:49
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+setTimeout
+s @ index-DD7kaI9K.js:49
+o @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+jr @ index-DD7kaI9K.js:49
+setData @ index-DD7kaI9K.js:49
+setQueryData @ index-DD7kaI9K.js:49
+d @ index-DD7kaI9K.js:1746
+await in d
+l @ index-DD7kaI9K.js:1746
+await in l
+C @ index-DD7kaI9K.js:1746
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+outreach-BVhA9b6G.js:55 QuickTemplates - Loaded templates: []
+outreach-BVhA9b6G.js:55 QuickTemplates - Loaded templates: []
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/email-templates 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists/1665/companies 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+setOptions @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 Query error for /api/email-templates: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+outreach-BVhA9b6G.js:55 QuickTemplates - Loaded templates: []
+index-DD7kaI9K.js:1566 Query error for /api/lists: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 Query error for /api/lists/1665/companies: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+setOptions @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-06-30T21:56:09.575Z'}
+outreach-BVhA9b6G.js:55 QuickTemplates - Loaded templates: []
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/gmail/auth-status 500 (Internal Server Error)
+fd @ index-DD7kaI9K.js:1566
+await in fd
+mutationFn @ outreach-BVhA9b6G.js:55
+fn @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+execute @ index-DD7kaI9K.js:49
+await in execute
+mutate @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Jt @ outreach-BVhA9b6G.js:55
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+index-DD7kaI9K.js:1566 API Request Error: GET /api/gmail/auth-status {error: '500: Internal Server Error', timestamp: '2025-06-30T21:56:09.631Z'}
+fd @ index-DD7kaI9K.js:1566
+await in fd
+mutationFn @ outreach-BVhA9b6G.js:55
+fn @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+execute @ index-DD7kaI9K.js:49
+await in execute
+mutate @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Jt @ outreach-BVhA9b6G.js:55
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+outreach-BVhA9b6G.js:55 QuickTemplates - Loaded templates: []
+prompt-editor-1gyIzLpv.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-1gyIzLpv.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-C5NxXZcT.js:29 No saved search state found or session data already restored
+prompt-editor-1gyIzLpv.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-1gyIzLpv.js:57 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ prompt-editor-1gyIzLpv.js:57
+(anonymous) @ prompt-editor-1gyIzLpv.js:57
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+prompt-editor-1gyIzLpv.js:57 Failed to check search tooltip status: SyntaxError: Unexpected token 'I', "Internal S"... is not valid JSON
+(anonymous) @ prompt-editor-1gyIzLpv.js:57
+await in (anonymous)
+(anonymous) @ prompt-editor-1gyIzLpv.js:57
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+index-DD7kaI9K.js:1566 Query error for /api/lists: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/search-approaches 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+index-DD7kaI9K.js:1566 Query error for /api/search-approaches: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+gl @ index-DD7kaI9K.js:49
+onSubscribe @ index-DD7kaI9K.js:49
+subscribe @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Dk @ index-DD7kaI9K.js:39
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+home-C5NxXZcT.js:29 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ home-C5NxXZcT.js:29
+(anonymous) @ home-C5NxXZcT.js:29
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+home-C5NxXZcT.js:29 Failed to check email tooltip status: SyntaxError: Unexpected token 'I', "Internal S"... is not valid JSON
+(anonymous) @ home-C5NxXZcT.js:29
+await in (anonymous)
+(anonymous) @ home-C5NxXZcT.js:29
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+home-C5NxXZcT.js:29 Registration success detected, triggering welcome notification
+home-C5NxXZcT.js:29 Extracted guest data: {originalQuery: null}
+home-C5NxXZcT.js:29 Guest data cleared successfully
+index-DD7kaI9K.js:1566 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-06-30T21:56:11.309Z'}
+index-DD7kaI9K.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+refetchQueries @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+invalidateQueries @ index-DD7kaI9K.js:49
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 Query error for /api/lists: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async index-DD7kaI9K.js:1566:3139
+(anonymous) @ index-DD7kaI9K.js:1566
+await in (anonymous)
+i @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+fetch @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+refetchQueries @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+batch @ index-DD7kaI9K.js:49
+invalidateQueries @ index-DD7kaI9K.js:49
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+home-C5NxXZcT.js:29 
+            
+            
+           GET https://5ducks.ai/api/notifications/status 500 (Internal Server Error)
+(anonymous) @ home-C5NxXZcT.js:29
+(anonymous) @ home-C5NxXZcT.js:29
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+home-C5NxXZcT.js:29 Failed to check start selling tooltip status: SyntaxError: Unexpected token 'I', "Internal S"... is not valid JSON
+(anonymous) @ home-C5NxXZcT.js:29
+await in (anonymous)
+(anonymous) @ home-C5NxXZcT.js:29
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+(anonymous) @ index-DD7kaI9K.js:41
+index-DD7kaI9K.js:1566 
+            
+            
+           POST https://5ducks.ai/api/notifications/trigger 500 (Internal Server Error)
+fd @ index-DD7kaI9K.js:1566
+await in fd
+triggerNotification @ home-C5NxXZcT.js:27
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+index-DD7kaI9K.js:1566 API Request Error: POST /api/notifications/trigger {error: '500: Internal Server Error', timestamp: '2025-06-30T21:56:11.373Z'}
+fd @ index-DD7kaI9K.js:1566
+await in fd
+triggerNotification @ home-C5NxXZcT.js:27
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+home-C5NxXZcT.js:27 Failed to trigger notification: Error: 500: Internal Server Error
+    at WN (index-DD7kaI9K.js:1566:1745)
+    at async fd (index-DD7kaI9K.js:1566:2626)
+    at async triggerNotification (home-C5NxXZcT.js:27:4606)
+    at async s (home-C5NxXZcT.js:29:21071)
+triggerNotification @ home-C5NxXZcT.js:27
+await in triggerNotification
+s @ home-C5NxXZcT.js:29
+(anonymous) @ index-DD7kaI9K.js:1746
+setTimeout
+(anonymous) @ index-DD7kaI9K.js:1746
+Qf @ index-DD7kaI9K.js:41
+Ho @ index-DD7kaI9K.js:41
+ew @ index-DD7kaI9K.js:41
+ui @ index-DD7kaI9K.js:39
+sF @ index-DD7kaI9K.js:41
+vi @ index-DD7kaI9K.js:41
+hP @ index-DD7kaI9K.js:41
+_ @ index-DD7kaI9K.js:26
+F @ index-DD7kaI9K.js:26
+home-C5NxXZcT.js:29 Skipping localStorage save - no meaningful data to save
+home-C5NxXZcT.js:29 Saving search state: {query: 's', resultsCount: undefined, listId: null, companies: undefined}
+prompt-editor-1gyIzLpv.js:57 Analyzing search query...
+prompt-editor-1gyIzLpv.js:57 Preparing to search for companies and contacts...
+prompt-editor-1gyIzLpv.js:57 Initiating company search process...
+prompt-editor-1gyIzLpv.js:57 Sending request to company discovery API...
+prompt-editor-1gyIzLpv.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-C5NxXZcT.js:29 Created search session: search_1751320577882_vvmj7gdpz for query: shakeshack
+home-C5NxXZcT.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-1gyIzLpv.js:57 Created session search_1751320577882_vvmj7gdpz for query: shakeshack
+prompt-editor-1gyIzLpv.js:57 Quick search with strategy: 17
+index-DD7kaI9K.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-06-30T21:56:17.883Z'}
+index-DD7kaI9K.js:1566 
+            
+            
+           POST https://5ducks.ai/api/companies/quick-search 500 (Internal Server Error)
+fd @ index-DD7kaI9K.js:1566
+await in fd
+mutationFn @ prompt-editor-1gyIzLpv.js:57
+await in mutationFn
+fn @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+execute @ index-DD7kaI9K.js:49
+await in execute
+mutate @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Y @ prompt-editor-1gyIzLpv.js:57
+onKeyDown @ prompt-editor-1gyIzLpv.js:57
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+home-C5NxXZcT.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751320577882_vvmj7gdpz 500 (Internal Server Error)
+cleanupActiveSessions @ home-C5NxXZcT.js:29
+createSession @ home-C5NxXZcT.js:29
+mutationFn @ prompt-editor-1gyIzLpv.js:57
+await in mutationFn
+fn @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+execute @ index-DD7kaI9K.js:49
+await in execute
+mutate @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Y @ prompt-editor-1gyIzLpv.js:57
+onKeyDown @ prompt-editor-1gyIzLpv.js:57
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+home-C5NxXZcT.js:29 Cleaned up session: search_1751320577882_vvmj7gdpz
+home-C5NxXZcT.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+index-DD7kaI9K.js:1566 API Request Error: POST /api/companies/quick-search {error: '500: Internal Server Error', timestamp: '2025-06-30T21:56:17.942Z'}
+fd @ index-DD7kaI9K.js:1566
+await in fd
+mutationFn @ prompt-editor-1gyIzLpv.js:57
+await in mutationFn
+fn @ index-DD7kaI9K.js:49
+x @ index-DD7kaI9K.js:49
+start @ index-DD7kaI9K.js:49
+execute @ index-DD7kaI9K.js:49
+await in execute
+mutate @ index-DD7kaI9K.js:49
+(anonymous) @ index-DD7kaI9K.js:49
+Y @ prompt-editor-1gyIzLpv.js:57
+onKeyDown @ prompt-editor-1gyIzLpv.js:57
+_L @ index-DD7kaI9K.js:38
+EL @ index-DD7kaI9K.js:38
+CL @ index-DD7kaI9K.js:38
+Tx @ index-DD7kaI9K.js:38
+xk @ index-DD7kaI9K.js:38
+(anonymous) @ index-DD7kaI9K.js:38
+Zy @ index-DD7kaI9K.js:41
+$1 @ index-DD7kaI9K.js:38
+tp @ index-DD7kaI9K.js:38
+Ty @ index-DD7kaI9K.js:38
+zL @ index-DD7kaI9K.js:38
+home-C5NxXZcT.js:29 Saving search state: {query: 'shakeshack', resultsCount: undefined, listId: null, companies: undefined}

@@ -346,6 +346,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const user = await safeJsonParse(createRes);
         queryClient.setQueryData(["/api/firebase/user"], user);
+        
+        // Invalidate all queries to refetch with new authentication token
+        await queryClient.invalidateQueries();
+        console.log('Query cache invalidated after successful authentication');
       } catch (parseError) {
         console.error('Error parsing user data from sync response:', parseError);
         throw new Error('Failed to parse user data from backend response');
