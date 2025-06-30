@@ -390,6 +390,11 @@ export class CleanReplitStorage implements CleanIStorage {
     await this.set(`template:${id}`, updated);
     return updated;
   }
+
+  // Stub method for compatibility - no longer needed with clean Replit DB only approach
+  async initializeDefaultSearchApproaches(): Promise<void> {
+    console.log('Search approaches initialization skipped - using simplified Replit DB storage');
+  }
 }
 
 export const cleanStorage = new CleanReplitStorage();
