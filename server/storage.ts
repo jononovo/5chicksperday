@@ -13,8 +13,8 @@ import {
   type StrategicProfile, type InsertStrategicProfile,
   type OnboardingChat, type InsertOnboardingChat
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, and, or, sql, desc } from "drizzle-orm";
+// Note: This file contains interface definitions only. 
+// PostgreSQL imports removed - using Replit DB implementation.
 
 export interface IStorage {
   // User Auth

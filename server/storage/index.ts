@@ -1,13 +1,11 @@
 import { type Company, type InsertCompany } from "@shared/schema";
 import { type Contact, type InsertContact } from "@shared/schema";
-import { type SearchApproach, type InsertSearchApproach } from "@shared/schema";
 import { type List, type InsertList } from "@shared/schema";
 import { type Campaign, type InsertCampaign } from "@shared/schema";
 import { type CampaignList, type InsertCampaignList } from "@shared/schema";
 import { type EmailTemplate, type InsertEmailTemplate } from "@shared/schema";
 import { type ContactFeedback, type InsertContactFeedback } from "@shared/schema";
 import { type User, type InsertUser } from "@shared/schema";
-import { type SearchTestResult, type InsertSearchTestResult } from "@shared/schema";
 
 // Base storage interface that defines all storage operations
 export interface IStorage {

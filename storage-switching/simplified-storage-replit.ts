@@ -136,48 +136,7 @@ export class ReplitStorage implements IStorage {
     return updatedUser;
   }
 
-  // Gmail Token Management
-  // @ts-ignore
-  async setUserGmailTokens(userId: number, accessToken: string, refreshToken?: string): Promise<void> {
-    const user = await this.getUser(userId);
-    if (!user) throw new Error(`User ${userId} not found`);
-    
-    const updatedUser = {
-      ...user,
-      gmailAccessToken: accessToken,
-      gmailRefreshToken: refreshToken,
-      gmailTokenExpiry: new Date(Date.now() + 3600000).toISOString() // 1 hour expiry
-    };
-    
-    await this.set(`user:${userId}`, updatedUser);
-  }
 
-  // @ts-ignore
-  async getUserGmailTokens(userId: number): Promise<{accessToken?: string, refreshToken?: string} | undefined> {
-    const user = await this.getUser(userId);
-    if (!user) return undefined;
-    
-    // @ts-ignore: Type issues with extended user fields
-    return {
-      accessToken: user.gmailAccessToken,
-      refreshToken: user.gmailRefreshToken
-    };
-  }
-
-  // @ts-ignore
-  async clearUserGmailTokens(userId: number): Promise<void> {
-    const user = await this.getUser(userId);
-    if (!user) return;
-    
-    const updatedUser = {
-      ...user,
-      gmailAccessToken: undefined,
-      gmailRefreshToken: undefined,
-      gmailTokenExpiry: undefined
-    };
-    
-    await this.set(`user:${userId}`, updatedUser);
-  }
 
   // User Preferences
   // @ts-ignore
