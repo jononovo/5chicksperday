@@ -65,7 +65,10 @@ async function verifyUser(req: Request): Promise<SelectUser | null> {
     console.log('Raw user from getUserByEmail:', JSON.stringify(user, null, 2));
     console.log('User properties:', Object.keys(user || {}));
     
-    if (!user) {
+    // Check if user exists (handle Replit DB error format)
+    const userExists = user && typeof user === 'object' && !('ok' in user);
+    
+    if (!userExists) {
       console.log('Creating new user for email:', email);
       user = await (storage as any).createUser({
         email: email,
