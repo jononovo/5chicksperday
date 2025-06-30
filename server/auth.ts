@@ -390,13 +390,26 @@ export function setupAuth(app: Express) {
   });
 
   // Add new route to check Gmail authorization status
-  app.get("/api/gmail/auth-status", requireAuth, (req, res) => {
-    const hasGmailToken = !!req.session.gmailToken;
-    console.log('Checking Gmail auth status:', {
-      hasToken: hasGmailToken,
-      sessionID: req.sessionID,
-      timestamp: new Date().toISOString()
-    });
-    res.json({ authorized: hasGmailToken });
+  app.get("/api/gmail/auth-status", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      if (!userId) {
+        return res.status(401).json({ authorized: false });
+      }
+
+      const tokens = await storage.getUserGmailTokens(userId);
+      const hasGmailToken = !!tokens?.accessToken;
+      
+      console.log('Checking Gmail auth status:', {
+        userId,
+        hasToken: hasGmailToken,
+        timestamp: new Date().toISOString()
+      });
+      
+      res.json({ authorized: hasGmailToken });
+    } catch (error) {
+      console.error('Error checking Gmail auth status:', error);
+      res.status(500).json({ authorized: false });
+    }
   });
 }
