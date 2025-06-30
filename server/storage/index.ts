@@ -16,6 +16,11 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+  
+  // Gmail Token methods
+  setUserGmailTokens(userId: number, accessToken: string, refreshToken?: string): Promise<void>;
+  getUserGmailTokens(userId: number): Promise<{accessToken?: string, refreshToken?: string} | undefined>;
+  clearUserGmailTokens(userId: number): Promise<void>;
 
   // Lists
   getList(listId: number, userId: number): Promise<List | undefined>;

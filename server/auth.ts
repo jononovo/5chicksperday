@@ -332,23 +332,14 @@ export function setupAuth(app: Express) {
   // Add to the Google auth route
   app.post("/api/google-auth", async (req, res, next) => {
     try {
-      const { email, username, accessToken } = req.body;
+      const { email, username, accessToken, refreshToken } = req.body;
 
       console.log('Google auth endpoint received request:', { 
         hasEmail: !!email, 
         hasUsername: !!username,
-        hasAccessToken: !!accessToken 
+        hasAccessToken: !!accessToken,
+        hasRefreshToken: !!refreshToken
       });
-
-      // Store Gmail token in session if provided
-      if (accessToken) {
-        req.session.gmailToken = accessToken;
-        console.log('Stored Gmail token in session:', {
-          hasToken: !!accessToken,
-          sessionID: req.sessionID,
-          timestamp: new Date().toISOString()
-        });
-      }
 
       if (!email) {
         return res.status(400).json({ error: "Email is required" });
@@ -369,6 +360,22 @@ export function setupAuth(app: Express) {
         } catch (createError) {
           console.error('Failed to create user:', createError);
           return res.status(500).json({ error: "Failed to create user account" });
+        }
+      }
+
+      // Store Gmail tokens in database if provided
+      if (accessToken) {
+        try {
+          await storage.setUserGmailTokens(user.id, accessToken, refreshToken);
+          console.log('Stored Gmail tokens in database:', {
+            userId: user.id,
+            hasAccessToken: !!accessToken,
+            hasRefreshToken: !!refreshToken,
+            timestamp: new Date().toISOString()
+          });
+        } catch (tokenError) {
+          console.error('Failed to store Gmail tokens:', tokenError);
+          // Continue with login even if token storage fails
         }
       }
 

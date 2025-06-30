@@ -295,13 +295,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Function to get Firebase ID token and sync with backend
   const syncWithBackend = async (firebaseUser: FirebaseUser) => {
     try {
-      // Get the access token for Gmail API
+      // Get the access token and refresh token for Gmail API
       const credential = firebaseUser.providerData[0];
       const accessToken = (credential as any)?.accessToken;
+      const refreshToken = (credential as any)?.refreshToken;
 
       console.log('Making backend sync request', {
         endpoint: '/api/google-auth',
         hasAccessToken: !!accessToken,
+        hasRefreshToken: !!refreshToken,
         domain: window.location.hostname
       });
 
@@ -317,7 +319,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           email: firebaseUser.email,
           username: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
-          accessToken // Add the access token to the request
+          accessToken, // Add the access token to the request
+          refreshToken // Add the refresh token to the request
         })
       });
 
