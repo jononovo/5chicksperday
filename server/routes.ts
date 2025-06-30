@@ -3456,58 +3456,100 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   app.post("/api/send-gmail", requireAuth, async (req, res) => {
     try {
       const { to, subject, content } = req.body;
+      console.log('=== Gmail Send Request Started ===');
+      console.log('Request data:', { to, hasSubject: !!subject, hasContent: !!content });
 
       if (!to || !subject || !content) {
-        res.status(400).json({ message: "Missing required email fields" });
-        return;
+        console.log('Missing required fields:', { to: !!to, subject: !!subject, content: !!content });
+        return res.status(400).json({ message: "Missing required email fields" });
       }
 
       // Get Gmail token from user record
       const userId = (req as any).user.id;
+      console.log('Getting Gmail tokens for user:', userId);
+      
       const gmailTokens = await (storage as any).getUserGmailTokens(userId);
+      console.log('Gmail tokens retrieved:', {
+        hasAccessToken: !!gmailTokens?.accessToken,
+        hasRefreshToken: !!gmailTokens?.refreshToken,
+        accessTokenLength: gmailTokens?.accessToken?.length || 0
+      });
+
       if (!gmailTokens?.accessToken) {
-        res.status(401).json({ message: "Gmail authorization required" });
-        return;
+        console.log('No Gmail access token found for user:', userId);
+        return res.status(401).json({ message: "Gmail authorization required" });
       }
 
       // Create Gmail API client
+      console.log('Creating Gmail API client...');
       const oauth2Client = new google.auth.OAuth2();
       oauth2Client.setCredentials({ access_token: gmailTokens.accessToken });
 
       const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
-      // Create email content
-      const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
+      // Create email content with proper formatting
+      console.log('Building email message...');
+      const senderEmail = (req as any).user.email;
+      
+      // Create proper RFC 2822 email format
       const messageParts = [
-        'From: ' + req.user!.email,
-        'To: ' + to,
-        'Content-Type: text/html; charset=utf-8',
+        `From: ${senderEmail}`,
+        `To: ${to}`,
+        `Subject: ${subject}`,
         'MIME-Version: 1.0',
-        `Subject: ${utf8Subject}`,
+        'Content-Type: text/html; charset=utf-8',
         '',
         content,
       ];
       const message = messageParts.join('\n');
+      console.log('Email message created, length:', message.length);
 
-      // The body needs to be base64url encoded
+      // Base64url encode the message
       const encodedMessage = Buffer.from(message)
         .toString('base64')
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=+$/, '');
 
-      await gmail.users.messages.send({
+      console.log('Sending email via Gmail API...');
+      const sendResult = await gmail.users.messages.send({
         userId: 'me',
         requestBody: {
           raw: encodedMessage,
         },
       });
 
-      res.json({ success: true });
+      console.log('=== Gmail Send Success ===');
+      console.log('Message ID:', sendResult.data.id);
+      
+      res.json({ 
+        success: true, 
+        messageId: sendResult.data.id,
+        to,
+        subject 
+      });
+
     } catch (error) {
-      console.error('Gmail send error:', error);
+      console.error('=== Gmail Send Error ===');
+      console.error('Error details:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = "Failed to send email";
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid Credentials')) {
+          errorMessage = "Gmail authentication expired. Please reconnect your Gmail account.";
+        } else if (error.message.includes('insufficient permissions')) {
+          errorMessage = "Insufficient Gmail permissions. Please grant email sending permissions.";
+        } else if (error.message.includes('quota')) {
+          errorMessage = "Gmail API quota exceeded. Please try again later.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       res.status(500).json({
-        message: error instanceof Error ? error.message : "Failed to send email"
+        message: errorMessage,
+        error: error instanceof Error ? error.name : 'Unknown error'
       });
     }
   });
