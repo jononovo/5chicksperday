@@ -61,17 +61,23 @@ global.searchSessions = global.searchSessions || new Map();
 
 
 
-// Helper function to safely get user ID from request
-function getUserId(req: express.Request): number {
+// Helper function to safely check if user is authenticated
+async function isAuthenticated(req: express.Request): Promise<boolean> {
   try {
-    // First check if user is authenticated through session
-    if (req.isAuthenticated && req.isAuthenticated() && req.user && (req.user as any).id) {
-      return (req.user as any).id;
-    }
-    
-    // Then check for Firebase authentication - this should now be properly set after the middleware fix
-    if ((req as any).firebaseUser && (req as any).firebaseUser.id) {
-      return (req as any).firebaseUser.id;
+    const user = await verifyUser(req);
+    return !!user;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Helper function to safely get user ID from request
+async function getUserId(req: express.Request): Promise<number> {
+  try {
+    // Use simplified authentication approach
+    const user = await verifyUser(req);
+    if (user && user.id) {
+      return user.id;
     }
   } catch (error) {
     console.error('Error accessing user ID:', error);
@@ -217,16 +223,22 @@ export function registerRoutes(app: Express) {
   // Core Authentication Routes
   
   // User status endpoint - returns current user if authenticated
-  app.get("/api/user", optionalAuth, (req, res) => {
-    if (req.user) {
-      res.json({ 
-        user: {
-          id: req.user.id,
-          email: req.user.email,
-          username: req.user.username
-        }
-      });
-    } else {
+  app.get("/api/user", async (req, res) => {
+    try {
+      const user = await verifyUser(req);
+      if (user) {
+        res.json({ 
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username
+          }
+        });
+      } else {
+        res.status(401).json({ error: "Not authenticated" });
+      }
+    } catch (error) {
+      console.error('Error verifying user:', error);
       res.status(401).json({ error: "Not authenticated" });
     }
   });

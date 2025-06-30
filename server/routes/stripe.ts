@@ -25,10 +25,14 @@ function getStripe(): Stripe {
   return stripe;
 }
 
-function requireAuth(req: Request, res: Response, next: express.NextFunction) {
-  if (!req.isAuthenticated() || !req.user) {
+async function requireAuth(req: Request, res: Response, next: express.NextFunction) {
+  const { verifyUser } = await import('../auth');
+  const user = await verifyUser(req);
+  if (!user) {
     return res.status(401).json({ message: "Authentication required" });
   }
+  // Set user on request for compatibility
+  (req as any).user = user;
   next();
 }
 

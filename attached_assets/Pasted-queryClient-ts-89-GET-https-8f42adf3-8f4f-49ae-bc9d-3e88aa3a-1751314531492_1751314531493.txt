@@ -1,0 +1,931 @@
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/user 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+cleanUp @ firebase_auth.js?v=1756a228:6886
+unregisterAndCleanUp @ firebase_auth.js?v=1756a228:6788
+resolve @ firebase_auth.js?v=1756a228:6776
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+cleanUp @ firebase_auth.js?v=1756a228:6886
+unregisterAndCleanUp @ firebase_auth.js?v=1756a228:6788
+resolve @ firebase_auth.js?v=1756a228:6776
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/stripe/subscription-status 500 (Internal Server Error)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+setQueryData @ @tanstack_react-query.js?v=1756a228:1661
+syncWithBackend @ use-auth.tsx:344
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+queryClient.ts:101 Query error for /api/stripe/subscription-status: Error: 500: {"error":"req.isAuthenticated is not a function","status":500,"timestamp":"2025-06-30T20:14:56.473Z"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+setQueryData @ @tanstack_react-query.js?v=1756a228:1661
+syncWithBackend @ use-auth.tsx:344
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/notifications/status 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+setQueryData @ @tanstack_react-query.js?v=1756a228:1661
+syncWithBackend @ use-auth.tsx:344
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+queryClient.ts:101 Query error for /api/notifications/status: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+setQueryData @ @tanstack_react-query.js?v=1756a228:1661
+syncWithBackend @ use-auth.tsx:344
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/credits 500 (Internal Server Error)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+setQueryData @ @tanstack_react-query.js?v=1756a228:1661
+syncWithBackend @ use-auth.tsx:344
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+queryClient.ts:101 Query error for /api/credits: Error: 500: {"message":"Failed to fetch credit information","error":"req.isAuthenticated is not a function"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+setQueryData @ @tanstack_react-query.js?v=1756a228:1661
+syncWithBackend @ use-auth.tsx:344
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/email-templates 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/email-templates: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/lists 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/lists: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/search-approaches 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/search-approaches: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/lists 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/lists: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+home.tsx:136 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/notifications/status 401 (Unauthorized)
+checkEmailTooltipStatus @ home.tsx:136
+(anonymous) @ home.tsx:154
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+home.tsx:162 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/notifications/status 401 (Unauthorized)
+checkStartSellingTooltipStatus @ home.tsx:162
+(anonymous) @ home.tsx:180
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:55 
+            
+            
+           POST https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/notifications/trigger 401 (Unauthorized)
+apiRequest @ queryClient.ts:55
+triggerNotification @ use-notifications.tsx:43
+handleRegistrationSuccess @ home.tsx:493
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/lists 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+(anonymous) @ @tanstack_react-query.js?v=1756a228:1726
+(anonymous) @ @tanstack_react-query.js?v=1756a228:1725
+batch @ @tanstack_react-query.js?v=1756a228:583
+refetchQueries @ @tanstack_react-query.js?v=1756a228:1724
+(anonymous) @ @tanstack_react-query.js?v=1756a228:1716
+batch @ @tanstack_react-query.js?v=1756a228:583
+invalidateQueries @ @tanstack_react-query.js?v=1756a228:1705
+handleRegistrationSuccess @ home.tsx:480
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:65 API Request Error: POST /api/notifications/trigger {error: '401: {"error":"Not authenticated"}', timestamp: '2025-06-30T20:15:01.185Z'}
+apiRequest @ queryClient.ts:65
+await in apiRequest
+triggerNotification @ use-notifications.tsx:43
+handleRegistrationSuccess @ home.tsx:493
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+use-notifications.tsx:63 Failed to trigger notification: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:62:5)
+    at async triggerNotification (use-notifications.tsx:43:24)
+    at async handleRegistrationSuccess (home.tsx:493:9)
+triggerNotification @ use-notifications.tsx:63
+await in triggerNotification
+handleRegistrationSuccess @ home.tsx:493
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/lists: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+(anonymous) @ @tanstack_react-query.js?v=1756a228:1726
+(anonymous) @ @tanstack_react-query.js?v=1756a228:1725
+batch @ @tanstack_react-query.js?v=1756a228:583
+refetchQueries @ @tanstack_react-query.js?v=1756a228:1724
+(anonymous) @ @tanstack_react-query.js?v=1756a228:1716
+batch @ @tanstack_react-query.js?v=1756a228:583
+invalidateQueries @ @tanstack_react-query.js?v=1756a228:1705
+handleRegistrationSuccess @ home.tsx:480
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+prompt-editor.tsx:100 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/notifications/status 401 (Unauthorized)
+checkSearchTooltipStatus @ prompt-editor.tsx:100
+(anonymous) @ prompt-editor.tsx:118
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/lists 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+queryClient.ts:101 Query error for /api/lists: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/email-templates 401 (Unauthorized)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+queryClient.ts:101 Query error for /api/email-templates: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
