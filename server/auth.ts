@@ -61,10 +61,6 @@ async function verifyUser(req: Request): Promise<SelectUser | null> {
     // Get or create user in database based on email from verified frontend
     let user = await (storage as any).getUserByEmail(email);
     
-    console.log('=== USER DEBUG ===');
-    console.log('Raw user from getUserByEmail:', JSON.stringify(user, null, 2));
-    console.log('User properties:', Object.keys(user || {}));
-    
     // Check if user exists (handle Replit DB error format)
     const userExists = user && typeof user === 'object' && !('ok' in user);
     
@@ -75,12 +71,10 @@ async function verifyUser(req: Request): Promise<SelectUser | null> {
         password: '', // Not used for Firebase auth
         username: username || email.split('@')[0]
       });
-      console.log('New user created:', JSON.stringify(user, null, 2));
+      console.log('New user created with ID:', user.id);
     } else {
-      console.log('Existing user found:', JSON.stringify(user, null, 2));
+      console.log('Existing user found with ID:', user.id);
     }
-    
-    console.log('=== USER DEBUG END ===');
     return user;
   } catch (error) {
     console.error('User verification/creation failed:', error);
