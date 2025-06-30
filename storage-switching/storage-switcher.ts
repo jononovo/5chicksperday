@@ -1,11 +1,10 @@
 /**
- * Storage implementation - Replit Database only
+ * Storage implementation - Clean Replit Database only
  */
-import { storage as replitStorage } from './simplified-storage-replit';
-import { IStorage } from '../server/storage/index';
+import { cleanStorage } from './replit-storage-clean';
 
-// Export Replit storage implementation
-export const storage: IStorage = replitStorage;
+// Export clean Replit storage implementation
+export const storage = cleanStorage;
 
 // Log storage type
-console.log('Using Replit Database for storage');
+console.log('Using Clean Replit Database for storage');
