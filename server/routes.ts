@@ -139,36 +139,8 @@ function calculateImprovement(results: any[]): string | null {
 }
 
 // Authentication middleware
-function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
-  console.log('Auth check:', {
-    isAuthenticated: req.isAuthenticated(),
-    hasUser: !!req.user,
-    hasFirebaseUser: !!(req as any).firebaseUser,
-    path: req.path,
-    method: req.method,
-    timestamp: new Date().toISOString()
-  });
-  
-  // In a production environment, we would require authentication
-  // For now, we'll still allow access but flag it for easier development
-  
-  // If we have either a session user or Firebase user, set proper user context
-  if (req.isAuthenticated() && req.user) {
-    // Already authenticated via session
-    next();
-    return;
-  }
-  
-  // Firebase token verification would have happened in middleware
-  if ((req as any).firebaseUser) {
-    // User authenticated via Firebase token
-    next();
-    return;
-  }
-  
-  // For development only - we'll still allow the request
-  next();
-}
+// Import the new requireAuth from auth module
+import { requireAuth, optionalAuth, verifyFirebaseToken } from "./auth";
 
 // Generate static sitemap XML
 function generateSitemap(req: express.Request, res: express.Response) {
@@ -241,6 +213,57 @@ function generateSitemap(req: express.Request, res: express.Response) {
 }
 
 export function registerRoutes(app: Express) {
+  
+  // Core Authentication Routes
+  
+  // User status endpoint - returns current user if authenticated
+  app.get("/api/user", optionalAuth, (req, res) => {
+    if (req.user) {
+      res.json({ 
+        user: {
+          id: req.user.id,
+          email: req.user.email,
+          username: req.user.username
+        }
+      });
+    } else {
+      res.status(401).json({ error: "Not authenticated" });
+    }
+  });
+
+  // Google authentication endpoint - handles Firebase token and stores Gmail tokens
+  app.post("/api/google-auth", async (req, res) => {
+    try {
+      const user = await verifyFirebaseToken(req);
+      
+      if (!user) {
+        return res.status(401).json({ error: "Invalid Firebase token" });
+      }
+
+      // Store Gmail tokens if provided in the request body
+      const { gmailTokens } = req.body;
+      if (gmailTokens) {
+        console.log('Storing Gmail tokens for user:', user.id);
+        await (storage as any).storeUserGmailTokens(user.id, gmailTokens);
+      }
+
+      res.json({ 
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username
+        }
+      });
+    } catch (error) {
+      console.error('Google auth error:', error);
+      res.status(500).json({ 
+        error: "Authentication failed",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Session status endpoint for polling
   app.get("/api/search-sessions/:sessionId/status", (req, res) => {
     try {

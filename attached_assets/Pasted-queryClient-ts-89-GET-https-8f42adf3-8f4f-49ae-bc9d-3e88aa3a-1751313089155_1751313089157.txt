@@ -1,0 +1,417 @@
+queryClient.ts:89 
+            
+            
+           GET https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/user 500 (Internal Server Error)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/user: Error: 500: {"error":"Invalid user object for serialization","status":500,"timestamp":"2025-06-30T19:51:03.689Z"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+use-auth.tsx:311 
+            
+            
+           POST https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/google-auth 500 (Internal Server Error)
+syncWithBackend @ use-auth.tsx:311
+await in syncWithBackend
+(anonymous) @ use-auth.tsx:374
+(anonymous) @ firebase_auth.js?v=1756a228:2697
+Promise.then
+registerStateListener @ firebase_auth.js?v=1756a228:2693
+onAuthStateChanged @ firebase_auth.js?v=1756a228:2553
+(anonymous) @ use-auth.tsx:369
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+use-auth.tsx:332 Backend sync error response: {status: 500, statusText: 'Internal Server Error', responseText: '{"error":"Invalid user object for serialization","…atus":500,"timestamp":"2025-06-30T19:51:03.788Z"}'}
+syncWithBackend @ use-auth.tsx:332
+await in syncWithBackend
+(anonymous) @ use-auth.tsx:374
+(anonymous) @ firebase_auth.js?v=1756a228:2697
+Promise.then
+registerStateListener @ firebase_auth.js?v=1756a228:2693
+onAuthStateChanged @ firebase_auth.js?v=1756a228:2553
+(anonymous) @ use-auth.tsx:369
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+use-auth.tsx:351 Error syncing with backend: {error: Error: Failed to sync with backend: 500
+    at syncWithBackend (https://8f42adf3-8f4f-49ae-bc9d-3e8…, domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev', environment: 'development'}
+syncWithBackend @ use-auth.tsx:351
+await in syncWithBackend
+(anonymous) @ use-auth.tsx:374
+(anonymous) @ firebase_auth.js?v=1756a228:2697
+Promise.then
+registerStateListener @ firebase_auth.js?v=1756a228:2693
+onAuthStateChanged @ firebase_auth.js?v=1756a228:2553
+(anonymous) @ use-auth.tsx:369
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+use-auth.tsx:376 Error during auth state sync: Error: Failed to sync with backend: 500
+    at syncWithBackend (use-auth.tsx:337:15)
+    at async use-auth.tsx:374:11
+(anonymous) @ use-auth.tsx:376
+await in (anonymous)
+(anonymous) @ firebase_auth.js?v=1756a228:2697
+Promise.then
+registerStateListener @ firebase_auth.js?v=1756a228:2693
+onAuthStateChanged @ firebase_auth.js?v=1756a228:2553
+(anonymous) @ use-auth.tsx:369
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+cleanUp @ firebase_auth.js?v=1756a228:6886
+unregisterAndCleanUp @ firebase_auth.js?v=1756a228:6788
+resolve @ firebase_auth.js?v=1756a228:6776
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+cleanUp @ firebase_auth.js?v=1756a228:6886
+unregisterAndCleanUp @ firebase_auth.js?v=1756a228:6788
+resolve @ firebase_auth.js?v=1756a228:6776
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+use-auth.tsx:311 
+            
+            
+           POST https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/google-auth 500 (Internal Server Error)
+syncWithBackend @ use-auth.tsx:311
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+use-auth.tsx:332 Backend sync error response: {status: 500, statusText: 'Internal Server Error', responseText: '{"error":"Invalid user object for serialization","…atus":500,"timestamp":"2025-06-30T19:51:15.384Z"}'}
+syncWithBackend @ use-auth.tsx:332
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+use-auth.tsx:351 Error syncing with backend: {error: Error: Failed to sync with backend: 500
+    at syncWithBackend (https://8f42adf3-8f4f-49ae-bc9d-3e8…, domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev', environment: 'development'}
+syncWithBackend @ use-auth.tsx:351
+await in syncWithBackend
+signInWithGoogle @ use-auth.tsx:245
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+use-auth.tsx:248 Google sign-in error: {error: 'Failed to sync with backend: 500', code: undefined, domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev', environment: 'development'}
+signInWithGoogle @ use-auth.tsx:248
+await in signInWithGoogle
+handleGoogleSignIn @ registration-modal.tsx:53
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+registration-modal.tsx:57 Google sign-in failed: Error: Failed to sync with backend: 500
+    at syncWithBackend (use-auth.tsx:337:15)
+    at async signInWithGoogle (use-auth.tsx:245:7)
+    at async handleGoogleSignIn (registration-modal.tsx:53:7)
+handleGoogleSignIn @ registration-modal.tsx:57
+await in handleGoogleSignIn
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+use-auth.tsx:311 
+            
+            
+           POST https://8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev/api/google-auth 500 (Internal Server Error)
+syncWithBackend @ use-auth.tsx:311
+await in syncWithBackend
+(anonymous) @ use-auth.tsx:374
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:535
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:627
+Promise.then
+sendOne @ chunk-KSKBEU2Q.js?v=1756a228:624
+forEachObserver @ chunk-KSKBEU2Q.js?v=1756a228:617
+next @ chunk-KSKBEU2Q.js?v=1756a228:534
+notifyAuthListeners @ firebase_auth.js?v=1756a228:2676
+(anonymous) @ firebase_auth.js?v=1756a228:2488
+Promise.then
+queue @ firebase_auth.js?v=1756a228:2733
+_updateCurrentUser @ firebase_auth.js?v=1756a228:2486
+await in _updateCurrentUser
+_signInWithCredential @ firebase_auth.js?v=1756a228:4569
+await in _signInWithCredential
+_signIn @ firebase_auth.js?v=1756a228:6686
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+sendToConsumer @ firebase_auth.js?v=1756a228:7119
+(anonymous) @ firebase_auth.js?v=1756a228:7099
+onEvent @ firebase_auth.js?v=1756a228:7096
+(anonymous) @ firebase_auth.js?v=1756a228:7526
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+use-auth.tsx:332 Backend sync error response: {status: 500, statusText: 'Internal Server Error', responseText: '{"error":"Invalid user object for serialization","…atus":500,"timestamp":"2025-06-30T19:51:15.495Z"}'}
+syncWithBackend @ use-auth.tsx:332
+await in syncWithBackend
+(anonymous) @ use-auth.tsx:374
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:535
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:627
+Promise.then
+sendOne @ chunk-KSKBEU2Q.js?v=1756a228:624
+forEachObserver @ chunk-KSKBEU2Q.js?v=1756a228:617
+next @ chunk-KSKBEU2Q.js?v=1756a228:534
+notifyAuthListeners @ firebase_auth.js?v=1756a228:2676
+(anonymous) @ firebase_auth.js?v=1756a228:2488
+Promise.then
+queue @ firebase_auth.js?v=1756a228:2733
+_updateCurrentUser @ firebase_auth.js?v=1756a228:2486
+await in _updateCurrentUser
+_signInWithCredential @ firebase_auth.js?v=1756a228:4569
+await in _signInWithCredential
+_signIn @ firebase_auth.js?v=1756a228:6686
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+sendToConsumer @ firebase_auth.js?v=1756a228:7119
+(anonymous) @ firebase_auth.js?v=1756a228:7099
+onEvent @ firebase_auth.js?v=1756a228:7096
+(anonymous) @ firebase_auth.js?v=1756a228:7526
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+use-auth.tsx:351 Error syncing with backend: {error: Error: Failed to sync with backend: 500
+    at syncWithBackend (https://8f42adf3-8f4f-49ae-bc9d-3e8…, domain: '8f42adf3-8f4f-49ae-bc9d-3e88aa3a6761-00-36354h91hba2b.worf.replit.dev', environment: 'development'}
+syncWithBackend @ use-auth.tsx:351
+await in syncWithBackend
+(anonymous) @ use-auth.tsx:374
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:535
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:627
+Promise.then
+sendOne @ chunk-KSKBEU2Q.js?v=1756a228:624
+forEachObserver @ chunk-KSKBEU2Q.js?v=1756a228:617
+next @ chunk-KSKBEU2Q.js?v=1756a228:534
+notifyAuthListeners @ firebase_auth.js?v=1756a228:2676
+(anonymous) @ firebase_auth.js?v=1756a228:2488
+Promise.then
+queue @ firebase_auth.js?v=1756a228:2733
+_updateCurrentUser @ firebase_auth.js?v=1756a228:2486
+await in _updateCurrentUser
+_signInWithCredential @ firebase_auth.js?v=1756a228:4569
+await in _signInWithCredential
+_signIn @ firebase_auth.js?v=1756a228:6686
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+sendToConsumer @ firebase_auth.js?v=1756a228:7119
+(anonymous) @ firebase_auth.js?v=1756a228:7099
+onEvent @ firebase_auth.js?v=1756a228:7096
+(anonymous) @ firebase_auth.js?v=1756a228:7526
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+use-auth.tsx:376 Error during auth state sync: Error: Failed to sync with backend: 500
+    at syncWithBackend (use-auth.tsx:337:15)
+    at async Object.next (use-auth.tsx:374:11)
+(anonymous) @ use-auth.tsx:376
+await in (anonymous)
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:535
+(anonymous) @ chunk-KSKBEU2Q.js?v=1756a228:627
+Promise.then
+sendOne @ chunk-KSKBEU2Q.js?v=1756a228:624
+forEachObserver @ chunk-KSKBEU2Q.js?v=1756a228:617
+next @ chunk-KSKBEU2Q.js?v=1756a228:534
+notifyAuthListeners @ firebase_auth.js?v=1756a228:2676
+(anonymous) @ firebase_auth.js?v=1756a228:2488
+Promise.then
+queue @ firebase_auth.js?v=1756a228:2733
+_updateCurrentUser @ firebase_auth.js?v=1756a228:2486
+await in _updateCurrentUser
+_signInWithCredential @ firebase_auth.js?v=1756a228:4569
+await in _signInWithCredential
+_signIn @ firebase_auth.js?v=1756a228:6686
+onAuthEvent @ firebase_auth.js?v=1756a228:6746
+sendToConsumer @ firebase_auth.js?v=1756a228:7119
+(anonymous) @ firebase_auth.js?v=1756a228:7099
+onEvent @ firebase_auth.js?v=1756a228:7096
+(anonymous) @ firebase_auth.js?v=1756a228:7526
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
