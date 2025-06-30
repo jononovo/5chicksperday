@@ -42,8 +42,15 @@ export async function apiRequest(
       timestamp: new Date().toISOString()
     });
     
-    // Get Firebase token from localStorage if available
-    const authToken = localStorage.getItem('authToken');
+    // Get Firebase token if user is authenticated
+    let authToken = null;
+    if (firebaseAuth?.currentUser) {
+      try {
+        authToken = await firebaseAuth.currentUser.getIdToken();
+      } catch (error) {
+        console.error('Error getting Firebase token:', error);
+      }
+    }
     
     // Prepare headers
     const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
@@ -78,8 +85,15 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     try {
-      // Get Firebase token from localStorage if available
-      const authToken = localStorage.getItem('authToken');
+      // Get Firebase token if user is authenticated
+      let authToken = null;
+      if (firebaseAuth?.currentUser) {
+        try {
+          authToken = await firebaseAuth.currentUser.getIdToken();
+        } catch (error) {
+          console.error('Error getting Firebase token for query:', error);
+        }
+      }
       
       // Set up headers with auth token if available
       const headers: HeadersInit = {};
