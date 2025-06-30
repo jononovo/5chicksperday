@@ -18,17 +18,42 @@ declare global {
 async function verifyUser(req: Request): Promise<SelectUser | null> {
   console.log('=== SIMPLIFIED AUTH START ===');
   
+  // First check if user is already authenticated and stored in request
+  if ((req as any).user) {
+    console.log('User found from previous authentication:', { id: (req as any).user.id, email: (req as any).user.email });
+    return (req as any).user;
+  }
+  
+  // Check for simple authorization header (email-based)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const email = authHeader.replace('Bearer ', '');
+    console.log('Email found in authorization header:', email);
+    try {
+      const user = await (storage as any).getUserByEmail(email);
+      if (user) {
+        console.log('User authenticated via header:', { id: user.id, email: user.email });
+        // Store in request for future calls in this request chain
+        (req as any).user = user;
+        return user;
+      }
+    } catch (error) {
+      console.error('Header authentication failed:', error);
+    }
+  }
+  
   // Check for user data in request body (sent from frontend after Firebase verification)
-  const { email, username } = req.body;
+  const { email, username } = req.body || {};
   
   console.log('Auth request data:', {
     hasEmail: !!email,
     hasUsername: !!username,
+    hasAuthHeader: !!authHeader,
     timestamp: new Date().toISOString()
   });
 
   if (!email) {
-    console.log('No email provided in request');
+    console.log('No email provided in request body or header');
     return null;
   }
 

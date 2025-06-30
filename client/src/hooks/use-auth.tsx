@@ -342,6 +342,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const user = await safeJsonParse(createRes);
         queryClient.setQueryData(["/api/user"], user);
+        
+        // Store user email in localStorage for subsequent API calls
+        if (firebaseUser.email) {
+          localStorage.setItem('authToken', firebaseUser.email);
+          console.log('Stored user email for authentication:', firebaseUser.email);
+        }
       } catch (parseError) {
         console.error('Error parsing user data from sync response:', parseError);
         throw new Error('Failed to parse user data from backend response');
