@@ -46,6 +46,8 @@ interface FirebaseIStorage {
   getNextListId(): Promise<number>;
   createList(firebaseUID: string, data: Omit<InsertList, 'userId'>): Promise<List>;
   updateCompanyList(companyId: number, listId: number): Promise<void>;
+  updateList(listId: number, data: Partial<List>): Promise<List | null>;
+  listSearchApproaches(): Promise<any[]>;
 
   // Companies
   listCompanies(firebaseUID: string): Promise<Company[]>;
@@ -72,6 +74,11 @@ interface FirebaseIStorage {
   getEmailTemplate(id: number, firebaseUID: string): Promise<EmailTemplate | undefined>;
   createEmailTemplate(firebaseUID: string, data: Omit<InsertEmailTemplate, 'userId'>): Promise<EmailTemplate>;
   updateEmailTemplate(id: number, data: InsertEmailTemplate): Promise<EmailTemplate>;
+
+  // Legacy compatibility methods for authentication
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: number): Promise<User | undefined>;
+  createUser(data: { email: string; password: string; username?: string }): Promise<User>;
 
   // Compatibility method
   initializeDefaultSearchApproaches(): Promise<void>;
@@ -310,6 +317,20 @@ export class FirebaseStorage implements FirebaseIStorage {
     }
   }
 
+  async updateList(listId: number, data: Partial<List>): Promise<List | null> {
+    const existing = await this.get<List>(`list:${listId}`);
+    if (!existing) return null;
+    
+    const updated = { ...existing, ...data };
+    await this.set(`list:${listId}`, updated);
+    return updated;
+  }
+
+  async listSearchApproaches(): Promise<any[]> {
+    // Return empty array for Firebase-first storage - approaches are not used
+    return [];
+  }
+
   // Companies methods
   async listCompanies(firebaseUID: string): Promise<Company[]> {
     const companyIds = await this.get<number[]>(`user_companies:${firebaseUID}`) || [];
@@ -520,6 +541,51 @@ export class FirebaseStorage implements FirebaseIStorage {
     const updated = { ...existing, ...data, updatedAt: new Date() };
     await this.set(`template:${id}`, updated);
     return updated;
+  }
+
+  // Legacy compatibility methods for authentication
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    // Search through all user profiles to find by email
+    const allKeys = await this.list('user:');
+    for (const key of allKeys) {
+      const user = await this.get<User>(key);
+      if (user && user.email === email) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    // Since Firebase uses UID as primary key, we need to search by ID
+    const allKeys = await this.list('user:');
+    for (const key of allKeys) {
+      const user = await this.get<User>(key);
+      if (user && user.id === id) {
+        return user;
+      }
+    }
+    return undefined;
+  }
+
+  async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
+    // This is a legacy method for compatibility - in Firebase-first architecture,
+    // users should be created through createUserProfile with Firebase UID
+    const id = await this.getNextId('user');
+    const user: User = {
+      id,
+      firebaseUID: '', // Empty since this is legacy
+      email: data.email,
+      username: data.username || null,
+      name: data.username || null,
+      avatarUrl: null,
+      createdAt: new Date(),
+      lastLoginAt: null,
+      updatedAt: new Date()
+    };
+
+    await this.set(`legacy_user:${id}`, user);
+    return user;
   }
 
   // Compatibility method
