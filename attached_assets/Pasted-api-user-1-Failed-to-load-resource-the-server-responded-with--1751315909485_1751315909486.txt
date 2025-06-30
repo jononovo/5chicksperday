@@ -1,0 +1,56 @@
+api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+api/lists:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+queryClient.ts:101 Query error for /api/lists: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+api/search-approaches:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+queryClient.ts:101 Query error for /api/search-approaches: Error: 401: {"error":"Not authenticated"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+api/credits:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+queryClient.ts:101 Query error for /api/credits: Error: 500: {"message":"Failed to fetch credit information","error":"req.isAuthenticated is not a function"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+api/notifications/trigger:1 
+            
+            
+           Failed to load resource: the server responded with a status of 409 (Conflict)
+queryClient.ts:65 API Request Error: POST /api/notifications/trigger Object
+apiRequest @ queryClient.ts:65
+use-notifications.tsx:63 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:62:5)
+    at async triggerNotification (use-notifications.tsx:43:24)
+    at async handleRegistrationSuccess (home.tsx:493:9)
+triggerNotification @ use-notifications.tsx:63

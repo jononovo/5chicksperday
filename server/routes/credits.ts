@@ -1,14 +1,20 @@
 import express, { Request, Response } from "express";
 import { CreditService } from "../lib/credits";
 
+async function requireAuth(req: Request, res: Response, next: express.NextFunction) {
+  const { verifyUser } = await import('../auth');
+  const user = await verifyUser(req);
+  if (!user) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+  req.user = user;
+  next();
+}
+
 export function registerCreditRoutes(app: express.Express) {
   // Get user credit balance and status
-  app.get("/api/credits", async (req: Request, res: Response) => {
+  app.get("/api/credits", requireAuth, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        console.log("[Credits Route] Authentication failed");
-        return res.status(401).json({ message: "Authentication required" });
-      }
 
       const userId = (req.user as any).id;
       console.log(`[Credits Route] Processing request for user ${userId}`);
