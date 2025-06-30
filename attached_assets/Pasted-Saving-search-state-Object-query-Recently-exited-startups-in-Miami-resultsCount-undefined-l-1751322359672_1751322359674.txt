@@ -1,0 +1,41 @@
+Saving search state: 
+Object {query: "Recently exited startups in Miami", resultsCount: undefined, listId: null, companies: undefined}
+Analyzing search query...
+Preparing to search for companies, contacts, and emails...
+Initiating company search process...
+Sending request to company discovery API...
+[Session Management] Cleaning up active sessions before starting new search...
+Created search session: search_1751322327976_9ahxk701t for query: Recently exited startups in Miami
+[Session Cleanup] Found 1 active sessions, terminating...
+Created session search_1751322327976_9ahxk701t for query: Recently exited startups in Miami
+Quick search with strategy: 17
+API Request: POST /api/companies/quick-search 
+Object {hasData: true, timestamp: "2025-06-30T22:25:27.977Z"}
+Cleaned up session: search_1751322327976_9ahxk701t
+[Session Cleanup] Completed cleanup of 1 sessions
+Processing company results...
+Found 7 companies matching your search
+Started polling for session search_1751322327976_9ahxk701t completion
+Companies received: 7
+Starting contact discovery process...
+Searching for key decision makers and contacts...
+Sending comprehensive search request to API...
+This process may take a moment while we find the most relevant contacts...
+API Request: POST /api/companies/search 
+Object {hasData: true, timestamp: "2025-06-30T22:25:34.981Z"}
+CompanyTable received companies: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+CompanyTable company details: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Saving search state: 
+Object {query: "Recently exited startups in Miami", resultsCount: 7, listId: null, companies: Array(7)}
+API Request Error: POST /api/companies/search 
+Object {error: "500: {"message":"Cannot read properties of undefined (reading 'alternativeEmails')"}", timestamp: "2025-06-30T22:25:38.049Z"}
+error: "500: {"message":"Cannot read properties of undefined (reading 'alternativeEmails')"}"
+timestamp: "2025-06-30T22:25:38.049Z"
+[[Prototype]]: Object
+
+at t.value (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

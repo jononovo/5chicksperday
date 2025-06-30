@@ -627,15 +627,15 @@ export function registerRoutes(app: Express) {
                 return;
               }
               
-              // Create contact in database
-              const createdContact = await storage.createContact({
+              // Create contact in database using Firebase storage interface
+              const firebaseUID = req.firebaseUser?.uid || 'webhook';
+              const createdContact = await storage.createContact(firebaseUID, {
                 name: contact.name,
                 email: contact.email || null,
                 role: contact.title || null,
                 linkedinUrl: contact.linkedin || null,
                 phoneNumber: contact.phone || null,
                 companyId,
-                userId: userId,
                 probability: contact.probability ? parseFloat(contact.probability) : null,
                 alternativeEmails: contact.alternativeEmails || null,
                 confidence: contact.confidence || null
@@ -1409,10 +1409,11 @@ export function registerRoutes(app: Express) {
             
             console.log(`Found ${contacts.length} contacts using enhanced contact finder`);
 
-            // Create contact records
+            // Create contact records using Firebase storage interface
+            const firebaseUID = req.firebaseUser?.uid || 'guest';
             const createdContacts = await Promise.all(
               contacts.map(contact =>
-                storage.createContact({
+                storage.createContact(firebaseUID, {
                   companyId: existingCompany.id,
                   name: contact.name!,
                   role: contact.role ?? null,
@@ -1427,7 +1428,7 @@ export function registerRoutes(app: Express) {
                   nameConfidenceScore: contact.nameConfidenceScore ?? null,
                   userFeedbackScore: null,
                   feedbackCount: 0,
-                  userId: userId
+                  alternativeEmails: null
                 })
               )
             );
@@ -1480,10 +1481,11 @@ export function registerRoutes(app: Express) {
           
           console.log(`Found ${contacts.length} contacts for ${companyName}`);
 
-          // Create contact records
+          // Create contact records using Firebase storage interface
+          const firebaseUID = req.firebaseUser?.uid || 'guest';
           const createdContacts = await Promise.all(
             contacts.map(contact =>
-              storage.createContact({
+              storage.createContact(firebaseUID, {
                 companyId: createdCompany.id,
                 name: contact.name!,
                 role: contact.role ?? null,
@@ -1498,6 +1500,7 @@ export function registerRoutes(app: Express) {
                 nameConfidenceScore: contact.nameConfidenceScore ?? null,
                 userFeedbackScore: null,
                 feedbackCount: 0,
+                alternativeEmails: null
               })
             )
           );
