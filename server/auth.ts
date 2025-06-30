@@ -336,16 +336,6 @@ export function setupAuth(app: Express) {
         hasAccessToken: !!accessToken 
       });
 
-      // Store Gmail token in user record if provided
-      if (accessToken && user) {
-        await (storage as any).updateUserGmailTokens(user.id, accessToken);
-        console.log('Stored Gmail token in user record:', {
-          userId: user.id,
-          hasToken: !!accessToken,
-          timestamp: new Date().toISOString()
-        });
-      }
-
       if (!email) {
         return res.status(400).json({ error: "Email is required" });
       }
@@ -368,8 +358,24 @@ export function setupAuth(app: Express) {
         }
       }
 
-      req.login(user, (err) => {
+      req.login(user, async (err) => {
         if (err) return next(err);
+        
+        // Store Gmail token in user record if provided (after successful authentication)
+        if (accessToken) {
+          try {
+            await (storage as any).updateUserGmailTokens(user.id, accessToken);
+            console.log('Stored Gmail token in user record:', {
+              userId: user.id,
+              hasToken: !!accessToken,
+              timestamp: new Date().toISOString()
+            });
+          } catch (tokenError) {
+            console.error('Failed to store Gmail token:', tokenError);
+            // Don't fail authentication if token storage fails
+          }
+        }
+        
         res.json(user);
       });
     } catch (err) {
@@ -378,25 +384,5 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Add new route to check Gmail authorization status
-  app.get("/api/gmail/auth-status", requireAuth, async (req, res) => {
-    try {
-      const userId = (req as any).user.id;
-      const gmailTokens = await (storage as any).getUserGmailTokens(userId);
-      const hasGmailToken = !!gmailTokens?.accessToken;
-      
-      console.log('Checking Gmail auth status:', {
-        userId,
-        hasToken: hasGmailToken,
-        hasRefreshToken: !!gmailTokens?.refreshToken,
-        tokenExpiry: gmailTokens?.expiry,
-        timestamp: new Date().toISOString()
-      });
-      
-      res.json({ authorized: hasGmailToken });
-    } catch (error) {
-      console.error('Error checking Gmail auth status:', error);
-      res.status(500).json({ error: 'Failed to check Gmail authorization status' });
-    }
-  });
+
 }

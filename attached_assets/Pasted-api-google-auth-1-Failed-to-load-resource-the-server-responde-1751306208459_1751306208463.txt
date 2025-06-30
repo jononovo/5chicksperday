@@ -1,0 +1,83 @@
+api/google-auth:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+use-auth.tsx:332 Backend sync error response: Object
+syncWithBackend @ use-auth.tsx:332
+use-auth.tsx:351 Error syncing with backend: Object
+syncWithBackend @ use-auth.tsx:351
+use-auth.tsx:376 Error during auth state sync: Error: Failed to sync with backend: 500
+    at syncWithBackend (use-auth.tsx:337:15)
+    at async use-auth.tsx:374:11
+(anonymous) @ use-auth.tsx:376
+api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+queryClient.ts:101 Query error for /api/user: Error: 500: {"error":"Failed to serialize user into session","status":500,"timestamp":"2025-06-30T17:56:04.768Z"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+api/lists:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+queryClient.ts:101 Query error for /api/lists: Error: 500: {"error":"Failed to serialize user into session","status":500,"timestamp":"2025-06-30T17:56:05.374Z"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+api/search-approaches:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+queryClient.ts:101 Query error for /api/search-approaches: Error: 500: {"error":"Failed to serialize user into session","status":500,"timestamp":"2025-06-30T17:56:05.398Z"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+api/google-auth:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+use-auth.tsx:332 Backend sync error response: Object
+syncWithBackend @ use-auth.tsx:332
+use-auth.tsx:351 Error syncing with backend: Object
+syncWithBackend @ use-auth.tsx:351
+use-auth.tsx:376 Error during auth state sync: Error: Failed to sync with backend: 500
+    at syncWithBackend (use-auth.tsx:337:15)
+    at async Object.next (use-auth.tsx:374:11)
+(anonymous) @ use-auth.tsx:376
+api/google-auth:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+use-auth.tsx:332 Backend sync error response: Object
+syncWithBackend @ use-auth.tsx:332
+use-auth.tsx:351 Error syncing with backend: Object
+syncWithBackend @ use-auth.tsx:351
+use-auth.tsx:248 Google sign-in error: Object
+signInWithGoogle @ use-auth.tsx:248
+registration-modal.tsx:57 Google sign-in failed: Error: Failed to sync with backend: 500
+    at syncWithBackend (use-auth.tsx:337:15)
+    at async signInWithGoogle (use-auth.tsx:245:7)
+    at async handleGoogleSignIn (registration-modal.tsx:53:7)
+handleGoogleSignIn @ registration-modal.tsx:57
