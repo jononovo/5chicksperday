@@ -8,8 +8,7 @@ import type {
   User, InsertUser, List, InsertList, Company, InsertCompany,
   Contact, InsertContact, Campaign, InsertCampaign, CampaignList, 
   InsertCampaignList, EmailTemplate, InsertEmailTemplate,
-  SearchApproach, InsertSearchApproach, SearchTestResult, 
-  InsertSearchTestResult, UserPreferences, InsertUserPreferences,
+ UserPreferences, InsertUserPreferences,
   ContactFeedback, InsertContactFeedback
 } from "../shared/schema";
 import { IStorage } from '../server/storage/index';

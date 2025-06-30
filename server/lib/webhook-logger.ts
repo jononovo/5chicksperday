@@ -1,7 +1,5 @@
-import { db } from "../db";
-import { webhookLogs } from "@shared/schema";
+// Note: PostgreSQL webhook logging disabled - using console logging instead
 import type { WebhookLog } from "@shared/schema";
-import { eq, gte, sql } from "drizzle-orm";
 
 /**
  * Logs outgoing webhook requests to N8N workflows

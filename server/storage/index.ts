@@ -42,12 +42,7 @@ export interface IStorage {
   updateContact(id: number, contact: Partial<Contact>): Promise<Contact | undefined>;
   deleteContactsByCompany(companyId: number): Promise<void>;
 
-  // Search Approaches
-  getSearchApproach(id: number): Promise<SearchApproach | undefined>;
-  listSearchApproaches(): Promise<SearchApproach[]>;
-  createSearchApproach(approach: InsertSearchApproach): Promise<SearchApproach>;
-  updateSearchApproach(id: number, approach: Partial<SearchApproach>): Promise<SearchApproach | undefined>;
-  initializeDefaultSearchApproaches(): Promise<void>;
+  // Note: Search Approaches removed - not implemented in Replit DB storage
 
   // Campaigns
   getCampaign(campaignId: number, userId: number): Promise<Campaign | undefined>;
@@ -79,13 +74,7 @@ export interface IStorage {
   updateContactConfidenceScore(id: number, score: number): Promise<Contact | undefined>;
   updateContactValidationStatus(id: number): Promise<Contact | undefined>;
   
-  // Search Test Results
-  getSearchTestResult(id: number): Promise<SearchTestResult | undefined>;
-  listSearchTestResults(userId: number): Promise<SearchTestResult[]>;
-  getTestResultsByStrategy(strategyId: number, userId: number): Promise<SearchTestResult[]>;
-  createSearchTestResult(result: InsertSearchTestResult): Promise<SearchTestResult>;
-  updateTestResultStatus(id: number, status: 'completed' | 'running' | 'failed', metadata?: Record<string, unknown>): Promise<SearchTestResult>;
-  getStrategyPerformanceHistory(strategyId: number, userId: number): Promise<{ dates: string[], scores: number[] }>;
+  // Note: Search Test Results removed - not implemented in Replit DB storage
 }
 
-export * from './database';
+// Note: PostgreSQL database exports removed - using Replit DB implementation only.
