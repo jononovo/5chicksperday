@@ -1318,6 +1318,40 @@ export class ReplitStorage implements IStorage {
     
     console.log('Migration from PostgreSQL to Replit DB completed successfully!');
   }
+
+  // Gmail Token methods - IStorage implementation
+  async setUserGmailTokens(userId: number, accessToken: string, refreshToken?: string): Promise<void> {
+    const tokenData = {
+      accessToken,
+      refreshToken,
+      expiry: Date.now() + 3600000 // 1 hour from now
+    };
+    await this.set(`gmail_tokens:${userId}`, tokenData);
+  }
+
+  async getUserGmailTokens(userId: number): Promise<{accessToken?: string, refreshToken?: string} | undefined> {
+    const tokenData = await this.get<{accessToken: string, refreshToken?: string, expiry: number}>(`gmail_tokens:${userId}`);
+    
+    if (!tokenData) {
+      return undefined;
+    }
+    
+    // Check if token is expired
+    if (tokenData.expiry && tokenData.expiry < Date.now()) {
+      // Token is expired, clear it
+      await this.clearUserGmailTokens(userId);
+      return undefined;
+    }
+    
+    return {
+      accessToken: tokenData.accessToken,
+      refreshToken: tokenData.refreshToken
+    };
+  }
+
+  async clearUserGmailTokens(userId: number): Promise<void> {
+    await this.delete(`gmail_tokens:${userId}`);
+  }
 }
 
 // Export a singleton instance
