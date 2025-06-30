@@ -4277,7 +4277,7 @@ Respond in this exact JSON format:
   // Easter egg route
   app.post('/api/credits/easter-egg', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser!.uid;
       const { query } = req.body;
       
       const result = await CreditService.claimEasterEgg(userId, query);
@@ -4295,7 +4295,7 @@ Respond in this exact JSON format:
   // Notification routes
   app.post('/api/notifications/trigger', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser!.uid;
       const { trigger } = req.body;
       
       const result = await CreditService.triggerNotification(userId, trigger);
@@ -4312,7 +4312,7 @@ Respond in this exact JSON format:
 
   app.post('/api/notifications/mark-shown', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser!.uid;
       const { notificationId, badgeId } = req.body;
       
       if (typeof badgeId === 'number') {
