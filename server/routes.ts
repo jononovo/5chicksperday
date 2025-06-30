@@ -555,7 +555,7 @@ export function registerRoutes(app: Express) {
       }
       
       // Process company results if available
-      if (results && results.companies && Array.isArray(results.companies) && req.user) {
+      if (results && results.companies && Array.isArray(results.companies) && req.firebaseUser) {
         console.log(`Processing ${results.companies.length} companies from webhook`);
         
         for (const company of results.companies) {
@@ -571,7 +571,7 @@ export function registerRoutes(app: Express) {
               services: company.services || [],
               keyPeople: company.keyPeople || [],
               foundedYear: company.foundedYear ? parseInt(company.foundedYear) : null,
-              userId: req.user.id
+              userId: req.firebaseUser!.uid
             });
             
             console.log(`Created company: ${company.name} (ID: ${createdCompany.id})`);
@@ -1110,8 +1110,8 @@ export function registerRoutes(app: Express) {
       console.log(`[Quick Search] Search type: ${searchType || 'emails'}`);
       
       // Credit blocking check: Prevent searches if user has negative balance
-      if (req.isAuthenticated() && req.user) {
-        const credits = await CreditService.getUserCredits((req.user as any).id);
+      if (req.firebaseUser) {
+        const credits = await CreditService.getUserCredits(req.firebaseUser.uid);
         if (credits.currentBalance < 0) {
           return res.status(402).json({
             message: "Account blocked due to insufficient credits",
@@ -1200,7 +1200,7 @@ export function registerRoutes(app: Express) {
           const creditSearchType = mapSearchTypeToCredits(searchType || 'companies');
           
           await CreditService.deductCredits(
-            (req.user as any).id,
+            req.firebaseUser!.uid,
             creditSearchType,
             true
           );
@@ -4333,7 +4333,7 @@ Respond in this exact JSON format:
 
   app.get('/api/notifications/status', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser!.uid;
       const credits = await CreditService.getUserCredits(userId);
       
       res.json({ 
