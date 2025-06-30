@@ -4,7 +4,7 @@ import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
+import { storage } from "../storage-switching/storage-switcher";
 import { User, User as SelectUser } from "@shared/schema";
 import admin from "firebase-admin";
 import Database from '@replit/database';
@@ -13,6 +13,71 @@ import Database from '@replit/database';
 declare module 'express-session' {
   interface SessionData {
     gmailToken?: string;
+    gmailRefreshToken?: string;
+  }
+}
+
+// Custom Replit Database session store
+class ReplitSessionStore extends session.Store {
+  private db: Database;
+
+  constructor() {
+    super();
+    this.db = new Database();
+  }
+
+  async get(sid: string, callback: (err?: any, session?: session.SessionData | null) => void) {
+    try {
+      const result = await this.db.get(`session:${sid}`) as any;
+      let session: session.SessionData | null = null;
+      
+      if (result) {
+        // Replit DB returns the data directly, not wrapped
+        session = result as session.SessionData;
+      }
+      
+      callback(null, session);
+    } catch (err) {
+      console.error('Session get error:', err);
+      callback(err);
+    }
+  }
+
+  async set(sid: string, session: session.SessionData, callback?: (err?: any) => void) {
+    try {
+      await this.db.set(`session:${sid}`, session);
+      if (session.gmailToken) {
+        console.log('Gmail token stored in Replit DB session:', {
+          sessionId: sid.substring(0, 8) + '...',
+          hasGmailToken: !!session.gmailToken,
+          hasRefreshToken: !!session.gmailRefreshToken,
+          timestamp: new Date().toISOString()
+        });
+      }
+      callback && callback();
+    } catch (err) {
+      console.error('Session set error:', err);
+      callback && callback(err);
+    }
+  }
+
+  async destroy(sid: string, callback?: (err?: any) => void) {
+    try {
+      await this.db.delete(`session:${sid}`);
+      callback && callback();
+    } catch (err) {
+      callback && callback(err);
+    }
+  }
+
+  async touch(sid: string, session: session.SessionData, callback?: (err?: any) => void) {
+    try {
+      // Update the session to refresh its TTL
+      await this.db.set(`session:${sid}`, session);
+      callback && callback();
+    } catch (err) {
+      callback && callback(err);
+    }
   }
 }
 
@@ -130,6 +195,7 @@ export function setupAuth(app: Express) {
     secret: process.env.SESSION_SECRET || 'temporary-secret-key',
     resave: false,
     saveUninitialized: false,
+    store: new ReplitSessionStore(), // Use Replit Database for session persistence
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
@@ -137,6 +203,7 @@ export function setupAuth(app: Express) {
     }
   };
 
+  console.log('Setting up authentication with Replit Database session store');
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
