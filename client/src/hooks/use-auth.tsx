@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error,
     isLoading,
   } = useQuery<SelectUser | undefined, Error>({
-    queryKey: ["/api/user"],
+    queryKey: ["/api/firebase/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
 

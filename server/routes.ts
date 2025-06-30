@@ -4375,6 +4375,42 @@ Respond in this exact JSON format:
     }
   });
 
+  // Firebase User Endpoint - replaces /api/user
+  app.get("/api/firebase/user", verifyFirebaseToken, async (req, res) => {
+    try {
+      const firebaseUID = getFirebaseUID(req);
+      const firebaseUser = (req as any).firebaseUser;
+      
+      // Auto-register user on first access
+      let userData;
+      try {
+        userData = await storage.getFirebaseUser(firebaseUID);
+      } catch (error) {
+        // User doesn't exist, create them
+        console.log('Auto-registering new Firebase user:', firebaseUID);
+        userData = await storage.createFirebaseUser({
+          firebaseUID,
+          email: firebaseUser.email,
+          username: firebaseUser.name || firebaseUser.email?.split('@')[0] || 'User'
+        });
+      }
+      
+      res.json({
+        id: firebaseUID,
+        email: firebaseUser.email,
+        username: userData?.username || firebaseUser.name || firebaseUser.email?.split('@')[0],
+        createdAt: userData?.createdAt || new Date(),
+        firebaseUID
+      });
+    } catch (error) {
+      console.error('Firebase user endpoint error:', error);
+      res.status(500).json({
+        error: "Failed to get user data",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Firebase Authentication Test Route
   app.get("/api/firebase/test", verifyFirebaseToken, async (req, res) => {
     try {

@@ -24,6 +24,10 @@ interface FirebaseIStorage {
   getUserProfile(firebaseUID: string): Promise<User | undefined>;
   createUserProfile(firebaseUID: string, data: { email: string; username?: string }): Promise<User>;
   updateUserProfile(firebaseUID: string, data: Partial<User>): Promise<User>;
+  
+  // Firebase user methods for /api/firebase/user endpoint
+  getFirebaseUser(firebaseUID: string): Promise<User | undefined>;
+  createFirebaseUser(data: { firebaseUID: string; email: string; username?: string }): Promise<User>;
 
   // User Preferences
   getUserPreferences(firebaseUID: string): Promise<UserPreferences | undefined>;
@@ -151,6 +155,18 @@ export class FirebaseStorage implements FirebaseIStorage {
     const updated = { ...existing, ...data };
     await this.set(`user:${firebaseUID}`, updated);
     return updated;
+  }
+
+  // Firebase user methods for /api/firebase/user endpoint
+  async getFirebaseUser(firebaseUID: string): Promise<User | undefined> {
+    return await this.getUserProfile(firebaseUID);
+  }
+
+  async createFirebaseUser(data: { firebaseUID: string; email: string; username?: string }): Promise<User> {
+    return await this.createUserProfile(data.firebaseUID, {
+      email: data.email,
+      username: data.username
+    });
   }
 
   // User Preferences methods

@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { firebaseAuth } from "./firebase";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
