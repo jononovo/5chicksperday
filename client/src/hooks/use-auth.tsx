@@ -345,7 +345,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       try {
         const user = await safeJsonParse(createRes);
-        queryClient.setQueryData(["/api/user"], user);
+        queryClient.setQueryData(["/api/firebase/user"], user);
       } catch (parseError) {
         console.error('Error parsing user data from sync response:', parseError);
         throw new Error('Failed to parse user data from backend response');
@@ -378,10 +378,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await syncWithBackend(firebaseUser);
         } catch (error) {
           console.error('Error during auth state sync:', error);
-          queryClient.setQueryData(["/api/user"], null);
+          queryClient.setQueryData(["/api/firebase/user"], null);
         }
       } else {
-        queryClient.setQueryData(["/api/user"], null);
+        queryClient.setQueryData(["/api/firebase/user"], null);
       }
     });
 

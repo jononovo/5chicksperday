@@ -28,7 +28,7 @@ export const localAuth = {
       const response = await axios.post('/api/register', credentials);
       
       // Update auth state in React Query to trigger UI updates
-      queryClient.setQueryData(["/api/user"], response.data);
+      queryClient.setQueryData(["/api/firebase/user"], response.data);
       
       return response.data;
     } catch (error: any) {
@@ -45,7 +45,7 @@ export const localAuth = {
       const response = await axios.post('/api/login', credentials);
       
       // Update auth state in React Query to trigger UI updates
-      queryClient.setQueryData(["/api/user"], response.data);
+      queryClient.setQueryData(["/api/firebase/user"], response.data);
       
       return response.data;
     } catch (error: any) {

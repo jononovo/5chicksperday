@@ -1,0 +1,118 @@
+index-qVGGzpTE.js:1566 
+            
+            
+           GET https://5ducks.ai/api/firebase/user 401 (Unauthorized)
+(anonymous) @ index-qVGGzpTE.js:1566
+i @ index-qVGGzpTE.js:49
+x @ index-qVGGzpTE.js:49
+start @ index-qVGGzpTE.js:49
+fetch @ index-qVGGzpTE.js:49
+gl @ index-qVGGzpTE.js:49
+onSubscribe @ index-qVGGzpTE.js:49
+subscribe @ index-qVGGzpTE.js:49
+(anonymous) @ index-qVGGzpTE.js:49
+Dk @ index-qVGGzpTE.js:39
+Qf @ index-qVGGzpTE.js:41
+Ho @ index-qVGGzpTE.js:41
+ew @ index-qVGGzpTE.js:41
+ui @ index-qVGGzpTE.js:39
+sF @ index-qVGGzpTE.js:41
+vi @ index-qVGGzpTE.js:41
+hP @ index-qVGGzpTE.js:41
+_ @ index-qVGGzpTE.js:26
+F @ index-qVGGzpTE.js:26
+index-qVGGzpTE.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-qVGGzpTE.js:1566
+await in (anonymous)
+i @ index-qVGGzpTE.js:49
+x @ index-qVGGzpTE.js:49
+start @ index-qVGGzpTE.js:49
+fetch @ index-qVGGzpTE.js:49
+gl @ index-qVGGzpTE.js:49
+onSubscribe @ index-qVGGzpTE.js:49
+subscribe @ index-qVGGzpTE.js:49
+(anonymous) @ index-qVGGzpTE.js:49
+Dk @ index-qVGGzpTE.js:39
+Qf @ index-qVGGzpTE.js:41
+Ho @ index-qVGGzpTE.js:41
+ew @ index-qVGGzpTE.js:41
+ui @ index-qVGGzpTE.js:39
+sF @ index-qVGGzpTE.js:41
+vi @ index-qVGGzpTE.js:41
+hP @ index-qVGGzpTE.js:41
+_ @ index-qVGGzpTE.js:26
+F @ index-qVGGzpTE.js:26
+index-qVGGzpTE.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-qVGGzpTE.js:1566:1745)
+    at async index-qVGGzpTE.js:1566:3139
+(anonymous) @ index-qVGGzpTE.js:1566
+await in (anonymous)
+i @ index-qVGGzpTE.js:49
+x @ index-qVGGzpTE.js:49
+start @ index-qVGGzpTE.js:49
+fetch @ index-qVGGzpTE.js:49
+gl @ index-qVGGzpTE.js:49
+onSubscribe @ index-qVGGzpTE.js:49
+subscribe @ index-qVGGzpTE.js:49
+(anonymous) @ index-qVGGzpTE.js:49
+Dk @ index-qVGGzpTE.js:39
+Qf @ index-qVGGzpTE.js:41
+Ho @ index-qVGGzpTE.js:41
+ew @ index-qVGGzpTE.js:41
+ui @ index-qVGGzpTE.js:39
+sF @ index-qVGGzpTE.js:41
+vi @ index-qVGGzpTE.js:41
+hP @ index-qVGGzpTE.js:41
+_ @ index-qVGGzpTE.js:26
+F @ index-qVGGzpTE.js:26
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-qVGGzpTE.js:1489
+cleanUp @ index-qVGGzpTE.js:1384
+unregisterAndCleanUp @ index-qVGGzpTE.js:1369
+resolve @ index-qVGGzpTE.js:1369
+onAuthEvent @ index-qVGGzpTE.js:1369
+index-qVGGzpTE.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-qVGGzpTE.js:1489
+cleanUp @ index-qVGGzpTE.js:1384
+unregisterAndCleanUp @ index-qVGGzpTE.js:1369
+resolve @ index-qVGGzpTE.js:1369
+onAuthEvent @ index-qVGGzpTE.js:1369
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-qVGGzpTE.js:1384
+index-qVGGzpTE.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-qVGGzpTE.js:1489
+cleanUp @ index-qVGGzpTE.js:1384
+unregisterAndCleanUp @ index-qVGGzpTE.js:1369
+resolve @ index-qVGGzpTE.js:1369
+onAuthEvent @ index-qVGGzpTE.js:1369
+index-qVGGzpTE.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-qVGGzpTE.js:1489
+cleanUp @ index-qVGGzpTE.js:1384
+unregisterAndCleanUp @ index-qVGGzpTE.js:1369
+resolve @ index-qVGGzpTE.js:1369
+onAuthEvent @ index-qVGGzpTE.js:1369
