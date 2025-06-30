@@ -253,13 +253,16 @@ export class ReplitStorage implements IStorage {
   // Lists
   // @ts-ignore
   async listLists(userId: number): Promise<List[]> {
-    const listIds = await this.get<number[]>(`lists:user:${userId}`) || [];
+    const listIds = await this.get<number[]>(`lists:user:${userId}`);
     const lists: List[] = [];
     
-    for (const id of listIds) {
-      const list = await this.get<List>(`list:${id}`);
-      // @ts-ignore: Date handling issues
-      if (list) lists.push(list);
+    // Handle case where listIds is null, undefined, or not an array
+    if (Array.isArray(listIds)) {
+      for (const id of listIds) {
+        const list = await this.get<List>(`list:${id}`);
+        // @ts-ignore: Date handling issues
+        if (list) lists.push(list);
+      }
     }
     
     return lists;
