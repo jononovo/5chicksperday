@@ -1,16 +1,17 @@
 import express, { Request, Response } from "express";
 import { CreditService } from "../lib/credits";
+import { verifyFirebaseToken } from "../middleware/firebase-auth";
 
 export function registerCreditRoutes(app: express.Express) {
   // Get user credit balance and status
-  app.get("/api/credits", async (req: Request, res: Response) => {
+  app.get("/api/credits", verifyFirebaseToken, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
-        console.log("[Credits Route] Authentication failed");
+      if (!req.firebaseUser) {
+        console.log("[Credits Route] Firebase authentication failed");
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser.uid;
       console.log(`[Credits Route] Processing request for user ${userId}`);
       
       const credits = await CreditService.getUserCredits(userId);
@@ -36,13 +37,13 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Get credit transaction history
-  app.get("/api/credits/history", async (req: Request, res: Response) => {
+  app.get("/api/credits/history", verifyFirebaseToken, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
+      if (!req.firebaseUser) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser.uid;
       const limit = parseInt(req.query.limit as string) || 50;
       const history = await CreditService.getCreditHistory(userId, limit);
 
@@ -57,13 +58,13 @@ export function registerCreditRoutes(app: express.Express) {
   });
 
   // Get usage statistics
-  app.get("/api/credits/stats", async (req: Request, res: Response) => {
+  app.get("/api/credits/stats", verifyFirebaseToken, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
+      if (!req.firebaseUser) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser.uid;
       const stats = await CreditService.getUsageStats(userId);
 
       res.json(stats);
@@ -76,14 +77,14 @@ export function registerCreditRoutes(app: express.Express) {
     }
   });
 
-  // Check if user is blocked
-  app.get("/api/credits/status", async (req: Request, res: Response) => {
+  // Check if user is blocked  
+  app.get("/api/credits/status", verifyFirebaseToken, async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
+      if (!req.firebaseUser) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser.uid;
       const isBlocked = await CreditService.isUserBlocked(userId);
 
       res.json({ isBlocked });
@@ -99,13 +100,13 @@ export function registerCreditRoutes(app: express.Express) {
   // Manual credit adjustment (admin only - for future use)
   app.post("/api/credits/adjust", async (req: Request, res: Response) => {
     try {
-      if (!req.isAuthenticated() || !req.user) {
+      if (!req.firebaseUser) {
         return res.status(401).json({ message: "Authentication required" });
       }
 
       // For now, allow any authenticated user to adjust their own credits
       // In production, this should be admin-only
-      const userId = (req.user as any).id;
+      const userId = req.firebaseUser.uid;
       const { amount, description } = req.body;
 
       if (typeof amount !== 'number' || !description) {
