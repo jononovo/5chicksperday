@@ -1,10 +1,10 @@
 /**
- * Storage implementation - Clean Replit Database only
+ * Storage implementation - Firebase-first with Replit Database
  */
-import { cleanStorage } from './replit-storage-clean';
+import { firebaseStorage } from './firebase-storage';
 
-// Export clean Replit storage implementation
-export const storage = cleanStorage;
+// Export Firebase storage implementation
+export const storage = firebaseStorage;
 
 // Log storage type
-console.log('Using Clean Replit Database for storage');
+console.log('Using Firebase-first storage with Replit Database');
