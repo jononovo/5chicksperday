@@ -453,9 +453,11 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/status', requireAuth, (req, res) => {
+  app.get('/api/gmail/status', requireAuth, async (req, res) => {
     try {
-      const hasToken = !!(req.session as any)?.gmailToken;
+      const userId = (req as any).user.id;
+      const gmailTokens = await (storage as any).getUserGmailTokens(userId);
+      const hasToken = !!gmailTokens?.accessToken;
       
       res.json({
         connected: hasToken,
@@ -467,21 +469,19 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/disconnect', requireAuth, (req, res) => {
+  app.get('/api/gmail/disconnect', requireAuth, async (req, res) => {
     try {
-      // Remove Gmail tokens from session
-      delete (req.session as any).gmailToken;
-      delete (req.session as any).gmailRefreshToken;
+      const userId = (req as any).user.id;
       
-      // Save session
-      req.session.save(err => {
-        if (err) {
-          console.error('Error saving session:', err);
-          return res.status(500).json({ error: 'Failed to disconnect Gmail' });
-        }
-        
-        res.json({ success: true, message: 'Gmail disconnected successfully' });
+      // Clear Gmail tokens from user record
+      await (storage as any).clearUserGmailTokens(userId);
+      
+      console.log('Gmail disconnected successfully:', {
+        userId,
+        timestamp: new Date().toISOString()
       });
+      
+      res.json({ success: true, message: 'Gmail disconnected successfully' });
     } catch (error) {
       console.error('Error disconnecting Gmail:', error);
       res.status(500).json({ error: 'Failed to disconnect Gmail' });
@@ -492,7 +492,10 @@ export function registerRoutes(app: Express) {
   app.get('/api/replies/contacts', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      
+      // Get Gmail token from user record
+      const gmailTokens = await (storage as any).getUserGmailTokens(userId);
+      const gmailToken = gmailTokens?.accessToken || null;
       
       // Get the appropriate email provider (Gmail or mock)
       const emailProvider = getEmailProvider(userId, gmailToken);
@@ -511,11 +514,14 @@ export function registerRoutes(app: Express) {
     try {
       const userId = (req as any).user.id;
       const contactId = parseInt(req.params.contactId, 10);
-      const gmailToken = (req.session as any)?.gmailToken || null;
       
       if (isNaN(contactId)) {
         return res.status(400).json({ error: 'Invalid contact ID' });
       }
+      
+      // Get Gmail token from user record
+      const gmailTokens = await (storage as any).getUserGmailTokens(userId);
+      const gmailToken = gmailTokens?.accessToken || null;
       
       // Get the appropriate email provider 
       const emailProvider = getEmailProvider(userId, gmailToken);
@@ -3437,16 +3443,17 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         return;
       }
 
-      // Get Gmail token from session
-      const gmailToken = req.session.gmailToken;
-      if (!gmailToken) {
+      // Get Gmail token from user record
+      const userId = (req as any).user.id;
+      const gmailTokens = await (storage as any).getUserGmailTokens(userId);
+      if (!gmailTokens?.accessToken) {
         res.status(401).json({ message: "Gmail authorization required" });
         return;
       }
 
       // Create Gmail API client
       const oauth2Client = new google.auth.OAuth2();
-      oauth2Client.setCredentials({ access_token: gmailToken });
+      oauth2Client.setCredentials({ access_token: gmailTokens.accessToken });
 
       const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
