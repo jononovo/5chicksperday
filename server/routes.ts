@@ -1665,7 +1665,8 @@ export function registerRoutes(app: Express) {
           validContacts.map(async (contact: Contact) => {
             console.log(`Processing contact enrichment for: ${contact.name}`);
 
-            return storage.createContact({
+            const firebaseUID = req.firebaseUser?.uid || 'guest';
+            return storage.createContact(firebaseUID, {
               companyId,
               name: contact.name!,
               role: contact.role || null,
@@ -1677,7 +1678,7 @@ export function registerRoutes(app: Express) {
               department: null,
               location: null,
               verificationSource: 'Decision-maker Analysis',
-              userId: userId
+              alternativeEmails: null
             });
           })
         );
