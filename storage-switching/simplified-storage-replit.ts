@@ -183,6 +183,31 @@ export class ReplitStorage implements IStorage {
     };
   }
 
+  // @ts-ignore
+  async storeUserGmailTokens(userId: number, tokens: { access_token?: string; refresh_token?: string; expiry_date?: number }): Promise<void> {
+    console.log('=== STORING GMAIL TOKENS ===');
+    console.log('User ID:', userId);
+    console.log('Token keys received:', Object.keys(tokens));
+    
+    const user = await this.getUser(userId);
+    if (!user) {
+      console.error('User not found for Gmail token storage:', userId);
+      throw new Error('User not found');
+    }
+
+    const updatedUser = {
+      ...user,
+      gmailAccessToken: tokens.access_token || user.gmailAccessToken,
+      gmailRefreshToken: tokens.refresh_token || user.gmailRefreshToken,
+      gmailTokenExpiry: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : user.gmailTokenExpiry
+    };
+
+    await this.set(`user:${userId}`, updatedUser);
+    console.log('=== GMAIL TOKENS STORED IN DATABASE ===');
+    console.log('Access token length:', tokens.access_token?.length || 0);
+    console.log('Has refresh token:', !!tokens.refresh_token);
+  }
+
   // User Preferences
   // @ts-ignore
   async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {

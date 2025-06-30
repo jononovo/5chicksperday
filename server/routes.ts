@@ -234,19 +234,39 @@ export function registerRoutes(app: Express) {
   // Google authentication endpoint - handles Firebase token and stores Gmail tokens
   app.post("/api/google-auth", async (req, res) => {
     try {
+      console.log('=== GOOGLE AUTH DEBUG START ===');
+      console.log('Request body keys:', Object.keys(req.body));
+      console.log('Has gmailTokens in body:', !!req.body.gmailTokens);
+      
       const user = await verifyFirebaseToken(req);
       
       if (!user) {
+        console.log('=== FIREBASE TOKEN VERIFICATION FAILED ===');
         return res.status(401).json({ error: "Invalid Firebase token" });
       }
+
+      console.log('=== FIREBASE TOKEN VERIFIED SUCCESSFULLY ===');
+      console.log('User found/created:', { id: user.id, email: user.email });
 
       // Store Gmail tokens if provided in the request body
       const { gmailTokens } = req.body;
       if (gmailTokens) {
-        console.log('Storing Gmail tokens for user:', user.id);
-        await (storage as any).storeUserGmailTokens(user.id, gmailTokens);
+        console.log('=== GMAIL TOKENS PROVIDED ===');
+        console.log('Gmail tokens keys:', Object.keys(gmailTokens));
+        console.log('Has access token:', !!gmailTokens.access_token);
+        
+        try {
+          await (storage as any).storeUserGmailTokens(user.id, gmailTokens);
+          console.log('=== GMAIL TOKENS STORED SUCCESSFULLY ===');
+        } catch (tokenError) {
+          console.error('=== GMAIL TOKEN STORAGE FAILED ===');
+          console.error('Token storage error:', tokenError);
+        }
+      } else {
+        console.log('=== NO GMAIL TOKENS IN REQUEST ===');
       }
 
+      console.log('=== GOOGLE AUTH DEBUG END ===');
       res.json({ 
         success: true,
         user: {
@@ -256,12 +276,53 @@ export function registerRoutes(app: Express) {
         }
       });
     } catch (error) {
+      console.error('=== GOOGLE AUTH CRITICAL ERROR ===');
       console.error('Google auth error:', error);
       res.status(500).json({ 
         error: "Authentication failed",
         details: error instanceof Error ? error.message : String(error)
       });
     }
+  });
+
+  // TEMPORARY TEST ROUTE - Console debugging for authentication flow
+  app.post("/api/test-auth-flow", async (req, res) => {
+    console.log('\n=== AUTHENTICATION FLOW TEST ===');
+    console.log('1. Request received');
+    console.log('2. Headers:', Object.keys(req.headers));
+    console.log('3. Authorization header:', req.headers.authorization ? 'present' : 'missing');
+    console.log('4. Body keys:', Object.keys(req.body));
+    
+    try {
+      console.log('5. Testing Firebase token verification...');
+      const user = await verifyFirebaseToken(req);
+      
+      if (user) {
+        console.log('6. SUCCESS - User verified:', { id: user.id, email: user.email });
+        
+        console.log('7. Testing Gmail token storage...');
+        const testTokens = { access_token: 'test_token_123', refresh_token: 'refresh_123' };
+        await (storage as any).storeUserGmailTokens(user.id, testTokens);
+        
+        console.log('8. Testing Gmail token retrieval...');
+        const retrievedTokens = await (storage as any).getUserGmailTokens(user.id);
+        console.log('9. Retrieved tokens:', retrievedTokens ? 'found' : 'not found');
+        
+        res.json({ 
+          success: true, 
+          message: 'Authentication flow test completed',
+          user: { id: user.id, email: user.email },
+          tokenStorage: !!retrievedTokens
+        });
+      } else {
+        console.log('6. FAILURE - Token verification failed');
+        res.status(401).json({ error: 'Token verification failed' });
+      }
+    } catch (error) {
+      console.error('TEST ERROR:', error);
+      res.status(500).json({ error: 'Test failed', details: error instanceof Error ? error.message : String(error) });
+    }
+    console.log('=== AUTHENTICATION FLOW TEST END ===\n');
   });
 
   // Session status endpoint for polling
