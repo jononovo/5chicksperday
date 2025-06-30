@@ -281,7 +281,8 @@ export class FirebaseStorage implements FirebaseIStorage {
     await this.set(`list:${id}`, list);
     
     // Add to user's lists
-    const userLists = await this.get<number[]>(`user_lists:${firebaseUID}`) || [];
+    const userListsResult = await this.get<number[]>(`user_lists:${firebaseUID}`);
+    const userLists = Array.isArray(userListsResult) ? userListsResult : [];
     userLists.push(id);
     await this.set(`user_lists:${firebaseUID}`, userLists);
     
@@ -290,7 +291,8 @@ export class FirebaseStorage implements FirebaseIStorage {
 
   async updateCompanyList(companyId: number, listId: number): Promise<void> {
     // Add company to list
-    const listCompanies = await this.get<number[]>(`list_companies:${listId}`) || [];
+    const listCompaniesResult = await this.get<number[]>(`list_companies:${listId}`);
+    const listCompanies = Array.isArray(listCompaniesResult) ? listCompaniesResult : [];
     if (!listCompanies.includes(companyId)) {
       listCompanies.push(companyId);
       await this.set(`list_companies:${listId}`, listCompanies);
@@ -329,7 +331,8 @@ export class FirebaseStorage implements FirebaseIStorage {
     await this.set(`company:${id}`, company);
     
     // Add to user's companies
-    const userCompanies = await this.get<number[]>(`user_companies:${firebaseUID}`) || [];
+    const userCompaniesResult = await this.get<number[]>(`user_companies:${firebaseUID}`);
+    const userCompanies = Array.isArray(userCompaniesResult) ? userCompaniesResult : [];
     userCompanies.push(id);
     await this.set(`user_companies:${firebaseUID}`, userCompanies);
     
@@ -377,7 +380,8 @@ export class FirebaseStorage implements FirebaseIStorage {
     await this.set(`contact:${id}`, contact);
     
     // Add to company's contacts
-    const companyContacts = await this.get<number[]>(`company_contacts:${data.companyId}`) || [];
+    const companyContactsResult = await this.get<number[]>(`company_contacts:${data.companyId}`);
+    const companyContacts = Array.isArray(companyContactsResult) ? companyContactsResult : [];
     companyContacts.push(id);
     await this.set(`company_contacts:${data.companyId}`, companyContacts);
     
@@ -440,7 +444,8 @@ export class FirebaseStorage implements FirebaseIStorage {
     await this.set(`campaign:${id}`, campaign);
     
     // Add to user's campaigns
-    const userCampaigns = await this.get<number[]>(`user_campaigns:${firebaseUID}`) || [];
+    const userCampaignsResult = await this.get<number[]>(`user_campaigns:${firebaseUID}`);
+    const userCampaigns = Array.isArray(userCampaignsResult) ? userCampaignsResult : [];
     userCampaigns.push(id);
     await this.set(`user_campaigns:${firebaseUID}`, userCampaigns);
     
@@ -489,7 +494,8 @@ export class FirebaseStorage implements FirebaseIStorage {
     await this.set(`template:${id}`, template);
     
     // Add to user's templates
-    const userTemplates = await this.get<number[]>(`user_templates:${firebaseUID}`) || [];
+    const userTemplatesResult = await this.get<number[]>(`user_templates:${firebaseUID}`);
+    const userTemplates = Array.isArray(userTemplatesResult) ? userTemplatesResult : [];
     userTemplates.push(id);
     await this.set(`user_templates:${firebaseUID}`, userTemplates);
     
