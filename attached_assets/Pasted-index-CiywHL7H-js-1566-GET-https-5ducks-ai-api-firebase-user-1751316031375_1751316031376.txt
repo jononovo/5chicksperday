@@ -1,0 +1,336 @@
+index-CiywHL7H.js:1566 
+            
+            
+           GET https://5ducks.ai/api/firebase/user 401 (Unauthorized)
+(anonymous) @ index-CiywHL7H.js:1566
+i @ index-CiywHL7H.js:49
+x @ index-CiywHL7H.js:49
+start @ index-CiywHL7H.js:49
+fetch @ index-CiywHL7H.js:49
+gl @ index-CiywHL7H.js:49
+onSubscribe @ index-CiywHL7H.js:49
+subscribe @ index-CiywHL7H.js:49
+(anonymous) @ index-CiywHL7H.js:49
+Dk @ index-CiywHL7H.js:39
+Qf @ index-CiywHL7H.js:41
+Ho @ index-CiywHL7H.js:41
+ew @ index-CiywHL7H.js:41
+ui @ index-CiywHL7H.js:39
+sF @ index-CiywHL7H.js:41
+vi @ index-CiywHL7H.js:41
+hP @ index-CiywHL7H.js:41
+_ @ index-CiywHL7H.js:26
+F @ index-CiywHL7H.js:26
+index-CiywHL7H.js:1746 
+            
+            
+           POST https://5ducks.ai/api/google-auth 500 (Internal Server Error)
+d @ index-CiywHL7H.js:1746
+await in d
+(anonymous) @ index-CiywHL7H.js:1746
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+registerStateListener @ index-CiywHL7H.js:799
+onAuthStateChanged @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:1746
+Qf @ index-CiywHL7H.js:41
+Ho @ index-CiywHL7H.js:41
+ew @ index-CiywHL7H.js:41
+ui @ index-CiywHL7H.js:39
+sF @ index-CiywHL7H.js:41
+vi @ index-CiywHL7H.js:41
+hP @ index-CiywHL7H.js:41
+_ @ index-CiywHL7H.js:26
+F @ index-CiywHL7H.js:26
+index-CiywHL7H.js:1746 Backend sync error response: {status: 500, statusText: '', responseText: '{"error":"Authentication failed"}'}
+d @ index-CiywHL7H.js:1746
+await in d
+(anonymous) @ index-CiywHL7H.js:1746
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+registerStateListener @ index-CiywHL7H.js:799
+onAuthStateChanged @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:1746
+Qf @ index-CiywHL7H.js:41
+Ho @ index-CiywHL7H.js:41
+ew @ index-CiywHL7H.js:41
+ui @ index-CiywHL7H.js:39
+sF @ index-CiywHL7H.js:41
+vi @ index-CiywHL7H.js:41
+hP @ index-CiywHL7H.js:41
+_ @ index-CiywHL7H.js:26
+F @ index-CiywHL7H.js:26
+index-CiywHL7H.js:1746 Error syncing with backend: {error: Error: Failed to sync with backend: 500
+    at d (https://5ducks.ai/assets/index-CiywHL7H.js:1746:2…, domain: '5ducks.ai', environment: 'production'}
+d @ index-CiywHL7H.js:1746
+await in d
+(anonymous) @ index-CiywHL7H.js:1746
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+registerStateListener @ index-CiywHL7H.js:799
+onAuthStateChanged @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:1746
+Qf @ index-CiywHL7H.js:41
+Ho @ index-CiywHL7H.js:41
+ew @ index-CiywHL7H.js:41
+ui @ index-CiywHL7H.js:39
+sF @ index-CiywHL7H.js:41
+vi @ index-CiywHL7H.js:41
+hP @ index-CiywHL7H.js:41
+_ @ index-CiywHL7H.js:26
+F @ index-CiywHL7H.js:26
+index-CiywHL7H.js:1746 Error during auth state sync: Error: Failed to sync with backend: 500
+    at d (index-CiywHL7H.js:1746:29594)
+    at async index-CiywHL7H.js:1746:30307
+(anonymous) @ index-CiywHL7H.js:1746
+await in (anonymous)
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+registerStateListener @ index-CiywHL7H.js:799
+onAuthStateChanged @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:1746
+Qf @ index-CiywHL7H.js:41
+Ho @ index-CiywHL7H.js:41
+ew @ index-CiywHL7H.js:41
+ui @ index-CiywHL7H.js:39
+sF @ index-CiywHL7H.js:41
+vi @ index-CiywHL7H.js:41
+hP @ index-CiywHL7H.js:41
+_ @ index-CiywHL7H.js:26
+F @ index-CiywHL7H.js:26
+index-CiywHL7H.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-CiywHL7H.js:1384
+index-CiywHL7H.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-CiywHL7H.js:1384
+index-CiywHL7H.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-CiywHL7H.js:1384
+index-CiywHL7H.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-CiywHL7H.js:1384
+index-CiywHL7H.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-CiywHL7H.js:1384
+index-CiywHL7H.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-CiywHL7H.js:1384
+index-CiywHL7H.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-CiywHL7H.js:1489
+cleanUp @ index-CiywHL7H.js:1384
+unregisterAndCleanUp @ index-CiywHL7H.js:1369
+resolve @ index-CiywHL7H.js:1369
+onAuthEvent @ index-CiywHL7H.js:1369
+index-CiywHL7H.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-CiywHL7H.js:1489
+cleanUp @ index-CiywHL7H.js:1384
+unregisterAndCleanUp @ index-CiywHL7H.js:1369
+resolve @ index-CiywHL7H.js:1369
+onAuthEvent @ index-CiywHL7H.js:1369
+index-CiywHL7H.js:1746 
+            
+            
+           POST https://5ducks.ai/api/google-auth 500 (Internal Server Error)
+d @ index-CiywHL7H.js:1746
+await in d
+l @ index-CiywHL7H.js:1746
+await in l
+C @ index-CiywHL7H.js:1746
+_L @ index-CiywHL7H.js:38
+EL @ index-CiywHL7H.js:38
+CL @ index-CiywHL7H.js:38
+Tx @ index-CiywHL7H.js:38
+xk @ index-CiywHL7H.js:38
+(anonymous) @ index-CiywHL7H.js:38
+Zy @ index-CiywHL7H.js:41
+$1 @ index-CiywHL7H.js:38
+tp @ index-CiywHL7H.js:38
+Ty @ index-CiywHL7H.js:38
+zL @ index-CiywHL7H.js:38
+index-CiywHL7H.js:1746 Backend sync error response: {status: 500, statusText: '', responseText: '{"error":"Authentication failed"}'}
+d @ index-CiywHL7H.js:1746
+await in d
+l @ index-CiywHL7H.js:1746
+await in l
+C @ index-CiywHL7H.js:1746
+_L @ index-CiywHL7H.js:38
+EL @ index-CiywHL7H.js:38
+CL @ index-CiywHL7H.js:38
+Tx @ index-CiywHL7H.js:38
+xk @ index-CiywHL7H.js:38
+(anonymous) @ index-CiywHL7H.js:38
+Zy @ index-CiywHL7H.js:41
+$1 @ index-CiywHL7H.js:38
+tp @ index-CiywHL7H.js:38
+Ty @ index-CiywHL7H.js:38
+zL @ index-CiywHL7H.js:38
+index-CiywHL7H.js:1746 Error syncing with backend: {error: Error: Failed to sync with backend: 500
+    at d (https://5ducks.ai/assets/index-CiywHL7H.js:1746:2…, domain: '5ducks.ai', environment: 'production'}
+d @ index-CiywHL7H.js:1746
+await in d
+l @ index-CiywHL7H.js:1746
+await in l
+C @ index-CiywHL7H.js:1746
+_L @ index-CiywHL7H.js:38
+EL @ index-CiywHL7H.js:38
+CL @ index-CiywHL7H.js:38
+Tx @ index-CiywHL7H.js:38
+xk @ index-CiywHL7H.js:38
+(anonymous) @ index-CiywHL7H.js:38
+Zy @ index-CiywHL7H.js:41
+$1 @ index-CiywHL7H.js:38
+tp @ index-CiywHL7H.js:38
+Ty @ index-CiywHL7H.js:38
+zL @ index-CiywHL7H.js:38
+index-CiywHL7H.js:1746 Google sign-in error: {error: 'Failed to sync with backend: 500', code: undefined, domain: '5ducks.ai', environment: 'production'}
+l @ index-CiywHL7H.js:1746
+await in l
+C @ index-CiywHL7H.js:1746
+_L @ index-CiywHL7H.js:38
+EL @ index-CiywHL7H.js:38
+CL @ index-CiywHL7H.js:38
+Tx @ index-CiywHL7H.js:38
+xk @ index-CiywHL7H.js:38
+(anonymous) @ index-CiywHL7H.js:38
+Zy @ index-CiywHL7H.js:41
+$1 @ index-CiywHL7H.js:38
+tp @ index-CiywHL7H.js:38
+Ty @ index-CiywHL7H.js:38
+zL @ index-CiywHL7H.js:38
+index-CiywHL7H.js:1746 Google sign-in failed: Error: Failed to sync with backend: 500
+    at d (index-CiywHL7H.js:1746:29594)
+    at async l (index-CiywHL7H.js:1746:28014)
+    at async C (index-CiywHL7H.js:1746:39415)
+C @ index-CiywHL7H.js:1746
+await in C
+_L @ index-CiywHL7H.js:38
+EL @ index-CiywHL7H.js:38
+CL @ index-CiywHL7H.js:38
+Tx @ index-CiywHL7H.js:38
+xk @ index-CiywHL7H.js:38
+(anonymous) @ index-CiywHL7H.js:38
+Zy @ index-CiywHL7H.js:41
+$1 @ index-CiywHL7H.js:38
+tp @ index-CiywHL7H.js:38
+Ty @ index-CiywHL7H.js:38
+zL @ index-CiywHL7H.js:38
+index-CiywHL7H.js:1746 
+            
+            
+           POST https://5ducks.ai/api/google-auth 500 (Internal Server Error)
+d @ index-CiywHL7H.js:1746
+await in d
+(anonymous) @ index-CiywHL7H.js:1746
+(anonymous) @ index-CiywHL7H.js:154
+(anonymous) @ index-CiywHL7H.js:154
+Promise.then
+sendOne @ index-CiywHL7H.js:154
+forEachObserver @ index-CiywHL7H.js:154
+next @ index-CiywHL7H.js:154
+notifyAuthListeners @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+queue @ index-CiywHL7H.js:799
+_updateCurrentUser @ index-CiywHL7H.js:799
+await in _updateCurrentUser
+AN @ index-CiywHL7H.js:1114
+await in AN
+AU @ index-CiywHL7H.js:1354
+onAuthEvent @ index-CiywHL7H.js:1369
+sendToConsumer @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1414
+onEvent @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-CiywHL7H.js:1746 Backend sync error response: {status: 500, statusText: '', responseText: '{"error":"Authentication failed"}'}
+d @ index-CiywHL7H.js:1746
+await in d
+(anonymous) @ index-CiywHL7H.js:1746
+(anonymous) @ index-CiywHL7H.js:154
+(anonymous) @ index-CiywHL7H.js:154
+Promise.then
+sendOne @ index-CiywHL7H.js:154
+forEachObserver @ index-CiywHL7H.js:154
+next @ index-CiywHL7H.js:154
+notifyAuthListeners @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+queue @ index-CiywHL7H.js:799
+_updateCurrentUser @ index-CiywHL7H.js:799
+await in _updateCurrentUser
+AN @ index-CiywHL7H.js:1114
+await in AN
+AU @ index-CiywHL7H.js:1354
+onAuthEvent @ index-CiywHL7H.js:1369
+sendToConsumer @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1414
+onEvent @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-CiywHL7H.js:1746 Error syncing with backend: {error: Error: Failed to sync with backend: 500
+    at d (https://5ducks.ai/assets/index-CiywHL7H.js:1746:2…, domain: '5ducks.ai', environment: 'production'}
+d @ index-CiywHL7H.js:1746
+await in d
+(anonymous) @ index-CiywHL7H.js:1746
+(anonymous) @ index-CiywHL7H.js:154
+(anonymous) @ index-CiywHL7H.js:154
+Promise.then
+sendOne @ index-CiywHL7H.js:154
+forEachObserver @ index-CiywHL7H.js:154
+next @ index-CiywHL7H.js:154
+notifyAuthListeners @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+queue @ index-CiywHL7H.js:799
+_updateCurrentUser @ index-CiywHL7H.js:799
+await in _updateCurrentUser
+AN @ index-CiywHL7H.js:1114
+await in AN
+AU @ index-CiywHL7H.js:1354
+onAuthEvent @ index-CiywHL7H.js:1369
+sendToConsumer @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1414
+onEvent @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-CiywHL7H.js:1746 Error during auth state sync: Error: Failed to sync with backend: 500
+    at d (index-CiywHL7H.js:1746:29594)
+    at async Object.next (index-CiywHL7H.js:1746:30307)
+(anonymous) @ index-CiywHL7H.js:1746
+await in (anonymous)
+(anonymous) @ index-CiywHL7H.js:154
+(anonymous) @ index-CiywHL7H.js:154
+Promise.then
+sendOne @ index-CiywHL7H.js:154
+forEachObserver @ index-CiywHL7H.js:154
+next @ index-CiywHL7H.js:154
+notifyAuthListeners @ index-CiywHL7H.js:799
+(anonymous) @ index-CiywHL7H.js:799
+Promise.then
+queue @ index-CiywHL7H.js:799
+_updateCurrentUser @ index-CiywHL7H.js:799
+await in _updateCurrentUser
+AN @ index-CiywHL7H.js:1114
+await in AN
+AU @ index-CiywHL7H.js:1354
+onAuthEvent @ index-CiywHL7H.js:1369
+sendToConsumer @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1414
+onEvent @ index-CiywHL7H.js:1414
+(anonymous) @ index-CiywHL7H.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167

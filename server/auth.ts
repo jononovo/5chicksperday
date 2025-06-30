@@ -329,36 +329,41 @@ export function setupAuth(app: Express) {
     res.json(req.user);
   });
 
-  // Add to the Google auth route
+  // Firebase-compatible Google auth route
   app.post("/api/google-auth", async (req, res, next) => {
     try {
-      const { email, username, accessToken, refreshToken } = req.body;
+      const { firebaseUID, email, username, accessToken, refreshToken } = req.body;
 
       console.log('Google auth endpoint received request:', { 
+        hasFirebaseUID: !!firebaseUID,
         hasEmail: !!email, 
         hasUsername: !!username,
         hasAccessToken: !!accessToken,
         hasRefreshToken: !!refreshToken
       });
 
-      if (!email) {
-        return res.status(400).json({ error: "Email is required" });
+      if (!firebaseUID || !email) {
+        return res.status(400).json({ error: "Firebase UID and email are required" });
       }
 
-      // Try to find user by email
-      let user = await storage.getUserByEmail(email);
+      // Try to find user by Firebase UID
+      let user = await (storage as any).getFirebaseUser(firebaseUID);
 
       if (!user) {
         // Create new user if doesn't exist
         try {
-          user = await storage.createUser({
+          user = await storage.createFirebaseUser({
+            firebaseUID,
             email,
             username: username || email.split('@')[0],
-            password: '',  // Not used for Google auth
           });
-          console.log('Created new user:', { id: user.id, email: email.split('@')[0] + '@...' });
+          console.log('Created new Firebase user:', { 
+            firebaseUID: firebaseUID.substring(0, 8) + '...', 
+            email: email.split('@')[0] + '@...',
+            timestamp: new Date().toISOString()
+          });
         } catch (createError) {
-          console.error('Failed to create user:', createError);
+          console.error('Failed to create Firebase user:', createError);
           return res.status(500).json({ error: "Failed to create user account" });
         }
       }
@@ -366,9 +371,9 @@ export function setupAuth(app: Express) {
       // Store Gmail tokens in database if provided
       if (accessToken) {
         try {
-          await storage.setUserGmailTokens(user.id, accessToken, refreshToken);
+          await storage.setUserGmailTokens(firebaseUID, accessToken, refreshToken);
           console.log('Stored Gmail tokens in database:', {
-            userId: user.id,
+            firebaseUID: firebaseUID.substring(0, 8) + '...',
             hasAccessToken: !!accessToken,
             hasRefreshToken: !!refreshToken,
             timestamp: new Date().toISOString()
@@ -379,9 +384,13 @@ export function setupAuth(app: Express) {
         }
       }
 
-      req.login(user, (err) => {
-        if (err) return next(err);
-        res.json(user);
+      // Return user data directly (no session needed for Firebase auth)
+      res.json({
+        id: 0, // Firebase auth doesn't use integer IDs  
+        email: user.email,
+        username: user.username,
+        firebaseUID: user.firebaseUID,
+        createdAt: user.createdAt
       });
     } catch (err) {
       console.error('Google auth endpoint error:', err);

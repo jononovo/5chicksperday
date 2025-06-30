@@ -317,6 +317,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Authorization": `Bearer ${idToken}`
         },
         body: JSON.stringify({
+          firebaseUID: firebaseUser.uid,
           email: firebaseUser.email,
           username: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
           accessToken, // Add the access token to the request
