@@ -247,6 +247,7 @@
 - June 22, 2025. Start Selling tooltip duration optimization: Reduced auto-dismiss timer from 25 seconds to 10 seconds for better user experience consistency with other tooltips in the system
 - June 22, 2025. Guest authentication delay extension: Increased semi-protected route authentication delay from 14 seconds to 25 seconds to provide guests more exploration time before registration prompt, enhancing "try before you buy" experience
 - June 22, 2025. Guest authentication delay extension: Increased guest user registration prompt delay from 14 seconds to 25 seconds to provide more time for evaluation of search functionality before authentication requirement
+- June 30, 2025. Gmail API session persistence implementation: Created custom ReplitSessionStore class to persist Gmail access tokens and refresh tokens in Replit Database instead of memory. Fixed critical issue where Gmail authentication was lost on every server restart. Sessions now survive server restarts, maintaining Gmail API connectivity for users. Gmail tokens stored as `req.session.gmailToken` and `req.session.gmailRefreshToken` with 7-day persistence
 
 
 ## User Preferences

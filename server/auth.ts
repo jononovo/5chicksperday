@@ -156,7 +156,7 @@ async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
     }
 
     // Get or create user in our database
-    let user = await storage.getUserByEmail(decodedToken.email);
+    let user = await (storage as any).getUserByEmail(decodedToken.email);
 
     if (!user) {
       console.log('Creating new user in backend:', {
@@ -217,7 +217,7 @@ export function setupAuth(app: Express) {
       },
       async (email, password, done) => {
         try {
-          const user = await storage.getUserByEmail(email);
+          const user = await (storage as any).getUserByEmail(email);
           if (!user || !(await comparePasswords(password, user.password))) {
             return done(null, false, { message: "Invalid email or password" });
           }
@@ -235,7 +235,7 @@ export function setupAuth(app: Express) {
 
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const user = await storage.getUserById(id);
+      const user = await (storage as any).getUserById(id);
       if (!user) {
         return done(null, false);
       }
@@ -320,7 +320,7 @@ export function setupAuth(app: Express) {
       }
 
       // Check for existing email
-      const existingEmail = await storage.getUserByEmail(email);
+      const existingEmail = await (storage as any).getUserByEmail(email);
       if (existingEmail) {
         return res.status(400).json({ error: "Email already exists" });
       }
@@ -332,6 +332,7 @@ export function setupAuth(app: Express) {
       try {
         const user = await storage.createUser({
           email,
+          username: email.split('@')[0],
           password: hashedPassword,
         });
 
