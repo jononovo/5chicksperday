@@ -111,34 +111,8 @@ function calculateImprovement(results: any[]): string | null {
   }
 }
 
-// Firebase-only authentication middleware
-function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
-  const firebaseUser = (req as any).firebaseUser;
-  
-  if (!firebaseUser?.uid) {
-    console.log('Firebase auth required but not found:', {
-      path: req.path,
-      method: req.method,
-      hasAuthHeader: !!req.headers.authorization,
-      timestamp: new Date().toISOString()
-    });
-    
-    return res.status(401).json({ 
-      error: 'Authentication required',
-      message: 'Valid Firebase token must be provided'
-    });
-  }
-  
-  console.log('Firebase auth verified:', {
-    uid: firebaseUser.uid,
-    email: firebaseUser.email,
-    path: req.path,
-    method: req.method,
-    timestamp: new Date().toISOString()
-  });
-  
-  next();
-}
+// Note: requireAuth middleware has been replaced with verifyFirebaseToken
+// This function is kept for reference but is no longer used
 
 // Generate static sitemap XML
 function generateSitemap(req: express.Request, res: express.Response) {
@@ -340,9 +314,9 @@ export function registerRoutes(app: Express) {
   app.get('/sitemap.xml', generateSitemap);
   
   // Gmail authorization routes
-  app.get('/api/gmail/auth', requireAuth, (req, res) => {
+  app.get('/api/gmail/auth', verifyFirebaseToken, (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getFirebaseUID(req);
       
       // Create OAuth2 client
       const oauth2Client = new google.auth.OAuth2(
@@ -409,9 +383,9 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/status', requireAuth, async (req, res) => {
+  app.get('/api/gmail/status', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = getFirebaseUID(req);
       const tokens = await storage.getUserGmailTokens(userId);
       const hasToken = !!tokens?.accessToken;
       
@@ -425,9 +399,9 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/gmail/disconnect', requireAuth, async (req, res) => {
+  app.get('/api/gmail/disconnect', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const userId = getFirebaseUID(req);
       
       // Remove Gmail tokens from database
       await storage.clearUserGmailTokens(userId);
@@ -440,9 +414,9 @@ export function registerRoutes(app: Express) {
   });
   
   // Email conversations routes
-  app.get('/api/replies/contacts', requireAuth, async (req, res) => {
+  app.get('/api/replies/contacts', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getFirebaseUID(req);
       const tokens = await storage.getUserGmailTokens(userId);
       const gmailToken = tokens?.accessToken || null;
       
@@ -459,9 +433,9 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/replies/threads/:contactId', requireAuth, async (req, res) => {
+  app.get('/api/replies/threads/:contactId', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getFirebaseUID(req);
       const contactId = parseInt(req.params.contactId, 10);
       const tokens = await storage.getUserGmailTokens(userId);
       const gmailToken = tokens?.accessToken || null;
@@ -483,9 +457,9 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.get('/api/replies/thread/:id', requireAuth, async (req, res) => {
+  app.get('/api/replies/thread/:id', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getFirebaseUID(req);
       const threadId = parseInt(req.params.id, 10);
       const tokens = await storage.getUserGmailTokens(userId);
       const gmailToken = tokens?.accessToken || null;
@@ -514,9 +488,9 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.post('/api/replies/thread', requireAuth, async (req, res) => {
+  app.post('/api/replies/thread', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getFirebaseUID(req);
       const gmailToken = (req.session as any)?.gmailToken || null;
       
       // Get the appropriate email provider
