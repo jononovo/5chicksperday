@@ -424,7 +424,7 @@ export function setupAuth(app: Express) {
       }
 
       // Try to find user by email
-      let user = await storage.getUserByEmail(email);
+      let user = await (storage as any).getUserByEmail(email);
 
       if (!user) {
         // Create new user if doesn't exist
