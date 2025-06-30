@@ -157,6 +157,18 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => {
+    console.log('Serializing user:', { 
+      hasUser: !!user, 
+      userId: user?.id, 
+      userKeys: user ? Object.keys(user) : [],
+      timestamp: new Date().toISOString() 
+    });
+    
+    if (!user || !user.id) {
+      console.error('Cannot serialize user: missing user or user.id', { user });
+      return done(new Error('Invalid user object for serialization'));
+    }
+    
     done(null, user.id);
   });
 

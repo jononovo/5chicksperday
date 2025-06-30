@@ -4353,6 +4353,30 @@ Respond in this exact JSON format:
   // Register Stripe subscription routes
   registerStripeRoutes(app);
 
+  // Temporary admin route to clear Gmail tokens for test users
+  app.post('/api/admin/clear-gmail-tokens', async (req, res) => {
+    try {
+      const testEmails = ['jon@codetribe.com', 'jon@5ducks.ai', 'ale@codetribe.com'];
+      const results = [];
+      
+      for (const email of testEmails) {
+        const user = await storage.getUserByEmail(email);
+        if (user) {
+          await (storage as any).clearUserGmailTokens(user.id);
+          results.push({ email, userId: user.id, status: 'cleared' });
+          console.log(`Cleared Gmail tokens for user ${user.id} (${email})`);
+        } else {
+          results.push({ email, status: 'user not found' });
+        }
+      }
+      
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error('Error clearing Gmail tokens:', error);
+      res.status(500).json({ error: 'Failed to clear Gmail tokens' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
