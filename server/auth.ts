@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { storage } from "./storage";
 import { User, User as SelectUser } from "@shared/schema";
 import admin from "firebase-admin";
+import Database from '@replit/database';
 
 // Extend the session type to include gmailToken
 declare module 'express-session' {
