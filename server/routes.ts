@@ -298,8 +298,8 @@ export function registerRoutes(app: Express) {
     console.log('4. Body keys:', Object.keys(req.body));
     
     try {
-      console.log('5. Testing Firebase token verification...');
-      const user = await verifyFirebaseToken(req);
+      console.log('5. Testing simplified user verification...');
+      const user = await verifyUser(req);
       
       if (user) {
         console.log('6. SUCCESS - User verified:', { id: user.id, email: user.email });
