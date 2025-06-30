@@ -87,7 +87,29 @@ export class FirebaseStorage implements FirebaseIStorage {
   private async get<T>(key: string): Promise<T | undefined> {
     try {
       const result = await this.db.get(key);
-      return result ? JSON.parse(result as string) : undefined;
+      
+      // Handle null/undefined responses
+      if (!result) {
+        return undefined;
+      }
+      
+      // Handle Replit DB response format
+      if (typeof result === 'object' && 'value' in result) {
+        const value = (result as any).value;
+        return value ? JSON.parse(value) : undefined;
+      }
+      
+      // Handle string responses
+      if (typeof result === 'string') {
+        return JSON.parse(result);
+      }
+      
+      // Handle direct object responses (already parsed)
+      if (typeof result === 'object') {
+        return result as T;
+      }
+      
+      return undefined;
     } catch (error) {
       console.error(`Error getting ${key}:`, error);
       return undefined;
@@ -113,8 +135,15 @@ export class FirebaseStorage implements FirebaseIStorage {
 
   private async list(prefix: string): Promise<string[]> {
     try {
-      const keys = await this.db.list(prefix);
-      return keys || [];
+      const result = await this.db.list(prefix);
+      
+      // Handle Replit DB response format
+      if (result && typeof result === 'object' && 'value' in result) {
+        return (result as any).value || [];
+      }
+      
+      // Handle direct array response (legacy format)
+      return result || [];
     } catch (error) {
       console.error(`Error listing ${prefix}:`, error);
       return [];

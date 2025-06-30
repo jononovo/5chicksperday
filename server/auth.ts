@@ -352,7 +352,7 @@ export function setupAuth(app: Express) {
       if (!user) {
         // Create new user if doesn't exist
         try {
-          user = await storage.createFirebaseUser({
+          user = await (storage as any).createFirebaseUser({
             firebaseUID,
             email,
             username: username || email.split('@')[0],
@@ -371,7 +371,7 @@ export function setupAuth(app: Express) {
       // Store Gmail tokens in database if provided
       if (accessToken) {
         try {
-          await storage.setUserGmailTokens(firebaseUID, accessToken, refreshToken);
+          await (storage as any).setUserGmailTokens(firebaseUID, accessToken, refreshToken);
           console.log('Stored Gmail tokens in database:', {
             firebaseUID: firebaseUID.substring(0, 8) + '...',
             hasAccessToken: !!accessToken,
