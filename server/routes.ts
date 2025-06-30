@@ -509,9 +509,9 @@ export function registerRoutes(app: Express) {
     }
   });
   
-  app.post('/api/replies/message', requireAuth, async (req, res) => {
+  app.post('/api/replies/message', verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = (req as any).user.id;
+      const userId = getFirebaseUID(req);
       const gmailToken = (req.session as any)?.gmailToken || null;
       
       // Get the appropriate email provider
@@ -718,7 +718,7 @@ export function registerRoutes(app: Express) {
   });
   
   // Endpoint to trigger a search via workflow
-  app.post("/api/workflow-search", requireAuth, async (req, res) => {
+  app.post("/api/workflow-search", verifyFirebaseToken, async (req, res) => {
     const { query, strategyId, provider, targetUrl, resultsUrl } = req.body;
     
     if (!query || typeof query !== 'string') {
@@ -801,7 +801,7 @@ export function registerRoutes(app: Express) {
     }
   });
   // New route for enriching multiple contacts
-  app.post("/api/enrich-contacts", requireAuth, async (req, res) => {
+  app.post("/api/enrich-contacts", verifyFirebaseToken, async (req, res) => {
     try {
       const { contactIds } = req.body;
 
@@ -844,7 +844,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/lists/:listId", requireAuth, async (req, res) => {
+  app.get("/api/lists/:listId", verifyFirebaseToken, async (req, res) => {
     const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
     const listId = parseInt(req.params.listId);
     
@@ -868,7 +868,7 @@ export function registerRoutes(app: Express) {
     res.json(list);
   });
 
-  app.get("/api/lists/:listId/companies", requireAuth, async (req, res) => {
+  app.get("/api/lists/:listId/companies", verifyFirebaseToken, async (req, res) => {
     const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
     const listId = parseInt(req.params.listId);
     
@@ -887,7 +887,7 @@ export function registerRoutes(app: Express) {
     res.json(companies);
   });
 
-  app.post("/api/lists", requireAuth, async (req, res) => {
+  app.post("/api/lists", verifyFirebaseToken, async (req, res) => {
     const { companies, prompt, contactSearchConfig } = req.body;
 
     console.log(`POST /api/lists called with ${companies?.length || 0} companies`);
@@ -937,7 +937,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Update list endpoint
-  app.put("/api/lists/:listId", requireAuth, async (req, res) => {
+  app.put("/api/lists/:listId", verifyFirebaseToken, async (req, res) => {
     try {
       const userId = getUserId(req);
       const listId = parseInt(req.params.listId);
@@ -1033,7 +1033,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Companies
-  app.get("/api/companies", requireAuth, async (req, res) => {
+  app.get("/api/companies", verifyFirebaseToken, async (req, res) => {
     // Check if the user is authenticated with their own account
     const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
     
@@ -1048,7 +1048,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/companies/:id", requireAuth, async (req, res) => {
+  app.get("/api/companies/:id", verifyFirebaseToken, async (req, res) => {
     try {
       const companyId = parseInt(req.params.id);
       const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
