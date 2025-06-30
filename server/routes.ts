@@ -301,54 +301,6 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // TEMPORARY ADMIN ROUTE - Delete user for testing purposes
-  app.delete("/api/admin/delete-user/:email", async (req, res) => {
-    try {
-      const email = req.params.email;
-      console.log(`[ADMIN] Attempting to delete user: ${email}`);
-      
-      // Get user first to get their ID
-      const user = await (storage as any).getUserByEmail(email);
-      if (!user || user.ok === false) {
-        console.log(`[ADMIN] User not found: ${email}`);
-        return res.json({ success: false, message: `User ${email} not found` });
-      }
-      
-      const userId = user.id;
-      console.log(`[ADMIN] Found user ${email} with ID: ${userId}`);
-      
-      // Delete user record
-      await (storage as any).delete(`user:${userId}`);
-      console.log(`[ADMIN] Deleted user record: user:${userId}`);
-      
-      // Delete credit record
-      await (storage as any).delete(`user_credits:${userId}`);
-      console.log(`[ADMIN] Deleted credit record: user_credits:${userId}`);
-      
-      // Delete user preferences if they exist
-      try {
-        await (storage as any).delete(`userPrefs:${userId}`);
-        console.log(`[ADMIN] Deleted user preferences: userPrefs:${userId}`);
-      } catch (prefError) {
-        console.log(`[ADMIN] No user preferences found for: userPrefs:${userId}`);
-      }
-      
-      console.log(`[ADMIN] Successfully deleted all records for user: ${email}`);
-      res.json({ 
-        success: true, 
-        message: `User ${email} (ID: ${userId}) completely removed from database`,
-        deletedRecords: [`user:${userId}`, `user_credits:${userId}`, `userPrefs:${userId}`]
-      });
-      
-    } catch (error) {
-      console.error(`[ADMIN] Error deleting user:`, error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to delete user',
-        details: error instanceof Error ? error.message : String(error)
-      });
-    }
-  });
 
   // TEMPORARY TEST ROUTE - Console debugging for authentication flow
   app.post("/api/test-auth-flow", async (req, res) => {
