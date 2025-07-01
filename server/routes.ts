@@ -929,63 +929,51 @@ export function registerRoutes(app: Express) {
 
   // Lists
   app.get("/api/lists", requireAuth, async (req, res) => {
-    const userId = getUserId(req);
-    
-    // Check if the user is authenticated with their own ID
-    const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
-    
-    // If authenticated, return only their lists
-    if (isAuthenticated) {
+    try {
+      const userId = await getUserId(req);
+      console.log(`GET /api/lists - userId: ${userId}`);
+      
       const lists = await storage.listLists(userId);
+      console.log(`Found ${lists.length} lists for user ${userId}:`, lists.map(l => ({ id: l.id, listId: l.listId, prompt: l.prompt })));
+      
       res.json(lists);
-    } else {
-      // For unauthenticated users, return only demo lists (userId = 1)
-      const demoLists = await storage.listLists(1);
-      res.json(demoLists);
+    } catch (error) {
+      console.error('Error fetching lists:', error);
+      res.status(500).json({ message: 'Failed to fetch lists' });
     }
   });
 
   app.get("/api/lists/:listId", requireAuth, async (req, res) => {
-    const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
-    const listId = parseInt(req.params.listId);
-    
-    let list = null;
-    
-    // First try to find the list for the authenticated user
-    if (isAuthenticated) {
-      list = await storage.getList(listId, req.user!.id);
+    try {
+      const userId = await getUserId(req);
+      const listId = parseInt(req.params.listId);
+      
+      const list = await storage.getList(listId, userId);
+      
+      if (!list) {
+        res.status(404).json({ message: "List not found" });
+        return;
+      }
+      
+      res.json(list);
+    } catch (error) {
+      console.error('Error fetching list:', error);
+      res.status(500).json({ message: 'Failed to fetch list' });
     }
-    
-    // If not found or not authenticated, check if it's a demo list
-    if (!list) {
-      list = await storage.getList(listId, 1); // Check demo user (ID 1)
-    }
-    
-    if (!list) {
-      res.status(404).json({ message: "List not found" });
-      return;
-    }
-    
-    res.json(list);
   });
 
   app.get("/api/lists/:listId/companies", requireAuth, async (req, res) => {
-    const isAuthenticated = req.isAuthenticated && req.isAuthenticated() && req.user;
-    const listId = parseInt(req.params.listId);
-    
-    let companies = [];
-    
-    // First try to find companies for the authenticated user's list
-    if (isAuthenticated) {
-      companies = await storage.listCompaniesByList(listId, req.user!.id);
+    try {
+      const userId = await getUserId(req);
+      const listId = parseInt(req.params.listId);
+      
+      const companies = await storage.listCompaniesByList(listId, userId);
+      
+      res.json(companies);
+    } catch (error) {
+      console.error('Error fetching list companies:', error);
+      res.status(500).json({ message: 'Failed to fetch list companies' });
     }
-    
-    // If none found or not authenticated, check for demo list companies
-    if (companies.length === 0) {
-      companies = await storage.listCompaniesByList(listId, 1); // Check demo user (ID 1)
-    }
-    
-    res.json(companies);
   });
 
   app.post("/api/lists", requireAuth, async (req, res) => {

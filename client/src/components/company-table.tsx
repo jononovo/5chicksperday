@@ -373,7 +373,7 @@ export default function CompanyTable({
                         {Array.isArray(contact.alternativeEmails) && contact.alternativeEmails.length > 0 && (
                           <div className="text-xs opacity-75 mt-0.5 italic">
                             {contact.alternativeEmails.map((altEmail, index) => (
-                              <div key={index} className="text-xs italic">
+                              <div key={`alt-email-${contact.id}-${index}-${altEmail}`} className="text-xs italic">
                                 {altEmail}
                               </div>
                             ))}
