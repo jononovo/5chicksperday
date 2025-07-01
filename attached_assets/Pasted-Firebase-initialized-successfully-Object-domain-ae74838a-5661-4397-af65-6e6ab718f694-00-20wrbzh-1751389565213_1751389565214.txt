@@ -1,0 +1,107 @@
+Firebase initialized successfully: 
+Object {domain: "ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev", isAuth: true, isProvider: true, authDomain: "fire-5-ducks.firebaseapp.com", timestamp: "2025-07-01T16:36:13.386Z"}
+Setting up Firebase auth state listener
+Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID
+Firebase auth state changed: undefined
+Firebase persistence set to LOCAL
+User signed out, removed auth token
+Found pending search query: Recently exited startups in Miami
+Query error for /api/lists: 
+Error {}
+
+Query error for /api/search-approaches: 
+Error {}
+
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+Saving search state: 
+Object {query: "Recently exited startups in Miami", resultsCount: undefined, listId: null, companies: undefined}
+Attempting registration with: 
+Object {email: "2011@test.com", name: "Jon"}
+Starting email registration process 
+Object {email: "2011@...", timestamp: "2025-07-01T16:38:39.964Z"}
+Firebase auth state changed: 2011@test.com
+Making backend sync request 
+Object {endpoint: "/api/google-auth", hasAccessToken: false, domain: "ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev"}
+Auth token set successfully: 
+Object {uid: "0DFQfCy3HMU8ANwwNjxHPAU7Hu43", email: "2011@...", timestamp: "2025-07-01T16:38:40.509Z"}
+Email registration successful, syncing with backend
+Making backend sync request 
+Object {endpoint: "/api/google-auth", hasAccessToken: false, domain: "ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev"}
+Successfully synced with backend
+Stored user email for authentication: 2011@test.com
+Registration success detected, triggering welcome notification
+Extracted guest data: 
+Object {originalQuery: "Recently exited startups in Miami"}
+Guest data cleared successfully
+Restored guest query to input: Recently exited startups in Miami
+API Request: POST /api/notifications/trigger 
+Object {hasData: true, timestamp: "2025-07-01T16:38:41.558Z"}
+Successfully synced with backend
+Stored user email for authentication: 2011@test.com
+Registration successful with Firebase
+API Request: POST /api/notifications/mark-shown 
+Object {hasData: true, timestamp: "2025-07-01T16:38:44.109Z"}
+Analyzing search query...
+Preparing to search for companies, contacts, and emails...
+Initiating company search process...
+Sending request to company discovery API...
+[Session Management] Cleaning up active sessions before starting new search...
+Created search session: search_1751387940603_gsddwq5d0 for query: Recently exited startups in Miami
+[Session Cleanup] Found 1 active sessions, terminating...
+Created session search_1751387940603_gsddwq5d0 for query: Recently exited startups in Miami
+Quick search with strategy: 17
+API Request: POST /api/companies/quick-search 
+Object {hasData: true, timestamp: "2025-07-01T16:39:00.604Z"}
+Cleaned up session: search_1751387940603_gsddwq5d0
+[Session Cleanup] Completed cleanup of 1 sessions
+Processing company results...
+Found 7 companies matching your search
+Started polling for session search_1751387940603_gsddwq5d0 completion
+Companies received: 7
+Starting contact discovery process...
+Searching for key decision makers and contacts...
+Sending comprehensive search request to API...
+This process may take a moment while we find the most relevant contacts...
+API Request: POST /api/companies/search 
+Object {hasData: true, timestamp: "2025-07-01T16:39:07.501Z"}
+Warning: Encountered two children with the same key, &#x60;company-2&#x60;. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at tbody
+    at _c5 (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/components/ui/table.tsx:53:12)
+    at table
+    at div
+    at _c (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/components/ui/table.tsx:20:11)
+    at div
+    at div
+    at CompanyTable (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/components/company-table.tsx:42:3)
+    at Suspense
+    at div
+    at div
+    at _c9 (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/components/ui/card.tsx:106:12)
+    at div
+    at _c (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at Home (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/pages/home.tsx:80:41)
+    at Suspense
+    at component
+    at Route (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1756a228:323:16)
+    at SemiProtectedRoute (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/lib/semi-protected-route.tsx:22:3)
+    at Switch (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1756a228:379:17)
+    at div
+    at div
+    at div
+    at AppLayout (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/components/layout.tsx:38:29)
+    at Route (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1756a228:323:16)
+    at Switch (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=1756a228:379:17)
+    at Router (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/App.tsx?v=tHmYyrluEYJmDp2qz-r8b:81:3)
+    at SearchStrategyProvider (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/lib/search-strategy-context.tsx:24:42)
+    at RegistrationModalProvider (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/hooks/use-registration-modal.tsx:37:45)
+    at AuthProvider (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/hooks/use-auth.tsx:35:32)
+    at QueryClientProvider (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=1756a228:2805:3)
+    at App (https://ae74838a-5661-4397-af65-6e6ab718f694-00-20wrbzhvsqugf.kirk.replit.dev/src/App.tsx?v=tHmYyrluEYJmDp2qz-r8b:624:3)
