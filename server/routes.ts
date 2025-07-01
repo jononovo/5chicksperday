@@ -243,6 +243,46 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // TEST ENDPOINT: Create test user for debugging (only for development)
+  app.post("/api/test/create-user", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email and password required" });
+      }
+      
+      // Check if user exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.json({ 
+          id: existingUser.id, 
+          email: existingUser.email,
+          message: "User already exists" 
+        });
+      }
+      
+      // Create test user
+      const user = await storage.createUser({
+        email,
+        password,
+        username: email.split('@')[0]
+      });
+      
+      console.log(`Test user created: ${email} (ID: ${user.id})`);
+      
+      res.json({ 
+        id: user.id, 
+        email: user.email, 
+        username: user.username,
+        message: "Test user created successfully" 
+      });
+    } catch (error) {
+      console.error('Error creating test user:', error);
+      res.status(500).json({ error: "Failed to create test user" });
+    }
+  });
+
   // Google authentication endpoint - simplified approach trusting frontend verification
   app.post("/api/google-auth", async (req, res) => {
     try {
