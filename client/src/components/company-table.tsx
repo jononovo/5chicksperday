@@ -401,7 +401,7 @@ export default function CompanyTable({
                       {contact.alternativeEmails && contact.alternativeEmails.length > 0 && (
                         <div className="text-xs text-muted-foreground opacity-75 mt-1">
                           {contact.alternativeEmails.map((altEmail, index) => (
-                            <div key={index} className="text-xs italic">
+                            <div key={`alt-email-desktop-${contact.id}-${index}-${altEmail}`} className="text-xs italic">
                               {altEmail}
                             </div>
                           ))}
