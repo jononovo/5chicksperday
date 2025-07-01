@@ -968,9 +968,18 @@ export function registerRoutes(app: Express) {
   });
 
   // Lists
-  app.get("/api/lists", requireAuth, async (req, res) => {
+  app.get("/api/lists", async (req, res) => {
     try {
-      const userId = await getUserId(req);
+      // Try to get authenticated user, but don't require authentication
+      const user = await verifyUser(req);
+      
+      if (!user) {
+        // Return empty array for unauthenticated users
+        console.log('GET /api/lists - unauthenticated user, returning empty array');
+        return res.json([]);
+      }
+      
+      const userId = user.id;
       console.log(`GET /api/lists - userId: ${userId}`);
       
       const lists = await storage.listLists(userId);
