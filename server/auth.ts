@@ -71,6 +71,11 @@ async function verifyUser(req: Request): Promise<SelectUser | null> {
             email: token?.substring(0, 10) + '...',
             timestamp 
           });
+          // For GET/PUT/DELETE requests, if email header auth fails, don't continue
+          if (req.method !== 'POST') {
+            console.log('❌ Header authentication failed for non-POST request - aborting', { timestamp });
+            return null;
+          }
         }
       } catch (error) {
         console.error('💥 Email header authentication failed:', { 
@@ -109,8 +114,13 @@ async function verifyUser(req: Request): Promise<SelectUser | null> {
     timestamp
   });
 
-  if (!email) {
-    console.log('❌ AUTHENTICATION FAILED: No email provided in request body or header', { timestamp });
+  // Only require email in body for POST requests (user creation/sync)
+  // For GET requests, we should have already authenticated via header
+  if (!email && req.method === 'POST') {
+    console.log('❌ AUTHENTICATION FAILED: No email provided for POST request', { timestamp });
+    return null;
+  } else if (!email && req.method !== 'POST') {
+    console.log('❌ AUTHENTICATION FAILED: No valid authorization header for GET request', { timestamp });
     return null;
   }
 
