@@ -988,7 +988,7 @@ export function registerRoutes(app: Express) {
     }
 
     try {
-      const userId = getUserId(req);
+      const userId = await getUserId(req);
       const listId = await storage.getNextListId();
       
       // Extract custom search targets from contactSearchConfig
