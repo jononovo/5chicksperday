@@ -1,0 +1,507 @@
+index-JhuSfx3d.js:1744 Starting Firebase initialization... {timestamp: '2025-07-01T16:18:44.157Z', domain: '5ducks.ai'}
+index-JhuSfx3d.js:1744 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-JhuSfx3d.js:1744 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-JhuSfx3d.js:1746 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-07-01T16:18:44.159Z'}
+index-JhuSfx3d.js:1746 Setting up Firebase auth state listener
+index-JhuSfx3d.js:1746 Firebase auth state changed: undefined
+index-JhuSfx3d.js:1746 Firebase persistence set to LOCAL
+index-JhuSfx3d.js:49 
+            
+            
+           GET https://5ducks.ai/api/user 401 (Unauthorized)
+(anonymous) @ index-JhuSfx3d.js:49
+i @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+fetch @ index-JhuSfx3d.js:49
+gl @ index-JhuSfx3d.js:49
+onSubscribe @ index-JhuSfx3d.js:49
+subscribe @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Dk @ index-JhuSfx3d.js:39
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+index-JhuSfx3d.js:1746 User signed out, removed auth token
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-C4uYzPAR.js:29 No saved search state found or session data already restored
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+index-JhuSfx3d.js:49 
+            
+            
+           GET https://5ducks.ai/api/lists 401 (Unauthorized)
+(anonymous) @ index-JhuSfx3d.js:49
+i @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+fetch @ index-JhuSfx3d.js:49
+gl @ index-JhuSfx3d.js:49
+onSubscribe @ index-JhuSfx3d.js:49
+subscribe @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Dk @ index-JhuSfx3d.js:39
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+index-JhuSfx3d.js:49 Query error for /api/lists: Error: 401: {"error":"Not authenticated"}
+    at ZP (index-JhuSfx3d.js:49:42832)
+    at async index-JhuSfx3d.js:49:44014
+(anonymous) @ index-JhuSfx3d.js:49
+await in (anonymous)
+i @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+fetch @ index-JhuSfx3d.js:49
+gl @ index-JhuSfx3d.js:49
+onSubscribe @ index-JhuSfx3d.js:49
+subscribe @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Dk @ index-JhuSfx3d.js:39
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+index-JhuSfx3d.js:49 
+            
+            
+           GET https://5ducks.ai/api/search-approaches 401 (Unauthorized)
+(anonymous) @ index-JhuSfx3d.js:49
+i @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+fetch @ index-JhuSfx3d.js:49
+gl @ index-JhuSfx3d.js:49
+onSubscribe @ index-JhuSfx3d.js:49
+subscribe @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Dk @ index-JhuSfx3d.js:39
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+index-JhuSfx3d.js:49 Query error for /api/search-approaches: Error: 401: {"error":"Not authenticated"}
+    at ZP (index-JhuSfx3d.js:49:42832)
+    at async index-JhuSfx3d.js:49:44014
+(anonymous) @ index-JhuSfx3d.js:49
+await in (anonymous)
+i @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+fetch @ index-JhuSfx3d.js:49
+gl @ index-JhuSfx3d.js:49
+onSubscribe @ index-JhuSfx3d.js:49
+subscribe @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Dk @ index-JhuSfx3d.js:39
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+home-C4uYzPAR.js:29 Skipping localStorage save - no meaningful data to save
+index-JhuSfx3d.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-JhuSfx3d.js:1746 Calling signInWithPopup...
+index-JhuSfx3d.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-JhuSfx3d.js:1564
+index-JhuSfx3d.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-JhuSfx3d.js:1564
+index-JhuSfx3d.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-JhuSfx3d.js:1564
+index-JhuSfx3d.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-JhuSfx3d.js:1564
+index-JhuSfx3d.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-JhuSfx3d.js:1564
+index-JhuSfx3d.js:1564 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-JhuSfx3d.js:1564
+index-JhuSfx3d.js:1746 Firebase auth state changed: jon@codetribe.com
+index-JhuSfx3d.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, domain: '5ducks.ai'}
+index-JhuSfx3d.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-JhuSfx3d.js:1669
+cleanUp @ index-JhuSfx3d.js:1564
+unregisterAndCleanUp @ index-JhuSfx3d.js:1549
+resolve @ index-JhuSfx3d.js:1549
+onAuthEvent @ index-JhuSfx3d.js:1549
+index-JhuSfx3d.js:1669 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-JhuSfx3d.js:1669
+cleanUp @ index-JhuSfx3d.js:1564
+unregisterAndCleanUp @ index-JhuSfx3d.js:1549
+resolve @ index-JhuSfx3d.js:1549
+onAuthEvent @ index-JhuSfx3d.js:1549
+index-JhuSfx3d.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-JhuSfx3d.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-07-01T16:19:00.931Z'}
+index-JhuSfx3d.js:1746 Google sign-in successful, syncing with backend {email: 'jon@...', displayName: 'Jonathan Novotny'}
+index-JhuSfx3d.js:1746 OAuth credential extracted: {hasCredential: true, hasAccessToken: true, accessTokenLength: 222, timestamp: '2025-07-01T16:19:00.932Z'}
+index-JhuSfx3d.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: true, domain: '5ducks.ai'}
+index-JhuSfx3d.js:1746 Auth token set successfully: {uid: 'zIQDtEiUW4S31UxzqafpvCN9Tz63', email: 'jon@...', timestamp: '2025-07-01T16:19:01.070Z'}
+index-JhuSfx3d.js:1746 Successfully synced with backend
+index-JhuSfx3d.js:1746 Stored user email for authentication: jon@codetribe.com
+index-JhuSfx3d.js:1746 Successfully synced with backend
+index-JhuSfx3d.js:1746 Stored user email for authentication: jon@codetribe.com
+home-C4uYzPAR.js:29 Registration success detected, triggering welcome notification
+home-C4uYzPAR.js:29 Extracted guest data: {originalQuery: 'Recently exited startups in Miami'}
+home-C4uYzPAR.js:29 Guest data cleared successfully
+home-C4uYzPAR.js:29 Restored guest query to input: Recently exited startups in Miami
+index-JhuSfx3d.js:49 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-07-01T16:19:01.561Z'}
+index-JhuSfx3d.js:49 
+            
+            
+           POST https://5ducks.ai/api/notifications/trigger 409 (Conflict)
+ld @ index-JhuSfx3d.js:49
+triggerNotification @ home-C4uYzPAR.js:27
+s @ home-C4uYzPAR.js:29
+(anonymous) @ index-JhuSfx3d.js:1746
+setTimeout
+(anonymous) @ index-JhuSfx3d.js:1746
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+(anonymous) @ index-JhuSfx3d.js:41
+setTimeout
+s @ index-JhuSfx3d.js:49
+o @ index-JhuSfx3d.js:49
+batch @ index-JhuSfx3d.js:49
+Or @ index-JhuSfx3d.js:49
+setData @ index-JhuSfx3d.js:49
+setQueryData @ index-JhuSfx3d.js:49
+d @ index-JhuSfx3d.js:1746
+await in d
+(anonymous) @ index-JhuSfx3d.js:1746
+(anonymous) @ index-JhuSfx3d.js:334
+(anonymous) @ index-JhuSfx3d.js:334
+Promise.then
+sendOne @ index-JhuSfx3d.js:334
+forEachObserver @ index-JhuSfx3d.js:334
+next @ index-JhuSfx3d.js:334
+notifyAuthListeners @ index-JhuSfx3d.js:979
+(anonymous) @ index-JhuSfx3d.js:979
+Promise.then
+queue @ index-JhuSfx3d.js:979
+_updateCurrentUser @ index-JhuSfx3d.js:979
+await in _updateCurrentUser
+xA @ index-JhuSfx3d.js:1294
+await in xA
+Cz @ index-JhuSfx3d.js:1534
+onAuthEvent @ index-JhuSfx3d.js:1549
+sendToConsumer @ index-JhuSfx3d.js:1594
+(anonymous) @ index-JhuSfx3d.js:1594
+onEvent @ index-JhuSfx3d.js:1594
+(anonymous) @ index-JhuSfx3d.js:1699
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-JhuSfx3d.js:49 API Request Error: POST /api/notifications/trigger {error: '409: {"shouldShow":false,"message":"Notification already shown or not found"}', timestamp: '2025-07-01T16:19:01.885Z'}
+ld @ index-JhuSfx3d.js:49
+await in ld
+triggerNotification @ home-C4uYzPAR.js:27
+s @ home-C4uYzPAR.js:29
+(anonymous) @ index-JhuSfx3d.js:1746
+setTimeout
+(anonymous) @ index-JhuSfx3d.js:1746
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+(anonymous) @ index-JhuSfx3d.js:41
+setTimeout
+s @ index-JhuSfx3d.js:49
+o @ index-JhuSfx3d.js:49
+batch @ index-JhuSfx3d.js:49
+Or @ index-JhuSfx3d.js:49
+setData @ index-JhuSfx3d.js:49
+setQueryData @ index-JhuSfx3d.js:49
+d @ index-JhuSfx3d.js:1746
+await in d
+(anonymous) @ index-JhuSfx3d.js:1746
+(anonymous) @ index-JhuSfx3d.js:334
+(anonymous) @ index-JhuSfx3d.js:334
+Promise.then
+sendOne @ index-JhuSfx3d.js:334
+forEachObserver @ index-JhuSfx3d.js:334
+next @ index-JhuSfx3d.js:334
+notifyAuthListeners @ index-JhuSfx3d.js:979
+(anonymous) @ index-JhuSfx3d.js:979
+Promise.then
+queue @ index-JhuSfx3d.js:979
+_updateCurrentUser @ index-JhuSfx3d.js:979
+await in _updateCurrentUser
+xA @ index-JhuSfx3d.js:1294
+await in xA
+Cz @ index-JhuSfx3d.js:1534
+onAuthEvent @ index-JhuSfx3d.js:1549
+sendToConsumer @ index-JhuSfx3d.js:1594
+(anonymous) @ index-JhuSfx3d.js:1594
+onEvent @ index-JhuSfx3d.js:1594
+(anonymous) @ index-JhuSfx3d.js:1699
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+home-C4uYzPAR.js:27 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at ZP (index-JhuSfx3d.js:49:42832)
+    at async ld (index-JhuSfx3d.js:49:43612)
+    at async triggerNotification (home-C4uYzPAR.js:27:4606)
+    at async s (home-C4uYzPAR.js:29:21071)
+triggerNotification @ home-C4uYzPAR.js:27
+await in triggerNotification
+s @ home-C4uYzPAR.js:29
+(anonymous) @ index-JhuSfx3d.js:1746
+setTimeout
+(anonymous) @ index-JhuSfx3d.js:1746
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+(anonymous) @ index-JhuSfx3d.js:41
+setTimeout
+s @ index-JhuSfx3d.js:49
+o @ index-JhuSfx3d.js:49
+batch @ index-JhuSfx3d.js:49
+Or @ index-JhuSfx3d.js:49
+setData @ index-JhuSfx3d.js:49
+setQueryData @ index-JhuSfx3d.js:49
+d @ index-JhuSfx3d.js:1746
+await in d
+(anonymous) @ index-JhuSfx3d.js:1746
+(anonymous) @ index-JhuSfx3d.js:334
+(anonymous) @ index-JhuSfx3d.js:334
+Promise.then
+sendOne @ index-JhuSfx3d.js:334
+forEachObserver @ index-JhuSfx3d.js:334
+next @ index-JhuSfx3d.js:334
+notifyAuthListeners @ index-JhuSfx3d.js:979
+(anonymous) @ index-JhuSfx3d.js:979
+Promise.then
+queue @ index-JhuSfx3d.js:979
+_updateCurrentUser @ index-JhuSfx3d.js:979
+await in _updateCurrentUser
+xA @ index-JhuSfx3d.js:1294
+await in xA
+Cz @ index-JhuSfx3d.js:1534
+onAuthEvent @ index-JhuSfx3d.js:1549
+sendToConsumer @ index-JhuSfx3d.js:1594
+(anonymous) @ index-JhuSfx3d.js:1594
+onEvent @ index-JhuSfx3d.js:1594
+(anonymous) @ index-JhuSfx3d.js:1699
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+home-C4uYzPAR.js:29 Saving search state: {query: 'Recently exited startups in Miami', resultsCount: undefined, listId: null, companies: undefined}
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+index-JhuSfx3d.js:49 API Request: GET /api/gmail/status {hasData: false, timestamp: '2025-07-01T16:19:20.756Z'}
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+index-JhuSfx3d.js:49 API Request: POST /api/send-gmail {hasData: true, timestamp: '2025-07-01T16:19:21.087Z'}
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+outreach-QLS42Eab.js:55 Page focused - invalidating contact caches for fresh data
+outreach-QLS42Eab.js:55 QuickTemplates - Loaded templates: []
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-C4uYzPAR.js:29 No saved search state found or session data already restored
+prompt-editor-oCBI9Cwx.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-C4uYzPAR.js:29 Registration success detected, triggering welcome notification
+home-C4uYzPAR.js:29 Extracted guest data: {originalQuery: 'Recently exited startups in Miami'}
+home-C4uYzPAR.js:29 Guest data cleared successfully
+home-C4uYzPAR.js:29 Restored guest query to input: Recently exited startups in Miami
+index-JhuSfx3d.js:49 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-07-01T16:21:47.863Z'}
+index-JhuSfx3d.js:49 
+            
+            
+           POST https://5ducks.ai/api/notifications/trigger 409 (Conflict)
+ld @ index-JhuSfx3d.js:49
+triggerNotification @ home-C4uYzPAR.js:27
+s @ home-C4uYzPAR.js:29
+(anonymous) @ index-JhuSfx3d.js:1746
+setTimeout
+(anonymous) @ index-JhuSfx3d.js:1746
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+index-JhuSfx3d.js:49 API Request Error: POST /api/notifications/trigger {error: '409: {"shouldShow":false,"message":"Notification already shown or not found"}', timestamp: '2025-07-01T16:21:48.163Z'}
+ld @ index-JhuSfx3d.js:49
+await in ld
+triggerNotification @ home-C4uYzPAR.js:27
+s @ home-C4uYzPAR.js:29
+(anonymous) @ index-JhuSfx3d.js:1746
+setTimeout
+(anonymous) @ index-JhuSfx3d.js:1746
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+home-C4uYzPAR.js:27 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at ZP (index-JhuSfx3d.js:49:42832)
+    at async ld (index-JhuSfx3d.js:49:43612)
+    at async triggerNotification (home-C4uYzPAR.js:27:4606)
+    at async s (home-C4uYzPAR.js:29:21071)
+triggerNotification @ home-C4uYzPAR.js:27
+await in triggerNotification
+s @ home-C4uYzPAR.js:29
+(anonymous) @ index-JhuSfx3d.js:1746
+setTimeout
+(anonymous) @ index-JhuSfx3d.js:1746
+Qf @ index-JhuSfx3d.js:41
+Ho @ index-JhuSfx3d.js:41
+ew @ index-JhuSfx3d.js:41
+ui @ index-JhuSfx3d.js:39
+sF @ index-JhuSfx3d.js:41
+vi @ index-JhuSfx3d.js:41
+hP @ index-JhuSfx3d.js:41
+_ @ index-JhuSfx3d.js:26
+F @ index-JhuSfx3d.js:26
+home-C4uYzPAR.js:29 Saving search state: {query: 'Recently exited startups in Miami', resultsCount: undefined, listId: null, companies: undefined}
+prompt-editor-oCBI9Cwx.js:57 Analyzing search query...
+prompt-editor-oCBI9Cwx.js:57 Preparing to search for companies, contacts, and emails...
+prompt-editor-oCBI9Cwx.js:57 Initiating company search process...
+prompt-editor-oCBI9Cwx.js:57 Sending request to company discovery API...
+prompt-editor-oCBI9Cwx.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-C4uYzPAR.js:29 Created search session: search_1751386909142_q8zkb1fax for query: Recently exited startups in Miami
+home-C4uYzPAR.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-oCBI9Cwx.js:57 Created session search_1751386909142_q8zkb1fax for query: Recently exited startups in Miami
+prompt-editor-oCBI9Cwx.js:57 Quick search with strategy: 17
+index-JhuSfx3d.js:49 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T16:21:49.142Z'}
+home-C4uYzPAR.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751386909142_q8zkb1fax 500 (Internal Server Error)
+cleanupActiveSessions @ home-C4uYzPAR.js:29
+createSession @ home-C4uYzPAR.js:29
+mutationFn @ prompt-editor-oCBI9Cwx.js:57
+await in mutationFn
+fn @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+execute @ index-JhuSfx3d.js:49
+await in execute
+mutate @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Y @ prompt-editor-oCBI9Cwx.js:57
+_L @ index-JhuSfx3d.js:38
+EL @ index-JhuSfx3d.js:38
+CL @ index-JhuSfx3d.js:38
+Tx @ index-JhuSfx3d.js:38
+xk @ index-JhuSfx3d.js:38
+(anonymous) @ index-JhuSfx3d.js:38
+Zy @ index-JhuSfx3d.js:41
+$1 @ index-JhuSfx3d.js:38
+tp @ index-JhuSfx3d.js:38
+Ty @ index-JhuSfx3d.js:38
+zL @ index-JhuSfx3d.js:38
+home-C4uYzPAR.js:29 Cleaned up session: search_1751386909142_q8zkb1fax
+home-C4uYzPAR.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+index-JhuSfx3d.js:49 
+            
+            
+           POST https://5ducks.ai/api/companies/quick-search 500 (Internal Server Error)
+ld @ index-JhuSfx3d.js:49
+mutationFn @ prompt-editor-oCBI9Cwx.js:57
+await in mutationFn
+fn @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+execute @ index-JhuSfx3d.js:49
+await in execute
+mutate @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Y @ prompt-editor-oCBI9Cwx.js:57
+_L @ index-JhuSfx3d.js:38
+EL @ index-JhuSfx3d.js:38
+CL @ index-JhuSfx3d.js:38
+Tx @ index-JhuSfx3d.js:38
+xk @ index-JhuSfx3d.js:38
+(anonymous) @ index-JhuSfx3d.js:38
+Zy @ index-JhuSfx3d.js:41
+$1 @ index-JhuSfx3d.js:38
+tp @ index-JhuSfx3d.js:38
+Ty @ index-JhuSfx3d.js:38
+zL @ index-JhuSfx3d.js:38
+index-JhuSfx3d.js:49 API Request Error: POST /api/companies/quick-search {error: '500: Internal Server Error', timestamp: '2025-07-01T16:21:49.230Z'}
+ld @ index-JhuSfx3d.js:49
+await in ld
+mutationFn @ prompt-editor-oCBI9Cwx.js:57
+await in mutationFn
+fn @ index-JhuSfx3d.js:49
+x @ index-JhuSfx3d.js:49
+start @ index-JhuSfx3d.js:49
+execute @ index-JhuSfx3d.js:49
+await in execute
+mutate @ index-JhuSfx3d.js:49
+(anonymous) @ index-JhuSfx3d.js:49
+Y @ prompt-editor-oCBI9Cwx.js:57
+_L @ index-JhuSfx3d.js:38
+EL @ index-JhuSfx3d.js:38
+CL @ index-JhuSfx3d.js:38
+Tx @ index-JhuSfx3d.js:38
+xk @ index-JhuSfx3d.js:38
+(anonymous) @ index-JhuSfx3d.js:38
+Zy @ index-JhuSfx3d.js:41
+$1 @ index-JhuSfx3d.js:38
+tp @ index-JhuSfx3d.js:38
+Ty @ index-JhuSfx3d.js:38
+zL @ index-JhuSfx3d.js:38
