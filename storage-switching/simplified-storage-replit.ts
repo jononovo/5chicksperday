@@ -65,9 +65,18 @@ export class ReplitStorage implements IStorage {
   
   private async getNextId(entity: string): Promise<number> {
     const key = `counter:${entity}`;
+    
+    // Use timestamp-based ID to ensure uniqueness
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    const uniqueId = parseInt(`${timestamp}${random}`.slice(-8)); // Last 8 digits for reasonable ID size
+    
+    // Still maintain counter for reference, but don't rely on it for uniqueness
     const current = await this.get<number>(key) || 0;
-    const next = current + 1;
+    const next = Math.max(current + 1, uniqueId);
     await this.set(key, next);
+    
+    console.log(`Generated unique ID for ${entity}: ${next}`);
     return next;
   }
 
@@ -328,6 +337,8 @@ export class ReplitStorage implements IStorage {
 
   // @ts-ignore
   async createList(data: InsertList & { userId: number }): Promise<List> {
+    console.log('Creating list with data:', data);
+    
     const id = await this.getNextId('list');
     const listId = await this.getNextListId();
     const now = new Date().toISOString();
@@ -339,13 +350,17 @@ export class ReplitStorage implements IStorage {
       createdAt: now
     };
     
+    console.log('Generated list object:', list);
+    
     // Store the list
     await this.set(`list:${id}`, list);
+    console.log(`Stored list with key: list:${id}`);
     
     // Add to user's lists (add at beginning for newest-first order)
     const userLists = await this.get<number[]>(`lists:user:${data.userId}`) || [];
     userLists.unshift(id);
     await this.set(`lists:user:${data.userId}`, userLists);
+    console.log(`Updated user lists for user ${data.userId}:`, userLists);
     
     // @ts-ignore: Date handling issues
     return list;
