@@ -1,0 +1,66 @@
+Registration success detected, triggering welcome notification
+Extracted guest data: 
+Object {originalQuery: "cardiologists in boston"}
+Guest data cleared successfully
+Restored guest query to input: cardiologists in boston
+API Request: POST /api/notifications/trigger 
+Object {hasData: true, timestamp: "2025-07-01T18:09:39.648Z"}
+Registration success detected, triggering welcome notification
+Extracted guest data: 
+Object {originalQuery: null}
+Guest data cleared successfully
+API Request: POST /api/notifications/trigger 
+Object {hasData: true, timestamp: "2025-07-01T18:09:39.715Z"}
+Saving search state: 
+Object {query: "cardiologists in boston", resultsCount: undefined, listId: null, companies: undefined}
+API Request: POST /api/notifications/mark-shown 
+Object {hasData: true, timestamp: "2025-07-01T18:09:41.842Z"}
+Analyzing search query...
+Preparing to search for companies and contacts...
+Initiating company search process...
+Sending request to company discovery API...
+[Session Management] Cleaning up active sessions before starting new search...
+Created search session: search_1751393386152_0njl8kxt5 for query: cardiologists in boston
+[Session Cleanup] Found 1 active sessions, terminating...
+Created session search_1751393386152_0njl8kxt5 for query: cardiologists in boston
+Quick search with strategy: 17
+API Request: POST /api/companies/quick-search 
+Object {hasData: true, timestamp: "2025-07-01T18:09:46.153Z"}
+Cleaned up session: search_1751393386152_0njl8kxt5
+[Session Cleanup] Completed cleanup of 1 sessions
+Processing company results...
+Found 7 companies matching your search
+Started polling for session search_1751393386152_0njl8kxt5 completion
+Companies received: 7
+Starting contact discovery process...
+Searching for key decision makers and contacts...
+Sending comprehensive search request to API...
+This process may take a moment while we find the most relevant contacts...
+API Request: POST /api/companies/search 
+Object {hasData: true, timestamp: "2025-07-01T18:09:52.556Z"}
+CompanyTable received companies: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+Saving search state: 
+Object {query: "cardiologists in boston", resultsCount: 7, listId: null, companies: Array(7)}
+`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Contact discovery completed successfully
+Found 86 contacts across 7 companies
+Processing and organizing results...
+Session search_1751393386152_0njl8kxt5 completed with full results
+[Database Sync] Invalidating cache to force fresh queries...
+Search process completed!
+[Database Sync] Cache invalidated, sending results to UI...
+=== PARENT COMPONENT: handleSearchResults called ===
+Received query: cardiologists in boston
+Received results count: 7
+Current component state - query: cardiologists in boston
+Current component state - results count: 7
+Complete results received with contacts: 7
+Companies reordered by contact count: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+=== PARENT COMPONENT: State updated ===
