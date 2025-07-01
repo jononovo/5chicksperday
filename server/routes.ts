@@ -99,7 +99,7 @@ async function getUserId(req: express.Request): Promise<number> {
   }
   
   console.log('No authenticated user found - using demo user ID for compatibility', {
-    isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+    isAuthenticated: !!(req as any).user,
     hasUser: !!req.user,
     hasFirebaseUser: !!(req as any).firebaseUser,
     path: req.path,
@@ -1192,9 +1192,8 @@ export function registerRoutes(app: Express) {
 
   // Quick company search endpoint - returns companies immediately without waiting for contacts
   app.post("/api/companies/quick-search", async (req, res) => {
-    // For compatibility with the existing search functionality
-    // This temporary fix uses a default user ID if authentication fails
-    const userId = req.isAuthenticated() && req.user ? (req.user as any).id : 1;
+    // Get authenticated user or use demo user for non-authenticated requests
+    const userId = (req as any).user?.id || await getUserId(req);
     
     const { query, strategyId, contactSearchConfig, sessionId, searchType } = req.body;
 
@@ -1211,7 +1210,7 @@ export function registerRoutes(app: Express) {
       console.log(`[Quick Search] Search type: ${searchType || 'emails'}`);
       
       // Credit blocking check: Prevent searches if user has negative balance
-      if (req.isAuthenticated() && req.user) {
+      if ((req as any).user) {
         const credits = await CreditService.getUserCredits((req.user as any).id);
         if (credits.currentBalance < 0) {
           return res.status(402).json({
@@ -1286,7 +1285,7 @@ export function registerRoutes(app: Express) {
       }
       
       // Pre-response billing: Deduct credits based on actual search type selected
-      if (req.isAuthenticated() && req.user && companies.length > 0) {
+      if ((req as any).user && companies.length > 0) {
         try {
           // Map frontend search type to backend search type for billing
           function mapSearchTypeToCredits(frontendSearchType: string): SearchType {
