@@ -2,7 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
-import { storage } from "../storage-switching/storage-switcher";
+import { storage } from "../storage-switching/simplified-storage-replit";
 
 const app = express();
 
