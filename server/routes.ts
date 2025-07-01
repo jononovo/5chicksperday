@@ -1583,6 +1583,7 @@ export function registerRoutes(app: Express) {
                 nameConfidenceScore: contact.nameConfidenceScore ?? null,
                 userFeedbackScore: null,
                 feedbackCount: 0,
+                userId: userId,
               })
             )
           );
