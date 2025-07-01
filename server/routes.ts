@@ -1330,9 +1330,8 @@ export function registerRoutes(app: Express) {
 
   // Companies search endpoint
   app.post("/api/companies/search", async (req, res) => {
-    // For compatibility with the existing search functionality
-    // This temporary fix uses a default user ID if authentication fails
-    const userId = req.isAuthenticated() && req.user ? (req.user as any).id : 1;
+    // Get authenticated user or use demo user for non-authenticated requests
+    const userId = (req as any).user?.id || await getUserId(req);
     
     const { query, strategyId, includeContacts = true, contactSearchConfig, sessionId } = req.body;
 
@@ -2237,8 +2236,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   // User Preferences
   app.get("/api/user/preferences", async (req, res) => {
     try {
-      // For compatibility with the existing functionality
-      const userId = req.isAuthenticated() && req.user ? (req.user as any).id : 1;
+      // Get authenticated user or use demo user for non-authenticated requests
+      const userId = (req as any).user?.id || await getUserId(req);
       
       const preferences = await storage.getUserPreferences(userId);
       res.json(preferences || {});
