@@ -899,7 +899,7 @@ export function registerRoutes(app: Express) {
     }
 
     try {
-      const userId = getUserId(req);
+      const firebaseUID = getFirebaseUID(req);
       const listId = await storage.getNextListId();
       
       // Extract custom search targets from contactSearchConfig
@@ -913,12 +913,11 @@ export function registerRoutes(app: Express) {
         }
       }
       
-      const list = await storage.createList({
+      const list = await storage.createList(firebaseUID, {
         listId,
         prompt,
         resultCount: companies.length,
-        customSearchTargets: customSearchTargets.length > 0 ? customSearchTargets : null,
-        userId: userId
+        customSearchTargets: customSearchTargets.length > 0 ? customSearchTargets : null
       });
 
       await Promise.all(
@@ -939,11 +938,11 @@ export function registerRoutes(app: Express) {
   // Update list endpoint
   app.put("/api/lists/:listId", verifyFirebaseToken, async (req, res) => {
     try {
-      const userId = getUserId(req);
+      const firebaseUID = getFirebaseUID(req);
       const listId = parseInt(req.params.listId);
       const { companies, prompt, contactSearchConfig } = req.body;
       
-      console.log(`PUT /api/lists/${listId} called by user ${userId} with ${companies?.length || 0} companies`);
+      console.log(`PUT /api/lists/${listId} called by user ${firebaseUID} with ${companies?.length || 0} companies`);
       
       // Validate listId parameter
       if (isNaN(listId)) {
@@ -954,15 +953,15 @@ export function registerRoutes(app: Express) {
       }
       
       // Check if list exists and user has permission
-      const existingList = await storage.getList(listId, userId);
+      const existingList = await storage.getList(listId, firebaseUID);
       if (!existingList) {
-        console.log(`List update failed: List ${listId} not found for user ${userId}`);
+        console.log(`List update failed: List ${listId} not found for user ${firebaseUID}`);
         return res.status(404).json({
           message: "List not found or you don't have permission to update it"
         });
       }
       
-      console.log(`Found existing list ${listId} for user ${userId}: ${existingList.name}`);
+      console.log(`Found existing list ${listId} for user ${firebaseUID}: ${existingList.name}`);
       
       // Validate companies array
       if (!Array.isArray(companies)) {
@@ -977,14 +976,14 @@ export function registerRoutes(app: Express) {
           if (!company.id || typeof company.id !== 'number') {
             return { id: company.id, exists: false, error: 'Invalid company ID' };
           }
-          const exists = await storage.getCompany(company.id, userId);
+          const exists = await storage.getCompany(company.id, firebaseUID);
           return { id: company.id, exists: !!exists };
         })
       );
       
       const invalidCompanies = companyValidation.filter(c => !c.exists);
       if (invalidCompanies.length > 0) {
-        console.log(`List update failed: Invalid companies for user ${userId}:`, invalidCompanies.map(c => c.id));
+        console.log(`List update failed: Invalid companies for user ${firebaseUID}:`, invalidCompanies.map(c => c.id));
         return res.status(400).json({
           message: `Invalid or unauthorized companies: ${invalidCompanies.map(c => c.id).join(', ')}`
         });
@@ -1006,7 +1005,7 @@ export function registerRoutes(app: Express) {
         prompt,
         resultCount: companies.length,
         customSearchTargets: customSearchTargets.length > 0 ? customSearchTargets : null
-      }, userId);
+      });
       
       if (!updated) {
         console.log(`List update failed: updateList returned null for list ${listId}`);

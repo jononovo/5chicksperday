@@ -1,0 +1,2455 @@
+index-BWDCTzw6.js:1564 Starting Firebase initialization... {timestamp: '2025-07-01T13:07:22.415Z', domain: '5ducks.ai'}
+index-BWDCTzw6.js:1564 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-BWDCTzw6.js:1564 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-BWDCTzw6.js:1566 Firebase initialized successfully: {domain: '5ducks.ai', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-07-01T13:07:22.417Z'}
+index-BWDCTzw6.js:1746 Setting up Firebase auth state listener
+index-BWDCTzw6.js:1746 Firebase auth state changed: undefined
+index-BWDCTzw6.js:1566 Firebase persistence set to LOCAL
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/firebase/user 401 (Unauthorized)
+(anonymous) @ index-BWDCTzw6.js:1566
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+yl @ index-BWDCTzw6.js:49
+onSubscribe @ index-BWDCTzw6.js:49
+subscribe @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Dk @ index-BWDCTzw6.js:39
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 User signed out, removed auth token
+prompt-editor-DfBMvHE-.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-DfBMvHE-.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-ChWZsyVF.js:29 Found localStorage data: {query: 'shakeshack', resultsCount: 7, hasContacts: false, listId: null}
+home-ChWZsyVF.js:29 Refreshing contact data from database to preserve emails after navigation
+home-ChWZsyVF.js:29 Companies before refresh: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 NAVIGATION: Restoring search state and refreshing from database
+home-ChWZsyVF.js:29 Refreshing contact data from database for navigation persistence...
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242755 {hasData: false, timestamp: '2025-07-01T13:07:22.755Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242755 {hasData: false, timestamp: '2025-07-01T13:07:22.755Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242755 {hasData: false, timestamp: '2025-07-01T13:07:22.755Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242755 {hasData: false, timestamp: '2025-07-01T13:07:22.755Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242756 {hasData: false, timestamp: '2025-07-01T13:07:22.756Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242756 {hasData: false, timestamp: '2025-07-01T13:07:22.756Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/6/contacts?t=1751375242756 {hasData: false, timestamp: '2025-07-01T13:07:22.756Z'}
+prompt-editor-DfBMvHE-.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-DfBMvHE-.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/search-approaches 401 (Unauthorized)
+(anonymous) @ index-BWDCTzw6.js:1566
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+yl @ index-BWDCTzw6.js:49
+onSubscribe @ index-BWDCTzw6.js:49
+subscribe @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Dk @ index-BWDCTzw6.js:39
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 Query error for /api/search-approaches: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+yl @ index-BWDCTzw6.js:49
+onSubscribe @ index-BWDCTzw6.js:49
+subscribe @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Dk @ index-BWDCTzw6.js:39
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242756 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 401 (Unauthorized)
+(anonymous) @ index-BWDCTzw6.js:1566
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+yl @ index-BWDCTzw6.js:49
+onSubscribe @ index-BWDCTzw6.js:49
+subscribe @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Dk @ index-BWDCTzw6.js:39
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242756 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:22.833Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 4)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 Query error for /api/lists: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+yl @ index-BWDCTzw6.js:49
+onSubscribe @ index-BWDCTzw6.js:49
+subscribe @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Dk @ index-BWDCTzw6.js:39
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242755 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242755 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:22.849Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 0)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242756 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242756 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:22.911Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 5)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242755 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242755 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:22.932Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 1)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242755 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242756 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242755 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:22.997Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 2)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242756 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:22.997Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 6)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/6/contacts?t=1751375242755 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/6/contacts?t=1751375242755 {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:07:23.104Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 6: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 3)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+(anonymous) @ home-ChWZsyVF.js:29
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+hP @ index-BWDCTzw6.js:41
+_ @ index-BWDCTzw6.js:26
+F @ index-BWDCTzw6.js:26
+home-ChWZsyVF.js:29 Contact data refresh completed from database
+home-ChWZsyVF.js:29 NAVIGATION: Database refresh completed with 0 emails
+home-ChWZsyVF.js:29 NAVIGATION: Companies after refresh: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'shakeshack', resultsCount: 7, listId: null, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Analyzing search query...
+prompt-editor-DfBMvHE-.js:57 Preparing to search for companies and contacts...
+prompt-editor-DfBMvHE-.js:57 Initiating company search process...
+prompt-editor-DfBMvHE-.js:57 Sending request to company discovery API...
+prompt-editor-DfBMvHE-.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-ChWZsyVF.js:29 Created search session: search_1751375246755_njkszh8sx for query: shakeshack
+home-ChWZsyVF.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-DfBMvHE-.js:57 Created session search_1751375246755_njkszh8sx for query: shakeshack
+prompt-editor-DfBMvHE-.js:57 Quick search with strategy: 17
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T13:07:26.755Z'}
+home-ChWZsyVF.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751375246755_njkszh8sx 404 (Not Found)
+cleanupActiveSessions @ home-ChWZsyVF.js:29
+createSession @ home-ChWZsyVF.js:29
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Cleaned up session: search_1751375246755_njkszh8sx
+home-ChWZsyVF.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+list-utils-C2dYKTwf.js:20 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+list-utils-C2dYKTwf.js:20 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+prompt-editor-DfBMvHE-.js:57 Processing company results...
+prompt-editor-DfBMvHE-.js:57 Found 7 companies matching your search
+prompt-editor-DfBMvHE-.js:57 Started polling for session search_1751375246755_njkszh8sx completion
+home-ChWZsyVF.js:29 Companies received: 7
+prompt-editor-DfBMvHE-.js:57 Starting contact discovery process...
+prompt-editor-DfBMvHE-.js:57 Searching for key decision makers and contacts...
+prompt-editor-DfBMvHE-.js:57 Sending comprehensive search request to API...
+prompt-editor-DfBMvHE-.js:57 This process may take a moment while we find the most relevant contacts...
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-07-01T13:07:39.795Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'shakeshack', resultsCount: 7, listId: null, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Contact discovery completed successfully
+prompt-editor-DfBMvHE-.js:57 Found 54 contacts across 7 companies
+prompt-editor-DfBMvHE-.js:57 Processing and organizing results...
+prompt-editor-DfBMvHE-.js:57 Session search_1751375246755_njkszh8sx completed with full results
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor-DfBMvHE-.js:57 Search process completed!
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Cache invalidated, sending results to UI...
+home-ChWZsyVF.js:29 === PARENT COMPONENT: handleSearchResults called ===
+home-ChWZsyVF.js:29 Received query: shakeshack
+home-ChWZsyVF.js:29 Received results count: 7
+home-ChWZsyVF.js:29 Current component state - query: shakeshack
+home-ChWZsyVF.js:29 Current component state - results count: 7
+home-ChWZsyVF.js:29 Complete results received with contacts: 7
+home-ChWZsyVF.js:29 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 === PARENT COMPONENT: State updated ===
+home-ChWZsyVF.js:29 New state - query: shakeshack
+home-ChWZsyVF.js:29 New state - results count: 7
+home-ChWZsyVF.js:29 handleSearchResults completed
+home-ChWZsyVF.js:29 Companies with contacts: 7 of 7
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 Auto-expanding first company to show contacts: Wendy's
+index-BWDCTzw6.js:1566 API Request: POST /api/lists {hasData: true, timestamp: '2025-07-01T13:08:01.552Z'}
+home-ChWZsyVF.js:29 Saving search state: {query: 'shakeshack', resultsCount: 7, listId: null, companies: Array(7)}
+index-BWDCTzw6.js:1566 
+            
+            
+           POST https://5ducks.ai/api/lists 401 (Unauthorized)
+fd @ index-BWDCTzw6.js:1566
+mutationFn @ home-ChWZsyVF.js:29
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: POST /api/lists {error: '401: {"error":"No valid authorization header found"}', timestamp: '2025-07-01T13:08:01.620Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+mutationFn @ home-ChWZsyVF.js:29
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Auto list creation failed: Error: 401: {"error":"No valid authorization header found"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async Object.mutationFn (home-ChWZsyVF.js:29:22180)
+onError @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1746 Starting Google sign-in process {environment: 'production', domain: '5ducks.ai', origin: 'https://5ducks.ai'}
+index-BWDCTzw6.js:1746 Calling signInWithPopup...
+index-BWDCTzw6.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-BWDCTzw6.js:1384
+index-BWDCTzw6.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-BWDCTzw6.js:1384
+index-BWDCTzw6.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-BWDCTzw6.js:1384
+index-BWDCTzw6.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-BWDCTzw6.js:1384
+index-BWDCTzw6.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-BWDCTzw6.js:1384
+index-BWDCTzw6.js:1384 Cross-Origin-Opener-Policy policy would block the window.closed call.
+e @ index-BWDCTzw6.js:1384
+index-BWDCTzw6.js:1746 Firebase auth state changed: jon@codetribe.com
+index-BWDCTzw6.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, hasRefreshToken: false, domain: '5ducks.ai'}
+index-BWDCTzw6.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-BWDCTzw6.js:1489
+cleanUp @ index-BWDCTzw6.js:1384
+unregisterAndCleanUp @ index-BWDCTzw6.js:1369
+resolve @ index-BWDCTzw6.js:1369
+onAuthEvent @ index-BWDCTzw6.js:1369
+index-BWDCTzw6.js:1489 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ index-BWDCTzw6.js:1489
+cleanUp @ index-BWDCTzw6.js:1384
+unregisterAndCleanUp @ index-BWDCTzw6.js:1369
+resolve @ index-BWDCTzw6.js:1369
+onAuthEvent @ index-BWDCTzw6.js:1369
+index-BWDCTzw6.js:1746 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, scopes: undefined, credential: {…}, …}
+index-BWDCTzw6.js:1746 Gmail API scopes granted (Frontend): {hasScope: false, scopeType: 'undefined', timestamp: '2025-07-01T13:08:23.492Z'}
+index-BWDCTzw6.js:1746 Google sign-in successful, syncing with backend {email: 'jon@...', displayName: 'Jonathan Novotny'}
+index-BWDCTzw6.js:1746 Making backend sync request {endpoint: '/api/google-auth', hasAccessToken: false, hasRefreshToken: false, domain: '5ducks.ai'}
+index-BWDCTzw6.js:1566 Auth token set successfully: {uid: 'zIQDtEiUW4S31UxzqafpvCN9Tz63', email: 'jon@...', timestamp: '2025-07-01T13:08:23.697Z'}
+index-BWDCTzw6.js:1746 Successfully synced with backend
+index-BWDCTzw6.js:1746 Successfully synced with backend
+home-ChWZsyVF.js:29 Registration success detected, triggering welcome notification
+home-ChWZsyVF.js:29 Extracted guest data: {originalQuery: 'shakeshack'}
+home-ChWZsyVF.js:29 Guest data cleared successfully
+home-ChWZsyVF.js:29 Restored guest query to input: shakeshack
+index-BWDCTzw6.js:1566 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-07-01T13:08:24.698Z'}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+d @ index-BWDCTzw6.js:1746
+await in d
+(anonymous) @ index-BWDCTzw6.js:1746
+(anonymous) @ index-BWDCTzw6.js:154
+(anonymous) @ index-BWDCTzw6.js:154
+Promise.then
+sendOne @ index-BWDCTzw6.js:154
+forEachObserver @ index-BWDCTzw6.js:154
+next @ index-BWDCTzw6.js:154
+notifyAuthListeners @ index-BWDCTzw6.js:799
+(anonymous) @ index-BWDCTzw6.js:799
+Promise.then
+queue @ index-BWDCTzw6.js:799
+_updateCurrentUser @ index-BWDCTzw6.js:799
+await in _updateCurrentUser
+AN @ index-BWDCTzw6.js:1114
+await in AN
+AU @ index-BWDCTzw6.js:1354
+onAuthEvent @ index-BWDCTzw6.js:1369
+sendToConsumer @ index-BWDCTzw6.js:1414
+(anonymous) @ index-BWDCTzw6.js:1414
+onEvent @ index-BWDCTzw6.js:1414
+(anonymous) @ index-BWDCTzw6.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-BWDCTzw6.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+d @ index-BWDCTzw6.js:1746
+await in d
+(anonymous) @ index-BWDCTzw6.js:1746
+(anonymous) @ index-BWDCTzw6.js:154
+(anonymous) @ index-BWDCTzw6.js:154
+Promise.then
+sendOne @ index-BWDCTzw6.js:154
+forEachObserver @ index-BWDCTzw6.js:154
+next @ index-BWDCTzw6.js:154
+notifyAuthListeners @ index-BWDCTzw6.js:799
+(anonymous) @ index-BWDCTzw6.js:799
+Promise.then
+queue @ index-BWDCTzw6.js:799
+_updateCurrentUser @ index-BWDCTzw6.js:799
+await in _updateCurrentUser
+AN @ index-BWDCTzw6.js:1114
+await in AN
+AU @ index-BWDCTzw6.js:1354
+onAuthEvent @ index-BWDCTzw6.js:1369
+sendToConsumer @ index-BWDCTzw6.js:1414
+(anonymous) @ index-BWDCTzw6.js:1414
+onEvent @ index-BWDCTzw6.js:1414
+(anonymous) @ index-BWDCTzw6.js:1519
+Rm @ cb=gapi.loaded_0?le=scs:194
+(anonymous) @ cb=gapi.loaded_0?le=scs:194
+gl @ cb=gapi.loaded_0?le=scs:173
+pl @ cb=gapi.loaded_0?le=scs:173
+Kk @ cb=gapi.loaded_0?le=scs:174
+Qk.FH @ cb=gapi.loaded_0?le=scs:167
+index-BWDCTzw6.js:1746 Query cache invalidated after successful authentication
+home-ChWZsyVF.js:29 Saving search state: {query: 'shakeshack', resultsCount: undefined, listId: null, companies: undefined}
+index-BWDCTzw6.js:1746 Query cache invalidated after successful authentication
+index-BWDCTzw6.js:1566 API Request: POST /api/notifications/mark-shown {hasData: true, timestamp: '2025-07-01T13:08:27.230Z'}
+list-utils-C2dYKTwf.js:20 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+list-utils-C2dYKTwf.js:20 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+prompt-editor-DfBMvHE-.js:57 Analyzing search query...
+prompt-editor-DfBMvHE-.js:57 Preparing to search for companies and contacts...
+prompt-editor-DfBMvHE-.js:57 Initiating company search process...
+prompt-editor-DfBMvHE-.js:57 Sending request to company discovery API...
+prompt-editor-DfBMvHE-.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-ChWZsyVF.js:29 Created search session: search_1751375321394_amos42j2i for query: solar in Boston
+home-ChWZsyVF.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-DfBMvHE-.js:57 Created session search_1751375321394_amos42j2i for query: solar in Boston
+prompt-editor-DfBMvHE-.js:57 Quick search with strategy: 17
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T13:08:41.395Z'}
+home-ChWZsyVF.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751375321394_amos42j2i 404 (Not Found)
+cleanupActiveSessions @ home-ChWZsyVF.js:29
+createSession @ home-ChWZsyVF.js:29
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Cleaned up session: search_1751375321394_amos42j2i
+home-ChWZsyVF.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Boston', resultsCount: undefined, listId: null, companies: undefined}
+prompt-editor-DfBMvHE-.js:57 Processing company results...
+prompt-editor-DfBMvHE-.js:57 Found 7 companies matching your search
+prompt-editor-DfBMvHE-.js:57 Started polling for session search_1751375321394_amos42j2i completion
+home-ChWZsyVF.js:29 Companies received: 7
+prompt-editor-DfBMvHE-.js:57 Starting contact discovery process...
+prompt-editor-DfBMvHE-.js:57 Searching for key decision makers and contacts...
+prompt-editor-DfBMvHE-.js:57 Sending comprehensive search request to API...
+prompt-editor-DfBMvHE-.js:57 This process may take a moment while we find the most relevant contacts...
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-07-01T13:08:47.483Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Boston', resultsCount: 7, listId: null, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Contact discovery completed successfully
+prompt-editor-DfBMvHE-.js:57 Found 18 contacts across 7 companies
+prompt-editor-DfBMvHE-.js:57 Processing and organizing results...
+prompt-editor-DfBMvHE-.js:57 Session search_1751375321394_amos42j2i completed with full results
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor-DfBMvHE-.js:57 Search process completed!
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Cache invalidated, sending results to UI...
+home-ChWZsyVF.js:29 === PARENT COMPONENT: handleSearchResults called ===
+home-ChWZsyVF.js:29 Received query: solar in Boston
+home-ChWZsyVF.js:29 Received results count: 7
+home-ChWZsyVF.js:29 Current component state - query: solar in Boston
+home-ChWZsyVF.js:29 Current component state - results count: 7
+home-ChWZsyVF.js:29 Complete results received with contacts: 7
+home-ChWZsyVF.js:29 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 === PARENT COMPONENT: State updated ===
+home-ChWZsyVF.js:29 New state - query: solar in Boston
+home-ChWZsyVF.js:29 New state - results count: 7
+home-ChWZsyVF.js:29 handleSearchResults completed
+home-ChWZsyVF.js:29 Companies with contacts: 5 of 7
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 Auto-expanding first company to show contacts: Boston Solar
+index-BWDCTzw6.js:1566 API Request: POST /api/lists {hasData: true, timestamp: '2025-07-01T13:09:00.864Z'}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Boston', resultsCount: 7, listId: undefined, companies: Array(7)}
+list-utils-C2dYKTwf.js:20 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+list-utils-C2dYKTwf.js:20 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+prompt-editor-DfBMvHE-.js:57 Analyzing search query...
+prompt-editor-DfBMvHE-.js:57 Preparing to search for companies and contacts...
+prompt-editor-DfBMvHE-.js:57 Initiating company search process...
+prompt-editor-DfBMvHE-.js:57 Sending request to company discovery API...
+prompt-editor-DfBMvHE-.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-ChWZsyVF.js:29 Created search session: search_1751375762247_yt8yl8czm for query: solar in maine
+home-ChWZsyVF.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-DfBMvHE-.js:57 Created session search_1751375762247_yt8yl8czm for query: solar in maine
+prompt-editor-DfBMvHE-.js:57 Quick search with strategy: 17
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T13:16:02.247Z'}
+home-ChWZsyVF.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751375762247_yt8yl8czm 404 (Not Found)
+cleanupActiveSessions @ home-ChWZsyVF.js:29
+createSession @ home-ChWZsyVF.js:29
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Cleaned up session: search_1751375762247_yt8yl8czm
+home-ChWZsyVF.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in maine', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Processing company results...
+prompt-editor-DfBMvHE-.js:57 Found 7 companies matching your search
+prompt-editor-DfBMvHE-.js:57 Started polling for session search_1751375762247_yt8yl8czm completion
+home-ChWZsyVF.js:29 Companies received: 7
+prompt-editor-DfBMvHE-.js:57 Starting contact discovery process...
+prompt-editor-DfBMvHE-.js:57 Searching for key decision makers and contacts...
+prompt-editor-DfBMvHE-.js:57 Sending comprehensive search request to API...
+prompt-editor-DfBMvHE-.js:57 This process may take a moment while we find the most relevant contacts...
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-07-01T13:16:14.933Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in maine', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Contact discovery completed successfully
+prompt-editor-DfBMvHE-.js:57 Found 14 contacts across 7 companies
+prompt-editor-DfBMvHE-.js:57 Processing and organizing results...
+prompt-editor-DfBMvHE-.js:57 Session search_1751375762247_yt8yl8czm completed with full results
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor-DfBMvHE-.js:57 Search process completed!
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Cache invalidated, sending results to UI...
+home-ChWZsyVF.js:29 === PARENT COMPONENT: handleSearchResults called ===
+home-ChWZsyVF.js:29 Received query: solar in maine
+home-ChWZsyVF.js:29 Received results count: 7
+home-ChWZsyVF.js:29 Current component state - query: solar in maine
+home-ChWZsyVF.js:29 Current component state - results count: 7
+home-ChWZsyVF.js:29 Complete results received with contacts: 7
+home-ChWZsyVF.js:29 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 === PARENT COMPONENT: State updated ===
+home-ChWZsyVF.js:29 New state - query: solar in maine
+home-ChWZsyVF.js:29 New state - results count: 7
+home-ChWZsyVF.js:29 handleSearchResults completed
+home-ChWZsyVF.js:29 Companies with contacts: 5 of 7
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BWDCTzw6.js:1566 API Request: POST /api/lists {hasData: true, timestamp: '2025-07-01T13:16:28.837Z'}
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in maine', resultsCount: 7, listId: undefined, companies: Array(7)}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+prompt-editor-DfBMvHE-.js:57 Analyzing search query...
+prompt-editor-DfBMvHE-.js:57 Preparing to search for companies, contacts, and emails...
+prompt-editor-DfBMvHE-.js:57 Initiating company search process...
+prompt-editor-DfBMvHE-.js:57 Sending request to company discovery API...
+prompt-editor-DfBMvHE-.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-ChWZsyVF.js:29 Created search session: search_1751376743540_xi7edfjgc for query: solar in Miami
+home-ChWZsyVF.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-DfBMvHE-.js:57 Created session search_1751376743540_xi7edfjgc for query: solar in Miami
+prompt-editor-DfBMvHE-.js:57 Quick search with strategy: 17
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T13:32:23.541Z'}
+home-ChWZsyVF.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751376743540_xi7edfjgc 404 (Not Found)
+cleanupActiveSessions @ home-ChWZsyVF.js:29
+createSession @ home-ChWZsyVF.js:29
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Cleaned up session: search_1751376743540_xi7edfjgc
+home-ChWZsyVF.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Miami', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Processing company results...
+prompt-editor-DfBMvHE-.js:57 Found 7 companies matching your search
+prompt-editor-DfBMvHE-.js:57 Started polling for session search_1751376743540_xi7edfjgc completion
+home-ChWZsyVF.js:29 Companies received: 7
+prompt-editor-DfBMvHE-.js:57 Starting contact discovery process...
+prompt-editor-DfBMvHE-.js:57 Searching for key decision makers and contacts...
+prompt-editor-DfBMvHE-.js:57 Sending comprehensive search request to API...
+prompt-editor-DfBMvHE-.js:57 This process may take a moment while we find the most relevant contacts...
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-07-01T13:32:29.965Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Miami', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Contact discovery completed successfully
+prompt-editor-DfBMvHE-.js:57 Found 20 contacts across 7 companies
+prompt-editor-DfBMvHE-.js:57 Processing and organizing results...
+prompt-editor-DfBMvHE-.js:57 Session search_1751376743540_xi7edfjgc completed with full results
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor-DfBMvHE-.js:57 Search process completed!
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Cache invalidated, sending results to UI...
+home-ChWZsyVF.js:29 === PARENT COMPONENT: handleSearchResults called ===
+home-ChWZsyVF.js:29 Received query: solar in Miami
+home-ChWZsyVF.js:29 Received results count: 7
+home-ChWZsyVF.js:29 Current component state - query: solar in Miami
+home-ChWZsyVF.js:29 Current component state - results count: 7
+home-ChWZsyVF.js:29 Complete results received with contacts: 7
+home-ChWZsyVF.js:29 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 === PARENT COMPONENT: State updated ===
+home-ChWZsyVF.js:29 New state - query: solar in Miami
+home-ChWZsyVF.js:29 New state - results count: 7
+home-ChWZsyVF.js:29 handleSearchResults completed
+home-ChWZsyVF.js:29 Companies with contacts: 5 of 7
+home-ChWZsyVF.js:29 Starting backend email orchestration for 7 companies
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/find-all-emails {hasData: true, timestamp: '2025-07-01T13:32:40.840Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BWDCTzw6.js:1566 API Request: POST /api/lists {hasData: true, timestamp: '2025-07-01T13:32:41.840Z'}
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Miami', resultsCount: 7, listId: undefined, companies: Array(7)}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Backend orchestration completed: {companiesProcessed: 7, contactsProcessed: 0, emailsFound: 0, sourceBreakdown: {…}}
+home-ChWZsyVF.js:29 EMAIL SEARCH COMPLETE: Starting complete database reload to ensure email persistence
+home-ChWZsyVF.js:29 Cleared all localStorage state
+home-ChWZsyVF.js:29 Fetching complete fresh data from database...
+home-ChWZsyVF.js:29 Refreshing contact data from database for navigation persistence...
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494139412/contacts?t=1751376764838 {hasData: false, timestamp: '2025-07-01T13:32:44.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494143874/contacts?t=1751376764838 {hasData: false, timestamp: '2025-07-01T13:32:44.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494153500/contacts?t=1751376764838 {hasData: false, timestamp: '2025-07-01T13:32:44.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494162774/contacts?t=1751376764839 {hasData: false, timestamp: '2025-07-01T13:32:44.839Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494175142/contacts?t=1751376764839 {hasData: false, timestamp: '2025-07-01T13:32:44.839Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494195390/contacts?t=1751376764839 {hasData: false, timestamp: '2025-07-01T13:32:44.839Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494205530/contacts?t=1751376764839 {hasData: false, timestamp: '2025-07-01T13:32:44.839Z'}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/17513767494139412/contacts?t=1751376764838 500 (Internal Server Error)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/17513767494139412/contacts?t=1751376764838 {error: '500: {"message":"Failed to fetch contacts"}', timestamp: '2025-07-01T13:32:45.176Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 17513767494139412: Error: 500: {"message":"Failed to fetch contacts"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 0)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+    at async at (home-ChWZsyVF.js:29:40062)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/17513767494143874/contacts?t=1751376764838 500 (Internal Server Error)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/17513767494143874/contacts?t=1751376764838 {error: '500: {"message":"Failed to fetch contacts"}', timestamp: '2025-07-01T13:32:45.188Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 17513767494143874: Error: 500: {"message":"Failed to fetch contacts"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 1)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+    at async at (home-ChWZsyVF.js:29:40062)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Refreshed 1 contacts for Solar Dynamics: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for PayOli Solar: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for Goldin Solar: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for Solar Prime USA: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for Volt Solar Energy: [{…}]
+home-ChWZsyVF.js:29 Contact data refresh completed from database
+home-ChWZsyVF.js:29 Database reload completed with 0 emails found
+home-ChWZsyVF.js:29 Complete state saved to localStorage with 0 emails
+home-ChWZsyVF.js:29 Email search completion: Database reload approach successful
+home-ChWZsyVF.js:29 No existing list to update - email results will be available for manual save
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494139412/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.284Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494143874/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.285Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494153500/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.285Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494162774/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.285Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494175142/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.285Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494195390/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.285Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513767494205530/contacts {hasData: false, timestamp: '2025-07-01T13:32:45.285Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/17513767494143874/contacts 500 (Internal Server Error)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/17513767494143874/contacts {error: '500: {"message":"Failed to fetch contacts"}', timestamp: '2025-07-01T13:32:45.607Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Failed to refresh contacts for Patriot Power Company: Error: 500: {"message":"Failed to fetch contacts"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:37949
+    at async Promise.all (index 1)
+    at async as (home-ChWZsyVF.js:29:37897)
+    at async at (home-ChWZsyVF.js:29:40801)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/17513767494139412/contacts 500 (Internal Server Error)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/17513767494139412/contacts {error: '500: {"message":"Failed to fetch contacts"}', timestamp: '2025-07-01T13:32:45.990Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Failed to refresh contacts for Smart Planet Solar: Error: 500: {"message":"Failed to fetch contacts"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:37949
+    at async Promise.all (index 0)
+    at async as (home-ChWZsyVF.js:29:37897)
+    at async at (home-ChWZsyVF.js:29:40801)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 finishSearchWithoutSave: Updated localStorage with refreshed data
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in Miami', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Analyzing search query...
+prompt-editor-DfBMvHE-.js:57 Preparing to search for companies, contacts, and emails...
+prompt-editor-DfBMvHE-.js:57 Initiating company search process...
+prompt-editor-DfBMvHE-.js:57 Sending request to company discovery API...
+prompt-editor-DfBMvHE-.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-ChWZsyVF.js:29 Created search session: search_1751376792552_9vcyh39zm for query: solar in boston
+home-ChWZsyVF.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-DfBMvHE-.js:57 Created session search_1751376792552_9vcyh39zm for query: solar in boston
+prompt-editor-DfBMvHE-.js:57 Quick search with strategy: 17
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T13:33:12.552Z'}
+home-ChWZsyVF.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751376792552_9vcyh39zm 404 (Not Found)
+cleanupActiveSessions @ home-ChWZsyVF.js:29
+createSession @ home-ChWZsyVF.js:29
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Cleaned up session: search_1751376792552_9vcyh39zm
+home-ChWZsyVF.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+index-BWDCTzw6.js:1566 
+            
+            
+           POST https://5ducks.ai/api/companies/quick-search 402 (Payment Required)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: POST /api/companies/quick-search {error: '402: {"message":"Account blocked due to insufficient credits","currentBalance":-200}', timestamp: '2025-07-01T13:33:12.951Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in boston', resultsCount: 7, listId: undefined, companies: Array(7)}
+list-utils-C2dYKTwf.js:20 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+list-utils-C2dYKTwf.js:20 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+index-BWDCTzw6.js:1566 API Request: POST /api/credits/easter-egg {hasData: true, timestamp: '2025-07-01T13:33:21.282Z'}
+home-ChWZsyVF.js:29 Saving search state: {query: 'free palestine', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Analyzing search query...
+prompt-editor-DfBMvHE-.js:57 Preparing to search for companies, contacts, and emails...
+prompt-editor-DfBMvHE-.js:57 Initiating company search process...
+prompt-editor-DfBMvHE-.js:57 Sending request to company discovery API...
+prompt-editor-DfBMvHE-.js:57 [Session Management] Cleaning up active sessions before starting new search...
+home-ChWZsyVF.js:29 Created search session: search_1751376803936_tnc665ska for query: solar in boston
+home-ChWZsyVF.js:29 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor-DfBMvHE-.js:57 Created session search_1751376803936_tnc665ska for query: solar in boston
+prompt-editor-DfBMvHE-.js:57 Quick search with strategy: 17
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-01T13:33:23.937Z'}
+home-ChWZsyVF.js:29 
+            
+            
+           DELETE https://5ducks.ai/api/search-sessions/search_1751376803936_tnc665ska 404 (Not Found)
+cleanupActiveSessions @ home-ChWZsyVF.js:29
+createSession @ home-ChWZsyVF.js:29
+mutationFn @ prompt-editor-DfBMvHE-.js:57
+await in mutationFn
+fn @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Cleaned up session: search_1751376803936_tnc665ska
+home-ChWZsyVF.js:29 [Session Cleanup] Completed cleanup of 1 sessions
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in boston', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Processing company results...
+prompt-editor-DfBMvHE-.js:57 Found 7 companies matching your search
+prompt-editor-DfBMvHE-.js:57 Started polling for session search_1751376803936_tnc665ska completion
+home-ChWZsyVF.js:29 Companies received: 7
+prompt-editor-DfBMvHE-.js:57 Starting contact discovery process...
+prompt-editor-DfBMvHE-.js:57 Searching for key decision makers and contacts...
+prompt-editor-DfBMvHE-.js:57 Sending comprehensive search request to API...
+prompt-editor-DfBMvHE-.js:57 This process may take a moment while we find the most relevant contacts...
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-07-01T13:33:35.452Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in boston', resultsCount: 7, listId: undefined, companies: Array(7)}
+prompt-editor-DfBMvHE-.js:57 Contact discovery completed successfully
+prompt-editor-DfBMvHE-.js:57 Found 27 contacts across 7 companies
+prompt-editor-DfBMvHE-.js:57 Processing and organizing results...
+prompt-editor-DfBMvHE-.js:57 Session search_1751376803936_tnc665ska completed with full results
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor-DfBMvHE-.js:57 Search process completed!
+prompt-editor-DfBMvHE-.js:57 [Database Sync] Cache invalidated, sending results to UI...
+home-ChWZsyVF.js:29 === PARENT COMPONENT: handleSearchResults called ===
+home-ChWZsyVF.js:29 Received query: solar in boston
+home-ChWZsyVF.js:29 Received results count: 7
+home-ChWZsyVF.js:29 Current component state - query: solar in boston
+home-ChWZsyVF.js:29 Current component state - results count: 7
+home-ChWZsyVF.js:29 Complete results received with contacts: 7
+home-ChWZsyVF.js:29 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home-ChWZsyVF.js:29 === PARENT COMPONENT: State updated ===
+home-ChWZsyVF.js:29 New state - query: solar in boston
+home-ChWZsyVF.js:29 New state - results count: 7
+home-ChWZsyVF.js:29 handleSearchResults completed
+home-ChWZsyVF.js:29 Companies with contacts: 6 of 7
+home-ChWZsyVF.js:29 Starting backend email orchestration for 7 companies
+index-BWDCTzw6.js:1566 API Request: POST /api/companies/find-all-emails {hasData: true, timestamp: '2025-07-01T13:33:49.841Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 Auto-expanding first company to show contacts: Brightway Energy
+index-BWDCTzw6.js:1566 API Request: POST /api/lists {hasData: true, timestamp: '2025-07-01T13:33:51.838Z'}
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in boston', resultsCount: 7, listId: undefined, companies: Array(7)}
+home-ChWZsyVF.js:29 Backend orchestration completed: {companiesProcessed: 7, contactsProcessed: 0, emailsFound: 0, sourceBreakdown: {…}}
+home-ChWZsyVF.js:29 EMAIL SEARCH COMPLETE: Starting complete database reload to ensure email persistence
+home-ChWZsyVF.js:29 Cleared all localStorage state
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/lists 500 (Internal Server Error)
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 Query error for /api/lists: Error: 500: {"message":"listIds is not iterable"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async index-BWDCTzw6.js:1566:3139
+(anonymous) @ index-BWDCTzw6.js:1566
+await in (anonymous)
+i @ index-BWDCTzw6.js:49
+x @ index-BWDCTzw6.js:49
+start @ index-BWDCTzw6.js:49
+fetch @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+refetchQueries @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+batch @ index-BWDCTzw6.js:49
+invalidateQueries @ index-BWDCTzw6.js:49
+onSuccess @ home-ChWZsyVF.js:29
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+Bt @ home-ChWZsyVF.js:29
+(anonymous) @ prompt-editor-DfBMvHE-.js:57
+setTimeout
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Fetching complete fresh data from database...
+home-ChWZsyVF.js:29 Refreshing contact data from database for navigation persistence...
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148741516/contacts?t=1751376833837 {hasData: false, timestamp: '2025-07-01T13:33:53.837Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148763484/contacts?t=1751376833837 {hasData: false, timestamp: '2025-07-01T13:33:53.837Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148775916/contacts?t=1751376833838 {hasData: false, timestamp: '2025-07-01T13:33:53.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148788296/contacts?t=1751376833838 {hasData: false, timestamp: '2025-07-01T13:33:53.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148793496/contacts?t=1751376833838 {hasData: false, timestamp: '2025-07-01T13:33:53.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148807788/contacts?t=1751376833838 {hasData: false, timestamp: '2025-07-01T13:33:53.838Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148837638/contacts?t=1751376833838 {hasData: false, timestamp: '2025-07-01T13:33:53.838Z'}
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/17513768148775916/contacts?t=1751376833838 500 (Internal Server Error)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/17513768148775916/contacts?t=1751376833838 {error: '500: {"message":"Failed to fetch contacts"}', timestamp: '2025-07-01T13:33:54.159Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Failed to refresh contacts for company 17513768148775916: Error: 500: {"message":"Failed to fetch contacts"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:17922
+    at async Promise.all (index 2)
+    at async Pe (home-ChWZsyVF.js:29:17857)
+    at async at (home-ChWZsyVF.js:29:40062)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+Pe @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Refreshed 1 contacts for My Generation Energy: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for NuWatt Energy: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for Great Sky Solar: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for All Energy Solar: [{…}]
+home-ChWZsyVF.js:29 Refreshed 1 contacts for Boston Solar: [{…}]
+home-ChWZsyVF.js:29 Refreshed 2 contacts for Brightway Energy: (2) [{…}, {…}]
+home-ChWZsyVF.js:29 Contact data refresh completed from database
+home-ChWZsyVF.js:29 Database reload completed with 0 emails found
+home-ChWZsyVF.js:29 Complete state saved to localStorage with 0 emails
+home-ChWZsyVF.js:29 Email search completion: Database reload approach successful
+home-ChWZsyVF.js:29 No existing list to update - email results will be available for manual save
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148741516/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.281Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148763484/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.281Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148775916/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.282Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148788296/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.282Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148793496/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.282Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148807788/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.282Z'}
+index-BWDCTzw6.js:1566 API Request: GET /api/companies/17513768148837638/contacts {hasData: false, timestamp: '2025-07-01T13:33:54.282Z'}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+index-BWDCTzw6.js:1566 
+            
+            
+           GET https://5ducks.ai/api/companies/17513768148775916/contacts 500 (Internal Server Error)
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+index-BWDCTzw6.js:1566 API Request Error: GET /api/companies/17513768148775916/contacts {error: '500: {"message":"Failed to fetch contacts"}', timestamp: '2025-07-01T13:33:54.683Z'}
+fd @ index-BWDCTzw6.js:1566
+await in fd
+(anonymous) @ home-ChWZsyVF.js:29
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 Failed to refresh contacts for Viridis Energy Solutions: Error: 500: {"message":"Failed to fetch contacts"}
+    at WN (index-BWDCTzw6.js:1566:1745)
+    at async fd (index-BWDCTzw6.js:1566:2626)
+    at async home-ChWZsyVF.js:29:37949
+    at async Promise.all (index 2)
+    at async as (home-ChWZsyVF.js:29:37897)
+    at async at (home-ChWZsyVF.js:29:40801)
+(anonymous) @ home-ChWZsyVF.js:29
+await in (anonymous)
+as @ home-ChWZsyVF.js:29
+at @ home-ChWZsyVF.js:29
+await in at
+(anonymous) @ home-ChWZsyVF.js:29
+setTimeout
+onSearchSuccess @ home-ChWZsyVF.js:29
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+onSuccess @ prompt-editor-DfBMvHE-.js:57
+execute @ index-BWDCTzw6.js:49
+await in execute
+mutate @ index-BWDCTzw6.js:49
+(anonymous) @ index-BWDCTzw6.js:49
+Y @ prompt-editor-DfBMvHE-.js:57
+onKeyDown @ prompt-editor-DfBMvHE-.js:57
+_L @ index-BWDCTzw6.js:38
+EL @ index-BWDCTzw6.js:38
+CL @ index-BWDCTzw6.js:38
+Tx @ index-BWDCTzw6.js:38
+xk @ index-BWDCTzw6.js:38
+(anonymous) @ index-BWDCTzw6.js:38
+Zy @ index-BWDCTzw6.js:41
+$1 @ index-BWDCTzw6.js:38
+tp @ index-BWDCTzw6.js:38
+Ty @ index-BWDCTzw6.js:38
+zL @ index-BWDCTzw6.js:38
+home-ChWZsyVF.js:29 finishSearchWithoutSave: Updated localStorage with refreshed data
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in boston', resultsCount: 0, listId: undefined, companies: Array(0)}
+company-table-ycBU13Xs.js:1 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 CompanyTable company details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+company-table-ycBU13Xs.js:1 Auto-expanding first company to show contacts: Boston Solar
+home-ChWZsyVF.js:29 Saving search state: {query: 'solar in boston', resultsCount: 7, listId: undefined, companies: Array(7)}
+list-utils-C2dYKTwf.js:20 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
+list-utils-C2dYKTwf.js:20 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ list-utils-C2dYKTwf.js:20
+Qf @ index-BWDCTzw6.js:41
+Ko @ index-BWDCTzw6.js:41
+sF @ index-BWDCTzw6.js:41
+vi @ index-BWDCTzw6.js:41
+ew @ index-BWDCTzw6.js:41
+ui @ index-BWDCTzw6.js:39
+(anonymous) @ index-BWDCTzw6.js:41
