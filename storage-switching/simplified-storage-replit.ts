@@ -56,7 +56,12 @@ export class ReplitStorage implements IStorage {
   private async list(prefix: string): Promise<string[]> {
     try {
       // @ts-ignore: Replit database typing issues
-      return await this.db.list(prefix);
+      const response = await this.db.list(prefix);
+      // Replit DB returns wrapped response format: { ok: true, value: [...] }
+      if (response && response.ok && Array.isArray(response.value)) {
+        return response.value;
+      }
+      return [];
     } catch (e) {
       console.error(`Error listing keys with prefix ${prefix}:`, e);
       return [];
@@ -410,7 +415,7 @@ export class ReplitStorage implements IStorage {
   // @ts-ignore
   async listCompanies(): Promise<Company[]> {
     // We need to list all companies, so we'll use a prefix scan
-    const companyKeys = await this.list('company:');
+    const companyKeys = await this.list('company:') || [];
     const companies: Company[] = [];
     
     for (const key of companyKeys) {
