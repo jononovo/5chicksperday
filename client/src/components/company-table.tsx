@@ -335,9 +335,9 @@ export default function CompanyTable({
                 </TableRow>
                 
                 {/* Expanded details row - only visible when expanded */}
-                {isExpanded && topContacts.map((contact) => (
+                {isExpanded && topContacts.map((contact, contactIndex) => (
                   <TableRow 
-                    key={`${company.id}-contact-${contact.id}`} 
+                    key={`company-${company.id}-contact-${contact.id}-index-${contactIndex}`} 
                     className="border-t-0 h-10 bg-white/75 dark:bg-slate-900/75 hover:bg-white dark:hover:bg-slate-800 hover:scale-[1.01] hover:origin-left hover:font-medium transition-all"
                   >
                     <TableCell className="px-2 py-1">

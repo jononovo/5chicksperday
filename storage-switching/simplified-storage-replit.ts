@@ -66,18 +66,22 @@ export class ReplitStorage implements IStorage {
   private async getNextId(entity: string): Promise<number> {
     const key = `counter:${entity}`;
     
-    // Use timestamp-based ID to ensure uniqueness
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    const uniqueId = parseInt(`${timestamp}${random}`.slice(-8)); // Last 8 digits for reasonable ID size
-    
-    // Still maintain counter for reference, but don't rely on it for uniqueness
+    // Get current counter and ensure it's always incrementing
     const current = await this.get<number>(key) || 0;
-    const next = Math.max(current + 1, uniqueId);
+    const next = current + 1;
+    
+    // Add timestamp-based component for extra uniqueness
+    const timestamp = Date.now();
+    const timestampSuffix = parseInt(timestamp.toString().slice(-3)); // Last 3 digits of timestamp
+    
+    // Combine incremental ID with timestamp for uniqueness: ID + timestamp suffix
+    const uniqueId = parseInt(`${next}${timestampSuffix}`);
+    
+    // Store the incremental counter
     await this.set(key, next);
     
-    console.log(`Generated unique ID for ${entity}: ${next}`);
-    return next;
+    console.log(`Generated unique ID for ${entity}: ${uniqueId} (base: ${next}, suffix: ${timestampSuffix})`);
+    return uniqueId;
   }
 
   // Implementation of IStorage interface
