@@ -414,7 +414,9 @@ export function setupAuth(app: Express) {
   app.get("/api/gmail/auth-status", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const hasValidAuth = await TokenService.hasValidGmailAuth(userId);
+      // Use getGmailAccessToken which automatically attempts refresh if needed
+      const accessToken = await TokenService.getGmailAccessToken(userId);
+      const hasValidAuth = !!accessToken;
       
       console.log('Checking Gmail auth status:', {
         userId,
