@@ -85,7 +85,7 @@ export class TokenService {
       const updatedTokens: UserTokens = {
         ...existingTokens,
         gmailAccessToken: accessToken,
-        tokenExpiry: tokenExpiry || (Date.now() + (60 * 1000)), // TESTING: 60 seconds instead of 1 hour
+        tokenExpiry: tokenExpiry || (Date.now() + (3600 * 1000)), // Default 1 hour if not provided
         updatedAt: Date.now()
       };
 
