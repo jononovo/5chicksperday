@@ -113,6 +113,12 @@ try {
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
 
+  // Request offline access to get refresh tokens
+  googleProvider.setCustomParameters({
+    'access_type': 'offline',
+    'prompt': 'consent'
+  });
+
   // Set up auth state change listener
   if (auth) {
     onAuthStateChanged(auth, async (user: User | null) => {

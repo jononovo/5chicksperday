@@ -1,0 +1,142 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-RPCDYKBN.js?v=1756a228:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:78 Starting Firebase initialization... {timestamp: '2025-07-02T16:16:16.556Z', domain: '89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev'}
+firebase.ts:18 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'development', dev: true, …}
+firebase.ts:55 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'development', …}
+firebase.ts:160 Firebase initialized successfully: {domain: '89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-07-02T16:16:16.558Z'}
+use-auth.tsx:384 Setting up Firebase auth state listener
+use-auth.tsx:392 Firebase auth state changed: jon@5ducks.ai
+firebase.ts:100 Firebase persistence set to LOCAL
+firebase.ts:132 Auth token set successfully: {uid: 'fy9KZJlzTXdkLkOIqoIxPPmfjb82', email: 'jon@...', timestamp: '2025-07-02T16:16:16.791Z'}
+use-auth.tsx:321 No OAuth credential available for Gmail token extraction
+use-auth.tsx:324 Making backend sync request {endpoint: '/api/google-auth', hasGmailAccessToken: false, domain: '89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev'}
+use-auth.tsx:362 Successfully synced with backend
+queryClient.ts:89 
+            
+            
+           GET https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/api/stripe/subscription-status 503 (Service Unavailable)
+(anonymous) @ queryClient.ts:89
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+onSuccess @ @tanstack_react-query.js?v=1756a228:897
+resolve @ @tanstack_react-query.js?v=1756a228:456
+Promise.then
+run @ @tanstack_react-query.js?v=1756a228:498
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:101 Query error for /api/stripe/subscription-status: Error: 503: {"message":"Payment service unavailable. STRIPE_SECRET_KEY not configured.","requiresConfiguration":true}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=1756a228:840
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=1756a228:555
+flush @ @tanstack_react-query.js?v=1756a228:569
+batch @ @tanstack_react-query.js?v=1756a228:587
+dispatch_fn @ @tanstack_react-query.js?v=1756a228:996
+setData @ @tanstack_react-query.js?v=1756a228:696
+onSuccess @ @tanstack_react-query.js?v=1756a228:897
+resolve @ @tanstack_react-query.js?v=1756a228:456
+Promise.then
+run @ @tanstack_react-query.js?v=1756a228:498
+start @ @tanstack_react-query.js?v=1756a228:536
+fetch @ @tanstack_react-query.js?v=1756a228:926
+executeFetch_fn @ @tanstack_react-query.js?v=1756a228:2211
+onSubscribe @ @tanstack_react-query.js?v=1756a228:1898
+subscribe @ @tanstack_react-query.js?v=1756a228:24
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=1756a228:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+queryClient.ts:39 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-07-02T16:17:00.034Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
