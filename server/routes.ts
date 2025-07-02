@@ -370,120 +370,180 @@ export function registerRoutes(app: Express) {
   // Sitemap route
   app.get('/sitemap.xml', generateSitemap);
   
-  // Gmail authorization routes
-  app.get('/api/gmail/auth', requireAuth, (req, res) => {
+  // Gmail OAuth authorization routes
+  app.get('/api/gmail/oauth/authorize', requireAuth, (req, res) => {
     try {
       const userId = (req as any).user.id;
+      const { getGmailAuthUrl } = require('./lib/google-oauth.js');
       
-      // Create OAuth2 client
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GMAIL_CLIENT_ID,
-        process.env.GMAIL_CLIENT_SECRET,
-        `${req.protocol}://${req.hostname}/api/gmail/callback`
-      );
+      console.log(`Generating Gmail OAuth URL for user ${userId}`);
       
-      // Generate authentication URL
-      const scopes = [
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/gmail.send',
-        'https://www.googleapis.com/auth/gmail.modify'
-      ];
+      const authUrl = getGmailAuthUrl(userId);
       
-      const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: scopes,
-        prompt: 'consent', // Force to get refresh token
-        state: userId.toString() // Pass user ID to callback
-      });
-      
-      // Redirect the user to the auth URL
+      // Redirect the user to Google OAuth
       res.redirect(authUrl);
     } catch (error) {
-      console.error('Error initiating Gmail authorization:', error);
-      res.status(500).json({ error: 'Failed to start Gmail authorization' });
+      console.error('Error initiating Gmail OAuth:', error);
+      res.status(500).json({ 
+        error: 'Failed to start Gmail authorization',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
   
-  app.get('/api/gmail/callback', async (req, res) => {
+  app.get('/api/gmail/oauth/callback', async (req, res) => {
     try {
-      const { code, state } = req.query;
+      const { code, state, error } = req.query;
       
-      if (!code) {
-        return res.status(400).json({ error: 'Authorization code missing' });
+      if (error) {
+        console.error('OAuth error:', error);
+        return res.status(400).send(`
+          <html>
+            <body>
+              <h2>Gmail Authorization Failed</h2>
+              <p>Error: ${error}</p>
+              <p><a href="/">Return to Home</a></p>
+            </body>
+          </html>
+        `);
       }
       
-      // Get user ID from state
+      if (!code) {
+        return res.status(400).send(`
+          <html>
+            <body>
+              <h2>Gmail Authorization Failed</h2>
+              <p>Authorization code missing</p>
+              <p><a href="/">Return to Home</a></p>
+            </body>
+          </html>
+        `);
+      }
+      
+      // Get user ID from state parameter
       const userId = parseInt(state as string, 10);
       
       if (isNaN(userId)) {
-        return res.status(400).json({ error: 'Invalid state parameter' });
+        return res.status(400).send(`
+          <html>
+            <body>
+              <h2>Gmail Authorization Failed</h2>
+              <p>Invalid user session</p>
+              <p><a href="/">Return to Home</a></p>
+            </body>
+          </html>
+        `);
       }
       
-      // Create OAuth2 client
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GMAIL_CLIENT_ID,
-        process.env.GMAIL_CLIENT_SECRET,
-        `${req.protocol}://${req.hostname}/api/gmail/callback`
-      );
+      const { handleOAuthCallback } = require('./lib/google-oauth.js');
       
-      // Exchange code for tokens
-      const { tokens } = await oauth2Client.getToken(code as string);
+      console.log(`Processing OAuth callback for user ${userId}`);
       
-      // Store token in session
-      (req.session as any).gmailToken = tokens.access_token;
-      (req.session as any).gmailRefreshToken = tokens.refresh_token;
+      // Exchange code for tokens and store them
+      await handleOAuthCallback(code as string, userId);
       
-      // Save session
-      await new Promise<void>((resolve, reject) => {
-        req.session.save(err => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+      console.log(`Gmail OAuth completed successfully for user ${userId}`);
       
-      // Redirect to replies page
-      res.redirect('/replies');
+      // Redirect to outreach page with success message
+      res.send(`
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 40px; text-align: center; }
+              .success { color: #10b981; background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; }
+              .button { background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 10px; }
+            </style>
+          </head>
+          <body>
+            <h2>Gmail Connected Successfully!</h2>
+            <div class="success">
+              <p>Your Gmail account is now connected and ready for sending emails.</p>
+              <p>You can now use the email features in your outreach campaigns.</p>
+            </div>
+            <a href="/outreach" class="button">Go to Outreach</a>
+            <a href="/" class="button">Return to Home</a>
+          </body>
+        </html>
+      `);
     } catch (error) {
-      console.error('Error handling Gmail callback:', error);
-      res.status(500).json({ error: 'Failed to complete Gmail authorization' });
+      console.error('Error handling Gmail OAuth callback:', error);
+      res.status(500).send(`
+        <html>
+          <body>
+            <h2>Gmail Authorization Failed</h2>
+            <p>Error: ${error instanceof Error ? error.message : 'Unknown error'}</p>
+            <p><a href="/">Return to Home</a></p>
+          </body>
+        </html>
+      `);
     }
   });
   
-  app.get('/api/gmail/status', requireAuth, (req, res) => {
+  app.get('/api/gmail/status', requireAuth, async (req, res) => {
     try {
-      const hasToken = !!(req.session as any)?.gmailToken;
+      const userId = (req as any).user.id;
+      const { getValidGmailToken } = require('./lib/google-oauth.js');
+      
+      console.log(`Checking Gmail OAuth status for user ${userId}`);
+      
+      // Check if we have a valid Gmail token
+      const validToken = await getValidGmailToken(userId);
+      const isConnected = !!validToken;
+      
+      console.log(`Gmail status for user ${userId}:`, {
+        connected: isConnected,
+        hasValidToken: !!validToken
+      });
       
       res.json({
-        connected: hasToken,
-        authUrl: hasToken ? null : '/api/gmail/auth'
+        connected: isConnected,
+        authUrl: isConnected ? null : '/api/gmail/oauth/authorize',
+        hasValidToken: isConnected
       });
     } catch (error) {
-      console.error('Error checking Gmail status:', error);
-      res.status(500).json({ error: 'Failed to check Gmail connection status' });
+      console.error('Error checking Gmail OAuth status:', error);
+      res.status(500).json({ 
+        error: 'Failed to check Gmail connection status',
+        connected: false,
+        authUrl: '/api/gmail/oauth/authorize'
+      });
     }
   });
   
-  app.get('/api/gmail/disconnect', requireAuth, (req, res) => {
+  app.get('/api/gmail/disconnect', requireAuth, async (req, res) => {
     try {
-      // Remove Gmail tokens from session
-      delete (req.session as any).gmailToken;
-      delete (req.session as any).gmailRefreshToken;
+      const userId = (req as any).user.id;
+      const { TokenService } = require('./lib/tokens/index.js');
       
-      // Save session
-      req.session.save(err => {
-        if (err) {
-          console.error('Error saving session:', err);
-          return res.status(500).json({ error: 'Failed to disconnect Gmail' });
-        }
+      console.log(`Disconnecting Gmail OAuth for user ${userId}`);
+      
+      // Get current tokens to preserve non-Gmail data
+      const currentTokens = await TokenService.getUserTokens(userId);
+      
+      if (currentTokens) {
+        // Remove Gmail tokens while preserving other tokens (Firebase, etc.)
+        const updatedTokens = {
+          ...currentTokens,
+          gmailAccessToken: undefined,
+          gmailRefreshToken: undefined,
+          updatedAt: Date.now()
+        };
         
-        res.json({ success: true, message: 'Gmail disconnected successfully' });
+        await TokenService.saveUserTokens(userId, updatedTokens);
+        console.log(`Gmail OAuth tokens removed for user ${userId}`);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'Gmail disconnected successfully',
+        connected: false 
       });
     } catch (error) {
-      console.error('Error disconnecting Gmail:', error);
-      res.status(500).json({ error: 'Failed to disconnect Gmail' });
+      console.error('Error disconnecting Gmail OAuth:', error);
+      res.status(500).json({ 
+        error: 'Failed to disconnect Gmail',
+        connected: true
+      });
     }
   });
   

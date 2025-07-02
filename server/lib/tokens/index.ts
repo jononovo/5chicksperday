@@ -72,6 +72,36 @@ export class TokenService {
   }
 
   /**
+   * Store complete Gmail OAuth tokens (access + refresh)
+   */
+  static async storeGmailTokens(userId: number, tokens: {
+    accessToken: string;
+    refreshToken: string;
+    expiryDate: number;
+  }): Promise<void> {
+    try {
+      console.log(`[TokenService] Storing Gmail tokens for user ${userId}`);
+      
+      const existingTokens = await this.getUserTokens(userId);
+      
+      const updatedTokens: UserTokens = {
+        ...existingTokens,
+        gmailAccessToken: tokens.accessToken,
+        gmailRefreshToken: tokens.refreshToken,
+        tokenExpiry: tokens.expiryDate,
+        createdAt: existingTokens?.createdAt || Date.now(),
+        updatedAt: Date.now()
+      };
+
+      await this.saveUserTokens(userId, updatedTokens);
+      console.log(`[TokenService] Successfully stored Gmail tokens for user ${userId}`);
+    } catch (error) {
+      console.error(`Error storing Gmail tokens for user ${userId}:`, error);
+      throw new Error(`Failed to store Gmail tokens: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
    * Update only the Gmail access token (for refresh scenarios)
    */
   static async updateGmailToken(userId: number, accessToken: string, tokenExpiry?: number): Promise<boolean> {
@@ -127,7 +157,7 @@ export class TokenService {
     }
 
     const now = Date.now();
-    const timeUntilExpiry = tokens.tokenExpiry - now;
+    const timeUntilExpiry = (tokens.tokenExpiry || 0) - now;
     const isExpired = timeUntilExpiry <= 0;
     const needsRefresh = timeUntilExpiry <= (5 * 60 * 1000); // Refresh if expires within 5 minutes
 
@@ -236,7 +266,7 @@ export class TokenService {
       return null;
     }
 
-    return tokens!.gmailAccessToken;
+    return tokens?.gmailAccessToken ? tokens.gmailAccessToken : null;
   }
 
   /**

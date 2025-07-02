@@ -1,9 +1,9 @@
 export interface UserTokens {
-  firebaseIdToken: string;
-  gmailAccessToken: string;
+  firebaseIdToken?: string;  // Optional since Gmail OAuth is separate from Firebase
+  gmailAccessToken?: string;
   gmailRefreshToken?: string;
-  tokenExpiry: number;
-  scopes: string[];
+  tokenExpiry?: number;
+  scopes?: string[];
   createdAt: number;
   updatedAt: number;
 }
