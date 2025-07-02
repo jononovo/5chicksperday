@@ -1,0 +1,179 @@
+ [vite] connecting...
+ [vite] connected.
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Starting Firebase initialization... Object
+ Raw environment variables: Object
+ Firebase Configuration: Object
+ Firebase initialized successfully: Object
+ Setting up Firebase auth state listener
+ Firebase auth state changed: jon@codetribe.com
+ Firebase persistence set to LOCAL
+ No OAuth credential available for Gmail token extraction
+ Making backend sync request Object
+ Auth token set successfully: Object
+api/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+ Successfully synced with backend
+api/stripe/subscription-status:1  Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+ Query error for /api/stripe/subscription-status: 
+(anonymous) @ queryClient.ts:71
+ Found pending search query: Recently exited startups in Miami
+ Registration success detected, triggering welcome notification
+ Extracted guest data: Object
+ Guest data cleared successfully
+ API Request: POST /api/notifications/trigger Object
+api/notifications/trigger:1  Failed to load resource: the server responded with a status of 409 (Conflict)
+ API Request Error: POST /api/notifications/trigger Object
+apiRequest @ queryClient.ts:47
+ Failed to trigger notification: 
+triggerNotification @ use-notifications.tsx:46
+ PromptEditor received config update: Object
+ PromptEditor received config update: Object
+ PromptEditor received config update: Object
+ Saving search state: Object
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ API Request: GET /api/gmail/auth-status Object
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ Firebase auth state changed: undefined
+ User signed out, removed auth token
+use-auth.tsx:185 Starting Google sign-in process Object
+use-auth.tsx:215 Calling signInWithPopup...
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+use-auth.tsx:392 Firebase auth state changed: ale@codetribe.com
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+use-auth.tsx:224 SignInWithPopup completed Object
+use-auth.tsx:239 Google sign-in successful, syncing with backend Object
+use-auth.tsx:321 No OAuth credential available for Gmail token extraction
+use-auth.tsx:324 Making backend sync request Object
+use-auth.tsx:314 Extracted Gmail access token from OAuth credential: Object
+use-auth.tsx:324 Making backend sync request Object
+firebase.ts:132 Auth token set successfully: Object
+use-auth.tsx:362 Successfully synced with backend
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(0)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(0)
+api/stripe/subscription-status:1 
+            
+            
+           Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+queryClient.ts:101 Query error for /api/stripe/subscription-status: Error: 503: {"message":"Payment service unavailable. STRIPE_SECRET_KEY not configured.","requiresConfiguration":true}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+use-auth.tsx:362 Successfully synced with backend
+queryClient.ts:39 API Request: GET /api/gmail/auth-status Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+queryClient.ts:39 API Request: POST /api/send-gmail Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+queryClient.ts:39 API Request: GET /api/gmail/auth-status Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+queryClient.ts:39 API Request: POST /api/send-gmail Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+queryClient.ts:39 API Request: GET /api/gmail/auth-status Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+queryClient.ts:39 API Request: POST /api/send-gmail Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: Array(1)
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-07-02T16:01:30.901Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: POST /api/send-gmail {hasData: true, timestamp: '2025-07-02T16:01:31.690Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
