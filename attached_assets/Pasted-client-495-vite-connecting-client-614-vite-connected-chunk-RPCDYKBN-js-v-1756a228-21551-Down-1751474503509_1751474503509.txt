@@ -1,0 +1,83 @@
+client:495 [vite] connecting...
+client:614 [vite] connected.
+chunk-RPCDYKBN.js?v=1756a228:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:78 Starting Firebase initialization... Object
+firebase.ts:18 Raw environment variables: Object
+firebase.ts:55 Firebase Configuration: Object
+firebase.ts:160 Firebase initialized successfully: Object
+use-auth.tsx:384 Setting up Firebase auth state listener
+use-auth.tsx:392 Firebase auth state changed: undefined
+api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+firebase.ts:153 User signed out, removed auth token
+firebase.ts:100 Firebase persistence set to LOCAL
+home.tsx:366 Found pending search query: Recently exited startups in Miami
+prompt-editor.tsx:458 PromptEditor received config update: Object
+prompt-editor.tsx:458 PromptEditor received config update: Object
+prompt-editor.tsx:458 PromptEditor received config update: Object
+home.tsx:535 Saving search state: Object
+use-auth.tsx:185 Starting Google sign-in process Object
+use-auth.tsx:215 Calling signInWithPopup...
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+firebase_auth.js?v=1756a228:6898 Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js?v=1756a228:6898
+use-auth.tsx:392 Firebase auth state changed: ale@codetribe.com
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+firebase_auth.js?v=1756a228:7364 Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js?v=1756a228:7364
+use-auth.tsx:224 SignInWithPopup completed Object
+use-auth.tsx:239 Google sign-in successful, syncing with backend Object
+use-auth.tsx:321 No OAuth credential available for Gmail token extraction
+use-auth.tsx:324 Making backend sync request Object
+firebase.ts:132 Auth token set successfully: Object
+use-auth.tsx:314 Extracted Gmail access token from OAuth credential: Object
+use-auth.tsx:324 Making backend sync request Object
+use-auth.tsx:362 Successfully synced with backend
+api/stripe/subscription-status:1 
+            
+            
+           Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+queryClient.ts:101 Query error for /api/stripe/subscription-status: Error: 503: {"message":"Payment service unavailable. STRIPE_SECRET_KEY not configured.","requiresConfiguration":true}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async queryClient.ts:98:7
+(anonymous) @ queryClient.ts:101
+home.tsx:451 Registration success detected, triggering welcome notification
+home.tsx:460 Extracted guest data: Object
+home.tsx:482 Guest data cleared successfully
+home.tsx:487 Restored guest query to input: Recently exited startups in Miami
+queryClient.ts:39 API Request: POST /api/notifications/trigger Object
+use-auth.tsx:362 Successfully synced with backend
+queryClient.ts:39 API Request: POST /api/notifications/mark-shown Object
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: []
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-07-02T16:40:21.350Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: POST /api/send-gmail {hasData: true, timestamp: '2025-07-02T16:40:21.606Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-07-02T16:41:28.630Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+outreach.tsx:285 Page focused - invalidating contact caches for fresh data
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+queryClient.ts:39 API Request: GET /api/gmail/auth-status {hasData: false, timestamp: '2025-07-02T16:41:37.753Z'}
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
+quick-templates.tsx:65 QuickTemplates - Loaded templates: [{…}]
