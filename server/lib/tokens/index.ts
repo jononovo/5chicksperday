@@ -109,6 +109,8 @@ export class TokenService {
         return false;
       }
 
+      console.log(`[TokenService] Current token expiry for user ${userId}:`, new Date(existingTokens.tokenExpiry).toISOString());
+
       const expiredTokens: UserTokens = {
         ...existingTokens,
         tokenExpiry: Date.now() - (60 * 1000), // Set expiry to 1 minute ago
@@ -117,6 +119,7 @@ export class TokenService {
 
       await this.saveUserTokens(userId, expiredTokens);
       console.log(`[TokenService] Successfully expired Gmail token for user ${userId} - token is now expired by 1 minute`);
+      console.log(`[TokenService] New token expiry:`, new Date(expiredTokens.tokenExpiry).toISOString());
       return true;
     } catch (error) {
       console.error(`Error expiring Gmail token for user ${userId}:`, error);
