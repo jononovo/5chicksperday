@@ -150,26 +150,24 @@ export class TokenService {
         return false;
       }
 
-      console.log(`[TokenService] Attempting to refresh Gmail token for user ${userId}`);
-
-      // Note: In production, you would need FIREBASE_CLIENT_ID and FIREBASE_CLIENT_SECRET
-      // For now, we'll log what would happen and return false to indicate refresh is needed
-      console.log(`[TokenService] Token refresh would be attempted here with refresh token`);
-      console.log(`[TokenService] This requires Firebase OAuth client credentials in environment`);
+      console.log(`[TokenService] Gmail token expired for user ${userId}`);
+      console.log(`[TokenService] Firebase-centric approach: requiring re-authentication through Firebase OAuth`);
       
-      // TODO: Implement actual refresh logic when Firebase OAuth credentials are available
-      // const refreshResponse = await fetch('https://oauth2.googleapis.com/token', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      //   body: new URLSearchParams({
-      //     client_id: process.env.FIREBASE_CLIENT_ID!,
-      //     client_secret: process.env.FIREBASE_CLIENT_SECRET!,
-      //     refresh_token: tokens.gmailRefreshToken,
-      //     grant_type: 'refresh_token'
-      //   })
-      // });
-
-      return false; // Indicate that manual re-authorization is needed for now
+      // Firebase-centric token refresh strategy:
+      // Rather than implementing separate Google OAuth refresh, we leverage Firebase's 
+      // existing OAuth integration. When Gmail tokens expire, users will be prompted 
+      // to reconnect through Firebase, which will capture fresh Gmail tokens via 
+      // the existing registration/login flow in use-auth.tsx
+      
+      // This approach:
+      // 1. Maintains consistency with existing Firebase authentication
+      // 2. Avoids duplicate OAuth client management
+      // 3. Provides seamless user experience through "Reconnect Gmail" flow
+      // 4. Leverages existing token capture and storage infrastructure
+      
+      console.log(`[TokenService] User will be prompted to reconnect Gmail through Firebase`);
+      
+      return false; // Triggers re-auth through Firebase OAuth flow
     } catch (error) {
       console.error(`Error refreshing Gmail token for user ${userId}:`, error);
       return false;

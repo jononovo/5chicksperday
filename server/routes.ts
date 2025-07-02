@@ -491,7 +491,16 @@ export function registerRoutes(app: Express) {
   app.get('/api/replies/contacts', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const gmailToken = await TokenService.getGmailAccessToken(userId);
+      
+      if (!gmailToken) {
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true,
+          errorType: "token_unavailable"
+        });
+        return;
+      }
       
       // Get the appropriate email provider (Gmail or mock)
       const emailProvider = getEmailProvider(userId, gmailToken);
@@ -510,10 +519,19 @@ export function registerRoutes(app: Express) {
     try {
       const userId = (req as any).user.id;
       const contactId = parseInt(req.params.contactId, 10);
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const gmailToken = await TokenService.getGmailAccessToken(userId);
       
       if (isNaN(contactId)) {
         return res.status(400).json({ error: 'Invalid contact ID' });
+      }
+      
+      if (!gmailToken) {
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true,
+          errorType: "token_unavailable"
+        });
+        return;
       }
       
       // Get the appropriate email provider 
@@ -533,10 +551,19 @@ export function registerRoutes(app: Express) {
     try {
       const userId = (req as any).user.id;
       const threadId = parseInt(req.params.id, 10);
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const gmailToken = await TokenService.getGmailAccessToken(userId);
       
       if (isNaN(threadId)) {
         return res.status(400).json({ error: 'Invalid thread ID' });
+      }
+      
+      if (!gmailToken) {
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true,
+          errorType: "token_unavailable"
+        });
+        return;
       }
       
       // Get the appropriate email provider
@@ -562,7 +589,16 @@ export function registerRoutes(app: Express) {
   app.post('/api/replies/thread', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const gmailToken = await TokenService.getGmailAccessToken(userId);
+      
+      if (!gmailToken) {
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true,
+          errorType: "token_unavailable"
+        });
+        return;
+      }
       
       // Get the appropriate email provider
       const emailProvider = getEmailProvider(userId, gmailToken);
@@ -583,7 +619,16 @@ export function registerRoutes(app: Express) {
   app.post('/api/replies/message', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const gmailToken = (req.session as any)?.gmailToken || null;
+      const gmailToken = await TokenService.getGmailAccessToken(userId);
+      
+      if (!gmailToken) {
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true,
+          errorType: "token_unavailable"
+        });
+        return;
+      }
       
       // Get the appropriate email provider
       const emailProvider = getEmailProvider(userId, gmailToken);
@@ -3442,7 +3487,11 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       
       if (!gmailToken) {
         console.log(`No valid Gmail token found for user ${userId}`);
-        res.status(401).json({ message: "Gmail authorization required" });
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true,
+          errorType: "token_unavailable"
+        });
         return;
       }
 
@@ -3472,14 +3521,33 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         .replace(/\//g, '_')
         .replace(/=+$/, '');
 
-      await gmail.users.messages.send({
-        userId: 'me',
-        requestBody: {
-          raw: encodedMessage,
-        },
-      });
+      try {
+        await gmail.users.messages.send({
+          userId: 'me',
+          requestBody: {
+            raw: encodedMessage,
+          },
+        });
 
-      res.json({ success: true });
+        res.json({ success: true });
+      } catch (gmailError: any) {
+        // Check if error is due to invalid/expired token
+        if (gmailError.code === 401 || gmailError.message?.includes('invalid_token') || 
+            gmailError.message?.includes('Invalid Credentials')) {
+          console.log(`Gmail API rejected token for user ${userId}, requesting re-auth`);
+          res.status(401).json({
+            message: "Gmail authorization has expired",
+            needsReauth: true,
+            errorType: "token_rejected"
+          });
+        } else {
+          // Other Gmail API errors
+          console.error('Gmail send error:', gmailError);
+          res.status(500).json({
+            message: gmailError instanceof Error ? gmailError.message : "Failed to send email"
+          });
+        }
+      }
     } catch (error) {
       console.error('Gmail send error:', error);
       res.status(500).json({
