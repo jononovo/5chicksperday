@@ -28,6 +28,7 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 import { findKeyDecisionMakers } from "./lib/search-logic/contact-discovery/enhanced-contact-finder";
+import { getGmailAuthUrl, handleOAuthCallback, refreshGmailAccessToken, getValidGmailToken } from "./lib/google-oauth";
 import { registerCreditRoutes } from "./routes/credits";
 import { registerStripeRoutes } from "./routes/stripe";
 import { CreditService } from "./lib/credits";
@@ -374,14 +375,13 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/oauth/authorize', requireAuth, (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const { getGmailAuthUrl } = require('./lib/google-oauth.js');
       
       console.log(`Generating Gmail OAuth URL for user ${userId}`);
       
       const authUrl = getGmailAuthUrl(userId);
       
-      // Redirect the user to Google OAuth
-      res.redirect(authUrl);
+      // Return the auth URL instead of redirecting to handle it on frontend
+      res.json({ authUrl });
     } catch (error) {
       console.error('Error initiating Gmail OAuth:', error);
       res.status(500).json({ 
@@ -435,7 +435,7 @@ export function registerRoutes(app: Express) {
         `);
       }
       
-      const { handleOAuthCallback } = require('./lib/google-oauth.js');
+      // handleOAuthCallback is already imported above
       
       console.log(`Processing OAuth callback for user ${userId}`);
       
@@ -482,7 +482,7 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/status', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const { getValidGmailToken } = require('./lib/google-oauth.js');
+      // getValidGmailToken is already imported above
       
       console.log(`Checking Gmail OAuth status for user ${userId}`);
       
@@ -513,7 +513,7 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/disconnect', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const { TokenService } = require('./lib/tokens/index.js');
+      // TokenService is already imported above
       
       console.log(`Disconnecting Gmail OAuth for user ${userId}`);
       
@@ -551,7 +551,7 @@ export function registerRoutes(app: Express) {
   app.get('/api/debug/tokens', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const { TokenService } = require('./lib/tokens/index.js');
+      // TokenService is already imported above
       const tokens = await TokenService.getUserTokens(userId);
       
       console.log(`Token debug request for user ${userId}`);
@@ -594,8 +594,7 @@ export function registerRoutes(app: Express) {
   app.post('/api/gmail/force-refresh', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const { refreshGmailAccessToken } = require('./lib/google-oauth.js');
-      const { TokenService } = require('./lib/tokens/index.js');
+      // refreshGmailAccessToken and TokenService are already imported above
       
       console.log(`Force refresh requested for user ${userId}`);
       
@@ -649,7 +648,7 @@ export function registerRoutes(app: Express) {
   app.get('/api/gmail/oauth/authorize', requireAuth, async (req, res) => {
     try {
       const userId = (req as any).user.id;
-      const { getGmailAuthUrl } = require('./lib/google-oauth.js');
+      // getGmailAuthUrl is already imported above
       
       console.log(`Generating Gmail OAuth URL for user ${userId}`);
       
