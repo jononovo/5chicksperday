@@ -546,6 +546,129 @@ export function registerRoutes(app: Express) {
       });
     }
   });
+
+  // Debug endpoint to inspect current token state
+  app.get('/api/debug/tokens', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+      const { TokenService } = require('./lib/tokens/index.js');
+      const tokens = await TokenService.getUserTokens(userId);
+      
+      console.log(`Token debug request for user ${userId}`);
+      
+      const validation = tokens ? TokenService.isTokenValid(tokens) : null;
+      const now = Date.now();
+      
+      res.json({
+        userId,
+        debug: {
+          hasTokenRecord: !!tokens,
+          hasGmailAccess: !!tokens?.gmailAccessToken,
+          hasGmailRefresh: !!tokens?.gmailRefreshToken,
+          hasFirebaseToken: !!tokens?.firebaseIdToken,
+          tokenExpiry: tokens?.gmailTokenExpiry,
+          currentTime: now,
+          isExpired: tokens?.gmailTokenExpiry ? now > tokens.gmailTokenExpiry : null,
+          timeSinceExpiry: tokens?.gmailTokenExpiry ? now - tokens.gmailTokenExpiry : null,
+          timeToExpiry: tokens?.gmailTokenExpiry ? tokens.gmailTokenExpiry - now : null,
+          validation: validation ? {
+            isValid: validation.isValid,
+            isExpired: validation.isExpired,
+            needsRefresh: validation.needsRefresh,
+            hasRefreshToken: validation.hasRefreshToken
+          } : null,
+          accessTokenLength: tokens?.gmailAccessToken?.length,
+          refreshTokenLength: tokens?.gmailRefreshToken?.length
+        }
+      });
+    } catch (error) {
+      console.error('Token debug error:', error);
+      res.status(500).json({ 
+        error: 'Failed to debug tokens',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Force refresh endpoint for immediate testing
+  app.post('/api/gmail/force-refresh', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+      const { refreshGmailAccessToken } = require('./lib/google-oauth.js');
+      const { TokenService } = require('./lib/tokens/index.js');
+      
+      console.log(`Force refresh requested for user ${userId}`);
+      
+      const tokens = await TokenService.getUserTokens(userId);
+      
+      if (!tokens?.gmailRefreshToken) {
+        console.log(`No refresh token available for user ${userId}`);
+        return res.status(400).json({ 
+          success: false,
+          error: 'No refresh token available',
+          needsReauthorization: true,
+          hasTokenRecord: !!tokens,
+          hasAccessToken: !!tokens?.gmailAccessToken
+        });
+      }
+      
+      console.log(`Attempting forced refresh for user ${userId}...`);
+      const refreshResult = await refreshGmailAccessToken(userId);
+      
+      if (refreshResult) {
+        console.log(`Forced refresh successful for user ${userId}`);
+        res.json({
+          success: true,
+          refreshWorked: true,
+          newTokenLength: refreshResult.accessToken?.length,
+          newExpiryDate: new Date(refreshResult.expiryDate).toISOString(),
+          message: 'Token refreshed successfully via direct Google OAuth'
+        });
+      } else {
+        console.log(`Forced refresh failed for user ${userId}`);
+        res.status(500).json({
+          success: false,
+          refreshWorked: false,
+          error: 'Token refresh failed - refresh token may be invalid',
+          needsReauthorization: true
+        });
+      }
+      
+    } catch (error) {
+      console.error(`Force refresh error for user ${userId}:`, error);
+      res.status(500).json({
+        success: false,
+        refreshWorked: false,
+        error: error instanceof Error ? error.message : 'Unknown refresh error',
+        needsReauthorization: true
+      });
+    }
+  });
+
+  // Gmail OAuth authorization initiation (direct Google OAuth)
+  app.get('/api/gmail/oauth/authorize', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+      const { getGmailAuthUrl } = require('./lib/google-oauth.js');
+      
+      console.log(`Generating Gmail OAuth URL for user ${userId}`);
+      
+      const authUrl = getGmailAuthUrl(userId);
+      
+      res.json({
+        success: true,
+        authUrl,
+        message: 'Redirect to this URL to complete Gmail authorization'
+      });
+      
+    } catch (error) {
+      console.error('Gmail OAuth authorization error:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to generate authorization URL'
+      });
+    }
+  });
   
   // Email conversations routes
   app.get('/api/replies/contacts', requireAuth, async (req, res) => {

@@ -298,32 +298,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Get the ID token for authentication
       const idToken = await firebaseUser.getIdToken(true);
 
-      // Extract Gmail tokens from OAuth credential if available
-      let gmailAccessToken = '';
-      let gmailRefreshToken = '';
-      let tokenExpiry = Date.now() + (3600 * 1000); // Default 1 hour
-
-      if (credential) {
-        // Extract access token from Google OAuth credential
-        const oauthCredential = credential as any;
-        if (oauthCredential.accessToken) {
-          gmailAccessToken = oauthCredential.accessToken;
-          
-          // Note: Firebase OAuth credentials don't typically include refresh tokens
-          // Refresh tokens need to be obtained through server-side OAuth flow
-          console.log('Extracted Gmail access token from OAuth credential:', {
-            hasAccessToken: !!gmailAccessToken,
-            tokenLength: gmailAccessToken ? gmailAccessToken.length : 0,
-            expiresAt: new Date(tokenExpiry).toISOString()
-          });
-        }
-      } else {
-        console.log('No OAuth credential available for Gmail token extraction');
-      }
+      // Note: Firebase OAuth is for user authentication only
+      // Gmail API tokens are handled separately via server-side Google OAuth
+      console.log('Firebase OAuth completed - user authentication successful');
+      console.log('Gmail API authorization will be handled separately via server-side OAuth');
 
       console.log('Making backend sync request', {
         endpoint: '/api/google-auth',
-        hasGmailAccessToken: !!gmailAccessToken,
         domain: window.location.hostname
       });
 
@@ -336,9 +317,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           email: firebaseUser.email,
           username: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
-          gmailAccessToken,
-          gmailRefreshToken,
-          tokenExpiry,
           firebaseUid: firebaseUser.uid
         })
       });

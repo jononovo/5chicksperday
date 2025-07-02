@@ -45,6 +45,7 @@ import {Loader2} from "lucide-react";
 import { queryClient } from "@/lib/queryClient"; // Import queryClient
 import type { InsertEmailTemplate } from "@shared/schema"; // Import the type
 import { ContactActionColumn } from "@/components/contact-action-column";
+import { GmailAuthTest } from "@/components/gmail-auth-test";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -900,6 +901,11 @@ export default function Outreach() {
 
   return (
     <div className="w-full md:container md:mx-auto md:py-8">
+      {/* Gmail Auth Test Panel - Temporary for testing */}
+      <div className="mb-8">
+        <GmailAuthTest />
+      </div>
+
       {/* Mobile Duck Header - Only visible on mobile when in compressed view with selected contact */}
       <div className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 transition-all duration-300 ${showExpandedView || !selectedContact ? 'hidden' : 'block'}`}>
         <div className={`flex items-center justify-center relative transition-all duration-300 ${isScrolled ? 'pt-1 pb-0.5' : 'pt-2 pb-1'}`}>
