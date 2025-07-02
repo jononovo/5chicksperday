@@ -1,0 +1,79 @@
+Technical Note: Gmail API Token Management Implementation
+Objective: Implement robust Gmail token handling with automatic refresh and fallback re-authentication.
+Current Problem:
+
+Users re-authenticate every login
+Tokens expire after 1 hour
+No automatic token renewal
+
+Solution: Three-Tier Token Management
+Implementation Strategy:
+javascriptasync function sendEmailWithTokenManagement(userId, emailData) {
+  const user = await storage.getUserById(userId);
+  
+  // TIER 1: Use existing valid token
+  if (user.gmailAccessToken && !isTokenExpired(user.gmailTokenExpiry)) {
+    return await sendGmailEmail(user.gmailAccessToken, emailData);
+  }
+  
+  // TIER 2: Refresh token if possible
+  if (user.gmailRefreshToken) {
+    try {
+      const refreshResponse = await oauth2Client.refreshAccessToken(user.gmailRefreshToken);
+      const newAccessToken = refreshResponse.credentials.access_token;
+      const expiresAt = new Date(Date.now() + 3600000); // 1 hour
+      
+      // Update database with new token
+      await storage.updateUserGmailTokens(userId, {
+        accessToken: newAccessToken,
+        expiresAt: expiresAt
+      });
+      
+      return await sendGmailEmail(newAccessToken, emailData);
+    } catch (refreshError) {
+      console.log('Token refresh failed:', refreshError);
+      // Fall through to Tier 3
+    }
+  }
+  
+  // TIER 3: Request new authentication
+  return { 
+    success: false, 
+    error: "Gmail authentication required", 
+    needsReauth: true 
+  };
+}
+Helper Function:
+javascriptfunction isTokenExpired(expiryDate) {
+  if (!expiryDate) return true;
+  return new Date() >= new Date(expiryDate);
+}
+Frontend Handling:
+javascript// When sending email
+const result = await sendEmail(emailData);
+if (result.needsReauth) {
+  // Show "Reconnect Gmail" button
+  // Only triggers OAuth flow when actually needed
+}
+Database Schema Requirements:
+
+gmailAccessToken: Current access token
+gmailRefreshToken: Permanent refresh token
+gmailTokenExpiry: Timestamp when access token expires
+
+Key Benefits:
+
+90% of requests: Use cached valid token (instant)
+9% of requests: Automatic refresh (~200-500ms delay)
+1% of requests: User re-authentication (only when necessary)
+No background jobs or token refresh timers needed
+Tokens only refreshed when user actively sends emails
+
+Implementation Priority:
+
+Add token expiry tracking to database
+Implement three-tier token checking
+Update OAuth flow to store refresh tokens permanently
+Test with token expiration scenarios
+
+Expected Result: Users grant Gmail permissions once, system handles all token management automatically thereafter.
