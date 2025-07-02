@@ -150,24 +150,45 @@ export class TokenService {
         return false;
       }
 
-      console.log(`[TokenService] Gmail token expired for user ${userId}`);
-      console.log(`[TokenService] Firebase-centric approach: requiring re-authentication through Firebase OAuth`);
+      console.log(`[TokenService] Attempting to refresh Gmail token for user ${userId}`);
       
-      // Firebase-centric token refresh strategy:
-      // Rather than implementing separate Google OAuth refresh, we leverage Firebase's 
-      // existing OAuth integration. When Gmail tokens expire, users will be prompted 
-      // to reconnect through Firebase, which will capture fresh Gmail tokens via 
-      // the existing registration/login flow in use-auth.tsx
+      // Check if we have Gmail OAuth credentials
+      if (!process.env.GMAIL_CLIENT_ID || !process.env.GMAIL_CLIENT_SECRET) {
+        console.warn(`[TokenService] Gmail OAuth credentials not configured - falling back to re-authentication`);
+        return false;
+      }
       
-      // This approach:
-      // 1. Maintains consistency with existing Firebase authentication
-      // 2. Avoids duplicate OAuth client management
-      // 3. Provides seamless user experience through "Reconnect Gmail" flow
-      // 4. Leverages existing token capture and storage infrastructure
-      
-      console.log(`[TokenService] User will be prompted to reconnect Gmail through Firebase`);
-      
-      return false; // Triggers re-auth through Firebase OAuth flow
+      // Perform actual Google OAuth2 token refresh
+      try {
+        const refreshResponse = await fetch('https://oauth2.googleapis.com/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            client_id: process.env.GMAIL_CLIENT_ID,
+            client_secret: process.env.GMAIL_CLIENT_SECRET,
+            refresh_token: tokens.gmailRefreshToken,
+            grant_type: 'refresh_token'
+          })
+        });
+        
+        if (!refreshResponse.ok) {
+          const errorData = await refreshResponse.text();
+          console.error(`[TokenService] Token refresh failed: ${refreshResponse.status} - ${errorData}`);
+          return false;
+        }
+        
+        const refreshData = await refreshResponse.json();
+        
+        // Update stored token with new access token and expiry
+        const newExpiry = Date.now() + ((refreshData.expires_in || 3600) * 1000);
+        await this.updateGmailToken(userId, refreshData.access_token, newExpiry);
+        
+        console.log(`[TokenService] Successfully refreshed Gmail token for user ${userId}`);
+        return true;
+      } catch (error) {
+        console.error(`[TokenService] Error during token refresh:`, error);
+        return false;
+      }
     } catch (error) {
       console.error(`Error refreshing Gmail token for user ${userId}:`, error);
       return false;
