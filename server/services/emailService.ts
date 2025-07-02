@@ -1,5 +1,6 @@
 import { MOCK_ACTIVE_CONTACTS, MOCK_EMAIL_THREADS } from "../mock/emailData";
 import type { Contact } from "@shared/schema";
+import { TokenService } from "../lib/tokens";
 
 // Email provider interface - will be implemented by different email services
 export interface EmailProvider {
@@ -91,22 +92,50 @@ export class GmailProvider implements EmailProvider {
   private accessToken: string;
   private userId: number;
   private gmail: gmail_v1.Gmail;
+  private oauth2Client: any;
   
   constructor(accessToken: string, userId: number) {
     this.accessToken = accessToken;
     this.userId = userId;
     
     // Create an OAuth2 client with the access token
-    const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({
+    this.oauth2Client = new google.auth.OAuth2();
+    this.oauth2Client.setCredentials({
       access_token: accessToken
     });
     
     // Create the Gmail client
     this.gmail = google.gmail({
       version: 'v1',
-      auth: oauth2Client
+      auth: this.oauth2Client
     });
+  }
+  
+  // Helper method to refresh token and update Gmail client when needed
+  private async ensureValidToken(): Promise<boolean> {
+    try {
+      // Try to get a fresh token through TokenService
+      const freshToken = await TokenService.getGmailAccessToken(this.userId);
+      
+      if (freshToken && freshToken !== this.accessToken) {
+        console.log(`[GmailProvider] Updating token for user ${this.userId}`);
+        
+        // Update stored access token
+        this.accessToken = freshToken;
+        
+        // Update OAuth2 client credentials
+        this.oauth2Client.setCredentials({
+          access_token: freshToken
+        });
+        
+        console.log(`[GmailProvider] Successfully updated Gmail client with fresh token for user ${this.userId}`);
+      }
+      
+      return !!freshToken;
+    } catch (error) {
+      console.error(`[GmailProvider] Failed to refresh token for user ${this.userId}:`, error);
+      return false;
+    }
   }
   
   // Helper to convert Gmail message format to our internal format
@@ -163,6 +192,13 @@ export class GmailProvider implements EmailProvider {
   // Helper to get the user's email address
   private async getUserEmail() {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for getUserEmail`);
+        return '';
+      }
+      
       const response = await this.gmail.users.getProfile({
         userId: 'me'
       });
@@ -191,6 +227,13 @@ export class GmailProvider implements EmailProvider {
   // Get contacts with recent email threads
   async getActiveContacts(userId: number) {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for user ${userId}`);
+        return [];
+      }
+      
       // 1. Get all contacts for the user
       const contacts = await storage.listContacts(userId);
       
@@ -294,6 +337,13 @@ export class GmailProvider implements EmailProvider {
   // Get email threads for a specific contact
   async getThreadsByContact(contactId: number, userId: number) {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for getThreadsByContact`);
+        return [];
+      }
+      
       // 1. Get the contact details
       const contact = await storage.getContact(contactId, userId);
       
@@ -363,6 +413,13 @@ export class GmailProvider implements EmailProvider {
   // Get a specific thread with all its messages
   async getThreadWithMessages(threadId: number, userId: number) {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for getThreadWithMessages`);
+        return null;
+      }
+      
       // 1. Get thread data from Gmail
       const response = await this.gmail.users.threads.get({
         userId: 'me',
@@ -422,6 +479,13 @@ export class GmailProvider implements EmailProvider {
   // Create a new thread (sends first message)
   async createThread(data: any) {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for createThread`);
+        throw new Error('Gmail authorization required');
+      }
+      
       // 1. Create the email content
       const userEmail = await this.getUserEmail();
       const contact = await storage.getContact(data.contactId, data.userId);
@@ -467,6 +531,13 @@ export class GmailProvider implements EmailProvider {
   // Send a message in an existing thread
   async createMessage(data: any) {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for createMessage`);
+        throw new Error('Gmail authorization required');
+      }
+      
       // 1. Get thread details to ensure we have the right subject
       const response = await this.gmail.users.threads.get({
         userId: 'me',
@@ -528,6 +599,13 @@ export class GmailProvider implements EmailProvider {
   // Mark thread messages as read
   async markThreadAsRead(threadId: number) {
     try {
+      // Ensure we have a valid token before making API calls
+      const hasValidToken = await this.ensureValidToken();
+      if (!hasValidToken) {
+        console.error(`[GmailProvider] No valid token available for markThreadAsRead`);
+        return;
+      }
+      
       // 1. Get the thread
       const response = await this.gmail.users.threads.get({
         userId: 'me',

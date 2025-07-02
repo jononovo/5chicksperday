@@ -3436,13 +3436,16 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         return;
       }
 
-      // Get Gmail token from TokenService (persistent storage)
+      // Get Gmail token from TokenService (with automatic refresh handling)
       const userId = (req.user as any).id;
       const gmailToken = await TokenService.getGmailAccessToken(userId);
       
       if (!gmailToken) {
         console.log(`No valid Gmail token found for user ${userId}`);
-        res.status(401).json({ message: "Gmail authorization required" });
+        res.status(401).json({ 
+          message: "Gmail authorization required",
+          needsReauth: true
+        });
         return;
       }
 
@@ -3479,12 +3482,29 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         },
       });
 
+      console.log(`Email sent successfully via Gmail for user ${userId} to ${to}`);
       res.json({ success: true });
     } catch (error) {
       console.error('Gmail send error:', error);
-      res.status(500).json({
-        message: error instanceof Error ? error.message : "Failed to send email"
-      });
+      
+      // Check if this is an authentication error that might benefit from token refresh
+      const errorMessage = error instanceof Error ? error.message : "Failed to send email";
+      const isAuthError = errorMessage.includes('401') || 
+                         errorMessage.includes('Unauthorized') || 
+                         errorMessage.includes('invalid_token') ||
+                         errorMessage.includes('Invalid Credentials');
+      
+      if (isAuthError) {
+        console.log(`Authentication error detected for user ${(req.user as any).id}, token may need refresh`);
+        res.status(401).json({
+          message: "Gmail authorization expired",
+          needsReauth: true
+        });
+      } else {
+        res.status(500).json({
+          message: errorMessage
+        });
+      }
     }
   });
 

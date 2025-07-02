@@ -533,6 +533,12 @@ export default function Outreach() {
       const response = await apiRequest("POST", "/api/send-gmail", payload);
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
+        
+        // Check if this is a re-authentication requirement
+        if (errorData?.needsReauth) {
+          throw new Error("Your Gmail authorization has expired. Please re-authorize Gmail access to send emails.");
+        }
+        
         throw new Error(errorData?.message || "Failed to send email");
       }
       return response.json();
@@ -544,11 +550,22 @@ export default function Outreach() {
       });
     },
     onError: (error) => {
-      toast({
-        title: "Failed to Send Email",
-        description: error instanceof Error ? error.message : "Failed to send email via Gmail",
-        variant: "destructive",
-      });
+      const errorMessage = error instanceof Error ? error.message : "Failed to send email via Gmail";
+      
+      // Check if this is a re-authentication error
+      if (errorMessage.includes("authorization has expired") || errorMessage.includes("needsReauth")) {
+        toast({
+          title: "Gmail Re-authorization Required",
+          description: "Your Gmail access has expired. Please go to Settings to re-authorize Gmail access.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Failed to Send Email",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     },
   });
 

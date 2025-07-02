@@ -247,6 +247,7 @@
 - June 22, 2025. Start Selling tooltip duration optimization: Reduced auto-dismiss timer from 25 seconds to 10 seconds for better user experience consistency with other tooltips in the system
 - June 22, 2025. Guest authentication delay extension: Increased semi-protected route authentication delay from 14 seconds to 25 seconds to provide guests more exploration time before registration prompt, enhancing "try before you buy" experience
 - June 22, 2025. Guest authentication delay extension: Increased guest user registration prompt delay from 14 seconds to 25 seconds to provide more time for evaluation of search functionality before authentication requirement
+- July 2, 2025. Universal Gmail token refresh implementation: Enhanced all Gmail provider methods (getActiveContacts, getThreadsByContact, getThreadWithMessages, createThread, createMessage, markThreadAsRead, getUserEmail) with automatic token refresh via ensureValidToken() helper. Added consistent error handling, token expiry detection, and seamless refresh capabilities across complete Gmail API surface. Eliminates 1-hour token limitations and repeated permission requests while maintaining existing Firebase authentication workflow
 
 
 ## User Preferences
