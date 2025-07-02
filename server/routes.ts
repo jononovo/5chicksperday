@@ -28,6 +28,7 @@ import type { PerplexityMessage } from "./lib/perplexity";
 import type { Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
 import { findKeyDecisionMakers } from "./lib/search-logic/contact-discovery/enhanced-contact-finder";
+import { TokenService } from "./lib/tokens";
 import { registerCreditRoutes } from "./routes/credits";
 import { registerStripeRoutes } from "./routes/stripe";
 import { CreditService } from "./lib/credits";
@@ -4440,6 +4441,26 @@ Respond in this exact JSON format:
       console.error('Error fetching notification status:', error);
       res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to fetch notification status' 
+      });
+    }
+  });
+
+  // Testing endpoint to manually expire Gmail tokens
+  app.post('/api/admin/expire-gmail-token', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const success = await TokenService.expireGmailToken(userId);
+      
+      if (success) {
+        res.json({ success: true, message: `Gmail token expired for user ${userId}` });
+      } else {
+        res.status(404).json({ success: false, message: `No Gmail token found for user ${userId}` });
+      }
+    } catch (error) {
+      console.error('Error expiring Gmail token:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Failed to expire Gmail token' 
       });
     }
   });

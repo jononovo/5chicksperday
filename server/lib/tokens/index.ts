@@ -99,6 +99,32 @@ export class TokenService {
   }
 
   /**
+   * Manually expire a user's Gmail token (for testing purposes)
+   */
+  static async expireGmailToken(userId: number): Promise<boolean> {
+    try {
+      const existingTokens = await this.getUserTokens(userId);
+      if (!existingTokens) {
+        console.warn(`[TokenService] Cannot expire Gmail token - no existing tokens for user ${userId}`);
+        return false;
+      }
+
+      const expiredTokens: UserTokens = {
+        ...existingTokens,
+        tokenExpiry: Date.now() - (60 * 1000), // Set expiry to 1 minute ago
+        updatedAt: Date.now()
+      };
+
+      await this.saveUserTokens(userId, expiredTokens);
+      console.log(`[TokenService] Successfully expired Gmail token for user ${userId} - token is now expired by 1 minute`);
+      return true;
+    } catch (error) {
+      console.error(`Error expiring Gmail token for user ${userId}:`, error);
+      return false;
+    }
+  }
+
+  /**
    * Delete user tokens from Replit DB
    */
   static async deleteUserTokens(userId: number): Promise<void> {
