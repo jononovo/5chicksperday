@@ -211,6 +211,13 @@ export class TokenService {
     const tokens = await this.getUserTokens(userId);
     const validation = this.isTokenValid(tokens);
     
+    console.log(`[TokenService] Token validation for user ${userId}:`, {
+      isValid: validation.isValid,
+      isExpired: validation.isExpired,
+      needsRefresh: validation.needsRefresh,
+      hasRefreshToken: !!tokens?.gmailRefreshToken
+    });
+    
     if (!validation.isValid) {
       console.warn(`[TokenService] Invalid or expired Gmail token for user ${userId}`);
       return null;
@@ -225,6 +232,7 @@ export class TokenService {
         return refreshedTokens?.gmailAccessToken || null;
       }
       // If refresh failed, return null to trigger re-authorization
+      console.log(`[TokenService] Refresh failed for user ${userId} - will require re-authorization`);
       return null;
     }
 
