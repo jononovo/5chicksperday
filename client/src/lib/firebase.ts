@@ -105,18 +105,13 @@ try {
     
   googleProvider = new GoogleAuthProvider();
 
-  // Add required scopes for Gmail API
-  googleProvider.addScope('https://www.googleapis.com/auth/gmail.send');
-  googleProvider.addScope('https://www.googleapis.com/auth/gmail.compose');
-
-  // Add basic profile scopes
+  // Add only basic profile scopes for user authentication
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
 
-  // Request offline access to get refresh tokens
+  // Standard authentication parameters
   googleProvider.setCustomParameters({
-    'access_type': 'offline',
-    'prompt': 'consent'
+    'prompt': 'select_account'
   });
 
   // Set up auth state change listener

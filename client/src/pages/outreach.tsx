@@ -1433,7 +1433,7 @@ export default function Outreach() {
                   <div className="text-center py-4">
                     <p className="text-sm text-gray-600 mb-3">No email providers connected</p>
                     <Button
-                      onClick={() => connectProvider({ type: 'gmail' })}
+                      onClick={() => connectProvider('gmail')}
                       variant="outline"
                       size="sm"
                       className="gap-2"
@@ -1477,7 +1477,7 @@ export default function Outreach() {
                     {providers.length > 0 && (
                       <div className="pt-2 border-t">
                         <Button
-                          onClick={() => connectProvider({ type: 'gmail' })}
+                          onClick={() => connectProvider('gmail')}
                           variant="outline"
                           size="sm"
                           className="w-full gap-2"
