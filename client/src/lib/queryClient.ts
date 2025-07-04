@@ -34,7 +34,7 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
-): Promise<Response> {
+): Promise<any> {
   try {
     console.log(`API Request: ${method} ${url}`, {
       hasData: !!data,
@@ -60,7 +60,7 @@ export async function apiRequest(
     });
 
     await throwIfResNotOk(res);
-    return res;
+    return await safeJsonParse(res);
   } catch (error) {
     console.error(`API Request Error: ${method} ${url}`, {
       error: error instanceof Error ? error.message : 'Unknown error',
