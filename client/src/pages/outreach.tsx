@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { useEmailProviders } from "@/hooks/use-email-providers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Building2,
@@ -45,7 +46,6 @@ import {Loader2} from "lucide-react";
 import { queryClient } from "@/lib/queryClient"; // Import queryClient
 import type { InsertEmailTemplate } from "@shared/schema"; // Import the type
 import { ContactActionColumn } from "@/components/contact-action-column";
-import { GmailAuthTest } from "@/components/gmail-auth-test";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,6 +98,21 @@ export default function Outreach() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  
+  // Email provider system integration
+  const {
+    providers,
+    defaultProvider,
+    statusSummary,
+    isLoadingProviders,
+    connectProvider,
+    sendEmail,
+    removeProvider,
+    checkProviderStatus,
+    isSendingEmail,
+    hasProviders,
+    connectedProviders
+  } = useEmailProviders();
 
   // Email enrichment state tracking
   const [pendingContactIds, setPendingContactIds] = useState<Set<number>>(new Set());
@@ -512,47 +527,6 @@ export default function Outreach() {
     },
   });
 
-  const sendEmailMutation = useMutation({
-    mutationFn: async () => {
-      // First check Gmail authorization
-      const authResponse = await apiRequest("GET", "/api/gmail/auth-status");
-      if (!authResponse.ok) {
-        throw new Error("Failed to check Gmail authorization");
-      }
-
-      const authStatus = await authResponse.json();
-      if (!authStatus.authorized) {
-        throw new Error("Gmail authorization required. Please sign in with Google to grant email permissions.");
-      }
-
-      // Proceed with sending email
-      const payload = {
-        to: toEmail,
-        subject: emailSubject,
-        content: emailContent
-      };
-      const response = await apiRequest("POST", "/api/send-gmail", payload);
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to send email");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Email Sent",
-        description: "Your email has been sent successfully via Gmail!",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to Send Email",
-        description: error instanceof Error ? error.message : "Failed to send email via Gmail",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleSendEmail = () => {
     if (!toEmail || !emailSubject || !emailContent) {
       toast({
@@ -562,7 +536,15 @@ export default function Outreach() {
       });
       return;
     }
-    sendEmailMutation.mutate();
+    
+    // Use the new email provider system
+    sendEmail({
+      message: {
+        to: [toEmail],
+        subject: emailSubject,
+        html: emailContent
+      }
+    });
   };
 
   const generateEmailMutation = useMutation({
@@ -901,10 +883,7 @@ export default function Outreach() {
 
   return (
     <div className="w-full md:container md:mx-auto md:py-8">
-      {/* Gmail Auth Test Panel - Temporary for testing */}
-      <div className="mb-8">
-        <GmailAuthTest />
-      </div>
+
 
       {/* Mobile Duck Header - Only visible on mobile when in compressed view with selected contact */}
       <div className={`md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 transition-all duration-300 ${showExpandedView || !selectedContact ? 'hidden' : 'block'}`}>
@@ -1413,20 +1392,14 @@ export default function Outreach() {
                 <div className="absolute bottom-2 right-2">
                   <Button
                     onClick={handleSendEmail}
-                    disabled={sendEmailMutation.isPending}
+                    disabled={isSendingEmail}
                     variant="outline"
                     className={cn(
-                      "h-8 px-3 text-xs bg-white text-black border-black hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-out",
-                      sendEmailMutation.isSuccess && "bg-pink-500 hover:bg-pink-600 text-white border-pink-500"
+                      "h-8 px-3 text-xs bg-white text-black border-black hover:bg-black hover:text-white hover:scale-105 transition-all duration-300 ease-out"
                     )}
                   >
-                    {sendEmailMutation.isPending ? (
+                    {isSendingEmail ? (
                       <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                    ) : sendEmailMutation.isSuccess ? (
-                      <>
-                        <PartyPopper className="w-3 h-3 mr-1" />
-                        Sent Email
-                      </>
                     ) : (
                       <>
                         <Send className="w-3 h-3 mr-1" />
@@ -1435,6 +1408,87 @@ export default function Outreach() {
                     )}
                   </Button>
                 </div>
+              </div>
+
+              {/* Email Provider Status Section */}
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">Email Providers</span>
+                  </div>
+                  {statusSummary && (
+                    <Badge variant={statusSummary.connected > 0 ? "default" : "secondary"}>
+                      {statusSummary.connected}/{statusSummary.total} Connected
+                    </Badge>
+                  )}
+                </div>
+                
+                {isLoadingProviders ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Loading providers...
+                  </div>
+                ) : !hasProviders ? (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-gray-600 mb-3">No email providers connected</p>
+                    <Button
+                      onClick={() => connectProvider({ type: 'gmail' })}
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <Mail className="h-3 w-3" />
+                      Connect Gmail
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {providers.map((provider) => (
+                      <div key={provider.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-3 w-3 text-gray-500" />
+                          <span className="text-sm">{provider.email}</span>
+                          {provider.isDefault && (
+                            <Badge variant="secondary" className="text-xs">Default</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge 
+                            variant={provider.status === 'connected' ? 'default' : 'destructive'}
+                            className="text-xs"
+                          >
+                            {provider.status}
+                          </Badge>
+                          {provider.status === 'connected' && (
+                            <Button
+                              onClick={() => removeProvider(provider.id)}
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 text-gray-400 hover:text-red-500"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {providers.length > 0 && (
+                      <div className="pt-2 border-t">
+                        <Button
+                          onClick={() => connectProvider({ type: 'gmail' })}
+                          variant="outline"
+                          size="sm"
+                          className="w-full gap-2"
+                        >
+                          <Mail className="h-3 w-3" />
+                          Add Another Gmail Account
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Quick Templates Section - Moved below email content and buttons */}

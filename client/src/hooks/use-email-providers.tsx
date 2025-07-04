@@ -71,15 +71,14 @@ export function useEmailProviders() {
   // Connect new provider
   const connectProviderMutation = useMutation({
     mutationFn: async (providerType: string) => {
-      const response = await apiRequest(`/api/email-providers/connect`, {
-        method: 'POST',
-        body: JSON.stringify({ providerType })
-      });
-      return response.authUrl;
+      const response = await apiRequest('POST', `/api/email-providers/connect`, { providerType });
+      return response;
     },
-    onSuccess: (authUrl) => {
+    onSuccess: (data: any) => {
       // Open OAuth flow in new window
-      window.open(authUrl, '_blank', 'width=600,height=700');
+      if (data.authUrl) {
+        window.open(data.authUrl, '_blank', 'width=600,height=700');
+      }
     },
     onError: (error) => {
       toast({
@@ -93,9 +92,7 @@ export function useEmailProviders() {
   // Remove provider
   const removeProviderMutation = useMutation({
     mutationFn: async (providerId: string) => {
-      await apiRequest(`/api/email-providers/${providerId}`, {
-        method: 'DELETE'
-      });
+      await apiRequest('DELETE', `/api/email-providers/${providerId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/email-providers'] });
@@ -119,9 +116,7 @@ export function useEmailProviders() {
   // Set default provider
   const setDefaultProviderMutation = useMutation({
     mutationFn: async (providerId: string) => {
-      await apiRequest(`/api/email-providers/${providerId}/default`, {
-        method: 'PUT'
-      });
+      await apiRequest('PUT', `/api/email-providers/${providerId}/default`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/email-providers'] });
@@ -145,16 +140,13 @@ export function useEmailProviders() {
   // Send email
   const sendEmailMutation = useMutation({
     mutationFn: async ({ message, providerId }: { message: EmailMessage; providerId?: string }) => {
-      const response = await apiRequest('/api/email-providers/send', {
-        method: 'POST',
-        body: JSON.stringify({ ...message, providerId })
-      });
+      const response = await apiRequest('POST', '/api/email-providers/send', { ...message, providerId });
       return response;
     },
-    onSuccess: (result) => {
+    onSuccess: (result: any) => {
       toast({
         title: "Email Sent",
-        description: `Email sent successfully via ${result.providerId}`,
+        description: `Email sent successfully via ${result.providerId || 'default provider'}`,
         variant: "default"
       });
     },
@@ -170,12 +162,12 @@ export function useEmailProviders() {
   // Check provider status
   const checkProviderStatusMutation = useMutation({
     mutationFn: async (providerId: string) => {
-      const response = await apiRequest(`/api/email-providers/${providerId}/status`);
-      return response.valid;
+      const response = await apiRequest('GET', `/api/email-providers/${providerId}/status`);
+      return response;
     },
-    onSuccess: (isValid, providerId) => {
+    onSuccess: (result: any, providerId) => {
       queryClient.invalidateQueries({ queryKey: ['/api/email-providers'] });
-      if (isValid) {
+      if (result.valid) {
         toast({
           title: "Connection Valid",
           description: "Email provider is working correctly",
@@ -194,9 +186,7 @@ export function useEmailProviders() {
   // Refresh provider authentication
   const refreshProviderMutation = useMutation({
     mutationFn: async (providerId: string) => {
-      const response = await apiRequest(`/api/email-providers/${providerId}/refresh`, {
-        method: 'POST'
-      });
+      const response = await apiRequest('POST', `/api/email-providers/${providerId}/refresh`);
       return response;
     },
     onSuccess: () => {
