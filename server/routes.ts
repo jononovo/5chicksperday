@@ -4674,6 +4674,287 @@ Respond in this exact JSON format:
     }
   });
 
+  // ============= EMAIL PROVIDER ROUTES =============
+  
+  // Get all email providers for authenticated user
+  app.get('/api/email-providers', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      console.log(`[EmailProviders] Getting providers for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const providers = await emailProviderManager.getUserProviders(userId);
+      
+      // Remove sensitive auth data from response
+      const sanitizedProviders = providers.map(provider => ({
+        ...provider,
+        authData: undefined
+      }));
+      
+      res.json(sanitizedProviders);
+    } catch (error) {
+      console.error('Error getting email providers:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to get email providers' 
+      });
+    }
+  });
+
+  // Get user's default email provider
+  app.get('/api/email-providers/default', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      console.log(`[EmailProviders] Getting default provider for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const defaultProvider = await emailProviderManager.getDefaultProvider(userId);
+      
+      if (!defaultProvider) {
+        return res.status(404).json({ error: 'No default email provider configured' });
+      }
+      
+      // Remove sensitive auth data from response
+      const sanitizedProvider = {
+        ...defaultProvider,
+        authData: undefined
+      };
+      
+      res.json(sanitizedProvider);
+    } catch (error) {
+      console.error('Error getting default email provider:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to get default email provider' 
+      });
+    }
+  });
+
+  // Start OAuth flow for new email provider
+  app.post('/api/email-providers/connect', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { providerType } = req.body;
+      
+      if (!providerType) {
+        return res.status(400).json({ error: 'Provider type is required' });
+      }
+      
+      console.log(`[EmailProviders] Starting OAuth for ${providerType} provider for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const authUrl = await emailProviderManager.addProvider(userId, providerType);
+      
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Error starting email provider OAuth:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to start OAuth flow' 
+      });
+    }
+  });
+
+  // Gmail OAuth callback (replace existing route)
+  app.get('/api/email-providers/gmail/callback', async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      
+      if (!code || !state) {
+        return res.status(400).json({ error: 'Missing code or state parameter' });
+      }
+      
+      console.log(`[EmailProviders] Handling Gmail OAuth callback`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const provider = await emailProviderManager.handleCallback('gmail', code as string, state as string);
+      
+      // Redirect to outreach page with success message
+      const redirectUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/outreach?provider_connected=${provider.id}`;
+      res.redirect(redirectUrl);
+    } catch (error) {
+      console.error('Error handling Gmail OAuth callback:', error);
+      
+      // Redirect to outreach page with error message
+      const redirectUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/outreach?provider_error=${encodeURIComponent(error instanceof Error ? error.message : 'OAuth failed')}`;
+      res.redirect(redirectUrl);
+    }
+  });
+
+  // Remove email provider
+  app.delete('/api/email-providers/:providerId', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { providerId } = req.params;
+      
+      console.log(`[EmailProviders] Removing provider ${providerId} for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      await emailProviderManager.removeProvider(userId, providerId);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error removing email provider:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to remove email provider' 
+      });
+    }
+  });
+
+  // Set default email provider
+  app.put('/api/email-providers/:providerId/default', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { providerId } = req.params;
+      
+      console.log(`[EmailProviders] Setting default provider ${providerId} for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      await emailProviderManager.setDefaultProvider(userId, providerId);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error setting default email provider:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to set default email provider' 
+      });
+    }
+  });
+
+  // Send email via email provider
+  app.post('/api/email-providers/send', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { providerId, to, subject, text, html, cc, bcc } = req.body;
+      
+      if (!to || !subject || (!text && !html)) {
+        return res.status(400).json({ error: 'Missing required email fields' });
+      }
+      
+      console.log(`[EmailProviders] Sending email for user ${userId}, provider: ${providerId || 'default'}`);
+      
+      const message = {
+        to: Array.isArray(to) ? to : [to],
+        cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
+        bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+        subject,
+        text,
+        html
+      };
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const result = await emailProviderManager.sendEmail(userId, message, providerId);
+      
+      if (result.success) {
+        res.json({ success: true, providerId: result.providerId });
+      } else {
+        res.status(500).json({ 
+          error: result.error || 'Failed to send email',
+          providerId: result.providerId
+        });
+      }
+    } catch (error) {
+      console.error('Error sending email via provider:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to send email' 
+      });
+    }
+  });
+
+  // Check provider status
+  app.get('/api/email-providers/:providerId/status', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { providerId } = req.params;
+      
+      console.log(`[EmailProviders] Checking status for provider ${providerId} for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const isValid = await emailProviderManager.validateProvider(userId, providerId);
+      
+      res.json({ valid: isValid });
+    } catch (error) {
+      console.error('Error checking provider status:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to check provider status' 
+      });
+    }
+  });
+
+  // Refresh provider authentication
+  app.post('/api/email-providers/:providerId/refresh', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { providerId } = req.params;
+      
+      console.log(`[EmailProviders] Refreshing provider ${providerId} for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const refreshedProvider = await emailProviderManager.refreshProvider(userId, providerId);
+      
+      if (refreshedProvider) {
+        // Remove sensitive auth data from response
+        const sanitizedProvider = {
+          ...refreshedProvider,
+          authData: undefined
+        };
+        res.json(sanitizedProvider);
+      } else {
+        res.status(500).json({ error: 'Failed to refresh provider authentication' });
+      }
+    } catch (error) {
+      console.error('Error refreshing provider:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to refresh provider' 
+      });
+    }
+  });
+
+  // Get provider status summary
+  app.get('/api/email-providers/summary', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      console.log(`[EmailProviders] Getting status summary for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const summary = await emailProviderManager.getProviderStatusSummary(userId);
+      
+      // Remove sensitive auth data from default provider
+      if (summary.defaultProvider) {
+        summary.defaultProvider = {
+          ...summary.defaultProvider,
+          authData: undefined
+        };
+      }
+      
+      res.json(summary);
+    } catch (error) {
+      console.error('Error getting provider status summary:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to get provider status summary' 
+      });
+    }
+  });
+
+  // Health check for all user providers
+  app.get('/api/email-providers/health', requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      console.log(`[EmailProviders] Running health check for user ${userId}`);
+      
+      const { emailProviderManager } = await import('./lib/email-providers/index.js');
+      const healthResults = await emailProviderManager.healthCheckProviders(userId);
+      
+      res.json(healthResults);
+    } catch (error) {
+      console.error('Error running provider health check:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to run health check' 
+      });
+    }
+  });
+
+  // ============= END EMAIL PROVIDER ROUTES =============
+
   // Register credit routes
   registerCreditRoutes(app);
   
