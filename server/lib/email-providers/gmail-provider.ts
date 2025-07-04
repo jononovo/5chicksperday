@@ -13,11 +13,28 @@ export class GmailProvider implements EmailProviderService {
   private getOAuth2Client() {
     const clientId = process.env.GMAIL_CLIENT_ID;
     const clientSecret = process.env.GMAIL_CLIENT_SECRET;
-    const redirectUri = `${process.env.BASE_URL || 'http://localhost:5000'}/api/email-providers/gmail/callback`;
+    
+    // Determine the correct base URL for the current environment
+    let baseUrl = process.env.BASE_URL;
+    if (!baseUrl) {
+      // Try to get the domain from REPLIT_DOMAINS or fall back to localhost
+      const replitDomains = process.env.REPLIT_DOMAINS;
+      if (replitDomains) {
+        // Use the first domain from the list
+        const domains = replitDomains.split(',');
+        baseUrl = `https://${domains[0]}`;
+      } else {
+        baseUrl = 'http://localhost:5000';
+      }
+    }
+    
+    const redirectUri = `${baseUrl}/api/email-providers/gmail/callback`;
 
     if (!clientId || !clientSecret) {
       throw new Error('Gmail OAuth credentials not configured. Please set GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET environment variables.');
     }
+
+    console.log(`[GmailProvider] Using OAuth redirect URI: ${redirectUri}`);
 
     return new google.auth.OAuth2(
       clientId,

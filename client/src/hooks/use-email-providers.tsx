@@ -75,12 +75,57 @@ export function useEmailProviders() {
       return response;
     },
     onSuccess: (data: any) => {
+      console.log('Connect provider response:', data);
       // Open OAuth flow in new window
       if (data.authUrl) {
-        window.open(data.authUrl, '_blank', 'width=600,height=700');
+        console.log('Opening OAuth popup with URL:', data.authUrl);
+        const popup = window.open(
+          data.authUrl, 
+          'oauth_popup', 
+          'width=600,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no'
+        );
+        
+        if (!popup) {
+          toast({
+            title: "Popup Blocked",
+            description: "Please allow popups for this site and try again",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Monitor the popup for completion
+        const checkClosed = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkClosed);
+            // Refresh provider data after OAuth completion
+            queryClient.invalidateQueries({ queryKey: ['/api/email-providers'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/email-providers/default'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/email-providers/summary'] });
+            
+            toast({
+              title: "Checking Connection",
+              description: "Verifying your Gmail connection...",
+              variant: "default"
+            });
+          }
+        }, 1000);
+        
+        // Clear interval after 5 minutes as fallback
+        setTimeout(() => {
+          clearInterval(checkClosed);
+        }, 300000);
+      } else {
+        console.error('No authUrl in response:', data);
+        toast({
+          title: "Configuration Error",
+          description: "No authorization URL received from server",
+          variant: "destructive"
+        });
       }
     },
     onError: (error) => {
+      console.error('Connect provider error:', error);
       toast({
         title: "Connection Failed",
         description: error instanceof Error ? error.message : "Failed to start email provider connection",
