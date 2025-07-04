@@ -27,10 +27,13 @@ export class EmailProviderStorage {
       // Update user's provider list
       await this.addToUserProvidersList(provider.userId, provider.id);
       
-      // Set as default if it's the first provider
+      // Set as default if it's the first provider or explicitly marked as default
+      // Direct implementation to avoid circular dependency
       const userProviders = await this.getUserProviders(provider.userId);
       if (userProviders.length === 1 || provider.isDefault) {
-        await this.setDefaultProvider(provider.userId, provider.id);
+        const defaultKey = `${this.DEFAULT_PROVIDER_PREFIX}${provider.userId}`;
+        await db.set(defaultKey, provider.id);
+        console.log(`[EmailProviderStorage] Set ${provider.id} as default provider for user ${provider.userId}`);
       }
       
       console.log(`[EmailProviderStorage] Successfully stored provider ${provider.id} for user ${provider.userId}`);
@@ -114,17 +117,27 @@ export class EmailProviderStorage {
     try {
       console.log(`[EmailProviderStorage] Setting default provider ${providerId} for user ${userId}`);
       
-      // First, unset default flag on all user providers
+      // First, unset default flag on all user providers by directly updating their records
       const userProviders = await this.getUserProviders(userId);
       for (const provider of userProviders) {
         if (provider.isDefault && provider.id !== providerId) {
-          await this.updateProvider(userId, provider.id, { isDefault: false });
+          // Direct update without going through updateProvider to avoid recursion
+          const providerKey = `${this.PROVIDER_PREFIX}${provider.userId}:${provider.id}`;
+          const updatedProvider = { ...provider, isDefault: false, updatedAt: Date.now() };
+          await db.set(providerKey, JSON.stringify(updatedProvider));
         }
       }
       
-      // Set new default provider
+      // Set new default provider directly without recursion
       await db.set(key, providerId);
-      await this.updateProvider(userId, providerId, { isDefault: true });
+      
+      // Update the target provider's isDefault flag directly
+      const targetProvider = await this.getProvider(userId, providerId);
+      if (targetProvider) {
+        const providerKey = `${this.PROVIDER_PREFIX}${userId}:${providerId}`;
+        const updatedProvider = { ...targetProvider, isDefault: true, updatedAt: Date.now() };
+        await db.set(providerKey, JSON.stringify(updatedProvider));
+      }
       
       console.log(`[EmailProviderStorage] Successfully set default provider ${providerId} for user ${userId}`);
     } catch (error) {
