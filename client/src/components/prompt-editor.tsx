@@ -613,7 +613,7 @@ export default function PromptEditor({
         sessionId: sessionId,
         searchType: searchType
       });
-      return res.json();
+      return res;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
@@ -768,7 +768,7 @@ export default function PromptEditor({
         contactSearchConfig: contactSearchConfig,
         sessionId: currentSessionId
       });
-      return res.json();
+      return res;
     },
     onSuccess: (data) => {
       // Calculate total contacts found
