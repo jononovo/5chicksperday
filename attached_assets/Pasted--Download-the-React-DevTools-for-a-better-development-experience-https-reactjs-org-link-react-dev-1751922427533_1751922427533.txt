@@ -1,0 +1,228 @@
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ Starting Firebase initialization... Object
+ Raw environment variables: Object
+ Firebase Configuration: Object
+ Firebase initialized successfully: Object
+ Setting up Firebase auth state listener
+ Firebase auth state changed: undefined
+ Firebase persistence set to LOCAL
+api/user:1  Failed to load resource: the server responded with a status of 401 (Unauthorized)
+ User signed out, removed auth token
+ Found pending search query: Recently exited startups in Miami
+ PromptEditor received config update: Object
+ PromptEditor received config update: Object
+ PromptEditor received config update: Object
+ Saving search state: Object
+ Analyzing search query...
+ Preparing to search for companies and contacts...
+ Initiating company search process...
+ Sending request to company discovery API...
+ [Session Management] Cleaning up active sessions before starting new search...
+ Created search session: search_1751922073351_5xr81a9jz for query: Recently exited startups in Miami
+ [Session Cleanup] Found 1 active sessions, terminating...
+ Created session search_1751922073351_5xr81a9jz for query: Recently exited startups in Miami
+ Quick search with strategy: 17
+ API Request: POST /api/companies/quick-search Object
+api/search-sessions/search_1751922073351_5xr81a9jz:1  Failed to load resource: the server responded with a status of 404 (Not Found)
+ Cleaned up session: search_1751922073351_5xr81a9jz
+ [Session Cleanup] Completed cleanup of 1 sessions
+ `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ chunk-6NG4BD6S.js:324
+commitHookEffectListMount @ chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js:19447
+commitRootImpl @ chunk-RPCDYKBN.js:19416
+commitRoot @ chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js:9119
+(anonymous) @ chunk-RPCDYKBN.js:18627
+ Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-6NG4BD6S.js:338
+commitHookEffectListMount @ chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js:19447
+commitRootImpl @ chunk-RPCDYKBN.js:19416
+commitRoot @ chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js:9119
+(anonymous) @ chunk-RPCDYKBN.js:18627
+ Processing company results...
+ Found 7 companies matching your search
+ Started polling for session search_1751922073351_5xr81a9jz completion
+ Companies received: 7
+ Starting contact discovery process...
+ Searching for key decision makers and contacts...
+ Sending comprehensive search request to API...
+ This process may take a moment while we find the most relevant contacts...
+ API Request: POST /api/companies/search Object
+ CompanyTable received companies: Array(7)
+ Saving search state: Object
+api/search-sessions/search_1751922073351_5xr81a9jz/status:1  Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR
+ Error polling session: 
+pollForCompletion @ prompt-editor.tsx:252
+ Contact discovery completed successfully
+ Found 40 contacts across 7 companies
+ Processing and organizing results...
+ Session search_1751922073351_5xr81a9jz completed with full results
+ [Database Sync] Invalidating cache to force fresh queries...
+ Search process completed!
+ [Database Sync] Cache invalidated, sending results to UI...
+ === PARENT COMPONENT: handleSearchResults called ===
+ Received query: Recently exited startups in Miami
+ Received results count: 7
+ Current component state - query: Recently exited startups in Miami
+ Current component state - results count: 7
+ Complete results received with contacts: 7
+ Companies reordered by contact count: Array(7)
+ === PARENT COMPONENT: State updated ===
+ New state - query: Recently exited startups in Miami
+ New state - results count: 7
+ handleSearchResults completed
+ Companies with contacts: 7 of 7
+ CompanyTable received companies: Array(7)
+ Auto-expanding first company to show contacts: Luma Health
+ API Request: POST /api/lists Object
+ Saving search state: Object
+ Auto list creation failed: 
+onError @ home.tsx:457
+execute @ @tanstack_react-query.js:1254
+ Starting Google sign-in process Object
+ Calling signInWithPopup...
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js:6898
+ Cross-Origin-Opener-Policy policy would block the window.closed call.
+poll @ firebase_auth.js:6898
+ Firebase auth state changed: jon@codetribe.com
+ Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js:7364
+ Cross-Origin-Opener-Policy policy would block the window.close call.
+close @ firebase_auth.js:7364
+ SignInWithPopup completed Object
+ Google sign-in successful, syncing with backend Object
+ Auth token set successfully: Object
+ Firebase OAuth completed - user authentication successful
+ Gmail API authorization will be handled separately via server-side OAuth
+ Making backend sync request Object
+ Firebase OAuth completed - user authentication successful
+ Gmail API authorization will be handled separately via server-side OAuth
+ Making backend sync request Object
+api/google-auth:1  Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR
+ Error syncing with backend: Object
+syncWithBackend @ use-auth.tsx:285
+ Error during auth state sync: 
+(anonymous) @ use-auth.tsx:305
+ Successfully synced with backend
+ Registration success detected, triggering welcome notification
+ Extracted guest data: Object
+ Guest data cleared successfully
+ Restored guest query to input: Recently exited startups in Miami
+ API Request: POST /api/notifications/trigger Object
+api/notifications/trigger:1  Failed to load resource: the server responded with a status of 409 (Conflict)
+queryClient.ts:65 API Request Error: POST /api/notifications/trigger Object
+apiRequest @ queryClient.ts:65
+use-notifications.tsx:63 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:62:5)
+    at async triggerNotification (use-notifications.tsx:43:24)
+    at async handleRegistrationSuccess (home.tsx:493:9)
+triggerNotification @ use-notifications.tsx:63
+home.tsx:535 Saving search state: Object
+prompt-editor.tsx:911 Analyzing search query...
+prompt-editor.tsx:912 Preparing to search for companies and contacts...
+prompt-editor.tsx:588 Initiating company search process...
+prompt-editor.tsx:589 Sending request to company discovery API...
+prompt-editor.tsx:592 [Session Management] Cleaning up active sessions before starting new search...
+search-session-manager.ts:38 Created search session: search_1751922160791_buxrkz57d for query: Recently exited startups in Miami
+search-session-manager.ts:271 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor.tsx:603 Created session search_1751922160791_buxrkz57d for query: Recently exited startups in Miami
+prompt-editor.tsx:606 Quick search with strategy: 17
+queryClient.ts:39 API Request: POST /api/companies/quick-search Object
+api/search-sessions/search_1751922160791_buxrkz57d:1 
+            
+            
+           Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR
+search-session-manager.ts:284 [Session Cleanup] Failed to terminate backend session search_1751922160791_buxrkz57d: TypeError: Failed to fetch
+    at SearchSessionManager.cleanupActiveSessions (search-session-manager.ts:276:36)
+    at SearchSessionManager.createSession (search-session-manager.ts:41:10)
+    at Object.mutationFn (prompt-editor.tsx:596:46)
+cleanupActiveSessions @ search-session-manager.ts:284
+search-session-manager.ts:242 Cleaned up session: search_1751922160791_buxrkz57d
+search-session-manager.ts:291 [Session Cleanup] Completed cleanup of 1 sessions
+prompt-editor.tsx:622 Processing company results...
+prompt-editor.tsx:623 Found 7 companies matching your search
+prompt-editor.tsx:634 Started polling for session search_1751922160791_buxrkz57d completion
+home.tsx:809 Companies received: 7
+prompt-editor.tsx:757 Starting contact discovery process...
+prompt-editor.tsx:758 Searching for key decision makers and contacts...
+prompt-editor.tsx:761 Sending comprehensive search request to API...
+prompt-editor.tsx:762 This process may take a moment while we find the most relevant contacts...
+queryClient.ts:39 API Request: POST /api/companies/search Object
+company-table.tsx:73 CompanyTable received companies: Array(7)
+home.tsx:535 Saving search state: Object
+chunk-6NG4BD6S.js?v=1756a228:324 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ chunk-6NG4BD6S.js?v=1756a228:324
+chunk-6NG4BD6S.js?v=1756a228:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-6NG4BD6S.js?v=1756a228:338
+prompt-editor.tsx:778 Contact discovery completed successfully
+prompt-editor.tsx:779 Found 43 contacts across 7 companies
+prompt-editor.tsx:781 Processing and organizing results...
+prompt-editor.tsx:790 Session search_1751922160791_buxrkz57d completed with full results
+prompt-editor.tsx:795 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor.tsx:828 Search process completed!
+prompt-editor.tsx:805 [Database Sync] Cache invalidated, sending results to UI...
+home.tsx:823 === PARENT COMPONENT: handleSearchResults called ===
+home.tsx:824 Received query: Recently exited startups in Miami
+home.tsx:825 Received results count: 7
+home.tsx:826 Current component state - query: Recently exited startups in Miami
+home.tsx:827 Current component state - results count: 7
+home.tsx:828 Complete results received with contacts: 7
+home.tsx:847 Companies reordered by contact count: Array(7)
+home.tsx:856 === PARENT COMPONENT: State updated ===
+home.tsx:857 New state - query: Recently exited startups in Miami
+home.tsx:858 New state - results count: 7
+home.tsx:859 handleSearchResults completed
+home.tsx:869 Companies with contacts: 7 of 7
+company-table.tsx:73 CompanyTable received companies: Array(7)
+company-table.tsx:198 Auto-expanding first company to show contacts: EPICA
+queryClient.ts:39 API Request: POST /api/lists Object
+home.tsx:597 Auto list creation failed: TypeError: res.json is not a function
+    at Object.mutationFn (home.tsx:588:18)
+onError @ home.tsx:597
+home.tsx:535 Saving search state: Object
+home.tsx:2060 Starting backend email orchestration for 7 companies
+queryClient.ts:39 API Request: POST /api/companies/find-all-emails Object
+home.tsx:2159 Backend email orchestration error: Error: Backend orchestration failed: undefined
+    at runConsolidatedEmailSearch (home.tsx:2077:15)
+runConsolidatedEmailSearch @ home.tsx:2159
+home.tsx:2060 Starting backend email orchestration for 7 companies
+queryClient.ts:39 API Request: POST /api/companies/find-all-emails Object
+api/companies/find-all-emails:1 
+            
+            
+           Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR
+queryClient.ts:65 API Request Error: POST /api/companies/find-all-emails Object
+apiRequest @ queryClient.ts:65
+home.tsx:2159 Backend email orchestration error: TypeError: Failed to fetch
+    at apiRequest (queryClient.ts:55:23)
+    at runConsolidatedEmailSearch (home.tsx:2070:30)
+runConsolidatedEmailSearch @ home.tsx:2159
