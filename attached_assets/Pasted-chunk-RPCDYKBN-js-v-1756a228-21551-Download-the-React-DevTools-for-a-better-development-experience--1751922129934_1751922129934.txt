@@ -1,0 +1,208 @@
+chunk-RPCDYKBN.js?v=1756a228:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:78 Starting Firebase initialization... Object
+firebase.ts:18 Raw environment variables: Object
+firebase.ts:55 Firebase Configuration: Object
+firebase.ts:161 Firebase initialized successfully: Object
+use-auth.tsx:362 Setting up Firebase auth state listener
+use-auth.tsx:370 Firebase auth state changed: undefined
+firebase.ts:100 Firebase persistence set to LOCAL
+api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+firebase.ts:154 User signed out, removed auth token
+home.tsx:366 Found pending search query: Recently exited startups in Miami
+prompt-editor.tsx:458 PromptEditor received config update: Object
+prompt-editor.tsx:458 PromptEditor received config update: Object
+prompt-editor.tsx:458 PromptEditor received config update: Object
+home.tsx:535 Saving search state: Object
+prompt-editor.tsx:911 Analyzing search query...
+prompt-editor.tsx:912 Preparing to search for companies and contacts...
+prompt-editor.tsx:588 Initiating company search process...
+prompt-editor.tsx:589 Sending request to company discovery API...
+prompt-editor.tsx:592 [Session Management] Cleaning up active sessions before starting new search...
+search-session-manager.ts:38 Created search session: search_1751922073351_5xr81a9jz for query: Recently exited startups in Miami
+search-session-manager.ts:271 [Session Cleanup] Found 1 active sessions, terminating...
+prompt-editor.tsx:603 Created session search_1751922073351_5xr81a9jz for query: Recently exited startups in Miami
+prompt-editor.tsx:606 Quick search with strategy: 17
+queryClient.ts:39 API Request: POST /api/companies/quick-search {hasData: true, timestamp: '2025-07-07T21:01:13.352Z'}
+search-session-manager.ts:276 
+            
+            
+           DELETE https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/api/search-sessions/search_1751922073351_5xr81a9jz 404 (Not Found)
+cleanupActiveSessions @ search-session-manager.ts:276
+createSession @ search-session-manager.ts:41
+mutationFn @ prompt-editor.tsx:596
+await in mutationFn
+fn @ @tanstack_react-query.js?v=1756a228:1189
+run @ @tanstack_react-query.js?v=1756a228:494
+start @ @tanstack_react-query.js?v=1756a228:536
+execute @ @tanstack_react-query.js?v=1756a228:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=1756a228:2630
+(anonymous) @ @tanstack_react-query.js?v=1756a228:3295
+handleSearch @ prompt-editor.tsx:921
+callCallback2 @ chunk-RPCDYKBN.js?v=1756a228:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=1756a228:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=1756a228:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=1756a228:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=1756a228:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=1756a228:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=1756a228:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=1756a228:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=1756a228:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=1756a228:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=1756a228:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=1756a228:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=1756a228:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=1756a228:5449
+search-session-manager.ts:242 Cleaned up session: search_1751922073351_5xr81a9jz
+search-session-manager.ts:291 [Session Cleanup] Completed cleanup of 1 sessions
+chunk-6NG4BD6S.js?v=1756a228:324 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ chunk-6NG4BD6S.js?v=1756a228:324
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+chunk-6NG4BD6S.js?v=1756a228:338 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ chunk-6NG4BD6S.js?v=1756a228:338
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19416
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=1756a228:18627
+prompt-editor.tsx:622 Processing company results...
+prompt-editor.tsx:623 Found 7 companies matching your search
+prompt-editor.tsx:634 Started polling for session search_1751922073351_5xr81a9jz completion
+home.tsx:809 Companies received: 7
+prompt-editor.tsx:757 Starting contact discovery process...
+prompt-editor.tsx:758 Searching for key decision makers and contacts...
+prompt-editor.tsx:761 Sending comprehensive search request to API...
+prompt-editor.tsx:762 This process may take a moment while we find the most relevant contacts...
+queryClient.ts:39 API Request: POST /api/companies/search {hasData: true, timestamp: '2025-07-07T21:01:21.668Z'}
+company-table.tsx:73 CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home.tsx:535 Saving search state: {query: 'Recently exited startups in Miami', resultsCount: 7, listId: null, companies: Array(7)}
+prompt-editor.tsx:263 
+            
+            
+           GET https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/api/search-sessions/search_1751922073351_5xr81a9jz/status net::ERR_SSL_PROTOCOL_ERROR
+pollForCompletion @ prompt-editor.tsx:263
+setInterval
+(anonymous) @ prompt-editor.tsx:352
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+prompt-editor.tsx:339 Error polling session: TypeError: Failed to fetch
+    at pollForCompletion (prompt-editor.tsx:263:32)
+pollForCompletion @ prompt-editor.tsx:339
+setInterval
+(anonymous) @ prompt-editor.tsx:352
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18783
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+prompt-editor.tsx:778 Contact discovery completed successfully
+prompt-editor.tsx:779 Found 40 contacts across 7 companies
+prompt-editor.tsx:781 Processing and organizing results...
+prompt-editor.tsx:790 Session search_1751922073351_5xr81a9jz completed with full results
+prompt-editor.tsx:795 [Database Sync] Invalidating cache to force fresh queries...
+prompt-editor.tsx:828 Search process completed!
+prompt-editor.tsx:805 [Database Sync] Cache invalidated, sending results to UI...
+home.tsx:823 === PARENT COMPONENT: handleSearchResults called ===
+home.tsx:824 Received query: Recently exited startups in Miami
+home.tsx:825 Received results count: 7
+home.tsx:826 Current component state - query: Recently exited startups in Miami
+home.tsx:827 Current component state - results count: 7
+home.tsx:828 Complete results received with contacts: 7
+home.tsx:847 Companies reordered by contact count: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+home.tsx:856 === PARENT COMPONENT: State updated ===
+home.tsx:857 New state - query: Recently exited startups in Miami
+home.tsx:858 New state - results count: 7
+home.tsx:859 handleSearchResults completed
+home.tsx:869 Companies with contacts: 7 of 7
+ CompanyTable received companies: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Auto-expanding first company to show contacts: Luma Health
+ API Request: POST /api/lists {hasData: true, timestamp: '2025-07-07T21:01:35.917Z'}
+ Saving search state: {query: 'Recently exited startups in Miami', resultsCount: 7, listId: null, companies: Array(7)}
+ Auto list creation failed: 
+onError @ home.tsx:457
+execute @ @tanstack_react-query.js:1254
+await in execute
+mutate @ @tanstack_react-query.js:2630
+(anonymous) @ @tanstack_react-query.js:3295
+(anonymous) @ home.tsx:687
+setTimeout
+handleSearchResults @ home.tsx:687
+(anonymous) @ prompt-editor.tsx:584
+setTimeout
+onSuccess @ prompt-editor.tsx:582
+execute @ @tanstack_react-query.js:1233
+await in execute
+mutate @ @tanstack_react-query.js:2630
+(anonymous) @ @tanstack_react-query.js:3295
+onSuccess @ prompt-editor.tsx:482
+execute @ @tanstack_react-query.js:1233
+await in execute
+mutate @ @tanstack_react-query.js:2630
+(anonymous) @ @tanstack_react-query.js:3295
+handleSearch @ prompt-editor.tsx:669
+callCallback2 @ chunk-RPCDYKBN.js:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js:3736
+executeDispatch @ chunk-RPCDYKBN.js:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js:7034
+processDispatchQueue @ chunk-RPCDYKBN.js:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js:7051
+(anonymous) @ chunk-RPCDYKBN.js:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js:18913
+batchedUpdates @ chunk-RPCDYKBN.js:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js:5478
+dispatchEvent @ chunk-RPCDYKBN.js:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js:5449
