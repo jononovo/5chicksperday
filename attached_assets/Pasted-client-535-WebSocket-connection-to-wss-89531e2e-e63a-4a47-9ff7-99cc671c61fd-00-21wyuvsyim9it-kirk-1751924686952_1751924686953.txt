@@ -1,0 +1,105 @@
+client:535 WebSocket connection to 'wss://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/' failed: 
+setupWebSocket @ client:535
+client:535 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/' is invalid.
+    at setupWebSocket (client:535:19)
+    at fallback (client:508:16)
+    at WebSocket.<anonymous> (client:551:7)
+chunk-RPCDYKBN.js?v=1756a228:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:78 Starting Firebase initialization... {timestamp: '2025-07-07T21:44:16.214Z', domain: '89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev'}
+firebase.ts:18 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'development', dev: true, …}
+firebase.ts:55 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'development', …}
+firebase.ts:161 Firebase initialized successfully: {domain: '89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-07-07T21:44:16.215Z'}
+use-auth.tsx:362 Setting up Firebase auth state listener
+use-auth.tsx:370 Firebase auth state changed: jon@codetribe.com
+firebase.ts:100 Firebase persistence set to LOCAL
+home.tsx:366 Found pending search query: Recently exited startups in Miami
+use-auth.tsx:303 Firebase OAuth completed - user authentication successful
+use-auth.tsx:304 Gmail API authorization will be handled separately via server-side OAuth
+use-auth.tsx:306 Making backend sync request {endpoint: '/api/google-auth', domain: '89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev'}
+firebase.ts:133 Auth token set successfully: {uid: 'zIQDtEiUW4S31UxzqafpvCN9Tz63', email: 'jon@...', timestamp: '2025-07-07T21:44:16.433Z'}
+home.tsx:451 Registration success detected, triggering welcome notification
+home.tsx:460 Extracted guest data: {originalQuery: null}
+home.tsx:482 Guest data cleared successfully
+queryClient.ts:39 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-07-07T21:44:16.521Z'}
+use-auth.tsx:340 Successfully synced with backend
+queryClient.ts:55 
+            
+            
+           POST https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/api/notifications/trigger 409 (Conflict)
+apiRequest @ queryClient.ts:55
+triggerNotification @ use-notifications.tsx:43
+handleRegistrationSuccess @ home.tsx:493
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+queryClient.ts:65 API Request Error: POST /api/notifications/trigger {error: '409: {"shouldShow":false,"message":"Notification already shown or not found"}', timestamp: '2025-07-07T21:44:16.895Z'}
+apiRequest @ queryClient.ts:65
+await in apiRequest
+triggerNotification @ use-notifications.tsx:43
+handleRegistrationSuccess @ home.tsx:493
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+use-notifications.tsx:63 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:62:5)
+    at async triggerNotification (use-notifications.tsx:43:24)
+    at async handleRegistrationSuccess (home.tsx:493:9)
+triggerNotification @ use-notifications.tsx:63
+await in triggerNotification
+handleRegistrationSuccess @ home.tsx:493
+(anonymous) @ use-registration-modal.tsx:64
+setTimeout
+(anonymous) @ use-registration-modal.tsx:63
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=1756a228:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=1756a228:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=1756a228:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=1756a228:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=1756a228:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=1756a228:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=1756a228:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=1756a228:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=1756a228:19432
+commitRoot @ chunk-RPCDYKBN.js?v=1756a228:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=1756a228:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=1756a228:18718
+workLoop @ chunk-RPCDYKBN.js?v=1756a228:197
+flushWork @ chunk-RPCDYKBN.js?v=1756a228:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=1756a228:384
+prompt-editor.tsx:458 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor.tsx:458 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor.tsx:458 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home.tsx:535 Saving search state: {query: 'Recently exited startups in Miami', resultsCount: undefined, listId: null, companies: undefined}
