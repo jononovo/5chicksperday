@@ -1,4 +1,5 @@
-import { db } from "../db";
+// Webhook logging disabled when using Replit DB
+// import { db } from "../db";
 import { webhookLogs } from "@shared/schema";
 import type { WebhookLog } from "@shared/schema";
 import { eq, gte, sql } from "drizzle-orm";
@@ -22,19 +23,19 @@ export async function logOutgoingRequest(
       payload
     });
     
-    // Store in database
-    await db.insert(webhookLogs).values({
-      requestId,
-      searchId,
-      source: "n8n-send",
-      method: "POST",
-      url,
-      headers: { "Content-Type": "application/json" },
-      body: payload,
-      status: "pending",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    // Store in database - disabled when using Replit DB
+    // await db.insert(webhookLogs).values({
+    //   requestId,
+    //   searchId,
+    //   source: "n8n-send",
+    //   method: "POST",
+    //   url,
+    //   headers: { "Content-Type": "application/json" },
+    //   body: payload,
+    //   status: "pending",
+    //   createdAt: new Date(),
+    //   updatedAt: new Date()
+    // });
     
     return requestId;
   } catch (error) {
@@ -61,19 +62,19 @@ export async function logIncomingWebhook(
       payload
     });
     
-    // Store in database
-    await db.insert(webhookLogs).values({
-      requestId,
-      searchId,
-      source: "n8n-receive",
-      method: "POST",
-      url: "/api/webhooks/workflow",
-      headers,
-      body: payload,
-      status: "received",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    // Store in database - disabled when using Replit DB
+    // await db.insert(webhookLogs).values({
+    //   requestId,
+    //   searchId,
+    //   source: "n8n-receive",
+    //   method: "POST",
+    //   url: "/api/webhooks/workflow",
+    //   headers,
+    //   body: payload,
+    //   status: "received",
+    //   createdAt: new Date(),
+    //   updatedAt: new Date()
+    // });
     
     return requestId;
   } catch (error) {
@@ -98,20 +99,20 @@ export async function logHttpStatus(
       statusText
     });
     
-    // Update the database record
-    await db.update(webhookLogs)
-      .set({
-        statusCode,
-        status: statusCode >= 200 && statusCode < 300 ? "success" : "error",
-        processingDetails: {
-          httpStatus: statusCode,
-          httpStatusText: statusText,
-          responseTime: new Date().toISOString(),
-          responseData
-        },
-        updatedAt: new Date()
-      })
-      .where(eq(webhookLogs.requestId, requestId));
+    // Update the database record - disabled when using Replit DB
+    // await db.update(webhookLogs)
+    //   .set({
+    //     statusCode,
+    //     status: statusCode >= 200 && statusCode < 300 ? "success" : "error",
+    //     processingDetails: {
+    //       httpStatus: statusCode,
+    //       httpStatusText: statusText,
+    //       responseTime: new Date().toISOString(),
+    //       responseData
+    //     },
+    //     updatedAt: new Date()
+    //   })
+    //   .where(eq(webhookLogs.requestId, requestId));
   } catch (error) {
     console.error(`Failed to log HTTP status: ${error instanceof Error ? error.message : String(error)}`);
   }

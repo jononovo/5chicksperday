@@ -3,7 +3,7 @@ import { createServer } from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { storage } from "./storage";
+import { storage } from "../storage-switching/storage-switcher";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,7 +34,6 @@ import { registerStripeRoutes } from "./routes/stripe";
 import { CreditService } from "./lib/credits";
 import { SearchType } from "./lib/credits/types";
 import { TokenService } from "./lib/tokens";
-import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow-service";
 import { logIncomingWebhook } from "./lib/webhook-logger";
