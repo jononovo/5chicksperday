@@ -163,6 +163,22 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => {
+    console.log('Serializing user for session:', {
+      hasUser: !!user,
+      userId: user?.id,
+      userType: typeof user?.id,
+      userEmail: user?.email?.split('@')[0] + '@...',
+      timestamp: new Date().toISOString()
+    });
+    
+    if (!user || !user.id) {
+      console.error('User serialization failed - missing user or user.id:', {
+        user: user,
+        timestamp: new Date().toISOString()
+      });
+      return done(new Error('Failed to serialize user into session'));
+    }
+    
     done(null, user.id);
   });
 

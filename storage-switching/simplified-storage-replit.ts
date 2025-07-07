@@ -21,6 +21,37 @@ export class ReplitStorage implements IStorage {
   
   constructor() {
     this.db = new Database();
+    this.ensureDemoUser();
+  }
+  
+  // Ensure demo user (ID 1) exists for guest functionality
+  private async ensureDemoUser(): Promise<void> {
+    try {
+      const demoUser = await this.get<User>('user:1');
+      if (!demoUser) {
+        console.log('Creating demo user (ID 1) for guest functionality');
+        
+        const demoUserData = {
+          id: 1,
+          email: 'demo@5ducks.ai',
+          password: '',
+          username: 'demo',
+          createdAt: new Date()
+        };
+        
+        await this.set('user:1', demoUserData);
+        await this.set('index:user:email:demo@5ducks.ai', 1);
+        await this.set('index:user:username:demo', 1);
+        await this.set('counter:user', Math.max(1, await this.get<number>('counter:user') || 0));
+        
+        // Initialize preferences for demo user
+        await this.initializeUserPreferences(1);
+        
+        console.log('Demo user created successfully');
+      }
+    } catch (error) {
+      console.error('Error ensuring demo user exists:', error);
+    }
   }
   
   // Core helper methods
@@ -78,21 +109,31 @@ export class ReplitStorage implements IStorage {
   // @ts-ignore
   async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
     const id = await this.getNextId('user');
-    const now = new Date().toISOString();
+    const now = new Date();
     
     const user = {
       id,
       email: data.email,
       password: data.password,
       username: data.username || data.email.split('@')[0],
-      createdAt: now
+      createdAt: now  // Store as Date object, not string
     };
+    
+    console.log('Creating user in Replit DB:', {
+      id: user.id,
+      email: user.email.split('@')[0] + '@...',
+      hasId: typeof user.id === 'number',
+      timestamp: new Date().toISOString()
+    });
     
     await this.set(`user:${id}`, user);
     await this.set(`index:user:email:${data.email}`, id);
     if (user.username) {
       await this.set(`index:user:username:${user.username}`, id);
     }
+    
+    // Initialize user preferences for new user
+    await this.initializeUserPreferences(id);
     
     // @ts-ignore: Date handling issues
     return user;
