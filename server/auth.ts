@@ -93,6 +93,14 @@ async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
     // Get or create user in our database
     let user = await storage.getUserByEmail(decodedToken.email);
 
+    console.log('User lookup result:', {
+      found: !!user,
+      userType: typeof user,
+      hasId: user?.id,
+      email: decodedToken.email?.split('@')[0] + '@...',
+      timestamp: new Date().toISOString()
+    });
+
     if (!user) {
       console.log('Creating new user in backend:', {
         email: decodedToken.email?.split('@')[0] + '@...',
@@ -103,6 +111,13 @@ async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
         email: decodedToken.email,
         username: decodedToken.name || decodedToken.email.split('@')[0],
         password: '',  // Not used for Firebase auth
+      });
+      
+      console.log('User creation result:', {
+        created: !!user,
+        userId: user?.id,
+        userType: typeof user,
+        timestamp: new Date().toISOString()
       });
     }
 

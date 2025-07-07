@@ -57,14 +57,34 @@ export class ReplitStorage implements IStorage {
   // Core helper methods
   private async get<T>(key: string): Promise<T | undefined> {
     try {
-      return await this.db.get(key) as T;
-    } catch {
+      const result = await this.db.get(key);
+      
+      // Handle Replit DB response wrapper format
+      if (result && typeof result === 'object' && 'ok' in result) {
+        if (result.ok === true && 'value' in result) {
+          return result.value as T;
+        } else if (result.ok === false) {
+          // Handle error case - return undefined for not found
+          return undefined;
+        }
+      }
+      
+      // Direct value return (older format)
+      return result as T;
+    } catch (error) {
+      console.error(`Error getting key ${key}:`, error);
       return undefined;
     }
   }
   
   private async set<T>(key: string, value: T): Promise<void> {
-    await this.db.set(key, value);
+    try {
+      const result = await this.db.set(key, value);
+      console.log(`Set key ${key}:`, { success: true, hasValue: !!value });
+    } catch (error) {
+      console.error(`Error setting key ${key}:`, error);
+      throw error;
+    }
   }
   
   private async delete(key: string): Promise<void> {
@@ -74,7 +94,19 @@ export class ReplitStorage implements IStorage {
   private async list(prefix: string): Promise<string[]> {
     try {
       // @ts-ignore: Replit database typing issues
-      return await this.db.list(prefix);
+      const result = await this.db.list(prefix);
+      
+      // Handle Replit DB response wrapper format
+      if (result && typeof result === 'object' && 'ok' in result) {
+        if (result.ok === true && 'value' in result) {
+          return result.value as string[];
+        } else {
+          return [];
+        }
+      }
+      
+      // Direct value return (older format)
+      return result as string[];
     } catch (e) {
       console.error(`Error listing keys with prefix ${prefix}:`, e);
       return [];
