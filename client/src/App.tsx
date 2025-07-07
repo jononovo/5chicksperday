@@ -21,9 +21,9 @@ import LandingPage from "@/pages/landing";
 import Landing2Page from "@/pages/landing2";
 import Planning from "@/pages/planning";
 import Auth from "@/pages/auth";
+import Home from "@/pages/home";
 
 // Lazy imports for app pages that can be loaded on demand
-const Home = lazy(() => import("@/pages/home"));
 const Build = lazy(() => import("@/pages/build"));
 // Lists functionality moved to drawer in Home page
 const Campaigns = lazy(() => import("@/pages/campaigns"));
@@ -167,11 +167,7 @@ function Router() {
                 <Route path="/auth" component={Auth} />
                 
                 {/* Semi-protected routes - allow initial access but prompt for login for certain actions */}
-                <SemiProtectedRoute path="/app" component={() => 
-                  <Suspense fallback={<LoadingScreen message="Loading search interface..." />}>
-                    <Home />
-                  </Suspense>
-                } />
+                <SemiProtectedRoute path="/app" component={() => <Home />} />
                 <SemiProtectedRoute path="/companies/:id" component={() => 
                   <Suspense fallback={<LoadingScreen message="Loading company details..." />}>
                     <CompanyDetails />
