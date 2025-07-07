@@ -1,0 +1,40 @@
+[vite] connecting...
+DOMException {}
+stack: "SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/' is invalid.↵ at new t (https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:218737)↵ at setupWebSocket (https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/@vite/client:535:19)↵ at fallback (https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/@vite/client:508:16)↵ at WebSocket.<anonymous> (https://89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev/@vite/client:551:7)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: DOMException
+
+Starting Firebase initialization... 
+Object {timestamp: "2025-07-07T17:13:16.690Z", domain: "89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev"}
+Raw environment variables: 
+Object {apiKey: "....aDbuzU", projectId: "fire-5-ducks", appId: "....b133e8", mode: "development", dev: true, …}
+Firebase Configuration: 
+Object {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: "fire-5-ducks.firebaseapp.com", environment: "development", …}
+Firebase initialized successfully: 
+Object {domain: "89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev", isAuth: true, isProvider: true, authDomain: "fire-5-ducks.firebaseapp.com", timestamp: "2025-07-07T17:13:16.692Z"}
+Setting up Firebase auth state listener
+Firebase auth state changed: ale@codetribe.com
+Firebase persistence set to LOCAL
+Firebase OAuth completed - user authentication successful
+Gmail API authorization will be handled separately via server-side OAuth
+Making backend sync request 
+Object {endpoint: "/api/google-auth", domain: "89531e2e-e63a-4a47-9ff7-99cc671c61fd-00-21wyuvsyim9it.kirk.replit.dev"}
+Auth token set successfully: 
+Object {uid: "1NpuurD6ZfUpZ9ljf1QH6XBpzYD2", email: "ale@...", timestamp: "2025-07-07T17:13:17.402Z"}
+Found pending search query: Recently exited startups in Miami
+Successfully synced with backend
+Registration success detected, triggering welcome notification
+Extracted guest data: 
+Object {originalQuery: null}
+Guest data cleared successfully
+API Request: POST /api/notifications/trigger 
+Object {hasData: true, timestamp: "2025-07-07T17:13:17.849Z"}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+PromptEditor received config update: 
+Object {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: "", …}
+API Request Error: POST /api/notifications/trigger 
+Object {error: "409: {"shouldShow":false,"message":"Notification already shown or not found"}", timestamp: "2025-07-07T17:13:18.433Z"}
