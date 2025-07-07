@@ -2067,17 +2067,11 @@ export default function Home() {
 
       
       // Call backend orchestration endpoint with session ID
-      const response = await apiRequest("POST", "/api/companies/find-all-emails", {
+      const data = await apiRequest("POST", "/api/companies/find-all-emails", {
         companyIds,
         searchConfig: {},
         sessionId: currentSessionId
       });
-      
-      if (!response.ok) {
-        throw new Error(`Backend orchestration failed: ${response.status}`);
-      }
-      
-      const data = await response.json();
       
       console.log(`Backend orchestration completed:`, data.summary);
       
