@@ -20,7 +20,7 @@ interface ChatOverlayProps {
 }
 
 interface ChatOverlayRef {
-  initializeChat: (type: BusinessType) => void;
+  initializeChat: (type: BusinessType, formData?: any) => void;
 }
 
 const ChatOverlay = forwardRef<ChatOverlayRef, ChatOverlayProps>(({ initialState = 'hidden', onStateChange }, ref) => {
@@ -47,16 +47,44 @@ const ChatOverlay = forwardRef<ChatOverlayRef, ChatOverlayProps>(({ initialState
     onStateChange?.(chatState);
   }, [chatState, onStateChange]);
 
-  const initializeChat = (type: BusinessType) => {
+  const initializeChat = (type: BusinessType, formData?: any) => {
     setBusinessType(type);
-    const welcomeMessage: Message = {
-      id: Date.now().toString(),
-      content: `Hi! I love that you're selling a ${type}! Let's create your strategic sales plan together.
+    
+    let welcomeMessage: Message;
+    
+    if (formData) {
+      // If form data is provided, show personalized message like in the static implementation
+      const productService = formData.productService?.trim() || `your ${type}`;
+      const customerFeedback = formData.customerFeedback?.trim() || 'positive feedback';
+      const website = formData.website?.trim() || 'no website provided';
+      
+      welcomeMessage = {
+        id: Date.now().toString(),
+        content: `Perfect!
+
+**Your ${type} is:** ${productService}
+**Customers like:** ${customerFeedback}
+**And I can learn more at:** ${website !== 'no website provided' ? website : 'no website was provided'}
+
+Give me 5 seconds. I'm **building a product summary** so I can understand what you're selling.`,
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      
+      // Store form data for strategy generation
+      setProfileData(formData);
+    } else {
+      // Default welcome message
+      welcomeMessage = {
+        id: Date.now().toString(),
+        content: `Hi! I love that you're selling a ${type}! Let's create your strategic sales plan together.
 
 To get started, please tell me about your ${type}. What exactly are you offering, and what makes it special?`,
-      sender: 'ai',
-      timestamp: new Date()
-    };
+        sender: 'ai',
+        timestamp: new Date()
+      };
+    }
+    
     setMessages([welcomeMessage]);
     setChatState(isMobile ? 'fullscreen' : 'fullscreen');
   };

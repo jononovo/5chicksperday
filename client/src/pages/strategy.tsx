@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ArrowLeft, Package, Wrench, X } from "lucide-react";
+import ChatOverlay from "@/components/chat-overlay";
 
 interface FormData {
   productService: string;
@@ -23,6 +25,8 @@ export default function Strategy() {
     customerFeedback: "",
     website: ""
   });
+  const [chatState, setChatState] = useState<'hidden' | 'minimized' | 'sidebar' | 'fullscreen'>('hidden');
+  const chatRef = useRef<any>(null);
 
   useEffect(() => {
     // Get business type from URL params
@@ -81,10 +85,14 @@ export default function Strategy() {
 
   const handleNext = () => {
     if (currentStep === 3) {
-      // Form completed - will implement chat next
+      // Form completed - initialize chat with form data
       console.log("Form completed:", formData);
       setShowForm(false);
-      // TODO: Initialize chat with form data
+      
+      // Initialize chat with business type and form data
+      if (chatRef.current && businessType) {
+        chatRef.current.initializeChat(businessType, formData);
+      }
     } else {
       setCurrentStep(currentStep + 1);
     }
@@ -161,6 +169,9 @@ export default function Strategy() {
       {/* 3-Step Form Modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="max-w-md">
+          <VisuallyHidden>
+            <DialogTitle>Business Information Form</DialogTitle>
+          </VisuallyHidden>
           <div className="p-6">
             {/* Header */}
             <div className="text-center mb-6">
@@ -238,6 +249,13 @@ export default function Strategy() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Chat Overlay */}
+      <ChatOverlay
+        ref={chatRef}
+        initialState={chatState}
+        onStateChange={setChatState}
+      />
     </div>
   );
 }
