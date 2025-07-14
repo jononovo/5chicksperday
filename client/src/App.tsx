@@ -26,6 +26,7 @@ import Auth from "@/pages/auth";
 const Home = lazy(() => import("@/pages/home"));
 const Build = lazy(() => import("@/pages/build"));
 const Account = lazy(() => import("@/pages/account"));
+const Strategy = lazy(() => import("@/pages/strategy"));
 // Lists functionality moved to drawer in Home page
 const Campaigns = lazy(() => import("@/pages/campaigns"));
 const CampaignDetails = lazy(() => import("@/pages/campaign-details"));
@@ -176,6 +177,13 @@ function Router() {
                 <SemiProtectedRoute path="/companies/:id" component={() => 
                   <Suspense fallback={<LoadingScreen message="Loading company details..." />}>
                     <CompanyDetails />
+                  </Suspense>
+                } />
+                
+                {/* Strategy page - semi-protected to allow guest access */}
+                <SemiProtectedRoute path="/strategy" component={() => 
+                  <Suspense fallback={<LoadingScreen message="Loading strategy..." />}>
+                    <Strategy />
                   </Suspense>
                 } />
                 
