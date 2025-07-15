@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { X, Target, Minimize2 } from "lucide-react";
+import { X, Target, Minimize2, Maximize2 } from "lucide-react";
 import "@/components/ui/loading-spinner.css";
 
 interface FormData {
@@ -545,6 +545,10 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     onStateChange('minimized');
   };
 
+  const handleMaximize = () => {
+    onStateChange('fullscreen');
+  };
+
   // Don't render anything if hidden
   if (state === 'hidden') {
     return null;
@@ -577,13 +581,13 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
       )}
       
       {/* Overlay Container */}
-      <div className={`fixed z-50 bg-white border border-gray-200 shadow-2xl rounded-lg overflow-hidden transition-all duration-300 ${
+      <div className={`fixed z-50 bg-white shadow-2xl transition-all duration-300 ${
         isFullscreen 
-          ? 'inset-4 md:inset-8' 
-          : 'top-4 right-4 w-96 h-[600px]'
-      }`}>
+          ? 'inset-0 rounded-none' 
+          : 'top-4 right-4 w-96 h-[600px] border border-gray-200 rounded-lg'
+      } overflow-hidden flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">AI</span>
@@ -595,9 +599,14 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
           </div>
           <div className="flex items-center space-x-2">
             {isSidebar && (
-              <Button variant="ghost" size="sm" onClick={handleMinimize}>
-                <Minimize2 className="h-4 w-4" />
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={handleMaximize}>
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={handleMinimize}>
+                  <Minimize2 className="h-4 w-4" />
+                </Button>
+              </>
             )}
             <Button variant="ghost" size="sm" onClick={handleClose}>
               <X className="h-4 w-4" />
@@ -606,7 +615,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {!showChat ? (
             /* Form Section */
             <div className="flex-1 overflow-y-auto p-6">
@@ -700,7 +709,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
           ) : (
             /* Chat Section */
             <>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -738,7 +747,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
               </div>
 
               {/* Chat Input */}
-              <div className="border-t p-4">
+              <div className="border-t p-4 flex-shrink-0">
                 <div className="flex space-x-2">
                   <Input
                     value={userInput}
