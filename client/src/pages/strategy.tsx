@@ -153,6 +153,22 @@ export default function Strategy() {
         // Handle report types exactly like static implementation
         if (data.type === 'product_summary' || data.type === 'email_strategy' || data.type === 'sales_approach') {
           displayReport(data);
+        } else if (data.type === 'progressive_strategy') {
+          // Handle progressive strategy generation exactly like static
+          const aiMessage: Message = {
+            id: Date.now().toString(),
+            content: renderMarkdown(data.message),
+            sender: 'ai',
+            timestamp: new Date(),
+            isHTML: true
+          };
+          setMessages(prev => [...prev, aiMessage]);
+          
+          // Trigger progressive strategy generation after 500ms like static
+          setTimeout(async () => {
+            await generateProgressiveStrategy(data.initialTarget, data.refinedTarget);
+          }, 500);
+          
         } else if (data.type === 'conversation') {
           // Handle conversation messages
           const aiMessage: Message = {
@@ -173,6 +189,125 @@ export default function Strategy() {
       console.error('Error in strategy chat:', error);
       return { type: 'conversation', response: "Let's work with what you have. Could you be a bit more specific about your target market?" };
     }
+  };
+
+  // Copied from static implementation
+  const generateProgressiveStrategy = async (initialTarget: string, refinedTarget: string) => {
+    try {
+      console.log('Progressive strategy called with:', { 
+        initialTarget, 
+        refinedTarget, 
+        formDataExists: !!formData,
+        formData: formData 
+      });
+
+      const productContext = {
+        productService: formData?.productService,
+        customerFeedback: formData?.customerFeedback,
+        website: formData?.website
+      };
+
+      // Validate all required parameters
+      if (!initialTarget || !refinedTarget || !productContext.productService || !productContext.customerFeedback || !productContext.website) {
+        console.error('Missing required parameters for progressive strategy:', {
+          initialTarget: !!initialTarget,
+          refinedTarget: !!refinedTarget,
+          productService: !!productContext.productService,
+          customerFeedback: !!productContext.customerFeedback,
+          website: !!productContext.website
+        });
+        
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          content: "I need your product information to create the strategy. Let me restart the process.",
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+        return;
+      }
+
+      // Step 1: Generate Boundary Options
+      const loadingMessage: Message = {
+        id: Date.now().toString(),
+        content: "Analyzing your market scope...",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+      
+      console.log('Calling boundary API with:', { initialTarget, refinedTarget, productContext });
+      
+      const boundaryResponse = await fetch('/api/strategy/boundary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ initialTarget, refinedTarget, productContext })
+      });
+
+      if (boundaryResponse.ok) {
+        const boundaryData = await boundaryResponse.json();
+        
+        if (boundaryData.type === 'boundary_options') {
+          // Display interactive boundary selection
+          console.log('Boundary data received:', boundaryData);
+          console.log('About to display boundary options...');
+          displayBoundaryOptions(boundaryData, productContext, initialTarget, refinedTarget);
+          console.log('Boundary options displayed, returning to wait for selection');
+          return; // Wait for user selection
+        } else {
+          // Legacy single boundary response - display as report
+          displayReport(boundaryData);
+          console.log('Boundary step completed:', boundaryData);
+        }
+      } else {
+        console.error('Boundary API failed:', boundaryResponse.status, await boundaryResponse.text());
+        throw new Error(`Boundary generation failed: ${boundaryResponse.status}`);
+      }
+
+      // TODO: Continue with sprint and queries steps as needed
+
+    } catch (error) {
+      console.error('Error in progressive strategy:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: "There was an error generating your strategy. Let me try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+
+  // Copied from static implementation
+  const displayBoundaryOptions = (boundaryData: any, productContext: any, initialTarget: string, refinedTarget: string) => {
+    console.log('Displaying boundary options:', boundaryData);
+    
+    // Create boundary options HTML exactly like static
+    const boundaryHtml = `
+      <div class="boundary-options-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-2">${boundaryData.message}</h3>
+        <div class="boundary-options space-y-2">
+          ${boundaryData.data.options.map((option: any, index: number) => `
+            <button 
+              class="boundary-option-btn w-full text-left p-3 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+              onclick="chatOverlay.selectBoundaryOption(${index}, '${option.value}')"
+            >
+              <div class="font-medium text-gray-900">${option.label}</div>
+              <div class="text-sm text-gray-600">${option.description}</div>
+            </button>
+          `).join('')}
+        </div>
+      </div>`;
+    
+    const boundaryMessage: Message = {
+      id: Date.now().toString(),
+      content: boundaryHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, boundaryMessage]);
   };
 
   const handleNext = () => {
