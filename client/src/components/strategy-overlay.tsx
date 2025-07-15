@@ -790,15 +790,17 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Sidebar state: Show expand + close */}
             {isSidebar && (
-              <>
-                <Button variant="ghost" size="sm" onClick={handleMaximize}>
-                  <Maximize2 className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={handleMinimize}>
-                  <Minimize2 className="h-4 w-4" />
-                </Button>
-              </>
+              <Button variant="ghost" size="sm" onClick={handleMaximize}>
+                <Maximize2 className="h-4 w-4" />
+              </Button>
+            )}
+            {/* Fullscreen state: Show minimize + close */}
+            {isFullscreen && (
+              <Button variant="ghost" size="sm" onClick={handleMinimize}>
+                <Minimize2 className="h-4 w-4" />
+              </Button>
             )}
             <Button variant="ghost" size="sm" onClick={handleClose}>
               <X className="h-4 w-4" />
