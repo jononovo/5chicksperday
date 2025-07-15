@@ -206,12 +206,13 @@ To get started, please tell me about your ${type}. What exactly are you offering
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          {chatState === 'fullscreen' && !isMobile && (
+          {chatState === 'fullscreen' && (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setChatState('sidebar')}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              title="Switch to sidebar view"
             >
               <Minimize2 className="w-4 h-4" />
             </Button>
@@ -222,6 +223,7 @@ To get started, please tell me about your ${type}. What exactly are you offering
               size="icon"
               onClick={handleMaximize}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              title="Switch to fullscreen view"
             >
               <Maximize2 className="w-4 h-4" />
             </Button>
@@ -231,6 +233,7 @@ To get started, please tell me about your ${type}. What exactly are you offering
             size="icon"
             onClick={handleClose}
             className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            title="Close chat"
           >
             <X className="w-4 h-4" />
           </Button>
