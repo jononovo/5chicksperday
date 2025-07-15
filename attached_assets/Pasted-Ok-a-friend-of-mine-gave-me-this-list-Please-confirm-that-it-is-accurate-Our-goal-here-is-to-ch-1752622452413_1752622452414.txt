@@ -1,0 +1,44 @@
+Ok, a friend of mine gave me this list.  Please confirm that it is accurate.  Our goal here is to check if when a user runs through the react strategy on boarding flow, that at the end the product is saved to replit key-value DB and the Strategy assets as well.  1. I believe we don't have a sequence at the end that triggers such an event.  2. I'm not sure how it should be done. We'd like to do this as simply and effectively as possible.  Can you give some suggestions?  Do deep technical research into this.  Don't change anything yet  ——  # On-boarding Flow Fields  1. Onboarding Flow Fields ( Note: Not all of these are actually used in the form or flow inputs.) 
+Onboarding Flow Fields (from planning.tsx lines 220-235):
+* name (auto-generated as "Product 1", "Product 2", etc.)
+* businessType
+* businessDescription
+* targetCustomers
+* uniqueAttributes
+* marketNiche
+* productService
+* customerFeedback
+* website
+* businessLocation
+* primaryCustomerType
+* primarySalesChannel
+* primaryBusinessGoal
+* status
+Additional Fields I Added to Manual Form on Accounts Page:
+* short_description ← NOT in onboarding flow, should be removed
+
+
+2. Strategy Documents and Outputs - YES, They Are Saved!
+Strategy Output Database Fields (from schema.ts lines 404-410):
+* strategyHighLevelBoundary - Target boundary definition
+* exampleSprintPlanningPrompt - Sprint strategy prompt
+* productAnalysisSummary - Product analysis summary
+* reportSalesContextGuidance - Sales approach strategy
+* reportSalesTargetingGuidance - 90-Day Email Strategy (full strategy document)
+* dailySearchQueries - Daily search queries array
+* strategicPlan - Complete strategic plan object
+* searchPrompts - Search prompts array
+Progressive Strategy Endpoints That Save These:
+* /api/strategy/boundary/confirm → saves strategyHighLevelBoundary
+* /api/strategy/sprint → saves exampleSprintPlanningPrompt
+* /api/strategy/queries → saves dailySearchQueries + reportSalesTargetingGuidance (90-day strategy)
+* /api/onboarding/chat → saves productAnalysisSummary + reportSalesContextGuidance
+
+
+The 90-Day Email Strategy is saved as a complete document in reportSalesTargetingGuidance field containing:
+* Target boundary
+* Sprint prompt
+* Daily queries
+* Full formatted strategy content
+
+The strategy documents ARE being saved to the database, but they're not displayed in the "My Products" section yet. The manual form should remove the short_description field to match the onboarding flow exactly. 
