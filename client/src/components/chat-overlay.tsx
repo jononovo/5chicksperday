@@ -9,6 +9,7 @@ interface Message {
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  isHTML?: boolean;
 }
 
 type ChatState = 'hidden' | 'minimized' | 'sidebar' | 'fullscreen';
@@ -118,15 +119,41 @@ To get started, please tell me about your ${type}. What exactly are you offering
     });
     
     try {
-      const response: any = await apiRequest('POST', '/api/onboarding/chat', {
-        message: overrideFormData ? "Generate product summary" : "I want to create a strategic plan for my business. Please help me get started.",
-        businessType: effectiveBusinessType || 'product',
-        currentStep,
-        profileData: effectiveProfileData,
+      const response: any = await apiRequest('POST', '/api/onboarding/strategy-chat', {
+        userInput: overrideFormData ? "Generate product summary" : "I want to create a strategic plan for my business. Please help me get started.",
+        productContext: {
+          productService: effectiveProfileData?.productService,
+          customerFeedback: effectiveProfileData?.customerFeedback,
+          website: effectiveProfileData?.website
+        },
         conversationHistory: messages
       });
 
-      if (response.aiResponse) {
+      // Handle report types just like static implementation
+      if (response.type === 'product_summary' || response.type === 'email_strategy' || response.type === 'sales_approach') {
+        displayReport(response);
+      } else if (response.type === 'progressive_strategy') {
+        // Handle progressive strategy generation
+        const aiMessage: Message = {
+          id: Date.now().toString(),
+          content: response.message,
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, aiMessage]);
+        
+        // TODO: Implement progressive strategy generation if needed
+      } else if (response.type === 'conversation') {
+        // Handle conversation messages (like refinement requests)
+        const aiMessage: Message = {
+          id: Date.now().toString(),
+          content: response.message,
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, aiMessage]);
+      } else if (response.aiResponse) {
+        // Fallback for old format
         const aiMessage: Message = {
           id: (Date.now() + 1).toString(),
           content: response.aiResponse,
@@ -236,6 +263,34 @@ To get started, please tell me about your ${type}. What exactly are you offering
     setChatState(isMobile ? 'fullscreen' : 'sidebar');
   };
 
+  // Display report function copied from static implementation
+  const displayReport = (data: any) => {
+    // Remove any loading messages first
+    setMessages(prev => prev.filter(msg => !msg.isLoading));
+    
+    const reportContent = Array.isArray(data.content) 
+      ? data.content.join('\n') 
+      : data.content;
+
+    const reportHtml = `
+      <div class="strategy-report mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
+        <h4 class="font-semibold text-blue-800 mb-2">
+          ${data.title || 'Strategic Analysis'}
+        </h4>
+        <div class="text-gray-700 whitespace-pre-line">${reportContent}</div>
+      </div>`;
+
+    const reportMessage: Message = {
+      id: Date.now().toString(),
+      content: reportHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, reportMessage]);
+  };
+
   // Hidden state
   if (chatState === 'hidden') {
     return null;
@@ -320,7 +375,14 @@ To get started, please tell me about your ${type}. What exactly are you offering
                   : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              {message.isHTML ? (
+                <div 
+                  className="text-sm whitespace-pre-wrap"
+                  dangerouslySetInnerHTML={{ __html: message.content }}
+                />
+              ) : (
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              )}
               <span className="text-xs opacity-70 mt-1 block">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
