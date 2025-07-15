@@ -19,7 +19,7 @@ interface Message {
 }
 
 export default function Strategy() {
-  const [businessType, setBusinessType] = useState<"product" | "service">("product");
+  const [businessType, setBusinessType] = useState<"product" | "service" | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     productService: "",
@@ -278,22 +278,21 @@ export default function Strategy() {
     }
   };
 
-  // Copied from static implementation
+  // Copied from static implementation - Fixed for React
   const displayBoundaryOptions = (boundaryData: any, productContext: any, initialTarget: string, refinedTarget: string) => {
     console.log('Displaying boundary options:', boundaryData);
     
-    // Create boundary options HTML exactly like static
+    // Create boundary options HTML exactly like static but for React
     const boundaryHtml = `
       <div class="boundary-options-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-        <h3 class="font-bold text-lg text-blue-800 mb-2">${boundaryData.message}</h3>
+        <h3 class="font-bold text-lg text-blue-800 mb-2">${boundaryData.title || 'Target Boundary Options'}</h3>
+        <p class="text-sm text-gray-600 mb-3">${boundaryData.description || 'Choose your preferred approach:'}</p>
         <div class="boundary-options space-y-2">
-          ${boundaryData.data.options.map((option: any, index: number) => `
+          ${boundaryData.content.map((option: string, index: number) => `
             <button 
               class="boundary-option-btn w-full text-left p-3 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
-              onclick="chatOverlay.selectBoundaryOption(${index}, '${option.value}')"
-            >
-              <div class="font-medium text-gray-900">${option.label}</div>
-              <div class="text-sm text-gray-600">${option.description}</div>
+              onclick="window.selectBoundaryOption && window.selectBoundaryOption(${index}, '${option.replace(/'/g, "\\'")}', '${initialTarget.replace(/'/g, "\\'")}', '${refinedTarget.replace(/'/g, "\\'")}')">
+              <div class="font-medium text-gray-900">${option}</div>
             </button>
           `).join('')}
         </div>
@@ -308,6 +307,11 @@ export default function Strategy() {
     };
     
     setMessages(prev => [...prev, boundaryMessage]);
+  };
+
+  const handleBusinessTypeSelection = (type: "product" | "service") => {
+    setBusinessType(type);
+    console.log('Business type selected:', type);
   };
 
   const handleNext = () => {
@@ -389,6 +393,37 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
       handleSendMessage();
     }
   };
+
+  // Show initial Product/Service selection screen if no business type selected
+  if (!businessType) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col items-center justify-center p-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-xl text-slate-600 mb-12 max-w-2xl mx-auto text-center font-light">
+            <span>Let's create your 90-day email sales plan.<br />
+            What are you selling?</span>
+          </p>
+          
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <button
+              onClick={() => handleBusinessTypeSelection('product')}
+              className="h-24 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2 cursor-pointer transition-all duration-300 border-none outline-none"
+            >
+              <div className="text-2xl">📦</div>
+              <span className="font-semibold">Product</span>
+            </button>
+            <button
+              onClick={() => handleBusinessTypeSelection('service')}
+              className="h-24 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2 cursor-pointer transition-all duration-300 border-none outline-none"
+            >
+              <div className="text-2xl">🛠️</div>
+              <span className="font-semibold">Service</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (showChat) {
     return (
