@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,6 +43,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const [boundarySelectionContext, setBoundarySelectionContext] = useState<any>(null);
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
   // Boundary selection functions - moved before useEffect that references them
   const selectBoundaryOption = async (optionIndex: number) => {
@@ -59,6 +60,19 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const updateCustomBoundaryInput = (value: string) => {
     setCustomBoundaryInput(value);
   };
+
+  // Auto-scroll to bottom when messages change
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (messagesRef.current) {
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      }
+    }, 100);
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Set up global functions for HTML callbacks
   useEffect(() => {
@@ -926,7 +940,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
           ) : (
             /* Chat Section */
             <>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+              <div ref={messagesRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
                 {messages.map((message) => (
                   <div
                     key={message.id}
