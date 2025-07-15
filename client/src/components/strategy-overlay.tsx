@@ -60,6 +60,20 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     setCustomBoundaryInput(value);
   };
 
+  // Set up global functions for HTML callbacks
+  useEffect(() => {
+    (window as any).selectBoundaryOption = selectBoundaryOption;
+    (window as any).selectCustomBoundary = selectCustomBoundary;
+    (window as any).updateCustomBoundaryInput = updateCustomBoundaryInput;
+    
+    // Cleanup on unmount
+    return () => {
+      delete (window as any).selectBoundaryOption;
+      delete (window as any).selectCustomBoundary;
+      delete (window as any).updateCustomBoundaryInput;
+    };
+  }, [selectBoundaryOption, selectCustomBoundary, updateCustomBoundaryInput]);
+
   const confirmBoundarySelection = async (selectedOption: string | null, customBoundary: string | null) => {
     try {
       setBoundarySelectionMode(false);
