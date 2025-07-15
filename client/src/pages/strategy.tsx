@@ -30,6 +30,9 @@ export default function Strategy() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userInput, setUserInput] = useState("");
+  const [boundarySelectionMode, setBoundarySelectionMode] = useState(false);
+  const [boundarySelectionContext, setBoundarySelectionContext] = useState<any>(null);
+  const [customBoundaryInput, setCustomBoundaryInput] = useState("");
 
   useEffect(() => {
     // Get business type from URL params
@@ -278,23 +281,45 @@ export default function Strategy() {
     }
   };
 
-  // Copied from static implementation - Fixed for React
+  // Exact copy of static implementation displayBoundaryOptions
   const displayBoundaryOptions = (boundaryData: any, productContext: any, initialTarget: string, refinedTarget: string) => {
     console.log('Displaying boundary options:', boundaryData);
     
-    // Create boundary options HTML exactly like static but for React
+    // Store context for selection handling - exact copy from static
+    setBoundarySelectionContext({
+      options: boundaryData.content,
+      productContext,
+      initialTarget,
+      refinedTarget
+    });
+    setBoundarySelectionMode(true);
+
+    // Create boundary options HTML exactly like static implementation
     const boundaryHtml = `
-      <div class="boundary-options-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-        <h3 class="font-bold text-lg text-blue-800 mb-2">${boundaryData.title || 'Target Boundary Options'}</h3>
-        <p class="text-sm text-gray-600 mb-3">${boundaryData.description || 'Choose your preferred approach:'}</p>
-        <div class="boundary-options space-y-2">
+      <div class="boundary-options bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-1">First we need to agree on a high-level market segment.</h3>
+        <p class="text-sm text-blue-600 mb-3">Within this we will target ~700 companies across 6 sprints. Please choose your preferred approach:</p>
+        <div class="options-list space-y-3 mb-4">
           ${boundaryData.content.map((option: string, index: number) => `
-            <button 
-              class="boundary-option-btn w-full text-left p-3 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
-              onclick="window.selectBoundaryOption && window.selectBoundaryOption(${index}, '${option.replace(/'/g, "\\'")}', '${initialTarget.replace(/'/g, "\\'")}', '${refinedTarget.replace(/'/g, "\\'")}')">
-              <div class="font-medium text-gray-900">${option}</div>
-            </button>
+            <div class="option-item p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-blue-400 transition-colors" 
+                 onclick="window.selectBoundaryOption && window.selectBoundaryOption(${index})">
+              <strong>${index + 1}.</strong> ${option}
+            </div>
           `).join('')}
+        </div>
+        <div class="custom-input-section">
+          <p class="text-sm text-gray-600 mb-2">Or add your own:</p>
+          <div class="flex gap-2">
+            <input type="text" id="customBoundaryInput" placeholder="Your high-level target segment..." 
+                   class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                   style="border: 1px solid #e5e7eb !important;"
+                   value="${customBoundaryInput}"
+                   oninput="window.updateCustomBoundaryInput && window.updateCustomBoundaryInput(this.value)">
+            <button onclick="window.selectCustomBoundary && window.selectCustomBoundary()" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+              Use This
+            </button>
+          </div>
         </div>
       </div>`;
     
@@ -393,6 +418,131 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
       handleSendMessage();
     }
   };
+
+  // Exact copy of static implementation boundary selection functions
+  const selectBoundaryOption = async (optionIndex: number) => {
+    if (!boundarySelectionContext || !boundarySelectionMode) return;
+
+    const selectedBoundary = boundarySelectionContext.options[optionIndex];
+    await confirmBoundarySelection(selectedBoundary, null);
+  };
+
+  const selectCustomBoundary = async () => {
+    if (!customBoundaryInput.trim()) return;
+    
+    await confirmBoundarySelection(null, customBoundaryInput.trim());
+  };
+
+  const updateCustomBoundaryInput = (value: string) => {
+    setCustomBoundaryInput(value);
+  };
+
+  const confirmBoundarySelection = async (selectedOption: string | null, customBoundary: string | null) => {
+    try {
+      setBoundarySelectionMode(false);
+      
+      // Add loading message
+      const loadingMessage: Message = {
+        id: Date.now().toString(),
+        content: "Confirming your boundary selection...",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+      setIsLoading(true);
+
+      const confirmResponse = await fetch('/api/strategy/boundary/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedOption,
+          customBoundary,
+          productContext: boundarySelectionContext.productContext
+        })
+      });
+
+      if (confirmResponse.ok) {
+        const confirmData = await confirmResponse.json();
+        
+        const confirmationHtml = `
+          <div class="strategy-step mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
+            <h4 class="font-semibold text-green-800 mb-2">
+              Target Boundary Confirmed (Step 1/3)
+            </h4>
+            <div class="text-gray-700">${confirmData.content}</div>
+          </div>`;
+        
+        const confirmationMessage: Message = {
+          id: Date.now().toString(),
+          content: confirmationHtml,
+          sender: 'ai',
+          timestamp: new Date(),
+          isHTML: true
+        };
+
+        setMessages(prev => [...prev.slice(0, -1), confirmationMessage]);
+
+        // Continue with strategy generation using confirmed boundary
+        await continueStrategyGeneration(confirmData.content);
+      } else {
+        throw new Error('Failed to confirm boundary selection');
+      }
+    } catch (error) {
+      console.error('Error confirming boundary selection:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: "There was an error confirming your selection. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev.slice(0, -1), errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const continueStrategyGeneration = async (confirmedBoundary: string) => {
+    try {
+      const { initialTarget, refinedTarget, productContext } = boundarySelectionContext;
+
+      // Continue with next strategy steps - this will integrate with existing strategy generation
+      const nextStepMessage: Message = {
+        id: Date.now().toString(),
+        content: `Great! Now continuing with sprint generation for: ${confirmedBoundary}`,
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, nextStepMessage]);
+
+      // This would connect to the existing strategy generation pipeline
+      // For now, we'll show a success message
+      console.log('Continuing strategy generation with confirmed boundary:', confirmedBoundary);
+      
+    } catch (error) {
+      console.error('Error continuing strategy generation:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: "There was an error generating your strategy. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+
+  // Setup window handlers for boundary selection - like static implementation
+  useEffect(() => {
+    (window as any).selectBoundaryOption = selectBoundaryOption;
+    (window as any).selectCustomBoundary = selectCustomBoundary;
+    (window as any).updateCustomBoundaryInput = updateCustomBoundaryInput;
+
+    return () => {
+      // Cleanup
+      delete (window as any).selectBoundaryOption;
+      delete (window as any).selectCustomBoundary;
+      delete (window as any).updateCustomBoundaryInput;
+    };
+  }, [boundarySelectionContext, boundarySelectionMode, customBoundaryInput]);
 
   // Show initial Product/Service selection screen if no business type selected
   if (!businessType) {
