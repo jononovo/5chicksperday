@@ -44,6 +44,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Boundary selection functions - moved before useEffect that references them
   const selectBoundaryOption = async (optionIndex: number) => {
@@ -76,9 +77,9 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
 
   // Auto-focus input/textarea after step change
   useEffect(() => {
-    if (!showChat && businessType) {
+    if (!showChat && businessType && formRef.current) {
       setTimeout(() => {
-        const input = document.querySelector('input, textarea');
+        const input = formRef.current?.querySelector('input, textarea');
         if (input) {
           (input as HTMLInputElement | HTMLTextAreaElement).focus();
         }
@@ -870,7 +871,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
         <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {!showChat ? (
             /* Form Section */
-            <div className="flex-1 overflow-y-auto p-6">
+            <div ref={formRef} className="flex-1 overflow-y-auto p-6">
               {!businessType ? (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900">Let's get started!</h3>
