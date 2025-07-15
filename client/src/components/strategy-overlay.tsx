@@ -766,6 +766,15 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     }
   };
 
+  const handleFormKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (isValid) {
+        handleNext();
+      }
+    }
+  };
+
   const handleClose = () => {
     onStateChange('minimized');
   };
@@ -905,6 +914,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                         <Textarea
                           value={currentValue}
                           onChange={(e) => handleInputChange(e.target.value)}
+                          onKeyPress={handleFormKeyPress}
                           placeholder={currentQuestion.placeholder}
                           className="min-h-[100px] resize-none"
                         />
@@ -912,6 +922,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                         <Input
                           value={currentValue}
                           onChange={(e) => handleInputChange(e.target.value)}
+                          onKeyPress={handleFormKeyPress}
                           placeholder={currentQuestion.placeholder}
                         />
                       )}
