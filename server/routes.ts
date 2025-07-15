@@ -3589,11 +3589,21 @@ Then, on a new line, write the body of the email. Keep both subject and content 
   });
 
   // Strategic Onboarding Chat Endpoint
-  app.post("/api/onboarding/chat", async (req, res) => {
+  app.post("/api/onboarding/chat", requireAuth, async (req, res) => {
     try {
       const { message, businessType, currentStep, profileData, conversationHistory, researchResults } = req.body;
 
+      // Debug logging
+      console.log('Onboarding chat request:', {
+        message: message ? `"${message.substring(0, 50)}..."` : 'undefined',
+        businessType,
+        currentStep,
+        profileDataKeys: profileData ? Object.keys(profileData) : 'undefined',
+        conversationHistoryLength: conversationHistory ? conversationHistory.length : 'undefined'
+      });
+
       if (!message || !businessType) {
+        console.log('Missing required parameters:', { message: !!message, businessType: !!businessType });
         res.status(400).json({ message: "Missing required parameters" });
         return;
       }

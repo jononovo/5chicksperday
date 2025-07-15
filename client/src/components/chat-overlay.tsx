@@ -103,10 +103,18 @@ To get started, please tell me about your ${type}. What exactly are you offering
     
     setIsLoading(true);
     
+    // Debug logging
+    console.log('triggerAIResponse called with:', {
+      businessType,
+      currentStep,
+      profileData,
+      messagesLength: messages.length
+    });
+    
     try {
       const response: any = await apiRequest('POST', '/api/onboarding/chat', {
         message: "I want to create a strategic plan for my business. Please help me get started.",
-        businessType,
+        businessType: businessType || 'product', // Ensure businessType is not null
         currentStep,
         profileData,
         conversationHistory: messages
