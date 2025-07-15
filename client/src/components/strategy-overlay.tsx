@@ -928,7 +928,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                           onChange={(e) => handleInputChange(e.target.value)}
                           onKeyDown={handleFormKeyPress}
                           placeholder={currentQuestion.placeholder}
-                          className="min-h-[100px] resize-none"
+                          className="min-h-[60px] resize-none"
                         />
                       ) : (
                         <Input
