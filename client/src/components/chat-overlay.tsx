@@ -53,6 +53,9 @@ const ChatOverlay = forwardRef<ChatOverlayRef, ChatOverlayProps>(({ initialState
     let welcomeMessage: Message;
     
     if (formData) {
+      // Store form data for strategy generation immediately
+      setProfileData(formData);
+      
       // If form data is provided, show personalized message like in the static implementation
       const productService = formData.productService?.trim() || `your ${type}`;
       const customerFeedback = formData.customerFeedback?.trim() || 'positive feedback';
@@ -70,9 +73,6 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
         sender: 'ai',
         timestamp: new Date()
       };
-      
-      // Store form data for strategy generation
-      setProfileData(formData);
     } else {
       // Default welcome message
       welcomeMessage = {
@@ -88,35 +88,41 @@ To get started, please tell me about your ${type}. What exactly are you offering
     setMessages([welcomeMessage]);
     setChatState(isMobile ? 'fullscreen' : 'sidebar');
     
-    // Automatically trigger AI response after initial message
-    setTimeout(() => {
-      triggerAIResponse();
-    }, 2000);
+    // Automatically trigger AI response after initial message with form data
+    if (formData) {
+      setTimeout(() => {
+        triggerAIResponse(type, formData);
+      }, 2000);
+    }
   };
 
   useImperativeHandle(ref, () => ({
     initializeChat
   }));
 
-  const triggerAIResponse = async () => {
+  const triggerAIResponse = async (overrideBusinessType?: BusinessType, overrideFormData?: any) => {
     if (isLoading) return;
     
     setIsLoading(true);
     
+    // Use override values if provided (for initial call), otherwise use state
+    const effectiveBusinessType = overrideBusinessType || businessType;
+    const effectiveProfileData = overrideFormData || profileData;
+    
     // Debug logging
     console.log('triggerAIResponse called with:', {
-      businessType,
+      businessType: effectiveBusinessType,
       currentStep,
-      profileData,
+      profileData: effectiveProfileData,
       messagesLength: messages.length
     });
     
     try {
       const response: any = await apiRequest('POST', '/api/onboarding/chat', {
-        message: "I want to create a strategic plan for my business. Please help me get started.",
-        businessType: businessType || 'product', // Ensure businessType is not null
+        message: overrideFormData ? "Generate product summary" : "I want to create a strategic plan for my business. Please help me get started.",
+        businessType: effectiveBusinessType || 'product',
         currentStep,
-        profileData,
+        profileData: effectiveProfileData,
         conversationHistory: messages
       });
 
@@ -163,16 +169,17 @@ To get started, please tell me about your ${type}. What exactly are you offering
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
     try {
       const response: any = await apiRequest('POST', '/api/onboarding/chat', {
-        message: inputMessage,
-        businessType,
+        message: currentInput,
+        businessType: businessType || 'product', // Ensure businessType is not null
         currentStep,
         profileData,
-        conversationHistory: messages
+        conversationHistory: [...messages, userMessage]
       });
 
       if (response.aiResponse) {
