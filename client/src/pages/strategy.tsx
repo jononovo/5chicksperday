@@ -29,6 +29,7 @@ export default function Strategy() {
   const [showChat, setShowChat] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
     // Get business type from URL params
@@ -224,6 +225,36 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     window.history.back();
   };
 
+  const handleSendMessage = async () => {
+    if (!userInput.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: userInput,
+      sender: 'user',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+    setUserInput("");
+
+    try {
+      await handleStrategyChatMessage(userInput);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   if (showChat) {
     return (
       <div className="fixed inset-0 z-50 bg-white flex flex-col">
@@ -274,6 +305,28 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
               </div>
             </div>
           )}
+        </div>
+
+        {/* Chat Input */}
+        <div className="border-t border-gray-200 p-4">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type your message..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isLoading}
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={!userInput.trim() || isLoading}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     );
