@@ -734,7 +734,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
   };
 
   const handleMinimize = () => {
-    onStateChange('minimized');
+    onStateChange('sidebar');
   };
 
   const handleMaximize = () => {
