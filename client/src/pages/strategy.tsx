@@ -371,7 +371,13 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
   };
 
   const handleMinimize = () => {
-    setOverlayState('minimized');
+    if (overlayState === 'fullscreen') {
+      setOverlayState('sidebar');     // fullscreen → sidebar
+    } else if (overlayState === 'sidebar') {
+      setOverlayState('minimized');   // sidebar → minimized
+    } else {
+      setOverlayState('minimized');   // fallback
+    }
   };
 
   const handleMaximize = () => {
@@ -951,7 +957,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     // Chat overlay states (sidebar and fullscreen)
     const chatContainerClass = overlayState === 'fullscreen' 
       ? "fixed inset-0 z-40 bg-white h-screen w-full overflow-y-auto overscroll-contain"
-      : "fixed bottom-4 right-4 z-40 w-96 h-[600px] bg-white rounded-lg shadow-xl border border-gray-200";
+      : `fixed bottom-4 right-4 z-40 ${isMobile ? 'w-[90%] max-w-sm' : 'w-96'} h-[600px] bg-white rounded-lg shadow-xl border border-gray-200`;
 
     return (
       <div className={chatContainerClass}>
