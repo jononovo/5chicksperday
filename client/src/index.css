@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Body scroll lock for full-screen modals */
+.modal-open {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+
 /* iOS Safari auto-zoom prevention - mobile only */
 .mobile-input-text-fix {
   font-size: 16px;

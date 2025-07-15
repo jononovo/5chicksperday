@@ -39,7 +39,15 @@ export default function Strategy() {
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Enhanced mobile detection with resize listener
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // Get business type from URL params
@@ -50,6 +58,14 @@ export default function Strategy() {
       setOverlayState('form');
     }
   }, []);
+
+  // Body scroll lock when fullscreen modal is open
+  useEffect(() => {
+    if (overlayState === 'fullscreen') {
+      document.body.classList.add('modal-open');
+      return () => document.body.classList.remove('modal-open');
+    }
+  }, [overlayState]);
 
   const questions = [
     {
@@ -934,7 +950,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
 
     // Chat overlay states (sidebar and fullscreen)
     const chatContainerClass = overlayState === 'fullscreen' 
-      ? "fixed inset-0 z-40 bg-white"
+      ? "fixed inset-0 z-40 bg-white h-screen w-full overflow-y-auto overscroll-contain"
       : "fixed bottom-4 right-4 z-40 w-96 h-[600px] bg-white rounded-lg shadow-xl border border-gray-200";
 
     return (
