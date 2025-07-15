@@ -164,8 +164,8 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         setMessages(prev => prev.filter(msg => msg.content !== "Creating sprint strategy..."));
         
         const sprintHtml = `
-          <div class="strategy-step mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-            <h4 class="font-semibold text-blue-800 mb-2">
+          <div class="strategy-step mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
+            <h4 class="font-semibold text-green-800 mb-2">
               Sprint Strategy (Step 2/3)
             </h4>
             <div class="text-gray-700">${sprintData.content}</div>
@@ -206,8 +206,8 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
           setMessages(prev => prev.filter(msg => msg.content !== "Generating daily search queries..."));
           
           const queriesHtml = `
-            <div class="strategy-step mb-4 p-4 bg-purple-50 border-l-4 border-purple-400 rounded">
-              <h4 class="font-semibold text-purple-800 mb-2">
+            <div class="strategy-step mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
+              <h4 class="font-semibold text-green-800 mb-2">
                 Daily Search Queries (Step 3/3)
               </h4>
               <div class="text-gray-700">${queriesData.content}</div>
@@ -222,14 +222,12 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
           };
           setMessages(prev => [...prev, queriesMessage]);
           
-          // Show completion message
-          const completionMessage: Message = {
-            id: `completion-${Date.now()}`,
-            content: "Perfect! Your complete sales strategy is ready. You can now use this to start prospecting with targeted searches.",
-            sender: 'ai',
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, completionMessage]);
+          // Complete strategy and show sales approach (like static version)
+          await completeStrategyWithSalesApproach({
+            boundary: confirmedBoundary,
+            sprintPrompt: sprintData.content,
+            dailyQueries: Array.isArray(queriesData.content) ? queriesData.content : queriesData.content.split('\n').filter(q => q.trim())
+          }, initialTarget, refinedTarget);
         }
       }
     } catch (error) {
@@ -242,6 +240,65 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       };
       setMessages(prev => [...prev, errorMessage]);
     }
+  };
+
+  // Complete strategy and show sales approach (like static version)
+  const completeStrategyWithSalesApproach = async (strategyData: any, initialTarget: string, refinedTarget: string) => {
+    // Show the complete 90-day strategy
+    const completeHtml = `
+      <div class="strategy-complete mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 class="text-xl font-bold text-blue-900 mb-4">🎯 90-Day Target Search Strategy</h3>
+        <div class="space-y-4">
+          <div>
+            <h4 class="font-semibold text-blue-800">Target Boundary:</h4>
+            <p class="text-gray-700">${strategyData.boundary}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-blue-800">Sprint Focus:</h4>
+            <p class="text-gray-700">${strategyData.sprintPrompt}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-blue-800">Daily Search Queries:</h4>
+            <ul class="list-disc ml-6 text-gray-700">
+              ${strategyData.dailyQueries.map((query: string) => `<li>${query}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <p class="text-blue-800 font-medium">✓ Strategic onboarding complete! You're ready to start your outreach.</p>
+        </div>
+      </div>`;
+
+    const completeMessage: Message = {
+      id: `strategy-complete-${Date.now()}`,
+      content: completeHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    setMessages(prev => [...prev, completeMessage]);
+
+    // Show sales approach prompt after brief delay (like static version)
+    setTimeout(() => {
+      const promptHtml = `
+        <div class="boundary-options bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+          <h3 class="font-bold text-lg text-blue-800 mb-1">Perfect! Your strategy is complete.</h3>
+          <p class="text-sm text-blue-600 mb-3">Now let's create your marketing context document to guide email campaign creation.</p>
+          <button onclick="window.generateSalesApproach && window.generateSalesApproach()" 
+                  class="w-full px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium">
+            Create My Marketing Context Document
+          </button>
+        </div>`;
+
+      const promptMessage: Message = {
+        id: `sales-approach-prompt-${Date.now()}`,
+        content: promptHtml,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true
+      };
+      setMessages(prev => [...prev, promptMessage]);
+    }, 100);
   };
 
   // Auto-switch between sidebar and fullscreen based on screen size
