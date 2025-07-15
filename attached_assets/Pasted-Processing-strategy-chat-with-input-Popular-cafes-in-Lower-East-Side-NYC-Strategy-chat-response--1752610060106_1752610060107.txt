@@ -1,0 +1,26 @@
+Processing strategy chat with input: Popular cafes in Lower East Side, NYC
+Strategy chat response: 
+Object {type: "conversation", message: "Is there an additional niche or another example that you think could improve your sales chances?…", phase: "TARGET_COLLECTION"}
+Processing strategy chat with input: cafes in Lower East Side, NYC
+Strategy chat response: 
+Object {type: "progressive_strategy", message: "Perfect! Now I'll create your **strategic sales plan** step by step.", phase: "TARGET_REFINEMENT", initialTarget: "Popular cafes in Lower East Side, NYC", refinedTarget: "cafes in Lower East Side, NYC", …}
+Calling boundary API with: 
+Object {initialTarget: "Popular cafes in Lower East Side, NYC", refinedTarget: "cafes in Lower East Side, NYC", productContext: {…}}
+Boundary data received: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+About to display boundary options...
+Displaying boundary options: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+Boundary options displayed, returning to wait for selection
+Warning: Encountered two children with the same key, &#x60;1752610001596&#x60;. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at div
+    at StrategyOverlay (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/components/strategy-overlay.tsx:24:35)
+    at StrategyOverlayWrapper (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/App.tsx?v=vFlx-JmteN8Jzt5Qr0d7z:646:31)
+    at StrategyOverlayProvider (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/lib/strategy-overlay-context.tsx:20:43)
+    at SearchStrategyProvider (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/lib/search-strategy-context.tsx:24:42)
+    at RegistrationModalProvider (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/hooks/use-registration-modal.tsx:37:45)
+    at AuthProvider (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/hooks/use-auth.tsx:35:32)
+    at QueryClientProvider (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=926cdd43:2805:3)
+    at App (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/App.tsx?v=vFlx-JmteN8Jzt5Qr0d7z:669:3)

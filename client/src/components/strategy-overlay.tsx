@@ -102,7 +102,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         </div>`;
 
       const confirmMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: `boundary-confirmed-${Date.now()}`,
         content: confirmationHtml,
         sender: 'ai',
         timestamp: new Date(),
@@ -140,7 +140,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       
       // Step 1: Generate Sprint Prompt
       const sprintLoadingMessage: Message = {
-        id: Date.now().toString(),
+        id: `sprint-loading-${Date.now()}`,
         content: "Creating sprint strategy...",
         sender: 'ai',
         timestamp: new Date()
@@ -172,7 +172,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
           </div>`;
         
         const sprintMessage: Message = {
-          id: (Date.now() + 1).toString(),
+          id: `sprint-${Date.now()}`,
           content: sprintHtml,
           sender: 'ai',
           timestamp: new Date(),
@@ -182,7 +182,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         
         // Step 2: Generate Daily Queries
         const queriesLoadingMessage: Message = {
-          id: (Date.now() + 2).toString(),
+          id: `queries-loading-${Date.now()}`,
           content: "Generating daily search queries...",
           sender: 'ai',
           timestamp: new Date()
@@ -194,7 +194,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             boundary: confirmedBoundary, 
-            refinedTarget, 
+            sprintPrompt: sprintData.content, 
             productContext 
           })
         });
@@ -214,7 +214,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
             </div>`;
           
           const queriesMessage: Message = {
-            id: (Date.now() + 3).toString(),
+            id: `queries-${Date.now()}`,
             content: queriesHtml,
             sender: 'ai',
             timestamp: new Date(),
@@ -224,7 +224,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
           
           // Show completion message
           const completionMessage: Message = {
-            id: (Date.now() + 4).toString(),
+            id: `completion-${Date.now()}`,
             content: "Perfect! Your complete sales strategy is ready. You can now use this to start prospecting with targeted searches.",
             sender: 'ai',
             timestamp: new Date()
@@ -235,7 +235,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     } catch (error) {
       console.error('Error continuing strategy generation:', error);
       const errorMessage: Message = {
-        id: Date.now().toString(),
+        id: `error-${Date.now()}`,
         content: "There was an error generating your strategy. Please try again.",
         sender: 'ai',
         timestamp: new Date()
