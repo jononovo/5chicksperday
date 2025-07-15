@@ -80,9 +80,11 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       
       const loadingMessage: Message = {
         id: Date.now().toString(),
-        content: "Confirming your boundary selection...",
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Confirming your boundary selection...</span></div>`,
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        isHTML: true,
+        isLoading: true
       };
       setMessages(prev => [...prev, loadingMessage]);
       setIsLoading(true);
@@ -155,9 +157,11 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       // Step 1: Generate Sprint Prompt
       const sprintLoadingMessage: Message = {
         id: `sprint-loading-${Date.now()}`,
-        content: "Creating sprint strategy...",
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Creating sprint strategy...</span></div>`,
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        isHTML: true,
+        isLoading: true
       };
       setMessages(prev => [...prev, sprintLoadingMessage]);
       
@@ -197,9 +201,11 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         // Step 2: Generate Daily Queries
         const queriesLoadingMessage: Message = {
           id: `queries-loading-${Date.now()}`,
-          content: "Generating daily search queries...",
+          content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Generating daily search queries...</span></div>`,
           sender: 'ai',
-          timestamp: new Date()
+          timestamp: new Date(),
+          isHTML: true,
+          isLoading: true
         };
         setMessages(prev => [...prev, queriesLoadingMessage]);
         
@@ -474,9 +480,11 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
 
       const loadingMessage: Message = {
         id: Date.now().toString(),
-        content: "Analyzing your market scope...",
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Analyzing your market scope...</span></div>`,
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        isHTML: true,
+        isLoading: true
       };
       setMessages(prev => [...prev, loadingMessage]);
       
@@ -620,9 +628,10 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     try {
       const loadingMessage: Message = {
         id: Date.now().toString(),
-        content: "Creating your marketing context document...",
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Creating your marketing context document...</span></div>`,
         sender: 'ai',
         timestamp: new Date(),
+        isHTML: true,
         isLoading: true
       };
       setMessages(prev => [...prev, loadingMessage]);
