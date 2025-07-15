@@ -793,14 +793,14 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
           : 'top-4 right-4 w-96 h-[600px] border border-gray-200 rounded-lg'
       } overflow-hidden flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50 flex-shrink-0">
+        <div className="flex items-center justify-between p-3 border-b bg-white flex-shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">AI</span>
+            <div className="w-8 h-8 bg-gradient-to-br from-pink-100 to-yellow-100 rounded-full flex items-center justify-center">
+              <span className="text-lg">🦆</span>
             </div>
             <div>
-              <h2 className="font-semibold text-gray-900">Strategy Assistant</h2>
-              <p className="text-sm text-gray-600">Building your sales strategy</p>
+              <h2 className="font-semibold text-gray-900 text-sm">Mama Duck - Strategic Planning</h2>
+              <p className="text-xs text-gray-600">Creating your email product strategy</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -967,7 +967,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                   <Button
                     onClick={handleSendMessage}
                     disabled={!userInput.trim() || isLoading}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-gradient-to-br from-blue-600 to-purple-600 hover:opacity-90 text-white border-none"
                   >
                     Send
                   </Button>
