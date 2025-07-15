@@ -44,6 +44,81 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
 
+  // Boundary selection functions - moved before useEffect that references them
+  const selectBoundaryOption = async (optionIndex: number) => {
+    if (!boundarySelectionContext || !boundarySelectionMode) return;
+    const selectedBoundary = boundarySelectionContext.options[optionIndex];
+    await confirmBoundarySelection(selectedBoundary, null);
+  };
+
+  const selectCustomBoundary = async () => {
+    if (!customBoundaryInput.trim()) return;
+    await confirmBoundarySelection(null, customBoundaryInput.trim());
+  };
+
+  const updateCustomBoundaryInput = (value: string) => {
+    setCustomBoundaryInput(value);
+  };
+
+  const confirmBoundarySelection = async (selectedOption: string | null, customBoundary: string | null) => {
+    try {
+      setBoundarySelectionMode(false);
+      
+      const loadingMessage: Message = {
+        id: Date.now().toString(),
+        content: "Confirming your boundary selection...",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+      setIsLoading(true);
+
+      const confirmResponse = await fetch('/api/strategy/boundary/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedOption,
+          customBoundary,
+          productContext: boundarySelectionContext.productContext
+        })
+      });
+
+      if (!confirmResponse.ok) {
+        throw new Error('Failed to confirm boundary selection');
+      }
+
+      const result = await confirmResponse.json();
+      
+      setIsLoading(false);
+      setMessages(prev => prev.filter(msg => msg.content !== "Confirming your boundary selection..."));
+      
+      const confirmMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: result.message || "Boundary selection confirmed!",
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true
+      };
+      setMessages(prev => [...prev, confirmMessage]);
+      
+      if (result.salesApproachContext) {
+        setSalesApproachContext(result.salesApproachContext);
+      }
+      
+    } catch (error) {
+      setIsLoading(false);
+      setMessages(prev => prev.filter(msg => msg.content !== "Confirming your boundary selection..."));
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        content: "Sorry, there was an error confirming your selection. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+
   // Auto-switch between sidebar and fullscreen based on screen size
   useEffect(() => {
     const handleResize = () => {
@@ -83,7 +158,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       delete (window as any).updateCustomBoundaryInput;
       delete (window as any).generateSalesApproach;
     };
-  }, []);
+  }, [boundarySelectionContext, boundarySelectionMode, customBoundaryInput]);
 
   const questions = [
     {
@@ -343,72 +418,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       .replace(/\n/g, '<br>');
   };
 
-  const selectBoundaryOption = async (optionIndex: number) => {
-    if (!boundarySelectionContext || !boundarySelectionMode) return;
-    const selectedBoundary = boundarySelectionContext.options[optionIndex];
-    await confirmBoundarySelection(selectedBoundary, null);
-  };
 
-  const selectCustomBoundary = async () => {
-    if (!customBoundaryInput.trim()) return;
-    await confirmBoundarySelection(null, customBoundaryInput.trim());
-  };
-
-  const updateCustomBoundaryInput = (value: string) => {
-    setCustomBoundaryInput(value);
-  };
-
-  const confirmBoundarySelection = async (selectedOption: string | null, customBoundary: string | null) => {
-    try {
-      setBoundarySelectionMode(false);
-      
-      const loadingMessage: Message = {
-        id: Date.now().toString(),
-        content: "Confirming your boundary selection...",
-        sender: 'ai',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, loadingMessage]);
-      setIsLoading(true);
-
-      const confirmResponse = await fetch('/api/strategy/boundary/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          selectedOption,
-          customBoundary,
-          productContext: boundarySelectionContext.productContext
-        })
-      });
-
-      if (confirmResponse.ok) {
-        const confirmData = await confirmResponse.json();
-        
-        const confirmationHtml = `
-          <div class="strategy-step mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
-            <h4 class="font-semibold text-green-800 mb-2">
-              Target Boundary Confirmed (Step 1/3)
-            </h4>
-            <div class="text-gray-700">${confirmData.content}</div>
-          </div>`;
-
-        const confirmMessage: Message = {
-          id: Date.now().toString(),
-          content: confirmationHtml,
-          sender: 'ai',
-          timestamp: new Date(),
-          isHTML: true
-        };
-        
-        setMessages(prev => [...prev, confirmMessage]);
-        console.log('Boundary confirmation completed:', confirmData);
-      }
-    } catch (error) {
-      console.error('Boundary confirmation error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const generateSalesApproach = async () => {
     try {
