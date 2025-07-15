@@ -912,7 +912,6 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                         </div>
                       ))}
                     </div>
-                    <p className="text-sm text-gray-600">Step {currentStep} of 3</p>
                   </div>
 
                   <div className="space-y-4">
