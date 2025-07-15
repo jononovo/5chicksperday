@@ -4,6 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Target, Minimize2, Maximize2 } from "lucide-react";
 import "@/components/ui/loading-spinner.css";
+import { useAuth } from "@/lib/auth-context";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface FormData {
   productService: string;
@@ -45,6 +49,11 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  
+  // Auth and navigation hooks
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   // Boundary selection functions - moved before useEffect that references them
   const selectBoundaryOption = async (optionIndex: number) => {
@@ -651,6 +660,60 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
 
 
 
+  // Save complete product profile with strategy documents
+  const saveCompleteProductProfile = async () => {
+    if (!user) {
+      console.log('User not authenticated, skipping product save');
+      return;
+    }
+
+    try {
+      // Get existing profiles count to generate name
+      const existingProfiles = await apiRequest("GET", "/api/products");
+      const profileCount = Array.isArray(existingProfiles) ? existingProfiles.length : 0;
+      const productName = `Product ${profileCount + 1}`;
+
+      // Prepare complete profile data with form data
+      const strategicProfileData = {
+        name: productName,
+        businessType: businessType || "product",
+        businessDescription: `${businessType} offering: ${formData.productService}`,
+        targetCustomers: "Target customers based on strategy analysis",
+        uniqueAttributes: [],
+        marketNiche: "broad",
+        productService: formData.productService || "",
+        customerFeedback: formData.customerFeedback || "",
+        website: formData.website || "",
+        businessLocation: "",
+        primaryCustomerType: "",
+        primarySalesChannel: "",
+        primaryBusinessGoal: "",
+        status: "completed" as const
+      };
+
+      // Save the product profile - the strategy documents are already saved via the API endpoints
+      await apiRequest("POST", "/api/products", strategicProfileData);
+
+      toast({
+        title: "Strategy Saved Successfully!",
+        description: "Your product and strategy documents have been saved to your account.",
+      });
+
+      // Redirect to account page after a delay
+      setTimeout(() => {
+        setLocation("/app");
+      }, 3000);
+
+    } catch (error) {
+      console.error("Failed to save product profile:", error);
+      toast({
+        title: "Save Warning",
+        description: "Strategy completed but couldn't save to account. You can recreate it anytime.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const generateSalesApproach = async () => {
     try {
       const loadingMessage: Message = {
@@ -683,6 +746,9 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       if (response.ok) {
         const data = await response.json();
         displayReport(data);
+        
+        // Save complete product profile to database after strategy is complete
+        await saveCompleteProductProfile();
         
         setTimeout(() => {
           const currentDomain = window.location.origin;
