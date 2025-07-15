@@ -951,7 +951,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                       <Button
                         onClick={handleNext}
                         disabled={!isValid}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 py-3 px-8 text-base font-medium flex-1"
                       >
                         {currentStep === 3 ? 'Start Strategy' : 'Next'}
                       </Button>
