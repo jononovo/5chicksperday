@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
+import "@/components/ui/loading-spinner.css";
 
 interface FormData {
   productService: string;
@@ -16,6 +17,7 @@ interface Message {
   sender: 'user' | 'ai';
   timestamp: Date;
   isHTML?: boolean;
+  isLoading?: boolean;
 }
 
 export default function Strategy() {
@@ -33,6 +35,7 @@ export default function Strategy() {
   const [boundarySelectionMode, setBoundarySelectionMode] = useState(false);
   const [boundarySelectionContext, setBoundarySelectionContext] = useState<any>(null);
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
+  const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
 
   useEffect(() => {
     // Get business type from URL params
@@ -78,55 +81,7 @@ export default function Strategy() {
     }));
   };
 
-  // Copied from static implementation
-  const renderMarkdown = (markdown: string) => {
-    return markdown
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-blue-700 mt-4 mb-2">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-blue-800 mt-4 mb-3">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-blue-900 mt-4 mb-4">$1</h1>')
-      .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
-      .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4"><strong>$1.</strong> $2</li>')
-      .replace(/\n/g, '<br>');
-  };
-
-  // Copied from static implementation
-  const displayReport = (reportData: any) => {
-    console.log('DEBUG: displayReport called with:', reportData);
-    
-    const reportHtml = `
-      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
-        <div class="text-gray-700">
-          ${renderMarkdown(reportData.data.content)}
-        </div>
-      </div>`;
-    
-    const reportMessage: Message = {
-      id: Date.now().toString(),
-      content: reportHtml,
-      sender: 'ai',
-      timestamp: new Date(),
-      isHTML: true
-    };
-    
-    setMessages(prev => [...prev, reportMessage]);
-
-    // Add target business query after product summary
-    if (reportData.type === 'product_summary') {
-      setTimeout(() => {
-        const followUpMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
-          sender: 'ai',
-          timestamp: new Date(),
-          isHTML: true
-        };
-        setMessages(prev => [...prev, followUpMessage]);
-      }, 1000);
-    }
-  };
+  // These functions are now defined later in the file to avoid duplicates
 
   // Copied from static implementation
   const handleStrategyChatMessage = async (userInput: string) => {
@@ -501,23 +456,303 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     }
   };
 
+  // Helper function to add loading message
+  const addLoadingMessage = (message: string) => {
+    const loadingMessage: Message = {
+      id: Date.now().toString(),
+      content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>${message}</span></div>`,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true,
+      isLoading: true
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+  };
+
+  // Helper function to display strategy step
+  const displayStrategyStep = (stepData: any) => {
+    // Remove loading message
+    setMessages(prev => prev.filter(msg => !msg.isLoading));
+    
+    const stepContent = Array.isArray(stepData.content) 
+      ? stepData.content.join('\n') 
+      : stepData.content;
+
+    const stepHtml = `
+      <div class="strategy-step mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
+        <h4 class="font-semibold text-green-800 mb-2">
+          ${stepData.title} (Step ${stepData.step}/${stepData.totalSteps})
+        </h4>
+        <div class="text-gray-700 whitespace-pre-line">${stepContent}</div>
+      </div>`;
+
+    const stepMessage: Message = {
+      id: Date.now().toString(),
+      content: stepHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, stepMessage]);
+  };
+
+  // Helper function to display complete strategy
+  const displayStrategyComplete = (strategyData: any) => {
+    const completeHtml = `
+      <div class="strategy-complete mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 class="text-xl font-bold text-blue-900 mb-4">🎯 90-Day Target Search Strategy</h3>
+        <div class="space-y-4">
+          <div>
+            <h4 class="font-semibold text-blue-800">Target Boundary:</h4>
+            <p class="text-gray-700">${strategyData.boundary}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-blue-800">Sprint Focus:</h4>
+            <p class="text-gray-700">${strategyData.sprintPrompt}</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-blue-800">Daily Search Queries:</h4>
+            <ul class="list-disc ml-6 text-gray-700">
+              ${strategyData.dailyQueries.map((query: string) => `<li>${query}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <p class="text-blue-800 font-medium">✓ Strategic onboarding complete! You're ready to start your outreach.</p>
+        </div>
+      </div>`;
+
+    const completeMessage: Message = {
+      id: Date.now().toString(),
+      content: completeHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, completeMessage]);
+  };
+
+  // Helper function to display sales approach prompt
+  const displaySalesApproachPrompt = (initialTarget: string, refinedTarget: string) => {
+    setSalesApproachContext({ initialTarget, refinedTarget });
+    
+    const promptHtml = `
+      <div class="boundary-options bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-1">Perfect! Your strategy is complete.</h3>
+        <p class="text-sm text-blue-600 mb-3">Now let's create your marketing context document to guide email campaign creation.</p>
+        <button onclick="window.generateSalesApproach && window.generateSalesApproach()" 
+                class="w-full px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium">
+          Create My Marketing Context Document
+        </button>
+      </div>`;
+
+    const promptMessage: Message = {
+      id: Date.now().toString(),
+      content: promptHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, promptMessage]);
+  };
+
+  // Helper function to generate sales approach
+  const generateSalesApproach = async () => {
+    try {
+      addLoadingMessage("Creating your marketing context document...");
+      
+      const response = await fetch('/api/onboarding/strategy-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userInput: 'Generate sales approach',
+          productContext: {
+            productService: formData?.productService,
+            customerFeedback: formData?.customerFeedback,
+            website: formData?.website
+          },
+          conversationHistory: messages.map(m => ({
+            sender: m.sender,
+            content: m.content
+          }))
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        displayReport(data);
+        
+        // Final completion message
+        setTimeout(() => {
+          const currentDomain = window.location.origin;
+          const finalMessage: Message = {
+            id: Date.now().toString(),
+            content: `Excellent! Your complete sales strategy is ready.<br><br>Go to <a href="${currentDomain}/app" target="_blank" style="color: #3b82f6; text-decoration: underline;">${currentDomain}/app</a> to start prospecting or get the PDF version.`,
+            sender: 'ai',
+            timestamp: new Date(),
+            isHTML: true
+          };
+          setMessages(prev => [...prev, finalMessage]);
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Sales approach generation error:', error);
+    }
+  };
+
+  // Helper function to display report
+  const displayReport = (reportData: any) => {
+    // Remove loading message 
+    setMessages(prev => prev.filter(msg => !msg.isLoading));
+    
+    const reportHtml = `
+      <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+        <div class="report-content text-gray-700">
+          ${renderMarkdown(reportData.data.content)}
+        </div>
+      </div>`;
+    
+    const reportMessage: Message = {
+      id: Date.now().toString(),
+      content: reportHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, reportMessage]);
+
+    // Add target business query after product summary
+    if (reportData.type === 'product_summary') {
+      setTimeout(() => {
+        const followUpMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
+          sender: 'ai',
+          timestamp: new Date(),
+          isHTML: true
+        };
+        setMessages(prev => [...prev, followUpMessage]);
+      }, 1000);
+    }
+  };
+
+  // Helper function to render markdown
+  const renderMarkdown = (markdown: string) => {
+    return markdown
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-blue-700 mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-blue-800 mt-4 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-blue-900 mt-4 mb-4">$1</h1>')
+      .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
+      .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4"><strong>$1.</strong> $2</li>')
+      .replace(/\n/g, '<br>');
+  };
+
+  // Helper function: Execute sprint and queries API calls
+  const _executeStrategySteps = async (boundary: string, refinedTarget: string, productContext: any) => {
+    let sprintData = null;
+    let queriesData = null;
+
+    // Step 1: Generate Sprint Prompt
+    addLoadingMessage("Creating sprint strategy...");
+    
+    console.log('Calling sprint API with:', { 
+      boundary, 
+      refinedTarget, 
+      productContext 
+    });
+    
+    const sprintResponse = await fetch('/api/strategy/sprint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        boundary, 
+        refinedTarget, 
+        productContext 
+      })
+    });
+
+    if (sprintResponse.ok) {
+      sprintData = await sprintResponse.json();
+      displayStrategyStep(sprintData);
+      console.log('Sprint step completed:', sprintData);
+    } else {
+      console.error('Sprint API failed:', sprintResponse.status, await sprintResponse.text());
+      throw new Error(`Sprint generation failed: ${sprintResponse.status}`);
+    }
+
+    // Step 2: Generate Daily Queries
+    addLoadingMessage("Generating daily queries...");
+    
+    console.log('Calling queries API with:', { 
+      boundary,
+      sprintPrompt: sprintData.content,
+      productContext 
+    });
+    
+    const queriesResponse = await fetch('/api/strategy/queries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        boundary,
+        sprintPrompt: sprintData.content,
+        productContext 
+      })
+    });
+
+    if (queriesResponse.ok) {
+      queriesData = await queriesResponse.json();
+      displayStrategyStep(queriesData);
+      console.log('Queries step completed:', queriesData);
+    } else {
+      console.error('Queries API failed:', queriesResponse.status, await queriesResponse.text());
+      throw new Error(`Queries generation failed: ${queriesResponse.status}`);
+    }
+
+    return { sprintData, queriesData };
+  };
+
+  // Helper function: Complete strategy and show sales approach
+  const _completeStrategyWithSalesApproach = async (strategyData: any, initialTarget: string, refinedTarget: string) => {
+    displayStrategyComplete(strategyData);
+    console.log('Strategy generation completed successfully');
+    
+    // Always show sales approach prompt
+    console.log('Displaying sales approach prompt...');
+    setTimeout(() => {
+      console.log('setTimeout executing, calling displaySalesApproachPrompt with:', { initialTarget, refinedTarget });
+      displaySalesApproachPrompt(initialTarget, refinedTarget);
+      console.log('displaySalesApproachPrompt call completed');
+    }, 100);
+  };
+
   const continueStrategyGeneration = async (confirmedBoundary: string) => {
     try {
       const { initialTarget, refinedTarget, productContext } = boundarySelectionContext;
 
-      // Continue with next strategy steps - this will integrate with existing strategy generation
-      const nextStepMessage: Message = {
-        id: Date.now().toString(),
-        content: `Great! Now continuing with sprint generation for: ${confirmedBoundary}`,
-        sender: 'ai',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, nextStepMessage]);
-
-      // This would connect to the existing strategy generation pipeline
-      // For now, we'll show a success message
-      console.log('Continuing strategy generation with confirmed boundary:', confirmedBoundary);
+      // Execute sprint and queries using helper function
+      const { sprintData, queriesData } = await _executeStrategySteps(
+        confirmedBoundary, 
+        refinedTarget, 
+        productContext
+      );
       
+      // Compile complete strategy data for final display
+      const completeStrategyData = {
+        boundary: confirmedBoundary,
+        sprintPrompt: sprintData?.content || '',
+        dailyQueries: queriesData?.content ? (Array.isArray(queriesData.content) ? queriesData.content : queriesData.content.split('\n').filter((q: string) => q.trim())) : []
+      };
+      
+      // Complete strategy and show sales approach
+      await _completeStrategyWithSalesApproach(completeStrategyData, initialTarget, refinedTarget);
+
     } catch (error) {
       console.error('Error continuing strategy generation:', error);
       const errorMessage: Message = {
@@ -530,19 +765,21 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     }
   };
 
-  // Setup window handlers for boundary selection - like static implementation
+  // Setup window handlers for boundary selection and sales approach - like static implementation
   useEffect(() => {
     (window as any).selectBoundaryOption = selectBoundaryOption;
     (window as any).selectCustomBoundary = selectCustomBoundary;
     (window as any).updateCustomBoundaryInput = updateCustomBoundaryInput;
+    (window as any).generateSalesApproach = generateSalesApproach;
 
     return () => {
       // Cleanup
       delete (window as any).selectBoundaryOption;
       delete (window as any).selectCustomBoundary;
       delete (window as any).updateCustomBoundaryInput;
+      delete (window as any).generateSalesApproach;
     };
-  }, [boundarySelectionContext, boundarySelectionMode, customBoundaryInput]);
+  }, [boundarySelectionContext, boundarySelectionMode, customBoundaryInput, salesApproachContext]);
 
   // Show initial Product/Service selection screen if no business type selected
   if (!businessType) {
