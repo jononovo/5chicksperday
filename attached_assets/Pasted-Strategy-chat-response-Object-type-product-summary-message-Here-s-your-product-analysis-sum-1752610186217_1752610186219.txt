@@ -1,0 +1,34 @@
+Strategy chat response: 
+Object {type: "product_summary", message: "Here's your product analysis summary:", phase: "PRODUCT_SUMMARY", data: {…}}
+Processing strategy chat with input: Popular cafes in Lower East Side, NYC
+Strategy chat response: 
+Object {type: "conversation", message: "Great choice! Is there an additional niche or another example that you think could improve your…", phase: "TARGET_COLLECTION"}
+Processing strategy chat with input: cafes in Lower East Side, NYC
+Strategy chat response: 
+Object {type: "conversation", message: "Thank you! Now, I'll generate an email strategy for "popular cafes in Lower East Side, NYC" and…", phase: "TARGET_REFINEMENT"}
+Processing strategy chat with input: Popular cafes in Lower East Side, NYC
+Strategy chat response: 
+Object {type: "progressive_strategy", message: "Perfect! Now I'll create your **strategic sales plan** step by step.", phase: "EMAIL_STRATEGY", initialTarget: "Popular cafes in Lower East Side, NYC", refinedTarget: "Popular cafes in Lower East Side, NYC", …}
+Progressive strategy called with: 
+Object {initialTarget: "Popular cafes in Lower East Side, NYC", refinedTarget: "Popular cafes in Lower East Side, NYC", formDataExists: true, formData: {…}}
+Calling boundary API with: 
+Object {initialTarget: "Popular cafes in Lower East Side, NYC", refinedTarget: "Popular cafes in Lower East Side, NYC", productContext: {…}}
+Boundary data received: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+About to display boundary options...
+Displaying boundary options: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+Boundary options displayed, returning to wait for selection
+Calling sprint API with: 
+Object {boundary: "Mid-tier cafes in major U.S. cities.", refinedTarget: "Popular cafes in Lower East Side, NYC", productContext: {…}}
+Sprint step completed: 
+Object {type: "sprint", title: "Sprint Strategy", content: "**ExampleSprintPlanningPrompt**: "Identify mid-tier cafes in the Lower East Side, NYC, and similar…", step: 2, totalSteps: 3}
+Calling queries API with: 
+Object {boundary: "Mid-tier cafes in major U.S. cities.", sprintPrompt: "**ExampleSprintPlanningPrompt**: "Identify mid-tier cafes in the Lower East Side, NYC, and similar…", productContext: {…}}
+Queries step completed: 
+Object {type: "queries", title: "Daily Search Queries", content: Array(8), step: 3, totalSteps: 3, …}
+Strategy generation completed successfully
+Displaying sales approach prompt...
+setTimeout executing, calling displaySalesApproachPrompt with: 
+Object {initialTarget: "Popular cafes in Lower East Side, NYC", refinedTarget: "Popular cafes in Lower East Side, NYC"}
+displaySalesApproachPrompt call completed
