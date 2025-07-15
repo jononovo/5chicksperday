@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { X } from "lucide-react";
+import { X, Minimize2, Maximize2, MessageCircle } from "lucide-react";
 import "@/components/ui/loading-spinner.css";
 
 interface FormData {
@@ -20,6 +20,8 @@ interface Message {
   isLoading?: boolean;
 }
 
+type OverlayState = 'hidden' | 'form' | 'minimized' | 'sidebar' | 'fullscreen';
+
 export default function Strategy() {
   const [businessType, setBusinessType] = useState<"product" | "service" | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -28,7 +30,7 @@ export default function Strategy() {
     customerFeedback: "",
     website: ""
   });
-  const [showChat, setShowChat] = useState(false);
+  const [overlayState, setOverlayState] = useState<OverlayState>('hidden');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userInput, setUserInput] = useState("");
@@ -37,12 +39,15 @@ export default function Strategy() {
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   useEffect(() => {
     // Get business type from URL params
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type") as "product" | "service";
     if (type) {
       setBusinessType(type);
+      setOverlayState('form');
     }
   }, []);
 
@@ -291,6 +296,7 @@ export default function Strategy() {
 
   const handleBusinessTypeSelection = (type: "product" | "service") => {
     setBusinessType(type);
+    setOverlayState('form');
     console.log('Business type selected:', type);
   };
 
@@ -321,7 +327,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
       };
       
       setMessages([welcomeMessage]);
-      setShowChat(true);
+      setOverlayState(isMobile ? 'fullscreen' : 'sidebar');
       
       // Show loading and trigger product summary generation exactly like static
       setIsLoading(true);
@@ -341,7 +347,23 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
   };
 
   const handleCancel = () => {
-    window.history.back();
+    if (overlayState === 'form') {
+      window.history.back();
+    } else {
+      setOverlayState('hidden');
+    }
+  };
+
+  const handleMinimize = () => {
+    setOverlayState('minimized');
+  };
+
+  const handleMaximize = () => {
+    setOverlayState(isMobile ? 'fullscreen' : 'sidebar');
+  };
+
+  const handleFullscreen = () => {
+    setOverlayState('fullscreen');
   };
 
   const handleSendMessage = async () => {
@@ -812,159 +834,220 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     );
   }
 
-  if (showChat) {
-    return (
-      <div className="fixed inset-0 z-50 bg-white flex flex-col">
-        {/* Chat Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">AI</span>
+  // Render different overlay states
+  const renderOverlay = () => {
+    if (overlayState === 'hidden') return null;
+
+    if (overlayState === 'form') {
+      return (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-5">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            {/* Form Header */}
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">Let's get to know your business</h2>
+              <p className="text-sm text-gray-600 mt-1">Just 3 quick questions to create your strategy</p>
+              <div className="flex gap-2 mt-4">
+                {[1, 2, 3].map(step => (
+                  <div
+                    key={step}
+                    className={`w-8 h-2 rounded-full ${
+                      step <= currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
-            <div>
-              <h3 className="font-medium text-gray-900">Strategy Assistant</h3>
-              <p className="text-sm text-gray-500">Building your sales strategy</p>
+
+            {/* Form Content */}
+            <div className="p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {currentQuestion.title}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  {currentQuestion.subtitle}
+                </p>
+              </div>
+
+              {currentQuestion.type === 'textarea' ? (
+                <Textarea
+                  value={currentValue}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  placeholder={currentQuestion.placeholder}
+                  className="min-h-[100px] mb-6"
+                />
+              ) : (
+                <Input
+                  value={currentValue}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  placeholder={currentQuestion.placeholder}
+                  className="mb-6"
+                />
+              )}
+
+              {/* Form Actions */}
+              <div className="flex gap-3">
+                {currentStep > 1 ? (
+                  <Button 
+                    variant="outline" 
+                    onClick={handlePrevious}
+                    className="flex-1"
+                  >
+                    Back
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    onClick={handleCancel}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                )}
+                
+                <Button 
+                  onClick={handleNext}
+                  disabled={!isValid}
+                  className="flex-1"
+                >
+                  {currentStep === 3 ? 'Complete' : 'Next'}
+                </Button>
+              </div>
             </div>
           </div>
-          <button 
-            onClick={handleCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+        </div>
+      );
+    }
+
+    if (overlayState === 'minimized') {
+      return (
+        <div className="fixed bottom-4 right-4 z-40">
+          <button
+            onClick={handleMaximize}
+            className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <MessageCircle className="w-6 h-6" />
           </button>
         </div>
+      );
+    }
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                message.sender === 'user' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-gray-100 text-gray-900'
-              }`}>
-                {message.isHTML ? (
-                  <div dangerouslySetInnerHTML={{ __html: message.content }} />
-                ) : (
-                  <p className="text-sm">{message.content}</p>
-                )}
+    // Chat overlay states (sidebar and fullscreen)
+    const chatContainerClass = overlayState === 'fullscreen' 
+      ? "fixed inset-0 z-40 bg-white"
+      : "fixed bottom-4 right-4 z-40 w-96 h-[600px] bg-white rounded-lg shadow-xl border border-gray-200";
+
+    return (
+      <div className={chatContainerClass}>
+        <div className="flex flex-col h-full">
+          {/* Chat Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">AI</span>
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900">Strategy Assistant</h3>
+                <p className="text-sm text-gray-500">Building your sales strategy</p>
               </div>
             </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-lg px-4 py-2">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="flex items-center gap-2">
+              {overlayState === 'sidebar' && (
+                <button
+                  onClick={handleFullscreen}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={handleMinimize}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <Minimize2 className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={handleCancel}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message) => (
+              <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  message.sender === 'user' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 text-gray-900'
+                }`}>
+                  {message.isHTML ? (
+                    <div dangerouslySetInnerHTML={{ __html: message.content }} />
+                  ) : (
+                    <p className="text-sm">{message.content}</p>
+                  )}
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-gray-100 rounded-lg px-4 py-2">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-        {/* Chat Input */}
-        <div className="border-t border-gray-200 p-4">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={!userInput.trim() || isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-            >
-              Send
-            </button>
+          {/* Chat Input */}
+          <div className="border-t border-gray-200 p-4">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={isLoading}
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={!userInput.trim() || isLoading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              >
+                Send
+              </button>
+            </div>
           </div>
         </div>
       </div>
     );
-  }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-5">
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* Form Header */}
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Let's get to know your business</h2>
-          <p className="text-sm text-gray-600 mt-1">Just 3 quick questions to create your strategy</p>
-          <div className="flex gap-2 mt-4">
-            {[1, 2, 3].map(step => (
-              <div
-                key={step}
-                className={`w-8 h-2 rounded-full ${
-                  step <= currentStep ? 'bg-blue-600' : 'bg-gray-200'
-                }`}
-              />
-            ))}
+    <div>
+      {/* Main page content */}
+      <div className="min-h-screen bg-gray-50">
+        {/* This shows the main strategy page when overlay is hidden */}
+        {overlayState === 'hidden' && (
+          <div className="container mx-auto px-4 py-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Strategy Assistant</h1>
+              <p className="text-gray-600 mb-8">Create your personalized sales strategy</p>
+              <Button onClick={() => setOverlayState('form')}>Get Started</Button>
+            </div>
           </div>
-        </div>
-
-        {/* Form Content */}
-        <div className="p-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {currentQuestion.title}
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              {currentQuestion.subtitle}
-            </p>
-          </div>
-
-          {currentQuestion.type === 'textarea' ? (
-            <Textarea
-              value={currentValue}
-              onChange={(e) => handleInputChange(e.target.value)}
-              placeholder={currentQuestion.placeholder}
-              className="min-h-[100px] mb-6"
-            />
-          ) : (
-            <Input
-              value={currentValue}
-              onChange={(e) => handleInputChange(e.target.value)}
-              placeholder={currentQuestion.placeholder}
-              className="mb-6"
-            />
-          )}
-
-          {/* Form Actions */}
-          <div className="flex gap-3">
-            {currentStep > 1 ? (
-              <Button 
-                variant="outline" 
-                onClick={handlePrevious}
-                className="flex-1"
-              >
-                Back
-              </Button>
-            ) : (
-              <Button 
-                variant="outline" 
-                onClick={handleCancel}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            )}
-            
-            <Button 
-              onClick={handleNext}
-              disabled={!isValid}
-              className="flex-1"
-            >
-              {currentStep === 3 ? 'Complete' : 'Next'}
-            </Button>
-          </div>
-        </div>
+        )}
       </div>
+      
+      {renderOverlay()}
     </div>
   );
 }
