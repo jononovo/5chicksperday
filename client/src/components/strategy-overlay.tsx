@@ -963,7 +963,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
           ) : (
             /* Chat Section */
             <>
-              <div ref={messagesRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+              <div ref={messagesRef} className="flex-1 overflow-y-auto pt-4 pb-4 pl-4 pr-0 md:pr-4 space-y-4 min-h-0">
                 {messages.map((message) => (
                   <div
                     key={message.id}
