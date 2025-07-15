@@ -815,14 +815,6 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
     (window as any).selectCustomBoundary = selectCustomBoundary;
     (window as any).updateCustomBoundaryInput = updateCustomBoundaryInput;
     (window as any).generateSalesApproach = generateSalesApproach;
-
-    return () => {
-      // Cleanup
-      delete (window as any).selectBoundaryOption;
-      delete (window as any).selectCustomBoundary;
-      delete (window as any).updateCustomBoundaryInput;
-      delete (window as any).generateSalesApproach;
-    };
   }, [boundarySelectionContext, boundarySelectionMode, customBoundaryInput, salesApproachContext]);
 
   // Show initial Product/Service selection screen if no business type selected
