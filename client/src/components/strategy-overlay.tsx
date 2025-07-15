@@ -970,7 +970,7 @@ Give me 5 seconds. I'm **building a product summary** so I can understand what y
                     className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[90%] md:max-w-[80%] p-3 rounded-lg ${
+                      className={`max-w-[95%] lg:max-w-md p-3 rounded-lg ${
                         message.sender === 'user'
                           ? 'bg-blue-600 text-white'
                           : 'bg-gray-100 text-gray-900'
