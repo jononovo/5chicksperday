@@ -279,6 +279,10 @@ To get started, please tell me about your ${type}. What exactly are you offering
 
   // Display report function copied exactly from static implementation
   const displayReport = (reportData: any) => {
+    console.log('displayReport called with:', reportData);
+    console.log('reportData.data:', reportData.data);
+    console.log('reportData.data.content:', reportData.data?.content);
+    
     const reportHtml = `
       <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
         <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
@@ -295,6 +299,7 @@ To get started, please tell me about your ${type}. What exactly are you offering
       isHTML: true
     };
     
+    console.log('Adding report message:', reportMessage);
     setMessages(prev => [...prev, reportMessage]);
 
     // Add target business query after product summary
