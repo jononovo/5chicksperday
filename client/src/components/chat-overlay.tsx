@@ -87,11 +87,62 @@ To get started, please tell me about your ${type}. What exactly are you offering
     
     setMessages([welcomeMessage]);
     setChatState(isMobile ? 'fullscreen' : 'sidebar');
+    
+    // Automatically trigger AI response after initial message
+    setTimeout(() => {
+      triggerAIResponse();
+    }, 2000);
   };
 
   useImperativeHandle(ref, () => ({
     initializeChat
   }));
+
+  const triggerAIResponse = async () => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const response: any = await apiRequest('POST', '/api/onboarding/chat', {
+        message: "I want to create a strategic plan for my business. Please help me get started.",
+        businessType,
+        currentStep,
+        profileData,
+        conversationHistory: messages
+      });
+
+      if (response.aiResponse) {
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: response.aiResponse,
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, aiMessage]);
+      }
+
+      if (response.profileUpdate) {
+        setProfileData((prev: any) => ({ ...prev, ...response.profileUpdate }));
+      }
+
+      if (response.nextStep) {
+        setCurrentStep(response.nextStep);
+      }
+
+    } catch (error) {
+      console.error('Error triggering AI response:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I apologize, but I'm having trouble processing your message right now. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
