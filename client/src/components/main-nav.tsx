@@ -1,7 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { LogOut, User, Menu, LayoutDashboard, ListTodo, Mail, MessageCircle } from "lucide-react";
+import { LogOut, User, Menu, LayoutDashboard, ListTodo, Mail, MessageCircle, Target } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRegistrationModal } from "@/hooks/use-registration-modal";
+import { useStrategyOverlay } from "@/lib/strategy-overlay-context";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { CreditUpgradeDropdown } from "@/components/credit-upgrade-dropdown";
@@ -26,6 +27,7 @@ export function MainNav() {
   let user = null;
   let logoutMutation = null;
   let openRegistrationModal = null;
+  let strategyOverlay = null;
   
   try {
     const auth = useAuth();
@@ -35,10 +37,20 @@ export function MainNav() {
     // Registration modal for login functionality
     const { openModal } = useRegistrationModal();
     openRegistrationModal = openModal;
+    
+    // Strategy overlay hook usage
+    strategyOverlay = useStrategyOverlay();
   } catch (error) {
     // MainNav is being rendered outside AuthProvider context
     // This is acceptable for public routes - just don't show user menu
   }
+
+  const handleStrategyClick = () => {
+    if (strategyOverlay) {
+      const newState = window.innerWidth < 768 ? 'fullscreen' : 'sidebar';
+      strategyOverlay.showOverlay(newState);
+    }
+  };
 
   return (
     <nav className="flex items-center justify-between border-b mb-2 px-4 py-1.5">
@@ -67,6 +79,18 @@ export function MainNav() {
             </Link>
           );
         })}
+        
+        {/* Strategy Button */}
+        <Button
+          variant="ghost"
+          onClick={handleStrategyClick}
+          className="text-muted-foreground hover:text-foreground px-2 py-1.5 text-sm font-medium transition-colors"
+        >
+          <div className="flex items-center">
+            <Target className="mr-1 h-4 w-4" />
+            <span className="md:inline hidden">Strategy</span>
+          </div>
+        </Button>
       </div>
       <div className="flex items-center ml-auto gap-3">
         {user ? (

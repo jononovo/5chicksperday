@@ -9,6 +9,9 @@ import { Layout, AppLayout } from "@/components/layout";
 import { SearchStrategyProvider } from "@/lib/search-strategy-context";
 import { RegistrationModalProvider } from "@/hooks/use-registration-modal";
 import { RegistrationModalContainer } from "@/components/registration-modal-container";
+import { StrategyOverlayProvider } from "@/lib/strategy-overlay-context";
+import { StrategyOverlay } from "@/components/strategy-overlay";
+import { useStrategyOverlay } from "@/lib/strategy-overlay-context";
 import { useEffect, lazy, Suspense } from "react";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -26,7 +29,7 @@ import Auth from "@/pages/auth";
 const Home = lazy(() => import("@/pages/home"));
 const Build = lazy(() => import("@/pages/build"));
 const Account = lazy(() => import("@/pages/account"));
-const Strategy = lazy(() => import("@/pages/strategy"));
+// Strategy functionality moved to overlay system
 // Lists functionality moved to drawer in Home page
 const Campaigns = lazy(() => import("@/pages/campaigns"));
 const CampaignDetails = lazy(() => import("@/pages/campaign-details"));
@@ -180,12 +183,7 @@ function Router() {
                   </Suspense>
                 } />
                 
-                {/* Strategy page - semi-protected to allow guest access */}
-                <SemiProtectedRoute path="/strategy" component={() => 
-                  <Suspense fallback={<LoadingScreen message="Loading strategy..." />}>
-                    <Strategy />
-                  </Suspense>
-                } />
+                {/* Strategy functionality moved to overlay system */}
                 
                 {/* Fully protected routes - require login */}
                 <ProtectedRoute path="/build" component={() => 
@@ -252,6 +250,17 @@ function Router() {
   );
 }
 
+function StrategyOverlayWrapper() {
+  const { state, setState } = useStrategyOverlay();
+  
+  return (
+    <StrategyOverlay 
+      state={state} 
+      onStateChange={setState}
+    />
+  );
+}
+
 function App() {
   // Initialize Google Analytics when app loads
   useEffect(() => {
@@ -268,11 +277,14 @@ function App() {
       <AuthProvider>
         <RegistrationModalProvider>
           <SearchStrategyProvider>
-            {/* Default SEO tags for the entire site */}
-            <SEOHead />
-            <Router />
-            <RegistrationModalContainer />
-            <Toaster />
+            <StrategyOverlayProvider>
+              {/* Default SEO tags for the entire site */}
+              <SEOHead />
+              <Router />
+              <RegistrationModalContainer />
+              <StrategyOverlayWrapper />
+              <Toaster />
+            </StrategyOverlayProvider>
           </SearchStrategyProvider>
         </RegistrationModalProvider>
       </AuthProvider>
