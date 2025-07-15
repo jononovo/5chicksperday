@@ -534,7 +534,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         <p class="text-sm text-blue-600 mb-3">Within this we will target ~700 companies across 6 sprints. Please choose your preferred approach:</p>
         <div class="options-list space-y-3 mb-4">
           ${boundaryData.content.map((option: string, index: number) => `
-            <div class="option-item p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-blue-400 transition-colors" 
+            <div class="option-item p-3 bg-white border border-gray-200 rounded cursor-pointer hover:border-blue-600 transition-colors" 
                  onclick="window.selectBoundaryOption && window.selectBoundaryOption(${index})">
               <strong>${index + 1}.</strong> ${option}
             </div>
