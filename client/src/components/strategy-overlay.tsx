@@ -74,6 +74,18 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     scrollToBottom();
   }, [messages]);
 
+  // Auto-focus input/textarea after step change
+  useEffect(() => {
+    if (!showChat && businessType) {
+      setTimeout(() => {
+        const input = document.querySelector('input, textarea');
+        if (input) {
+          (input as HTMLInputElement | HTMLTextAreaElement).focus();
+        }
+      }, 100);
+    }
+  }, [currentStep, showChat, businessType]);
+
   // Set up global functions for HTML callbacks
   useEffect(() => {
     (window as any).selectBoundaryOption = selectBoundaryOption;
