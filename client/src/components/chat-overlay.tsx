@@ -86,7 +86,7 @@ To get started, please tell me about your ${type}. What exactly are you offering
     }
     
     setMessages([welcomeMessage]);
-    setChatState(isMobile ? 'fullscreen' : 'fullscreen');
+    setChatState(isMobile ? 'fullscreen' : 'sidebar');
   };
 
   useImperativeHandle(ref, () => ({
