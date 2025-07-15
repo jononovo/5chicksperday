@@ -3588,6 +3588,51 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
+  // Strategic Onboarding Profile Creation Endpoint
+  app.post("/api/onboarding/create-profile", requireAuth, async (req, res) => {
+    try {
+      const { businessType, productService, customerFeedback, website } = req.body;
+      
+      if (!businessType || !productService || !customerFeedback || !website) {
+        res.status(400).json({ message: "All form fields are required" });
+        return;
+      }
+      
+      const userId = getUserId(req);
+      
+      // Generate auto-name for new product
+      const existingProfiles = await storage.getStrategicProfiles(userId);
+      const productNumber = existingProfiles.length + 1;
+      const autoName = `Product ${productNumber}`;
+      
+      // Create new strategic profile with form data
+      const profile = await storage.createStrategicProfile({
+        userId,
+        name: autoName,
+        businessType,
+        productService,
+        customerFeedback,
+        website,
+        businessDescription: "", // Will be filled by strategy chat
+        targetCustomers: "", // Will be filled by strategy chat
+        status: "in_progress"
+      });
+      
+      res.json({ 
+        success: true, 
+        profile: {
+          id: profile.id,
+          name: profile.name,
+          businessType: profile.businessType
+        }
+      });
+      
+    } catch (error) {
+      console.error("Profile creation error:", error);
+      res.status(500).json({ message: "Failed to create profile" });
+    }
+  });
+
   // Strategic Onboarding Chat Endpoint
   app.post("/api/onboarding/chat", requireAuth, async (req, res) => {
     try {
@@ -3742,26 +3787,25 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         try {
           const userId = getUserId(req);
           
-          // Create or update strategic profile
-          const existingProfiles = await storage.getStrategicProfiles?.(userId) || [];
+          // Find existing profile and update it
+          const existingProfiles = await storage.getStrategicProfiles(userId);
           
           if (existingProfiles.length > 0) {
-            // Update existing profile
-            await storage.updateStrategicProfile?.(existingProfiles[0].id, {
+            // Update existing profile with chat data
+            await storage.updateStrategicProfile(existingProfiles[0].id, {
               ...profileData,
               ...profileUpdate,
               businessType,
               updatedAt: new Date()
             });
           } else {
-            // Generate auto-name for new product since onboarding doesn't collect names
+            // Profile should have been created by the form, but fallback to create if missing
             const productNumber = existingProfiles.length + 1;
             const autoName = `Product ${productNumber}`;
             
-            // Create new profile
-            await storage.createStrategicProfile?.({
+            await storage.createStrategicProfile({
               userId,
-              name: autoName, // Auto-generate product name
+              name: autoName,
               businessType,
               businessDescription: profileUpdate.businessDescription || profileData.businessDescription || "",
               targetCustomers: profileUpdate.targetCustomers || profileData.targetCustomers || "",
@@ -4065,19 +4109,22 @@ High-level strategic guidance for email generation.`;
         try {
           const userId = getUserId(req);
           
-          if (result.type === 'product_summary') {
-            await storage.updateStrategicProfile?.(userId, { 
-              productAnalysisSummary: JSON.stringify(result.data) 
-            });
-          } else if (result.type === 'email_strategy') {
-            // Legacy email strategy - database updates handled by progressive endpoints
-            await storage.updateStrategicProfile?.(userId, { 
-              reportSalesTargetingGuidance: JSON.stringify(result.data)
-            });
-          } else if (result.type === 'sales_approach') {
-            await storage.updateStrategicProfile?.(userId, { 
-              reportSalesContextGuidance: JSON.stringify(result.data) 
-            });
+          const profiles = await storage.getStrategicProfiles(userId);
+          if (profiles.length > 0) {
+            if (result.type === 'product_summary') {
+              await storage.updateStrategicProfile(profiles[0].id, { 
+                productAnalysisSummary: JSON.stringify(result.data) 
+              });
+            } else if (result.type === 'email_strategy') {
+              // Legacy email strategy - database updates handled by progressive endpoints
+              await storage.updateStrategicProfile(profiles[0].id, { 
+                reportSalesTargetingGuidance: JSON.stringify(result.data)
+              });
+            } else if (result.type === 'sales_approach') {
+              await storage.updateStrategicProfile(profiles[0].id, { 
+                reportSalesContextGuidance: JSON.stringify(result.data) 
+              });
+            }
           }
         } catch (dbError) {
           console.warn('Failed to save report to database:', dbError);
@@ -4186,9 +4233,12 @@ Return only the final boundary statement, no additional text.`;
       if (req.user) {
         try {
           const userId = getUserId(req);
-          await storage.updateStrategicProfile?.(userId, { 
-            strategyHighLevelBoundary: finalBoundary
-          });
+          const profiles = await storage.getStrategicProfiles(userId);
+          if (profiles.length > 0) {
+            await storage.updateStrategicProfile(profiles[0].id, { 
+              strategyHighLevelBoundary: finalBoundary
+            });
+          }
         } catch (dbError) {
           console.warn('Failed to save boundary to database:', dbError);
         }
@@ -4226,9 +4276,12 @@ Return only the final boundary statement, no additional text.`;
       if (req.user) {
         try {
           const userId = getUserId(req);
-          await storage.updateStrategicProfile?.(userId, { 
-            exampleSprintPlanningPrompt: sprintPrompt
-          });
+          const profiles = await storage.getStrategicProfiles(userId);
+          if (profiles.length > 0) {
+            await storage.updateStrategicProfile(profiles[0].id, { 
+              exampleSprintPlanningPrompt: sprintPrompt
+            });
+          }
         } catch (dbError) {
           console.warn('Failed to save sprint prompt to database:', dbError);
         }
@@ -4275,10 +4328,13 @@ Return only the final boundary statement, no additional text.`;
             content: `## 1. TARGET BOUNDARY\n${boundary}\n\n## 2. SPRINT PROMPT\n${sprintPrompt}\n\n## 3. DAILY QUERIES\n${dailyQueries.join('\n')}`
           };
           
-          await storage.updateStrategicProfile?.(userId, { 
-            dailySearchQueries: JSON.stringify(dailyQueries),
-            reportSalesTargetingGuidance: JSON.stringify(fullStrategy)
-          });
+          const profiles = await storage.getStrategicProfiles(userId);
+          if (profiles.length > 0) {
+            await storage.updateStrategicProfile(profiles[0].id, { 
+              dailySearchQueries: JSON.stringify(dailyQueries),
+              reportSalesTargetingGuidance: JSON.stringify(fullStrategy)
+            });
+          }
         } catch (dbError) {
           console.warn('Failed to save queries to database:', dbError);
         }

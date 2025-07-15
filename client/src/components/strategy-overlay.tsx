@@ -706,13 +706,38 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     console.log('Business type selected:', type);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 3) {
       console.log('Form completed:', formData);
       
       const productService = formData.productService?.trim() || 'your offering';
       const customerFeedback = formData.customerFeedback?.trim() || 'positive feedback';
       const website = formData.website?.trim() || 'no website provided';
+      
+      // Create profile with form data before starting chat
+      try {
+        const response = await fetch('/api/onboarding/create-profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            businessType,
+            productService: formData.productService,
+            customerFeedback: formData.customerFeedback,
+            website: formData.website
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Profile created successfully:', data.profile);
+        } else {
+          console.error('Failed to create profile');
+        }
+      } catch (error) {
+        console.error('Error creating profile:', error);
+      }
       
       const personalizedMessage = `Perfect!
 
