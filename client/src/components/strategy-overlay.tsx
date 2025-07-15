@@ -92,14 +92,26 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       setIsLoading(false);
       setMessages(prev => prev.filter(msg => msg.content !== "Confirming your boundary selection..."));
       
+      // Show the green "Target Boundary Confirmed (Step 1/3)" box like the static version
+      const confirmationHtml = `
+        <div class="strategy-step mb-4 p-4 bg-green-50 border-l-4 border-green-400 rounded">
+          <h4 class="font-semibold text-green-800 mb-2">
+            Target Boundary Confirmed (Step 1/3)
+          </h4>
+          <div class="text-gray-700">${result.content}</div>
+        </div>`;
+
       const confirmMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: result.message || "Boundary selection confirmed!",
+        content: confirmationHtml,
         sender: 'ai',
         timestamp: new Date(),
         isHTML: true
       };
       setMessages(prev => [...prev, confirmMessage]);
+      
+      // Continue with strategy generation like the static version
+      await continueStrategyGeneration(result.content);
       
       if (result.salesApproachContext) {
         setSalesApproachContext(result.salesApproachContext);
@@ -112,6 +124,119 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
         content: "Sorry, there was an error confirming your selection. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+
+  // Continue strategy generation after boundary confirmation (like static version)
+  const continueStrategyGeneration = async (confirmedBoundary: string) => {
+    try {
+      if (!boundarySelectionContext) return;
+      
+      const { initialTarget, refinedTarget, productContext } = boundarySelectionContext;
+      
+      // Step 1: Generate Sprint Prompt
+      const sprintLoadingMessage: Message = {
+        id: Date.now().toString(),
+        content: "Creating sprint strategy...",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, sprintLoadingMessage]);
+      
+      const sprintResponse = await fetch('/api/strategy/sprint', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          boundary: confirmedBoundary, 
+          refinedTarget, 
+          productContext 
+        })
+      });
+      
+      if (sprintResponse.ok) {
+        const sprintData = await sprintResponse.json();
+        
+        // Remove loading message and show Sprint Strategy (Step 2/3)
+        setMessages(prev => prev.filter(msg => msg.content !== "Creating sprint strategy..."));
+        
+        const sprintHtml = `
+          <div class="strategy-step mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
+            <h4 class="font-semibold text-blue-800 mb-2">
+              Sprint Strategy (Step 2/3)
+            </h4>
+            <div class="text-gray-700">${sprintData.content}</div>
+          </div>`;
+        
+        const sprintMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: sprintHtml,
+          sender: 'ai',
+          timestamp: new Date(),
+          isHTML: true
+        };
+        setMessages(prev => [...prev, sprintMessage]);
+        
+        // Step 2: Generate Daily Queries
+        const queriesLoadingMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          content: "Generating daily search queries...",
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, queriesLoadingMessage]);
+        
+        const queriesResponse = await fetch('/api/strategy/queries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            boundary: confirmedBoundary, 
+            refinedTarget, 
+            productContext 
+          })
+        });
+        
+        if (queriesResponse.ok) {
+          const queriesData = await queriesResponse.json();
+          
+          // Remove loading message and show final strategy
+          setMessages(prev => prev.filter(msg => msg.content !== "Generating daily search queries..."));
+          
+          const queriesHtml = `
+            <div class="strategy-step mb-4 p-4 bg-purple-50 border-l-4 border-purple-400 rounded">
+              <h4 class="font-semibold text-purple-800 mb-2">
+                Daily Search Queries (Step 3/3)
+              </h4>
+              <div class="text-gray-700">${queriesData.content}</div>
+            </div>`;
+          
+          const queriesMessage: Message = {
+            id: (Date.now() + 3).toString(),
+            content: queriesHtml,
+            sender: 'ai',
+            timestamp: new Date(),
+            isHTML: true
+          };
+          setMessages(prev => [...prev, queriesMessage]);
+          
+          // Show completion message
+          const completionMessage: Message = {
+            id: (Date.now() + 4).toString(),
+            content: "Perfect! Your complete sales strategy is ready. You can now use this to start prospecting with targeted searches.",
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, completionMessage]);
+        }
+      }
+    } catch (error) {
+      console.error('Error continuing strategy generation:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: "There was an error generating your strategy. Please try again.",
         sender: 'ai',
         timestamp: new Date()
       };
