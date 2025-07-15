@@ -263,23 +263,30 @@ To get started, please tell me about your ${type}. What exactly are you offering
     setChatState(isMobile ? 'fullscreen' : 'sidebar');
   };
 
-  // Display report function copied from static implementation
-  const displayReport = (data: any) => {
-    // Remove any loading messages first
-    setMessages(prev => prev.filter(msg => !msg.isLoading));
-    
-    const reportContent = Array.isArray(data.content) 
-      ? data.content.join('\n') 
-      : data.content;
+  // Markdown rendering function copied from static implementation
+  const renderMarkdown = (markdown: string) => {
+    // Simple markdown to HTML conversion
+    return markdown
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-blue-700 mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-blue-800 mt-4 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-blue-900 mt-4 mb-4">$1</h1>')
+      .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
+      .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4"><strong>$1.</strong> $2</li>')
+      .replace(/\n/g, '<br>');
+  };
 
+  // Display report function copied exactly from static implementation
+  const displayReport = (reportData: any) => {
     const reportHtml = `
-      <div class="strategy-report mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-        <h4 class="font-semibold text-blue-800 mb-2">
-          ${data.title || 'Strategic Analysis'}
-        </h4>
-        <div class="text-gray-700 whitespace-pre-line">${reportContent}</div>
+      <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+        <div class="report-content text-gray-700">
+          ${renderMarkdown(reportData.data.content)}
+        </div>
       </div>`;
-
+    
     const reportMessage: Message = {
       id: Date.now().toString(),
       content: reportHtml,
@@ -289,6 +296,20 @@ To get started, please tell me about your ${type}. What exactly are you offering
     };
     
     setMessages(prev => [...prev, reportMessage]);
+
+    // Add target business query after product summary
+    if (reportData.type === 'product_summary') {
+      setTimeout(() => {
+        const followUpMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
+          sender: 'ai',
+          timestamp: new Date(),
+          isHTML: true
+        };
+        setMessages(prev => [...prev, followUpMessage]);
+      }, 1000);
+    }
   };
 
   // Hidden state
