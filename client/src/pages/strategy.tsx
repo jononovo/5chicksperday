@@ -1,13 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { useLocation } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { ArrowLeft, Package, Wrench, X } from "lucide-react";
-import ChatOverlay from "@/components/chat-overlay";
+import { X } from "lucide-react";
 
 interface FormData {
   productService: string;
@@ -15,18 +10,25 @@ interface FormData {
   website: string;
 }
 
+interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+  isHTML?: boolean;
+}
+
 export default function Strategy() {
-  const [, setLocation] = useLocation();
-  const [businessType, setBusinessType] = useState<"product" | "service" | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [businessType, setBusinessType] = useState<"product" | "service">("product");
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     productService: "",
     customerFeedback: "",
     website: ""
   });
-  const [chatState, setChatState] = useState<'hidden' | 'minimized' | 'sidebar' | 'fullscreen'>('hidden');
-  const chatRef = useRef<any>(null);
+  const [showChat, setShowChat] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Get business type from URL params
@@ -34,19 +36,8 @@ export default function Strategy() {
     const type = params.get("type") as "product" | "service";
     if (type) {
       setBusinessType(type);
-      setShowForm(true);
     }
   }, []);
-
-  const handleBackToHome = () => {
-    setLocation("/");
-  };
-
-  const handleBusinessTypeSelect = (type: "product" | "service") => {
-    setBusinessType(type);
-    setShowForm(true);
-    setCurrentStep(1);
-  };
 
   const questions = [
     {
@@ -83,16 +74,141 @@ export default function Strategy() {
     }));
   };
 
+  // Copied from static implementation
+  const renderMarkdown = (markdown: string) => {
+    return markdown
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-blue-700 mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-blue-800 mt-4 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-blue-900 mt-4 mb-4">$1</h1>')
+      .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
+      .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4"><strong>$1.</strong> $2</li>')
+      .replace(/\n/g, '<br>');
+  };
+
+  // Copied from static implementation
+  const displayReport = (reportData: any) => {
+    console.log('DEBUG: displayReport called with:', reportData);
+    
+    const reportHtml = `
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+        <div class="text-gray-700">
+          ${renderMarkdown(reportData.data.content)}
+        </div>
+      </div>`;
+    
+    const reportMessage: Message = {
+      id: Date.now().toString(),
+      content: reportHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, reportMessage]);
+
+    // Add target business query after product summary
+    if (reportData.type === 'product_summary') {
+      setTimeout(() => {
+        const followUpMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
+          sender: 'ai',
+          timestamp: new Date(),
+          isHTML: true
+        };
+        setMessages(prev => [...prev, followUpMessage]);
+      }, 1000);
+    }
+  };
+
+  // Copied from static implementation
+  const handleStrategyChatMessage = async (userInput: string) => {
+    try {
+      console.log('Processing strategy chat with input:', userInput);
+      
+      const response = await fetch('/api/onboarding/strategy-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userInput: userInput,
+          productContext: {
+            productService: formData.productService,
+            customerFeedback: formData.customerFeedback,
+            website: formData.website
+          },
+          conversationHistory: messages
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Strategy chat response:', data);
+        
+        // Handle report types exactly like static implementation
+        if (data.type === 'product_summary' || data.type === 'email_strategy' || data.type === 'sales_approach') {
+          displayReport(data);
+        } else if (data.type === 'conversation') {
+          // Handle conversation messages
+          const aiMessage: Message = {
+            id: Date.now().toString(),
+            content: data.message,
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, aiMessage]);
+        }
+        
+        return data;
+      } else {
+        console.warn('Strategy chat failed:', response.status);
+        return { type: 'conversation', response: "Let me help you create your sales strategy. Could you be more specific about your target market?" };
+      }
+    } catch (error) {
+      console.error('Error in strategy chat:', error);
+      return { type: 'conversation', response: "Let's work with what you have. Could you be a bit more specific about your target market?" };
+    }
+  };
+
   const handleNext = () => {
     if (currentStep === 3) {
-      // Form completed - initialize chat with form data
-      console.log("Form completed:", formData);
-      setShowForm(false);
+      // Form completed - start chat exactly like static implementation
+      console.log('Form completed:', formData);
       
-      // Initialize chat with business type and form data
-      if (chatRef.current && businessType) {
-        chatRef.current.initializeChat(businessType, formData);
-      }
+      const productService = formData.productService?.trim() || 'your offering';
+      const customerFeedback = formData.customerFeedback?.trim() || 'positive feedback';
+      const website = formData.website?.trim() || 'no website provided';
+      
+      const personalizedMessage = `Perfect!
+
+**Your ${businessType} is:** ${productService}
+**Customers like:** ${customerFeedback}
+**And I can learn more at:** ${website !== 'no website provided' ? website : 'no website was provided'}
+
+Give me 5 seconds. I'm **building a product summary** so I can understand what you're selling.`;
+
+      // Add personalized message exactly like static implementation
+      const welcomeMessage: Message = {
+        id: Date.now().toString(),
+        content: renderMarkdown(personalizedMessage),
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true
+      };
+      
+      setMessages([welcomeMessage]);
+      setShowChat(true);
+      
+      // Show loading and trigger product summary generation exactly like static
+      setIsLoading(true);
+      setTimeout(async () => {
+        await handleStrategyChatMessage('Generate product summary');
+        setIsLoading(false);
+      }, 100);
     } else {
       setCurrentStep(currentStep + 1);
     }
@@ -105,157 +221,140 @@ export default function Strategy() {
   };
 
   const handleCancel = () => {
-    setShowForm(false);
-    setCurrentStep(1);
-    setFormData({
-      productService: "",
-      customerFeedback: "",
-      website: ""
-    });
+    window.history.back();
   };
 
+  if (showChat) {
+    return (
+      <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        {/* Chat Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-medium">AI</span>
+            </div>
+            <div>
+              <h3 className="font-medium text-gray-900">Strategy Assistant</h3>
+              <p className="text-sm text-gray-500">Building your sales strategy</p>
+            </div>
+          </div>
+          <button 
+            onClick={handleCancel}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((message) => (
+            <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                message.sender === 'user' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 text-gray-900'
+              }`}>
+                {message.isHTML ? (
+                  <div dangerouslySetInnerHTML={{ __html: message.content }} />
+                ) : (
+                  <p className="text-sm">{message.content}</p>
+                )}
+              </div>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 rounded-lg px-4 py-2">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <Button
-              variant="ghost"
-              onClick={handleBackToHome}
-              className="mb-4"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-              Strategic Planning
-            </h1>
-            <p className="text-slate-600 dark:text-slate-300">
-              Let's create your 90-day email sales plan.
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-5">
+      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        {/* Form Header */}
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900">Let's get to know your business</h2>
+          <p className="text-sm text-gray-600 mt-1">Just 3 quick questions to create your strategy</p>
+          <div className="flex gap-2 mt-4">
+            {[1, 2, 3].map(step => (
+              <div
+                key={step}
+                className={`w-8 h-2 rounded-full ${
+                  step <= currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <div className="p-6">
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {currentQuestion.title}
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              {currentQuestion.subtitle}
             </p>
           </div>
 
-          {/* Main Content */}
-          <Card className="w-full">
-            <CardContent className="pt-6">
-              <div className="text-center py-8">
-                <h2 className="text-2xl font-semibold text-slate-700 dark:text-slate-300 mb-4">
-                  What are you selling?
-                </h2>
-                
-                <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
-                  <Button
-                    className="h-24 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2"
-                    onClick={() => handleBusinessTypeSelect("product")}
-                  >
-                    <Package className="w-8 h-8" />
-                    <span className="font-semibold">Product</span>
-                  </Button>
-                  <Button
-                    className="h-24 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl flex flex-col items-center justify-center space-y-2"
-                    onClick={() => handleBusinessTypeSelect("service")}
-                  >
-                    <Wrench className="w-8 h-8" />
-                    <span className="font-semibold">Service</span>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {currentQuestion.type === 'textarea' ? (
+            <Textarea
+              value={currentValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder={currentQuestion.placeholder}
+              className="min-h-[100px] mb-6"
+            />
+          ) : (
+            <Input
+              value={currentValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder={currentQuestion.placeholder}
+              className="mb-6"
+            />
+          )}
+
+          {/* Form Actions */}
+          <div className="flex gap-3">
+            {currentStep > 1 ? (
+              <Button 
+                variant="outline" 
+                onClick={handlePrevious}
+                className="flex-1"
+              >
+                Back
+              </Button>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={handleCancel}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            )}
+            
+            <Button 
+              onClick={handleNext}
+              disabled={!isValid}
+              className="flex-1"
+            >
+              {currentStep === 3 ? 'Complete' : 'Next'}
+            </Button>
+          </div>
         </div>
       </div>
-
-      {/* 3-Step Form Modal */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-md">
-          <VisuallyHidden>
-            <DialogTitle>Business Information Form</DialogTitle>
-          </VisuallyHidden>
-          <div className="p-6">
-            {/* Header */}
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
-                Let's get to know your business
-              </h2>
-              <p className="text-sm text-slate-600 mb-4">
-                Just 3 quick questions to create your strategy
-              </p>
-              
-              {/* Progress dots */}
-              <div className="flex justify-center space-x-2">
-                {[1, 2, 3].map((step) => (
-                  <div
-                    key={step}
-                    className={`w-2 h-2 rounded-full ${
-                      step <= currentStep ? 'bg-blue-600' : 'bg-slate-300'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Question */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium text-slate-900 mb-2">
-                {currentQuestion.title}
-              </h3>
-              <p className="text-sm text-slate-600 mb-4">
-                {currentQuestion.subtitle}
-              </p>
-              
-              {currentQuestion.type === 'textarea' ? (
-                <Textarea
-                  value={currentValue}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  placeholder={currentQuestion.placeholder}
-                  className="min-h-[80px] resize-none"
-                />
-              ) : (
-                <Input
-                  value={currentValue}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  placeholder={currentQuestion.placeholder}
-                />
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="flex justify-between">
-              {currentStep > 1 ? (
-                <Button
-                  variant="outline"
-                  onClick={handlePrevious}
-                >
-                  Back
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-              )}
-              
-              <Button
-                onClick={handleNext}
-                disabled={!isValid}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                {currentStep === 3 ? 'Complete' : 'Next'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Chat Overlay */}
-      <ChatOverlay
-        ref={chatRef}
-        initialState={chatState}
-        onStateChange={setChatState}
-      />
     </div>
   );
 }
