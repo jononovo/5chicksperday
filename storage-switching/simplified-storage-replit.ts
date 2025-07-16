@@ -858,6 +858,12 @@ export class ReplitStorage implements IStorage {
     const templateIds = await this.get<number[]>(`emailTemplates:user:${userId}`) || [];
     const templates: EmailTemplate[] = [];
     
+    // Ensure templateIds is an array
+    if (!Array.isArray(templateIds)) {
+      console.warn('templateIds is not an array:', templateIds);
+      return [];
+    }
+    
     for (const id of templateIds) {
       const template = await this.get<EmailTemplate>(`emailTemplate:${id}`);
       // @ts-ignore: Date handling issues
