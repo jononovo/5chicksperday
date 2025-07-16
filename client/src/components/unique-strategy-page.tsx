@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,9 @@ import {
   Users,
   BarChart3,
   Lightbulb,
-  Zap
+  Zap,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -52,6 +54,11 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
   const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  
+  // Scroll state for tabs
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const parseJsonSafely = (jsonString: string | undefined) => {
     if (!jsonString) return null;
@@ -78,6 +85,43 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       description: `${description} copied successfully`,
     });
   };
+
+  // Scroll position detection
+  const checkScrollPosition = useCallback(() => {
+    const element = tabsRef.current;
+    if (!element) return;
+
+    setCanScrollLeft(element.scrollLeft > 0);
+    setCanScrollRight(
+      element.scrollLeft < element.scrollWidth - element.clientWidth
+    );
+  }, []);
+
+  // Scroll function
+  const scroll = useCallback((direction: 'left' | 'right') => {
+    const element = tabsRef.current;
+    if (!element) return;
+
+    const scrollAmount = 200;
+    element.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  }, []);
+
+  // Set up scroll event listener
+  useEffect(() => {
+    checkScrollPosition();
+    const element = tabsRef.current;
+    if (element) {
+      element.addEventListener('scroll', checkScrollPosition);
+      window.addEventListener('resize', checkScrollPosition);
+      return () => {
+        element.removeEventListener('scroll', checkScrollPosition);
+        window.removeEventListener('resize', checkScrollPosition);
+      };
+    }
+  }, [checkScrollPosition]);
 
   const handleExecuteQuery = (query: string) => {
     // Navigate to search page with the query
@@ -149,17 +193,46 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       {/* Content */}
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="inline-flex w-full overflow-x-auto gap-1 scrollbar-hide">
-            <TabsTrigger value="overview" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="strategy" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
-              Strategy & Boundary
-            </TabsTrigger>
-            <TabsTrigger value="implementation" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
-              Implementation
-            </TabsTrigger>
-          </TabsList>
+          <div className="relative flex items-center">
+            {canScrollLeft && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                onClick={() => scroll('left')}
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+            
+            <TabsList 
+              ref={tabsRef}
+              className="inline-flex w-full overflow-x-auto gap-1 scrollbar-hide justify-start"
+            >
+              <TabsTrigger value="overview" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="strategy" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
+                Strategy & Boundary
+              </TabsTrigger>
+              <TabsTrigger value="implementation" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
+                Implementation
+              </TabsTrigger>
+            </TabsList>
+
+            {canScrollRight && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 p-0 bg-white/90 hover:bg-white shadow-sm"
+                onClick={() => scroll('right')}
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-6">
