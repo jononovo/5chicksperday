@@ -3600,8 +3600,17 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       
       const userId = getUserId(req);
       
+      // DEBUGGING: Log user identification details
+      console.log('=== CREATE-PROFILE DEBUG ===');
+      console.log('getUserId(req):', userId);
+      console.log('(req.user as any)?.id:', (req.user as any)?.id);
+      console.log('req.isAuthenticated():', req.isAuthenticated ? req.isAuthenticated() : 'undefined');
+      console.log('req.user exists:', !!req.user);
+      console.log('(req as any).firebaseUser exists:', !!(req as any).firebaseUser);
+      
       // Generate auto-name for new product
       const existingProfiles = await storage.getStrategicProfiles(userId);
+      console.log('Existing profiles found:', existingProfiles.length);
       const productNumber = existingProfiles.length + 1;
       const autoName = `Product ${productNumber}`;
       
@@ -3617,6 +3626,9 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         targetCustomers: "", // Will be filled by strategy chat
         status: "in_progress"
       });
+      
+      console.log('Profile created with ID:', profile.id, 'for userId:', userId);
+      console.log('=== END CREATE-PROFILE DEBUG ===');
       
       res.json({ 
         success: true, 
@@ -4602,8 +4614,26 @@ Respond in this exact JSON format:
   // Products (Strategic Profiles) Management
   app.get('/api/products', requireAuth, async (req, res) => {
     try {
-      const userId = (req.user as any).id;
+      const userIdDirect = (req.user as any)?.id;
+      const userIdFunction = getUserId(req);
+      
+      // DEBUGGING: Log user identification details
+      console.log('=== GET-PRODUCTS DEBUG ===');
+      console.log('(req.user as any)?.id:', userIdDirect);
+      console.log('getUserId(req):', userIdFunction);
+      console.log('req.isAuthenticated():', req.isAuthenticated ? req.isAuthenticated() : 'undefined');
+      console.log('req.user exists:', !!req.user);
+      console.log('(req as any).firebaseUser exists:', !!(req as any).firebaseUser);
+      
+      // Use getUserId function for consistency
+      const userId = userIdFunction;
+      console.log('Using userId:', userId);
+      
       const products = await storage.getStrategicProfiles(userId);
+      console.log('Products found:', products.length);
+      console.log('Product IDs:', products.map(p => p.id));
+      console.log('=== END GET-PRODUCTS DEBUG ===');
+      
       res.json(products);
     } catch (error) {
       console.error('Error fetching products:', error);

@@ -922,22 +922,43 @@ export class ReplitStorage implements IStorage {
   // @ts-ignore
   async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
     try {
+      console.log('=== REPLIT STORAGE DEBUG: getStrategicProfiles ===');
+      console.log('Looking for userId:', userId);
+      console.log('Key:', `strategicProfiles:user:${userId}`);
+      
       const profileIds = await this.get<number[]>(`strategicProfiles:user:${userId}`);
+      console.log('Raw profileIds result:', profileIds);
+      console.log('Is array?', Array.isArray(profileIds));
       
       // Ensure we have a valid array
       if (!Array.isArray(profileIds)) {
+        console.log('No valid profile IDs found, returning empty array');
         return [];
       }
       
+      console.log('Found profile IDs:', profileIds);
       const profiles: StrategicProfile[] = [];
       
       for (const id of profileIds) {
         try {
+          console.log(`Fetching profile ${id} with key: strategicProfile:${id}`);
           const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
+          console.log(`Profile ${id} raw result:`, profile);
+          
           // @ts-ignore: Date handling issues
           // Only add profile if it exists and has valid data
           if (profile && typeof profile === 'object' && profile.id && profile.userId === userId) {
+            console.log(`Adding profile ${id} to results`);
             profiles.push(profile);
+          } else {
+            console.log(`Profile ${id} validation failed:`, {
+              exists: !!profile,
+              isObject: typeof profile === 'object',
+              hasId: profile?.id,
+              userIdMatch: profile?.userId === userId,
+              actualUserId: profile?.userId,
+              expectedUserId: userId
+            });
           }
         } catch (profileError) {
           console.error(`Error retrieving profile ${id}:`, profileError);
@@ -945,6 +966,8 @@ export class ReplitStorage implements IStorage {
         }
       }
       
+      console.log('Final profiles result:', profiles.length);
+      console.log('=== END REPLIT STORAGE DEBUG ===');
       return profiles;
     } catch (error) {
       console.error('Error in getStrategicProfiles:', error);
@@ -964,6 +987,10 @@ export class ReplitStorage implements IStorage {
     const id = await this.getNextId('strategicProfile');
     const now = new Date().toISOString();
     
+    console.log('=== REPLIT STORAGE DEBUG: createStrategicProfile ===');
+    console.log('Creating profile for userId:', data.userId);
+    console.log('Profile ID:', id);
+    
     const newProfile = {
       ...data,
       id,
@@ -971,14 +998,29 @@ export class ReplitStorage implements IStorage {
       updatedAt: now
     };
     
+    console.log('New profile object:', newProfile);
+    
     // Store the profile
-    await this.set(`strategicProfile:${id}`, newProfile);
+    const profileKey = `strategicProfile:${id}`;
+    console.log('Storing profile with key:', profileKey);
+    await this.set(profileKey, newProfile);
     
     // Add to user's profiles
-    const userProfiles = await this.get<number[]>(`strategicProfiles:user:${data.userId}`);
+    const userProfilesKey = `strategicProfiles:user:${data.userId}`;
+    console.log('User profiles key:', userProfilesKey);
+    
+    const userProfiles = await this.get<number[]>(userProfilesKey);
+    console.log('Existing user profiles:', userProfiles);
+    
     const profileArray = Array.isArray(userProfiles) ? userProfiles : [];
+    console.log('Profile array before push:', profileArray);
+    
     profileArray.push(id);
-    await this.set(`strategicProfiles:user:${data.userId}`, profileArray);
+    console.log('Profile array after push:', profileArray);
+    
+    await this.set(userProfilesKey, profileArray);
+    console.log('User profiles updated with new ID');
+    console.log('=== END REPLIT STORAGE DEBUG ===');
     
     // @ts-ignore: Date handling issues
     return newProfile;
