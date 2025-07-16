@@ -149,12 +149,11 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       {/* Content */}
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="product">Product Analysis</TabsTrigger>
             <TabsTrigger value="strategy">Strategy & Boundary</TabsTrigger>
             <TabsTrigger value="implementation">Implementation</TabsTrigger>
-            <TabsTrigger value="sales">Sales Approach</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -353,6 +352,40 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
                   )}
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Sales Context Guidance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {salesContext ? (
+                    <div className="space-y-4">
+                      <div className="prose max-w-none">
+                        <div dangerouslySetInnerHTML={{ __html: salesContext.content.replace(/\n/g, '<br>') }} />
+                      </div>
+                      
+                      <div className="flex items-center gap-2 pt-4 border-t">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => copyToClipboard(salesContext.content, 'Sales context guidance')}
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Guidance
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-slate-500">
+                      <Mail className="h-12 w-12 mx-auto mb-4 text-slate-300" />
+                      <p>Sales context guidance not yet generated</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
@@ -426,80 +459,6 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
               </CardContent>
             </Card>
           </TabsContent>
-
-          {/* Sales Approach Tab */}
-          <TabsContent value="sales" className="mt-6">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5" />
-                    Sales Context Guidance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {salesContext ? (
-                    <div className="space-y-4">
-                      <div className="prose max-w-none">
-                        <div dangerouslySetInnerHTML={{ __html: salesContext.content.replace(/\n/g, '<br>') }} />
-                      </div>
-                      
-                      <div className="flex items-center gap-2 pt-4 border-t">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => copyToClipboard(salesContext.content, 'Sales context guidance')}
-                        >
-                          <Copy className="h-4 w-4 mr-2" />
-                          Copy Guidance
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-slate-500">
-                      <Mail className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-                      <p>Sales context guidance not yet generated</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Sales Targeting Strategy
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {salesTargeting ? (
-                    <div className="space-y-4">
-                      <div className="prose max-w-none">
-                        <div dangerouslySetInnerHTML={{ __html: salesTargeting.content.replace(/\n/g, '<br>') }} />
-                      </div>
-                      
-                      <div className="flex items-center gap-2 pt-4 border-t">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => copyToClipboard(salesTargeting.content, 'Sales targeting strategy')}
-                        >
-                          <Copy className="h-4 w-4 mr-2" />
-                          Copy Strategy
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-slate-500">
-                      <Users className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-                      <p>Sales targeting strategy not yet generated</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
 
         </Tabs>
       </div>
