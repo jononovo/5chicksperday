@@ -136,7 +136,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
   return (
     <div className="bg-slate-50">
       {/* Main Product Section */}
-      <div className="bg-white border-b border-slate-200 p-6">
+      <div className="bg-white border-b border-slate-200 px-6 pt-6 pb-2">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
