@@ -135,7 +135,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
 
   return (
     <div className="bg-slate-50">
-      {/* Header */}
+      {/* Main Product Section */}
       <div className="bg-white border-b border-slate-200 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -179,12 +179,21 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
           
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Strategy
+              <Edit className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Edit Strategy</span>
             </Button>
             <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
+              <Download className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Export</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="ml-2"
+            >
+              <span className="sr-only">Close</span>
+              ×
             </Button>
           </div>
         </div>
