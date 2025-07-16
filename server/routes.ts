@@ -151,9 +151,6 @@ function requireAuth(req: express.Request, res: express.Response, next: express.
     timestamp: new Date().toISOString()
   });
   
-  // In a production environment, we would require authentication
-  // For now, we'll still allow access but flag it for easier development
-  
   // If we have either a session user or Firebase user, set proper user context
   if (req.isAuthenticated() && req.user) {
     // Already authenticated via session
@@ -163,13 +160,14 @@ function requireAuth(req: express.Request, res: express.Response, next: express.
   
   // Firebase token verification would have happened in middleware
   if ((req as any).firebaseUser) {
-    // User authenticated via Firebase token
+    // Set req.user from Firebase user for consistent access
+    req.user = (req as any).firebaseUser;
     next();
     return;
   }
   
-  // For development only - we'll still allow the request
-  next();
+  // Return 401 for unauthenticated requests
+  res.status(401).json({ message: "Authentication required" });
 }
 
 // Generate static sitemap XML
