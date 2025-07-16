@@ -951,7 +951,10 @@ export class ReplitStorage implements IStorage {
         }
       }
       
-      return profiles;
+      // Sort profiles by creation date (newest first) so profiles[0] is the current profile
+      return profiles.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     } catch (error) {
       console.error('Error in getStrategicProfiles:', error);
       return [];
