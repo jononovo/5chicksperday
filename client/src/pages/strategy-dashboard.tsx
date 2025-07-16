@@ -222,10 +222,6 @@ export default function StrategyDashboard() {
                             {product.status === 'completed' && (
                               <>
                                 <div className="flex items-center gap-1 text-xs text-slate-500">
-                                  <Search className="h-3 w-3" />
-                                  <span>Queries Ready</span>
-                                </div>
-                                <div className="flex items-center gap-1 text-xs text-slate-500">
                                   <Mail className="h-3 w-3" />
                                   <span>Email Strategy</span>
                                 </div>
