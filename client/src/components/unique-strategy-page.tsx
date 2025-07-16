@@ -167,8 +167,8 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
                     </>
                   )}
                 </Badge>
-                <span className="text-sm text-slate-500 capitalize">
-                  {product.businessType} Strategy
+                <span className="text-sm text-slate-500">
+                  {product.businessType === 'product' ? '📦 Product' : '🛠️ Service'}
                 </span>
                 <span className="text-sm text-slate-500">
                   Created {new Date(product.createdAt).toLocaleDateString()}
@@ -274,6 +274,20 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
                       <p className="text-sm text-slate-600">{product.strategyHighLevelBoundary}</p>
                     </div>
                   )}
+
+                  <div>
+                    <h4 className="font-medium text-slate-900 mb-1">Business Type</h4>
+                    <p className="text-sm text-slate-600">
+                      {product.businessType === 'product' ? '📦 Product' : '🛠️ Service'}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-slate-900 mb-1">Created</h4>
+                    <p className="text-sm text-slate-600">
+                      {new Date(product.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
