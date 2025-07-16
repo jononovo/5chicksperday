@@ -347,7 +347,7 @@ export default function StrategyDashboard() {
 
       {/* Unique Strategy Page Dialog */}
       <Dialog open={showUniqueStrategy} onOpenChange={setShowUniqueStrategy}>
-        <DialogContent className="max-w-6xl max-h-[90vh] p-0 flex flex-col [&>*[class*='opacity-70']]:hidden">
+        <DialogContent className="top-0 h-screen translate-y-0 rounded-none md:top-[50%] md:max-h-[90vh] md:translate-y-[-50%] md:rounded-lg max-w-6xl p-0 flex flex-col [&>*[class*='opacity-70']]:hidden">
           <button
             onClick={handleCloseUniqueStrategy}
             className="absolute top-2 right-2 z-50 p-2 hover:bg-gray-100 rounded-full transition-colors"
