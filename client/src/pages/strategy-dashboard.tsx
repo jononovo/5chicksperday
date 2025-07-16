@@ -123,8 +123,8 @@ export default function StrategyDashboard() {
                 onClick={() => setState('sidebar')}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Strategy
+                <Plus className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Create Strategy</span>
               </Button>
             </div>
 
@@ -142,8 +142,8 @@ export default function StrategyDashboard() {
                     onClick={() => setState('sidebar')}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Your First Strategy
+                    <Plus className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Create Your First Strategy</span>
                   </Button>
                 </CardContent>
               </Card>
