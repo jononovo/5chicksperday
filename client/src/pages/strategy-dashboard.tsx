@@ -3,11 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+
 import { 
   Target, 
   Calendar, 
-  Search,
   Plus,
   Eye,
   AlertCircle,
@@ -16,7 +15,8 @@ import {
   Mail,
   FileText,
   CheckCircle,
-  Clock
+  Clock,
+  Search
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
@@ -111,20 +111,12 @@ export default function StrategyDashboard() {
       />
       
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-        {/* Header */}
-        <div className="bg-white border-b border-slate-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Target className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-semibold text-slate-900">Strategic Dashboard</h1>
-                  <p className="text-sm text-slate-600">Plan, execute, and track your 90-day sales strategies</p>
-                </div>
-              </div>
-              
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+          {/* Strategic Plans Grid */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-900">Your Strategic Plans</h2>
               <Button 
                 onClick={() => navigate("/planning")}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
@@ -132,25 +124,6 @@ export default function StrategyDashboard() {
                 <Plus className="h-4 w-4 mr-2" />
                 Create Strategy
               </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-          {/* Strategic Plans Grid */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Your Strategic Plans</h2>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-                  <Input 
-                    placeholder="Search strategies..." 
-                    className="pl-10 w-64" 
-                  />
-                </div>
-              </div>
             </div>
 
             {products.length === 0 ? (
