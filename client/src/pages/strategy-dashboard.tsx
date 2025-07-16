@@ -7,18 +7,16 @@ import { Input } from "@/components/ui/input";
 import { 
   Target, 
   Calendar, 
-  TrendingUp, 
   Search,
   Plus,
   Eye,
-  BarChart3,
-  Clock,
-  CheckCircle,
   AlertCircle,
   Zap,
   Users,
   Mail,
-  FileText
+  FileText,
+  CheckCircle,
+  Clock
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
@@ -71,16 +69,7 @@ export default function StrategyDashboard() {
     setSelectedProduct(null);
   };
 
-  const getProgressStats = () => {
-    if (!products.length) return { complete: 0, inProgress: 0, total: 0 };
-    
-    const complete = products.filter((p: StrategicProfile) => p.status === 'completed').length;
-    const inProgress = products.filter((p: StrategicProfile) => p.status === 'in_progress').length;
-    
-    return { complete, inProgress, total: products.length };
-  };
 
-  const progressStats = getProgressStats();
 
   if (isLoading) {
     return (
@@ -148,62 +137,6 @@ export default function StrategyDashboard() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Progress Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                  <BarChart3 className="h-4 w-4" />
-                  Total Strategies
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-slate-900">{progressStats.total}</div>
-                <p className="text-xs text-slate-500 mt-1">Active strategic plans</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                  <CheckCircle className="h-4 w-4" />
-                  Complete
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">{progressStats.complete}</div>
-                <p className="text-xs text-slate-500 mt-1">Fully documented strategies</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                  <Clock className="h-4 w-4" />
-                  In Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-yellow-600">{progressStats.inProgress}</div>
-                <p className="text-xs text-slate-500 mt-1">Strategies being developed</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                  <TrendingUp className="h-4 w-4" />
-                  Success Rate
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-blue-600">
-                  {progressStats.total > 0 ? Math.round((progressStats.complete / progressStats.total) * 100) : 0}%
-                </div>
-                <p className="text-xs text-slate-500 mt-1">Strategy completion rate</p>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Strategic Plans Grid */}
           <div className="space-y-6">
