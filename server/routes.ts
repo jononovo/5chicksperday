@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { storage } from "../storage-switching/1--storage-switcher";
+import { StrategicProfileService } from "./lib/strategic-profiles";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -4547,7 +4548,7 @@ Respond in this exact JSON format:
   app.get('/api/products', requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const products = await storage.getStrategicProfiles(userId);
+      const products = await StrategicProfileService.getStrategicProfiles(userId);
       res.json(products);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -4567,7 +4568,7 @@ Respond in this exact JSON format:
         return;
       }
 
-      const product = await storage.getStrategicProfile(productId, userId);
+      const product = await StrategicProfileService.getStrategicProfile(productId, userId);
       
       if (!product) {
         res.status(404).json({ message: "Product not found" });
@@ -4586,7 +4587,7 @@ Respond in this exact JSON format:
   app.post('/api/products', requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const productData = { ...req.body, userId };
+      const productData = req.body;
       
       // Validate required fields
       if (!productData.businessType || !productData.businessDescription || !productData.targetCustomers) {
@@ -4596,7 +4597,7 @@ Respond in this exact JSON format:
         return;
       }
 
-      const product = await storage.createStrategicProfile(productData);
+      const product = await StrategicProfileService.createStrategicProfile(userId, productData);
       res.status(201).json(product);
     } catch (error) {
       console.error('Error creating product:', error);
@@ -4616,14 +4617,13 @@ Respond in this exact JSON format:
         return;
       }
 
-      // Verify ownership
-      const existingProduct = await storage.getStrategicProfile(productId, userId);
-      if (!existingProduct) {
+      const updatedProduct = await StrategicProfileService.updateStrategicProfile(productId, userId, req.body);
+      
+      if (!updatedProduct) {
         res.status(404).json({ message: "Product not found" });
         return;
       }
 
-      const updatedProduct = await storage.updateStrategicProfile(productId, req.body);
       res.json(updatedProduct);
     } catch (error) {
       console.error('Error updating product:', error);
@@ -4643,8 +4643,14 @@ Respond in this exact JSON format:
         return;
       }
 
-      await storage.deleteStrategicProfile(productId, userId);
-      res.status(204).send();
+      const success = await StrategicProfileService.deleteStrategicProfile(productId, userId);
+      
+      if (!success) {
+        res.status(404).json({ message: "Product not found" });
+        return;
+      }
+
+      res.json({ message: "Product deleted successfully" });
     } catch (error) {
       console.error('Error deleting product:', error);
       res.status(500).json({ 
@@ -4663,7 +4669,21 @@ Respond in this exact JSON format:
         return;
       }
 
-      const clonedProduct = await storage.cloneStrategicProfile(productId, userId);
+      // Get the original product
+      const originalProduct = await StrategicProfileService.getStrategicProfile(productId, userId);
+      if (!originalProduct) {
+        res.status(404).json({ message: "Product not found" });
+        return;
+      }
+
+      // Create a clone with a new name
+      const cloneData = {
+        ...originalProduct,
+        name: `${originalProduct.name} (Copy)`,
+        status: 'completed' as const
+      };
+      
+      const clonedProduct = await StrategicProfileService.createStrategicProfile(userId, cloneData);
       res.status(201).json(clonedProduct);
     } catch (error) {
       console.error('Error cloning product:', error);
