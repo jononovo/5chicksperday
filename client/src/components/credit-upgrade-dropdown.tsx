@@ -202,7 +202,7 @@ export function CreditUpgradeDropdown() {
           <span className="text-muted-foreground">
             {credits.balance < 0 ? credits.balance : `${credits.balance.toLocaleString()}`}
           </span>
-          <ChevronDown className="w-4 h-4" />
+          <ChevronDown className="w-4 h-4 hidden md:block" />
         </Button>
       </DropdownMenuTrigger>
       
