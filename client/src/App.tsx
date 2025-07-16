@@ -29,6 +29,7 @@ import Auth from "@/pages/auth";
 const Home = lazy(() => import("@/pages/home"));
 const Build = lazy(() => import("@/pages/build"));
 const Account = lazy(() => import("@/pages/account"));
+const StrategyDashboard = lazy(() => import("@/pages/strategy-dashboard"));
 // Strategy functionality moved to overlay system
 // Lists functionality moved to drawer in Home page
 const Campaigns = lazy(() => import("@/pages/campaigns"));
@@ -194,6 +195,11 @@ function Router() {
                 <ProtectedRoute path="/account" component={() => 
                   <Suspense fallback={<LoadingScreen />}>
                     <Account />
+                  </Suspense>
+                } />
+                <ProtectedRoute path="/strategy" component={() => 
+                  <Suspense fallback={<LoadingScreen />}>
+                    <StrategyDashboard />
                   </Suspense>
                 } />
                 {/* Lists routes removed - functionality moved to drawer in Home page */}

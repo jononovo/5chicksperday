@@ -16,6 +16,7 @@ import {
 
 const navigation = [
   { name: "Search", href: "/app", icon: "dashboard" },
+  { name: "Strategy", href: "/strategy", icon: "target" },
   { name: "Outreach", href: "/outreach", icon: "mail" },
   // { name: "Replies", href: "/replies", icon: "message" }
 ];
@@ -72,6 +73,7 @@ export function MainNav() {
             >
               <div className="flex items-center">
                 {item.icon === "dashboard" && <LayoutDashboard className="mr-1 h-4 w-4" />}
+                {item.icon === "target" && <Target className="mr-1 h-4 w-4" />}
                 {item.icon === "mail" && <Mail className="mr-1 h-4 w-4" />}
                 {item.icon === "message" && <MessageCircle className="mr-1 h-4 w-4" />}
                 <span className="md:inline hidden">{item.name}</span>
