@@ -347,7 +347,7 @@ export default function StrategyDashboard() {
 
       {/* Unique Strategy Page Dialog */}
       <Dialog open={showUniqueStrategy} onOpenChange={setShowUniqueStrategy}>
-        <DialogContent className="max-w-6xl max-h-[90vh] p-0">
+        <DialogContent className="max-w-6xl max-h-[90vh] p-0 flex flex-col">
           <DialogHeader className="px-6 py-4 border-b">
             <DialogTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
