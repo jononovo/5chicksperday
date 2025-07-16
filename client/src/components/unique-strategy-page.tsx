@@ -137,7 +137,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
     <div className="bg-slate-50">
       {/* Main Product Section */}
       <div className="bg-white border-b border-slate-200 p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white text-lg font-medium">
@@ -172,7 +172,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-1">
             <Button variant="outline" size="sm">
               <Edit className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Edit Strategy</span>
