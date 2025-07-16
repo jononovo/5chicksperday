@@ -3901,7 +3901,7 @@ Focus on actionable insights that directly support their stated business goal an
   });
 
   // Three-Report Strategy Chat with OpenAI + Perplexity
-  app.post("/api/onboarding/strategy-chat", async (req, res) => {
+  app.post("/api/onboarding/strategy-chat", requireAuth, async (req, res) => {
     try {
       const { userInput, productContext, conversationHistory } = req.body;
 
@@ -4105,53 +4105,30 @@ High-level strategic guidance for email generation.`;
       console.log('Strategy chat completed successfully, type:', result.type);
       
       // Save reports to database if user is authenticated
-      console.log('Attempting to save strategic data:', {
-        hasUser: !!req.user,
-        resultType: result.type,
-        hasResultData: !!result.data
-      });
-      
       if (req.user) {
         try {
           const userId = getUserId(req);
-          console.log('User ID retrieved:', userId);
           
           const profiles = await storage.getStrategicProfiles(userId);
-          console.log('Profiles retrieved:', profiles.length, 'profiles found');
-          
           if (profiles.length > 0) {
-            console.log('Target profile ID:', profiles[0].id, 'Profile name:', profiles[0].name);
-            
             if (result.type === 'product_summary') {
-              console.log('Saving product summary to profile', profiles[0].id);
               await storage.updateStrategicProfile(profiles[0].id, { 
                 productAnalysisSummary: JSON.stringify(result.data) 
               });
-              console.log('Product summary saved successfully');
             } else if (result.type === 'email_strategy') {
               // Legacy email strategy - database updates handled by progressive endpoints
-              console.log('Saving email strategy to profile', profiles[0].id);
               await storage.updateStrategicProfile(profiles[0].id, { 
                 reportSalesTargetingGuidance: JSON.stringify(result.data)
               });
-              console.log('Email strategy saved successfully');
             } else if (result.type === 'sales_approach') {
-              console.log('Saving sales approach to profile', profiles[0].id);
               await storage.updateStrategicProfile(profiles[0].id, { 
                 reportSalesContextGuidance: JSON.stringify(result.data) 
               });
-              console.log('Sales approach saved successfully');
-            } else {
-              console.log('Result type not handled for database saving:', result.type);
             }
-          } else {
-            console.log('No profiles found for user', userId);
           }
         } catch (dbError) {
-          console.error('Failed to save report to database:', dbError);
+          console.warn('Failed to save report to database:', dbError);
         }
-      } else {
-        console.log('User not authenticated, skipping database save');
       }
 
       // Return structured response
