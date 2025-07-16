@@ -4104,10 +4104,15 @@ High-level strategic guidance for email generation.`;
       
       console.log('Strategy chat completed successfully, type:', result.type);
       
-      // Save reports to database if user is authenticated
-      if (req.user) {
+      // Save reports to database if user is authenticated OR if this is a strategic conversation with session
+      const hasFirebaseAuth = !!req.user;
+      const hasSessionAuth = req.isAuthenticated && req.isAuthenticated() && req.user;
+      const canSaveStrategicData = hasFirebaseAuth || hasSessionAuth;
+      
+      if (canSaveStrategicData) {
         try {
-          const userId = getUserId(req);
+          // Use Firebase user ID if available, otherwise use session user ID
+          const userId = hasFirebaseAuth ? getUserId(req) : (req.user as any).id;
           
           const profiles = await storage.getStrategicProfiles(userId);
           if (profiles.length > 0) {
