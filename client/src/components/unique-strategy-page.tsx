@@ -167,12 +167,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
                     </>
                   )}
                 </Badge>
-                <span className="text-sm text-slate-500">
-                  {product.businessType === 'product' ? '📦 Product' : '🛠️ Service'}
-                </span>
-                <span className="text-sm text-slate-500">
-                  Created {new Date(product.createdAt).toLocaleDateString()}
-                </span>
+
               </div>
             </div>
           </div>
