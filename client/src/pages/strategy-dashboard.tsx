@@ -118,7 +118,7 @@ export default function StrategyDashboard() {
           {/* Strategic Plans Grid */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-900">Your Strategic Plans</h2>
+              <h2 className="text-lg font-semibold text-slate-900">My Products</h2>
               <Button 
                 onClick={() => setState('sidebar')}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
