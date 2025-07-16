@@ -46,8 +46,8 @@ export function MainNav() {
 
   return (
     <nav className="flex items-center justify-between border-b mb-2 px-4 py-1.5">
-      <div className="flex items-center space-x-2 sm:space-x-4">
-        <Logo size="sm" className="mr-4 sm:mr-8" />
+      <div className="flex items-center space-x-2 md:space-x-4">
+        <Logo size="sm" className="mr-4 md:mr-8" />
         {navigation.map((item) => {
           const isActive = item.href === location || 
             (item.href === "/" && location === "/");
@@ -60,7 +60,7 @@ export function MainNav() {
                 isActive
                   ? "text-primary font-semibold border-b-2 border-primary"
                   : "text-muted-foreground hover:text-foreground"
-              } px-1 sm:px-2 py-1.5 text-sm font-medium transition-colors`}
+              } px-1 md:px-2 py-1.5 text-sm font-medium transition-colors`}
             >
               <div className="flex items-center">
                 {item.icon === "dashboard" && <LayoutDashboard className="mr-1 h-4 w-4" />}
@@ -73,7 +73,7 @@ export function MainNav() {
           );
         })}
       </div>
-      <div className="flex items-center ml-auto gap-2 sm:gap-3">
+      <div className="flex items-center ml-auto gap-2 md:gap-3">
         {user ? (
           <>
             <CreditUpgradeDropdown />
