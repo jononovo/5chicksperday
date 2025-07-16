@@ -4609,7 +4609,31 @@ Respond in this exact JSON format:
     try {
       const userId = getUserId(req);
       const products = await storage.getStrategicProfiles(userId);
-      res.json(products);
+      
+      // Update status based on strategic conversation completion
+      const updatedProducts = products.map(product => {
+        const strategicFields = [
+          'productAnalysisSummary',
+          'strategyHighLevelBoundary', 
+          'exampleSprintPlanningPrompt',
+          'dailySearchQueries',
+          'reportSalesContextGuidance',
+          'reportSalesTargetingGuidance'
+        ];
+        
+        const completedFields = strategicFields.filter(field => product[field]);
+        const isStrategicComplete = completedFields.length === 6;
+        
+        // Update status to completed if all strategic fields are present
+        const correctedStatus = isStrategicComplete ? 'completed' : 'in_progress';
+        
+        return {
+          ...product,
+          status: correctedStatus
+        };
+      });
+      
+      res.json(updatedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
       res.status(500).json({ 
