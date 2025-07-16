@@ -23,6 +23,7 @@ import { useLocation } from "wouter";
 import { SEOHead } from "@/components/ui/seo-head";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { UniqueStrategyPage } from "@/components/unique-strategy-page";
+import { useStrategyOverlay } from "@/lib/strategy-overlay-context";
 
 interface StrategicProfile {
   id: number;
@@ -44,6 +45,7 @@ interface StrategicProfile {
 export default function StrategyDashboard() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
+  const { setState } = useStrategyOverlay();
   const [selectedProduct, setSelectedProduct] = useState<StrategicProfile | null>(null);
   const [showUniqueStrategy, setShowUniqueStrategy] = useState(false);
 
@@ -118,7 +120,7 @@ export default function StrategyDashboard() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-900">Your Strategic Plans</h2>
               <Button 
-                onClick={() => navigate("/planning")}
+                onClick={() => setState('sidebar')}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -137,7 +139,7 @@ export default function StrategyDashboard() {
                     Create your first strategic plan to start building your 90-day sales execution roadmap
                   </p>
                   <Button 
-                    onClick={() => navigate("/planning")}
+                    onClick={() => setState('sidebar')}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
                     <Plus className="h-4 w-4 mr-2" />
