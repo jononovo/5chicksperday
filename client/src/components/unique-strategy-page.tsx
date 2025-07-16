@@ -191,7 +191,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="px-3 py-6 sm:px-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="relative flex items-center">
             {canScrollLeft && (
@@ -235,16 +235,16 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
           </div>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="mt-3 sm:mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
               <Card>
-                <CardHeader>
+                <CardHeader className="px-3 py-6 sm:px-6">
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
                     Strategic Overview
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 px-3 py-6 pt-0 sm:px-6">
                   <div>
                     <h4 className="font-medium text-slate-900 mb-1">Product/Service</h4>
                     <p className="text-sm text-slate-600">{product.productService}</p>
@@ -292,13 +292,13 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
               </Card>
 
               <Card>
-                <CardHeader>
+                <CardHeader className="px-3 py-6 sm:px-6">
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5" />
                     Implementation Status
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-3 py-6 pt-0 sm:px-6">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-slate-600">Product Analysis</span>
@@ -332,13 +332,13 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
               </Card>
               
               <Card className="lg:col-span-2">
-                <CardHeader>
+                <CardHeader className="px-3 py-6 sm:px-6">
                   <CardTitle className="flex items-center gap-2">
                     <Lightbulb className="h-5 w-5" />
                     Product Analysis Summary
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-3 py-6 pt-0 sm:px-6">
                   {productSummary ? (
                     <div className="space-y-4">
                       <div className="prose max-w-none">
@@ -368,16 +368,16 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
           </TabsContent>
 
           {/* Strategy & Boundary Tab */}
-          <TabsContent value="strategy" className="mt-6">
-            <div className="space-y-6">
+          <TabsContent value="strategy" className="mt-3 sm:mt-6">
+            <div className="space-y-3 sm:space-y-6">
               <Card>
-                <CardHeader>
+                <CardHeader className="px-3 py-6 sm:px-6">
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-5 w-5" />
                     Strategic Boundary
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-3 py-6 pt-0 sm:px-6">
                   {product.strategyHighLevelBoundary ? (
                     <div className="space-y-4">
                       <div className="p-4 bg-blue-50 rounded-lg">
@@ -407,13 +407,13 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
               </Card>
 
               <Card>
-                <CardHeader>
+                <CardHeader className="px-3 py-6 sm:px-6">
                   <CardTitle className="flex items-center gap-2">
                     <Calendar className="h-5 w-5" />
                     Sprint Planning Prompt
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-3 py-6 pt-0 sm:px-6">
                   {product.exampleSprintPlanningPrompt ? (
                     <div className="space-y-4">
                       <div className="p-4 bg-slate-50 rounded-lg">
@@ -443,13 +443,13 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
               </Card>
 
               <Card>
-                <CardHeader>
+                <CardHeader className="px-3 py-6 sm:px-6">
                   <CardTitle className="flex items-center gap-2">
                     <Mail className="h-5 w-5" />
                     Sales Context Guidance
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-3 py-6 pt-0 sm:px-6">
                   {salesContext ? (
                     <div className="space-y-4">
                       <div className="prose max-w-none">
@@ -479,18 +479,18 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
           </TabsContent>
 
           {/* Implementation Tab (formerly Daily Queries) */}
-          <TabsContent value="implementation" className="mt-6">
+          <TabsContent value="implementation" className="mt-3 sm:mt-6">
             <Card>
-              <CardHeader>
+              <CardHeader className="px-3 py-6 sm:px-6">
                 <CardTitle className="flex items-center gap-2">
                   <Search className="h-5 w-5" />
                   Daily Search Queries
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 py-6 pt-0 sm:px-6">
                 {dailyQueries.length > 0 ? (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                       {dailyQueries.map((query: string, index: number) => (
                         <div key={index} className="p-4 bg-slate-50 rounded-lg">
                           <div className="flex items-center justify-between">
