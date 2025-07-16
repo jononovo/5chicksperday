@@ -186,15 +186,6 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
               <Download className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Export</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="ml-2"
-            >
-              <span className="sr-only">Close</span>
-              ×
-            </Button>
           </div>
         </div>
       </div>
