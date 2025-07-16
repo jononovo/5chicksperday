@@ -116,9 +116,13 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       setMessages(prev => [...prev, loadingMessage]);
       setIsLoading(true);
 
+      const token = localStorage.getItem('authToken');
       const confirmResponse = await fetch('/api/strategy/boundary/confirm', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           selectedOption,
           customBoundary,
@@ -192,9 +196,13 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       };
       setMessages(prev => [...prev, sprintLoadingMessage]);
       
+      const token = localStorage.getItem('authToken');
       const sprintResponse = await fetch('/api/strategy/sprint', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ 
           boundary: confirmedBoundary, 
           refinedTarget, 
@@ -238,7 +246,10 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         
         const queriesResponse = await fetch('/api/strategy/queries', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ 
             boundary: confirmedBoundary, 
             sprintPrompt: sprintData.content, 
@@ -429,10 +440,12 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     try {
       console.log('Processing strategy chat with input:', userInput);
       
+      const token = localStorage.getItem('authToken');
       const response = await fetch('/api/onboarding/strategy-chat', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           userInput: userInput,
@@ -517,9 +530,13 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       
       console.log('Calling boundary API with:', { initialTarget, refinedTarget, productContext });
       
+      const token = localStorage.getItem('authToken');
       const boundaryResponse = await fetch('/api/strategy/boundary', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ initialTarget, refinedTarget, productContext })
       });
 
@@ -663,9 +680,13 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       };
       setMessages(prev => [...prev, loadingMessage]);
       
+      const token = localStorage.getItem('authToken');
       const response = await fetch('/api/onboarding/strategy-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           userInput: 'Generate sales approach',
           productContext: {
