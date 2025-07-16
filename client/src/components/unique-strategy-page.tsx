@@ -149,10 +149,16 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       {/* Content */}
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="strategy">Strategy & Boundary</TabsTrigger>
-            <TabsTrigger value="implementation">Implementation</TabsTrigger>
+          <TabsList className="inline-flex w-full overflow-x-auto gap-1 scrollbar-hide">
+            <TabsTrigger value="overview" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="strategy" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
+              Strategy & Boundary
+            </TabsTrigger>
+            <TabsTrigger value="implementation" className="flex-shrink-0 whitespace-nowrap px-4 py-2">
+              Implementation
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
