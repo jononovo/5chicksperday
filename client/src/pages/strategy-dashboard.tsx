@@ -295,6 +295,53 @@ export default function StrategyDashboard() {
               </Card>
             </div>
           )}
+
+          {/* 90-Day Implementation Timeline */}
+          <div className="mt-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  90-Day Implementation Timeline
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-blue-50 rounded-lg">
+                      <h4 className="font-medium text-blue-900 mb-2">Days 1-30</h4>
+                      <p className="text-sm text-blue-700">Setup & Initial Outreach</p>
+                      <ul className="text-xs text-blue-600 mt-2 space-y-1">
+                        <li>• Execute daily search queries</li>
+                        <li>• Build contact database</li>
+                        <li>• Begin email campaigns</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <h4 className="font-medium text-green-900 mb-2">Days 31-60</h4>
+                      <p className="text-sm text-green-700">Scale & Optimize</p>
+                      <ul className="text-xs text-green-600 mt-2 space-y-1">
+                        <li>• Analyze response rates</li>
+                        <li>• Refine messaging</li>
+                        <li>• Scale successful campaigns</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="p-4 bg-purple-50 rounded-lg">
+                      <h4 className="font-medium text-purple-900 mb-2">Days 61-90</h4>
+                      <p className="text-sm text-purple-700">Maximize & Measure</p>
+                      <ul className="text-xs text-purple-600 mt-2 space-y-1">
+                        <li>• Full campaign execution</li>
+                        <li>• ROI measurement</li>
+                        <li>• Strategy refinement</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 

@@ -149,13 +149,12 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       {/* Content */}
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="product">Product Analysis</TabsTrigger>
             <TabsTrigger value="strategy">Strategy & Boundary</TabsTrigger>
-            <TabsTrigger value="queries">Daily Queries</TabsTrigger>
-            <TabsTrigger value="sales">Sales Approach</TabsTrigger>
             <TabsTrigger value="implementation">Implementation</TabsTrigger>
+            <TabsTrigger value="sales">Sales Approach</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -357,8 +356,8 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
             </div>
           </TabsContent>
 
-          {/* Daily Queries Tab */}
-          <TabsContent value="queries" className="mt-6">
+          {/* Implementation Tab (formerly Daily Queries) */}
+          <TabsContent value="implementation" className="mt-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -501,94 +500,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
             </div>
           </TabsContent>
 
-          {/* Implementation Tab */}
-          <TabsContent value="implementation" className="mt-6">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="h-5 w-5" />
-                    Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Button 
-                      variant="outline" 
-                      className="justify-start h-auto p-4"
-                      onClick={() => navigate("/")}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Search className="h-5 w-5 text-blue-600" />
-                        <div className="text-left">
-                          <div className="font-medium">Execute Search Queries</div>
-                          <div className="text-sm text-slate-500">Run your strategic search prompts</div>
-                        </div>
-                      </div>
-                    </Button>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="justify-start h-auto p-4"
-                      onClick={() => navigate("/outreach")}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Mail className="h-5 w-5 text-green-600" />
-                        <div className="text-left">
-                          <div className="font-medium">Start Email Outreach</div>
-                          <div className="text-sm text-slate-500">Begin your sales campaigns</div>
-                        </div>
-                      </div>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    90-Day Implementation Timeline
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-4 bg-blue-50 rounded-lg">
-                        <h4 className="font-medium text-blue-900 mb-2">Days 1-30</h4>
-                        <p className="text-sm text-blue-700">Setup & Initial Outreach</p>
-                        <ul className="text-xs text-blue-600 mt-2 space-y-1">
-                          <li>• Execute daily search queries</li>
-                          <li>• Build contact database</li>
-                          <li>• Begin email campaigns</li>
-                        </ul>
-                      </div>
-                      
-                      <div className="p-4 bg-green-50 rounded-lg">
-                        <h4 className="font-medium text-green-900 mb-2">Days 31-60</h4>
-                        <p className="text-sm text-green-700">Scale & Optimize</p>
-                        <ul className="text-xs text-green-600 mt-2 space-y-1">
-                          <li>• Analyze response rates</li>
-                          <li>• Refine messaging</li>
-                          <li>• Scale successful campaigns</li>
-                        </ul>
-                      </div>
-                      
-                      <div className="p-4 bg-purple-50 rounded-lg">
-                        <h4 className="font-medium text-purple-900 mb-2">Days 61-90</h4>
-                        <p className="text-sm text-purple-700">Maximize & Measure</p>
-                        <ul className="text-xs text-purple-600 mt-2 space-y-1">
-                          <li>• Full campaign execution</li>
-                          <li>• ROI measurement</li>
-                          <li>• Strategy refinement</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
     </div>
