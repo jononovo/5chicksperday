@@ -118,25 +118,102 @@ export class ReplitStorage implements IStorage {
   
   // @ts-ignore
   async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
-    const id = await this.getNextId('user');
-    const now = new Date().toISOString();
+    console.log('🔧 Creating user:', {
+      email: data.email?.split('@')[0] + '@...',
+      hasPassword: !!data.password,
+      username: data.username,
+      timestamp: new Date().toISOString()
+    });
     
+    // Check if user already exists
+    const existingUser = await this.getUserByEmail(data.email);
+    if (existingUser) {
+      console.log('✅ User already exists, returning existing:', { id: existingUser.id });
+      return existingUser;
+    }
+    
+    // Get next ID with retry logic
+    let id: number;
+    let retries = 3;
+    
+    while (retries > 0) {
+      try {
+        id = await this.getNextId('user');
+        console.log('🔧 Generated user ID:', { id });
+        break;
+      } catch (err) {
+        console.error('❌ Failed to get next ID, retrying...', err);
+        retries--;
+        if (retries === 0) {
+          throw new Error('Failed to generate user ID after multiple attempts');
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+    
+    const now = new Date().toISOString();
     const user = {
-      id,
+      id: id!,
       email: data.email,
       password: data.password,
       username: data.username || data.email.split('@')[0],
       createdAt: now
     };
     
-    await this.set(`user:${id}`, user);
-    await this.set(`index:user:email:${data.email}`, id);
-    if (user.username) {
-      await this.set(`index:user:username:${user.username}`, id);
+    // Atomic-like user creation with comprehensive error handling
+    try {
+      console.log('🔧 Saving user record...');
+      await this.set(`user:${id}`, user);
+      
+      console.log('🔧 Creating email index...');
+      await this.set(`index:user:email:${data.email}`, id);
+      
+      if (user.username) {
+        console.log('🔧 Creating username index...');
+        await this.set(`index:user:username:${user.username}`, id);
+      }
+      
+      // Verify user was created successfully
+      const verification = await this.get(`user:${id}`);
+      if (!verification) {
+        throw new Error('User creation verification failed');
+      }
+      
+      console.log('✅ User created successfully:', {
+        id: user.id,
+        email: data.email?.split('@')[0] + '@...',
+        username: user.username,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Initialize user preferences
+      try {
+        await this.initializeUserPreferences(id);
+        console.log('✅ User preferences initialized for:', { id });
+      } catch (prefsErr) {
+        console.error('⚠️ Failed to initialize preferences (non-fatal):', prefsErr);
+      }
+      
+      // @ts-ignore: Date handling issues
+      return user;
+      
+    } catch (err) {
+      console.error('❌ User creation failed, attempting cleanup...', err);
+      
+      // Cleanup on failure
+      try {
+        await this.delete(`user:${id}`);
+        await this.delete(`index:user:email:${data.email}`);
+        if (user.username) {
+          await this.delete(`index:user:username:${user.username}`);
+        }
+        console.log('🔧 Cleanup completed');
+      } catch (cleanupErr) {
+        console.error('❌ Cleanup failed:', cleanupErr);
+      }
+      
+      throw new Error(`User creation failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
-    
-    // @ts-ignore: Date handling issues
-    return user;
   }
 
   // User methods - IStorage implementation
