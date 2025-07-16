@@ -716,10 +716,12 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       
       // Create profile with form data before starting chat
       try {
+        const token = localStorage.getItem('authToken');
         const response = await fetch('/api/onboarding/create-profile', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
             businessType,
