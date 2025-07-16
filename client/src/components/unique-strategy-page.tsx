@@ -147,7 +147,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 max-h-[90vh] overflow-y-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
