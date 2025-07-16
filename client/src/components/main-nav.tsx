@@ -60,7 +60,7 @@ export function MainNav() {
                 isActive
                   ? "text-primary font-semibold border-b-2 border-primary"
                   : "text-muted-foreground hover:text-foreground"
-              } px-1 md:px-2 py-1.5 text-sm font-medium transition-colors`}
+              } px-2 md:px-3 py-1.5 text-sm font-medium transition-colors`}
             >
               <div className="flex items-center justify-center">
                 {item.icon === "dashboard" && <LayoutDashboard className="md:mr-1 h-4 w-4" />}
