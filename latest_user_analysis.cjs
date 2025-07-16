@@ -2,58 +2,63 @@ const Database = require("@replit/database");
 const db = new Database();
 
 async function analyzeLatestUser() {
-  console.log("=== LATEST USER ANALYSIS ===");
+  console.log("=== LATEST USER ANALYSIS (ale@codetribe.com) ===");
   
-  // From the console logs, user 440 was just created with email 9010@test.com
-  const userId = 440;
-  const expectedEmail = "9010@test.com";
+  const userId = 428;
+  const expectedProfileId = 16;
   
-  console.log(`\n1. ANALYZING USER ${userId} (${expectedEmail})`);
+  console.log(`\n1. USER RECORD CHECK (${userId}):`);
   
-  // Check user record
   try {
-    const userRecord = await db.get(`user:${userId}`);
-    if (userRecord?.value) {
-      console.log(`✅ User Record:`);
-      console.log(`   ID: ${userRecord.value.id}`);
-      console.log(`   Email: ${userRecord.value.email}`);
-      console.log(`   Username: ${userRecord.value.username}`);
-      console.log(`   Created: ${userRecord.value.createdAt}`);
+    const userResult = await db.get(`user:${userId}`);
+    if (userResult?.value) {
+      console.log(`✅ User ${userId} exists:`);
+      console.log(`   Email: ${userResult.value.email}`);
+      console.log(`   Username: ${userResult.value.username}`);
+      console.log(`   Created: ${userResult.value.createdAt}`);
     } else {
-      console.log(`❌ No user record found for ID ${userId}`);
-      return;
+      console.log(`❌ User ${userId} not found in database`);
     }
   } catch (err) {
     console.log(`❌ Error checking user record: ${err.message}`);
-    return;
   }
   
-  console.log(`\n2. CHECKING STRATEGIC PROFILES FOR USER ${userId}`);
+  console.log(`\n2. CREDITS SYSTEM CHECK:`);
   
-  // Check strategic profiles using the correct storage key format
   try {
-    const profilesData = await db.get(`strategicProfiles:user:${userId}`);
-    
-    if (profilesData?.value) {
+    const creditsResult = await db.get(`user_credits:${userId}`);
+    if (creditsResult?.value) {
+      const credits = JSON.parse(creditsResult.value);
+      console.log(`✅ Credits balance: ${credits.currentBalance}`);
+      console.log(`   Total used: ${credits.totalUsed}`);
+      console.log(`   Has badges: ${credits.badges ? credits.badges.length : 0} badges`);
+    } else {
+      console.log(`❌ Credits record not found`);
+    }
+  } catch (err) {
+    console.log(`❌ Error checking credits: ${err.message}`);
+  }
+  
+  console.log(`\n3. STRATEGIC PROFILES CHECK:`);
+  
+  try {
+    const profilesResult = await db.get(`strategicProfiles:user:${userId}`);
+    if (profilesResult?.value) {
       let profileIds;
-      if (typeof profilesData.value === 'string') {
-        profileIds = JSON.parse(profilesData.value);
-      } else if (Array.isArray(profilesData.value)) {
-        profileIds = profilesData.value;
+      if (Array.isArray(profilesResult.value)) {
+        profileIds = profilesResult.value;
       } else {
-        console.log(`❌ Invalid profiles data format: ${typeof profilesData.value}`);
-        return;
+        profileIds = JSON.parse(profilesResult.value);
       }
       
-      console.log(`✅ Found ${profileIds.length} strategic profile(s)`);
+      console.log(`✅ Found ${profileIds.length} strategic profile(s): ${profileIds.join(', ')}`);
       
-      for (let i = 0; i < profileIds.length; i++) {
-        const profileId = profileIds[i];
-        
+      // Check the expected profile (ID 16)
+      for (const profileId of profileIds) {
         try {
           const profile = await db.get(`strategicProfile:${profileId}`);
           if (profile?.value) {
-            console.log(`\n   Profile ${i + 1} (ID: ${profileId}):`);
+            console.log(`\n   Profile ${profileId} (Expected: ${expectedProfileId}):`);
             console.log(`   Name: ${profile.value.name}`);
             console.log(`   Business Type: ${profile.value.businessType}`);
             console.log(`   Product/Service: ${profile.value.productService}`);
@@ -63,22 +68,27 @@ async function analyzeLatestUser() {
             console.log(`   Status: ${profile.value.status}`);
             
             // Check strategic conversation data
-            console.log(`\n   Strategic Conversation Data:`);
+            console.log(`\n   Strategic Documents Check:`);
             const strategicFields = [
               { key: 'productAnalysisSummary', name: 'Product Analysis Summary' },
               { key: 'strategyHighLevelBoundary', name: 'Strategy High Level Boundary' },
               { key: 'exampleSprintPlanningPrompt', name: 'Example Sprint Planning Prompt' },
               { key: 'dailySearchQueries', name: 'Daily Search Queries' },
-              { key: 'reportSalesContextGuidance', name: 'Report Sales Context Guidance' },
-              { key: 'reportSalesTargetingGuidance', name: 'Report Sales Targeting Guidance' }
+              { key: 'reportSalesContextGuidance', name: 'Sales Context Guidance' },
+              { key: 'reportSalesTargetingGuidance', name: 'Sales Targeting Guidance' }
             ];
             
             let completedFields = 0;
             for (const field of strategicFields) {
-              const hasData = profile.value[field.key] && profile.value[field.key].trim().length > 0;
+              const hasData = profile.value[field.key] && profile.value[field.key].toString().trim().length > 0;
               if (hasData) {
                 completedFields++;
-                const preview = profile.value[field.key].substring(0, 100) + '...';
+                let preview;
+                if (typeof profile.value[field.key] === 'object') {
+                  preview = JSON.stringify(profile.value[field.key]).substring(0, 100) + '...';
+                } else {
+                  preview = profile.value[field.key].toString().substring(0, 100) + '...';
+                }
                 console.log(`   ✅ ${field.name}: ${preview}`);
               } else {
                 console.log(`   ❌ ${field.name}: Missing or empty`);
@@ -88,10 +98,10 @@ async function analyzeLatestUser() {
             const completionPercentage = Math.round((completedFields / strategicFields.length) * 100);
             console.log(`\n   Completion Status: ${completedFields}/${strategicFields.length} fields (${completionPercentage}%)`);
             
-            // Determine if this should be marked as complete
             const shouldBeComplete = completedFields === strategicFields.length;
             const expectedStatus = shouldBeComplete ? 'completed' : 'in_progress';
             console.log(`   Expected Status: ${expectedStatus}`);
+            console.log(`   Actual Status: ${profile.value.status}`);
             
             if (profile.value.status !== expectedStatus) {
               console.log(`   ⚠️  Status mismatch! Database shows '${profile.value.status}' but should be '${expectedStatus}'`);
@@ -102,50 +112,43 @@ async function analyzeLatestUser() {
         }
       }
     } else {
-      console.log(`❌ No strategic profiles found for user ${userId}`);
+      console.log(`❌ No strategic profiles found`);
     }
   } catch (err) {
     console.log(`❌ Error checking strategic profiles: ${err.message}`);
   }
   
-  console.log(`\n3. CHECKING CREDIT BALANCE FOR USER ${userId}`);
+  console.log(`\n4. FIREBASE MAPPING CHECK:`);
   
   try {
-    const creditsData = await db.get(`user_credits:${userId}`);
-    if (creditsData?.value) {
-      let credits;
-      if (typeof creditsData.value === 'string') {
-        credits = JSON.parse(creditsData.value);
-      } else {
-        credits = creditsData.value;
+    const firebaseKeys = await db.list("firebase_uid:");
+    if (firebaseKeys && firebaseKeys.length > 0) {
+      for (const key of firebaseKeys) {
+        try {
+          const mappedUserId = await db.get(key);
+          if (mappedUserId?.value === userId) {
+            const uid = key.replace('firebase_uid:', '');
+            console.log(`✅ Firebase mapping found: ${uid.substring(0, 12)}... -> ${userId}`);
+            break;
+          }
+        } catch (err) {
+          // Continue checking
+        }
       }
-      
-      console.log(`✅ Credit Balance: ${credits.currentBalance}`);
-      console.log(`   Total Used: ${credits.totalUsed}`);
-      console.log(`   Monthly Allowance: ${credits.monthlyAllowance}`);
-      console.log(`   Has Badges: ${credits.badges ? credits.badges.length : 0}`);
     } else {
-      console.log(`❌ No credit data found for user ${userId}`);
+      console.log(`❌ No Firebase mappings found`);
     }
   } catch (err) {
-    console.log(`❌ Error checking credits: ${err.message}`);
+    console.log(`❌ Error checking Firebase mappings: ${err.message}`);
   }
   
-  console.log(`\n=== SYSTEM HEALTH ASSESSMENT ===`);
-  console.log(`✅ User Creation: Working properly`);
-  console.log(`✅ Authentication: Firebase + Database integration working`);
-  console.log(`✅ Strategic Profile Creation: System functioning`);
-  console.log(`✅ Credit System: Properly initialized`);
-  console.log(`✅ Data Persistence: All data saving to Replit Database`);
-  
-  console.log(`\n=== CONCLUSION ===`);
-  console.log(`The system is functioning correctly. User 440 was successfully created with:`);
-  console.log(`- Proper database record with email authentication`);
-  console.log(`- Strategic profile(s) created and persisted`);
-  console.log(`- Credit balance initialized (180 credits)`);
-  console.log(`- All data properly isolated by user ID`);
-  
-  console.log(`\nNo critical issues detected. System is ready for production use.`);
+  console.log(`\n=== SUMMARY FOR USER ${userId} (ale@codetribe.com) ===`);
+  console.log(`Based on server logs, this user:`);
+  console.log(`- Successfully logged in via Google auth`);
+  console.log(`- Completed onboarding form: watches, durable, casio.com`);
+  console.log(`- Created profile ID 16: "Product 1"`);
+  console.log(`- Went through full strategy conversation`);
+  console.log(`- Should have complete strategic documents saved`);
 }
 
 analyzeLatestUser().catch(console.error);
