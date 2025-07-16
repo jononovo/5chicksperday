@@ -90,7 +90,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
   const dailyQueries = parseArraySafely(product.dailySearchQueries);
 
   return (
-    <div className="h-full bg-slate-50">
+    <div className="bg-slate-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 p-6">
         <div className="flex items-center justify-between">
@@ -147,7 +147,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       </div>
 
       {/* Content */}
-      <div className="p-6 max-h-[90vh] overflow-y-auto">
+      <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
