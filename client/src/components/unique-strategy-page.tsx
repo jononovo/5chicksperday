@@ -149,9 +149,8 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
       {/* Content */}
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="product">Product Analysis</TabsTrigger>
             <TabsTrigger value="strategy">Strategy & Boundary</TabsTrigger>
             <TabsTrigger value="implementation">Implementation</TabsTrigger>
           </TabsList>
@@ -238,44 +237,41 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
                   </div>
                 </CardContent>
               </Card>
+              
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="h-5 w-5" />
+                    Product Analysis Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {productSummary ? (
+                    <div className="space-y-4">
+                      <div className="prose max-w-none">
+                        <div dangerouslySetInnerHTML={{ __html: productSummary.content.replace(/\n/g, '<br>') }} />
+                      </div>
+                      
+                      <div className="flex items-center gap-2 pt-4 border-t">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => copyToClipboard(productSummary.content, 'Product analysis')}
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Analysis
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-slate-500">
+                      <FileText className="h-12 w-12 mx-auto mb-4 text-slate-300" />
+                      <p>Product analysis not yet generated</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
-          </TabsContent>
-
-          {/* Product Analysis Tab */}
-          <TabsContent value="product" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5" />
-                  Product Analysis Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {productSummary ? (
-                  <div className="space-y-4">
-                    <div className="prose max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: productSummary.content.replace(/\n/g, '<br>') }} />
-                    </div>
-                    
-                    <div className="flex items-center gap-2 pt-4 border-t">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => copyToClipboard(productSummary.content, 'Product analysis')}
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy Analysis
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-slate-500">
-                    <FileText className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-                    <p>Product analysis not yet generated</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </TabsContent>
 
           {/* Strategy & Boundary Tab */}
