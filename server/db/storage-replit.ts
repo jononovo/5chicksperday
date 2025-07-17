@@ -70,9 +70,16 @@ export class ReplitStorage implements IStorage {
           // For other types (numbers, booleans), return as-is
           return wrappedResult.value as T;
         }
+        // If ok is false or value is null/undefined, return undefined
+        return undefined;
       }
 
       // For direct responses (strings, numbers, etc.)
+      // But check if it's an error response first
+      if (result && typeof result === "object" && "error" in result) {
+        return undefined;
+      }
+      
       return result as T;
     } catch {
       return undefined;
@@ -89,7 +96,23 @@ export class ReplitStorage implements IStorage {
 
   private async list(prefix: string): Promise<string[]> {
     try {
-      return await this.db.list(prefix);
+      const result = await this.db.list(prefix);
+      
+      // Handle Replit DB wrapped response format
+      if (result && typeof result === "object" && "ok" in result && "value" in result) {
+        const wrappedResult = result as { ok: boolean; value: any };
+        if (wrappedResult.ok && Array.isArray(wrappedResult.value)) {
+          return wrappedResult.value;
+        }
+        return [];
+      }
+      
+      // For direct array responses
+      if (Array.isArray(result)) {
+        return result;
+      }
+      
+      return [];
     } catch (e) {
       console.error(`Error listing keys with prefix ${prefix}:`, e);
       return [];
@@ -122,9 +145,23 @@ export class ReplitStorage implements IStorage {
 
   // User Auth Methods
   async getUserByEmail(email: string): Promise<User | undefined> {
+    console.log('🔍 Looking up user by email:', email?.split('@')[0] + '@...');
+    
     const userId = await this.get<number>(`index:user:email:${email}`);
+    console.log('🔍 Email index result:', { userId, hasUserId: !!userId });
+    
     if (!userId) return undefined;
-    return this.getUser(userId);
+    
+    const user = await this.getUser(userId);
+    console.log('🔍 User lookup result:', { 
+      found: !!user, 
+      userId, 
+      hasId: user && 'id' in user, 
+      type: typeof user,
+      user: user
+    });
+    
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -158,6 +195,7 @@ export class ReplitStorage implements IStorage {
     console.log("✅ User created successfully:", {
       id,
       email: data.email?.split("@")[0] + "@...",
+      userObject: user,
       timestamp: new Date().toISOString(),
     });
 
