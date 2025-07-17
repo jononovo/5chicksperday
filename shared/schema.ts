@@ -593,8 +593,5 @@ export type OnboardingChat = typeof onboardingChats.$inferSelect;
 export type InsertOnboardingChat = z.infer<typeof insertOnboardingChatSchema>;
 export type ProspectDelivery = typeof prospectDeliveries.$inferSelect;
 export type InsertProspectDelivery = z.infer<typeof insertProspectDeliverySchema>;
-
-// Add User type
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
+  
 

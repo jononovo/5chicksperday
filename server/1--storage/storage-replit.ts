@@ -11,11 +11,11 @@ import type {
   SearchApproach, InsertSearchApproach, SearchTestResult, 
   InsertSearchTestResult, UserPreferences, InsertUserPreferences,
   ContactFeedback, InsertContactFeedback, StrategicProfile, InsertStrategicProfile
-} from "../shared/schema";
+} from "../../shared/schema";
 import { IStorage } from './index';
 
 // This class implementation intentionally ignores TypeScript errors to simplify the migration
-// @ts-ignore
+
 export class ReplitStorage implements IStorage {
   private db: Database;
   
@@ -67,7 +67,7 @@ export class ReplitStorage implements IStorage {
   
   private async list(prefix: string): Promise<string[]> {
     try {
-      // @ts-ignore: Replit database typing issues
+      
       return await this.db.list(prefix);
     } catch (e) {
       console.error(`Error listing keys with prefix ${prefix}:`, e);
@@ -104,19 +104,19 @@ export class ReplitStorage implements IStorage {
   // This is a pragmatic approach that allows us to migrate without fixing all TypeScript errors
 
   // User Auth
-  // @ts-ignore
+  
   async getUserByEmail(email: string): Promise<User | undefined> {
     const userId = await this.get<number>(`index:user:email:${email}`);
     if (!userId) return undefined;
     return this.getUser(userId);
   }
 
-  // @ts-ignore
+  
   async getUserById(id: number): Promise<User | undefined> {
     return this.getUser(id);
   }
   
-  // @ts-ignore
+  
   async createUser(data: { email: string; password: string; username?: string }): Promise<User> {
     console.log('🔧 Creating user:', {
       email: data.email?.split('@')[0] + '@...',
@@ -194,7 +194,7 @@ export class ReplitStorage implements IStorage {
         console.error('⚠️ Failed to initialize preferences (non-fatal):', prefsErr);
       }
       
-      // @ts-ignore: Date handling issues
+      
       return user;
       
     } catch (err) {
@@ -217,19 +217,19 @@ export class ReplitStorage implements IStorage {
   }
 
   // User methods - IStorage implementation
-  // @ts-ignore
+  
   async getUser(id: number): Promise<User | undefined> {
     return this.get<User>(`user:${id}`);
   }
 
-  // @ts-ignore
+  
   async getUserByUsername(username: string): Promise<User | undefined> {
     const userId = await this.get<number>(`index:user:username:${username}`);
     if (!userId) return undefined;
     return this.getUser(userId);
   }
 
-  // @ts-ignore
+  
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
     const user = await this.getUser(id);
     if (!user) return undefined;
@@ -250,17 +250,17 @@ export class ReplitStorage implements IStorage {
     const updatedUser = { ...user, ...updates };
     await this.set(`user:${id}`, updatedUser);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedUser;
   }
 
   // User Preferences
-  // @ts-ignore
+  
   async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {
     return this.get<UserPreferences>(`userPrefs:${userId}`);
   }
 
-  // @ts-ignore
+  
   async updateUserPreferences(userId: number, data: Partial<InsertUserPreferences>): Promise<UserPreferences> {
     const existing = await this.getUserPreferences(userId);
     const now = new Date().toISOString();
@@ -284,11 +284,11 @@ export class ReplitStorage implements IStorage {
     }
     
     await this.set(`userPrefs:${userId}`, prefs);
-    // @ts-ignore: Date handling issues
+    
     return prefs;
   }
 
-  // @ts-ignore
+  
   async initializeUserPreferences(userId: number): Promise<UserPreferences> {
     const existing = await this.getUserPreferences(userId);
     if (existing) return existing;
@@ -297,7 +297,7 @@ export class ReplitStorage implements IStorage {
   }
 
   // Lists
-  // @ts-ignore
+  
   async listLists(userId: number): Promise<List[]> {
     try {
       const listIds = await this.get<number[]>(`lists:user:${userId}`);
@@ -311,7 +311,7 @@ export class ReplitStorage implements IStorage {
       
       for (const id of listIds) {
         const list = await this.get<List>(`list:${id}`);
-        // @ts-ignore: Date handling issues
+        
         if (list) lists.push(list);
       }
       
@@ -322,13 +322,13 @@ export class ReplitStorage implements IStorage {
     }
   }
 
-  // @ts-ignore
+  
   async getList(listId: number, userId: number): Promise<List | undefined> {
     const lists = await this.listLists(userId);
     return lists.find(list => list.listId === listId);
   }
 
-  // @ts-ignore
+  
   async listCompaniesByList(listId: number, userId: number): Promise<Company[]> {
     try {
       const companies = await this.get<number[]>(`companies:list:${listId}`);
@@ -342,7 +342,7 @@ export class ReplitStorage implements IStorage {
       
       for (const id of companies) {
         const company = await this.getCompany(id);
-        // @ts-ignore: Date handling issues
+        
         if (company && company.userId === userId) result.push(company);
       }
       
@@ -353,12 +353,12 @@ export class ReplitStorage implements IStorage {
     }
   }
 
-  // @ts-ignore
+  
   async getNextListId(): Promise<number> {
     return (await this.getNextId('listSequence')) + 1000; // Start from 1001
   }
 
-  // @ts-ignore
+  
   async createList(data: InsertList & { userId: number }): Promise<List> {
     const id = await this.getNextId('list');
     const listId = await this.getNextListId();
@@ -380,11 +380,11 @@ export class ReplitStorage implements IStorage {
     listArray.unshift(id);
     await this.set(`lists:user:${data.userId}`, listArray);
     
-    // @ts-ignore: Date handling issues
+    
     return list;
   }
 
-  // @ts-ignore
+  
   async updateList(listId: number, data: Partial<InsertList>, userId: number): Promise<List | undefined> {
     // Get existing list
     const existingList = await this.getList(listId, userId);
@@ -397,11 +397,11 @@ export class ReplitStorage implements IStorage {
     // This ensures we update the existing record instead of creating a new one
     await this.set(`list:${listId}`, updatedList);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedList;
   }
 
-  // @ts-ignore
+  
   async updateCompanyList(companyId: number, listId: number): Promise<Company | undefined> {
     const company = await this.getCompany(companyId);
     if (!company) return undefined;
@@ -416,12 +416,12 @@ export class ReplitStorage implements IStorage {
       await this.set(`companies:list:${listId}`, companyIds);
     }
     
-    // @ts-ignore: Date handling issues
+    
     return updatedCompany;
   }
 
   // Companies
-  // @ts-ignore
+  
   async listCompanies(): Promise<Company[]> {
     // We need to list all companies, so we'll use a prefix scan
     const companyKeys = await this.list('company:');
@@ -429,19 +429,19 @@ export class ReplitStorage implements IStorage {
     
     for (const key of companyKeys) {
       const company = await this.get<Company>(key);
-      // @ts-ignore: Date handling issues
+      
       if (company) companies.push(company);
     }
     
     return companies;
   }
 
-  // @ts-ignore
+  
   async getCompany(id: number): Promise<Company | undefined> {
     return this.get<Company>(`company:${id}`);
   }
 
-  // @ts-ignore
+  
   async createCompany(company: InsertCompany): Promise<Company> {
     const id = await this.getNextId('company');
     const now = new Date().toISOString();
@@ -469,11 +469,11 @@ export class ReplitStorage implements IStorage {
       await this.set(`companies:list:${company.listId}`, listCompanies);
     }
     
-    // @ts-ignore: Date handling issues
+    
     return newCompany;
   }
 
-  // @ts-ignore
+  
   async updateCompany(id: number, updates: Partial<Company>): Promise<Company | undefined> {
     const company = await this.getCompany(id);
     if (!company) return undefined;
@@ -500,31 +500,31 @@ export class ReplitStorage implements IStorage {
     const updatedCompany = { ...company, ...updates };
     await this.set(`company:${id}`, updatedCompany);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedCompany;
   }
 
   // Contacts
-  // @ts-ignore
+  
   async listContactsByCompany(companyId: number): Promise<Contact[]> {
     const contactIds = await this.get<number[]>(`contacts:company:${companyId}`) || [];
     const contacts: Contact[] = [];
     
     for (const id of contactIds) {
       const contact = await this.get<Contact>(`contact:${id}`);
-      // @ts-ignore: Date handling issues
+      
       if (contact) contacts.push(contact);
     }
     
     return contacts;
   }
 
-  // @ts-ignore
+  
   async getContact(id: number): Promise<Contact | undefined> {
     return this.get<Contact>(`contact:${id}`);
   }
 
-  // @ts-ignore
+  
   async createContact(contact: InsertContact): Promise<Contact> {
     const id = await this.getNextId('contact');
     const now = new Date().toISOString();
@@ -552,11 +552,11 @@ export class ReplitStorage implements IStorage {
       await this.set(`contacts:user:${contact.userId}`, userContacts);
     }
     
-    // @ts-ignore: Date handling issues
+    
     return newContact;
   }
 
-  // @ts-ignore
+  
   async updateContact(id: number, updates: Partial<Contact>): Promise<Contact | undefined> {
     const contact = await this.getContact(id);
     if (!contact) return undefined;
@@ -564,11 +564,11 @@ export class ReplitStorage implements IStorage {
     const updatedContact = { ...contact, ...updates };
     await this.set(`contact:${id}`, updatedContact);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedContact;
   }
 
-  // @ts-ignore
+  
   async deleteContactsByCompany(companyId: number): Promise<void> {
     const contactIds = await this.get<number[]>(`contacts:company:${companyId}`) || [];
     
@@ -594,12 +594,12 @@ export class ReplitStorage implements IStorage {
   // based on the actual requirements of your application
 
   // Search Approaches
-  // @ts-ignore
+  
   async getSearchApproach(id: number): Promise<SearchApproach | undefined> {
     return this.get<SearchApproach>(`searchApproach:${id}`);
   }
 
-  // @ts-ignore
+  
   async listSearchApproaches(): Promise<SearchApproach[]> {
     try {
       // Initial approach approaches - since we don't have any in the DB yet
@@ -676,7 +676,7 @@ export class ReplitStorage implements IStorage {
         
         for (const key of keys) {
           const approach = await this.get<SearchApproach>(key);
-          // @ts-ignore: Date handling issues
+          
           if (approach) approaches.push(approach);
         }
         
@@ -696,7 +696,7 @@ export class ReplitStorage implements IStorage {
     }
   }
 
-  // @ts-ignore
+  
   async createSearchApproach(approach: InsertSearchApproach): Promise<SearchApproach> {
     const id = await this.getNextId('searchApproach');
     
@@ -712,11 +712,11 @@ export class ReplitStorage implements IStorage {
     
     await this.set(`searchApproach:${id}`, newApproach);
     
-    // @ts-ignore: Date handling issues
+    
     return newApproach;
   }
 
-  // @ts-ignore
+  
   async updateSearchApproach(id: number, updates: Partial<SearchApproach>): Promise<SearchApproach | undefined> {
     const approach = await this.getSearchApproach(id);
     if (!approach) return undefined;
@@ -724,11 +724,11 @@ export class ReplitStorage implements IStorage {
     const updatedApproach = { ...approach, ...updates };
     await this.set(`searchApproach:${id}`, updatedApproach);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedApproach;
   }
 
-  // @ts-ignore
+  
   async initializeDefaultSearchApproaches(): Promise<void> {
     const defaults = [
       {
@@ -797,26 +797,26 @@ export class ReplitStorage implements IStorage {
   // These need to be expanded based on your application's actual needs
   
   // Campaign methods
-  // @ts-ignore
+  
   async getCampaign(campaignId: number, userId: number): Promise<Campaign | undefined> {
     return this.get<Campaign>(`campaign:${campaignId}`);
   }
   
-  // @ts-ignore
+  
   async listCampaigns(userId: number): Promise<Campaign[]> {
     const campaignIds = await this.get<number[]>(`campaigns:user:${userId}`) || [];
     const campaigns: Campaign[] = [];
     
     for (const id of campaignIds) {
       const campaign = await this.get<Campaign>(`campaign:${id}`);
-      // @ts-ignore: Date handling issues
+      
       if (campaign) campaigns.push(campaign);
     }
     
     return campaigns;
   }
   
-  // @ts-ignore
+  
   async createCampaign(campaign: InsertCampaign & { userId: number }): Promise<Campaign> {
     const id = await this.getNextId('campaign');
     const campaignId = await this.getNextCampaignId();
@@ -838,11 +838,11 @@ export class ReplitStorage implements IStorage {
     userCampaigns.push(id);
     await this.set(`campaigns:user:${campaign.userId}`, userCampaigns);
     
-    // @ts-ignore: Date handling issues
+    
     return newCampaign;
   }
   
-  // @ts-ignore
+  
   async updateCampaign(id: number, updates: Partial<Campaign>, userId: number): Promise<Campaign | undefined> {
     const campaign = await this.getCampaign(id, userId);
     if (!campaign) return undefined;
@@ -850,17 +850,17 @@ export class ReplitStorage implements IStorage {
     const updatedCampaign = { ...campaign, ...updates };
     await this.set(`campaign:${id}`, updatedCampaign);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedCampaign;
   }
   
-  // @ts-ignore
+  
   async getNextCampaignId(): Promise<number> {
     return (await this.getNextId('campaignSequence')) + 2000;
   }
   
   // Campaign Lists
-  // @ts-ignore
+  
   async addListToCampaign(campaignList: InsertCampaignList): Promise<CampaignList> {
     const id = await this.getNextId('campaignList');
     const now = new Date().toISOString();
@@ -879,11 +879,11 @@ export class ReplitStorage implements IStorage {
     campaignLists.push(campaignList.listId);
     await this.set(`campaign:${campaignList.campaignId}:lists`, campaignLists);
     
-    // @ts-ignore: Date handling issues
+    
     return newCampaignList;
   }
   
-  // @ts-ignore
+  
   async removeListFromCampaign(campaignId: number, listId: number): Promise<void> {
     // Update campaign's lists
     const campaignLists = await this.get<number[]>(`campaign:${campaignId}:lists`) || [];
@@ -891,21 +891,21 @@ export class ReplitStorage implements IStorage {
     await this.set(`campaign:${campaignId}:lists`, updatedLists);
   }
   
-  // @ts-ignore
+  
   async getListsByCampaign(campaignId: number): Promise<List[]> {
     const listIds = await this.get<number[]>(`campaign:${campaignId}:lists`) || [];
     const lists: List[] = [];
     
     for (const id of listIds) {
       const list = await this.get<List>(`list:${id}`);
-      // @ts-ignore: Date handling issues
+      
       if (list) lists.push(list);
     }
     
     return lists;
   }
   
-  // @ts-ignore
+  
   async updateCampaignTotalCompanies(campaignId: number): Promise<void> {
     const campaign = await this.get<Campaign>(`campaign:${campaignId}`);
     if (!campaign) return;
@@ -923,14 +923,14 @@ export class ReplitStorage implements IStorage {
   }
   
   // Email Templates
-  // @ts-ignore
+  
   async getEmailTemplate(id: number, userId: number): Promise<EmailTemplate | undefined> {
     const template = await this.get<EmailTemplate>(`emailTemplate:${id}`);
     if (!template || template.userId !== userId) return undefined;
     return template;
   }
   
-  // @ts-ignore
+  
   async listEmailTemplates(userId: number): Promise<EmailTemplate[]> {
     const templateIds = await this.get<number[]>(`emailTemplates:user:${userId}`) || [];
     const templates: EmailTemplate[] = [];
@@ -943,14 +943,14 @@ export class ReplitStorage implements IStorage {
     
     for (const id of templateIds) {
       const template = await this.get<EmailTemplate>(`emailTemplate:${id}`);
-      // @ts-ignore: Date handling issues
+      
       if (template) templates.push(template);
     }
     
     return templates;
   }
   
-  // @ts-ignore
+  
   async createEmailTemplate(template: InsertEmailTemplate & { userId: number }): Promise<EmailTemplate> {
     const id = await this.getNextId('emailTemplate');
     const now = new Date().toISOString();
@@ -970,11 +970,11 @@ export class ReplitStorage implements IStorage {
     userTemplates.push(id);
     await this.set(`emailTemplates:user:${template.userId}`, userTemplates);
     
-    // @ts-ignore: Date handling issues
+    
     return newTemplate;
   }
   
-  // @ts-ignore
+  
   async updateEmailTemplate(id: number, updates: Partial<EmailTemplate>, userId: number): Promise<EmailTemplate | undefined> {
     const template = await this.getEmailTemplate(id, userId);
     if (!template) return undefined;
@@ -983,11 +983,11 @@ export class ReplitStorage implements IStorage {
     const updatedTemplate = { ...template, ...updates, updatedAt: now };
     await this.set(`emailTemplate:${id}`, updatedTemplate);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedTemplate;
   }
   
-  // @ts-ignore
+  
   async deleteEmailTemplate(id: number, userId: number): Promise<void> {
     const template = await this.getEmailTemplate(id, userId);
     if (!template) return;
@@ -1002,7 +1002,7 @@ export class ReplitStorage implements IStorage {
   }
 
   // Strategic Profiles - CRITICAL MISSING METHODS
-  // @ts-ignore
+  
   async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
     try {
       const profileIds = await this.get<number[]>(`strategicProfiles:user:${userId}`);
@@ -1017,7 +1017,7 @@ export class ReplitStorage implements IStorage {
       for (const id of profileIds) {
         try {
           const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
-          // @ts-ignore: Date handling issues
+          
           // Only add profile if it exists and has valid data
           if (profile && typeof profile === 'object' && profile.id && profile.userId === userId) {
             profiles.push(profile);
@@ -1038,14 +1038,14 @@ export class ReplitStorage implements IStorage {
     }
   }
 
-  // @ts-ignore
+  
   async getStrategicProfile(id: number, userId: number): Promise<StrategicProfile | undefined> {
     const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
     if (!profile || profile.userId !== userId) return undefined;
     return profile;
   }
 
-  // @ts-ignore
+  
   async createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile> {
     const id = await this.getNextId('strategicProfile');
     const now = new Date().toISOString();
@@ -1066,11 +1066,11 @@ export class ReplitStorage implements IStorage {
     profileArray.push(id);
     await this.set(`strategicProfiles:user:${data.userId}`, profileArray);
     
-    // @ts-ignore: Date handling issues
+    
     return newProfile;
   }
 
-  // @ts-ignore
+  
   async updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile> {
     const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
     if (!profile) throw new Error(`Strategic profile with id ${id} not found`);
@@ -1079,11 +1079,11 @@ export class ReplitStorage implements IStorage {
     const updatedProfile = { ...profile, ...data, updatedAt: now };
     await this.set(`strategicProfile:${id}`, updatedProfile);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedProfile;
   }
 
-  // @ts-ignore
+  
   async deleteStrategicProfile(id: number, userId: number): Promise<void> {
     const profile = await this.getStrategicProfile(id, userId);
     if (!profile) return;
@@ -1097,7 +1097,7 @@ export class ReplitStorage implements IStorage {
     await this.delete(`strategicProfile:${id}`);
   }
 
-  // @ts-ignore
+  
   async cloneStrategicProfile(id: number, userId: number): Promise<StrategicProfile> {
     const originalProfile = await this.getStrategicProfile(id, userId);
     if (!originalProfile) throw new Error(`Strategic profile with id ${id} not found`);
@@ -1118,12 +1118,12 @@ export class ReplitStorage implements IStorage {
   }
   
   // Contact enrichment
-  // @ts-ignore
+  
   async enrichContact(id: number, contactData: Partial<Contact>): Promise<Contact | undefined> {
     return this.updateContact(id, contactData);
   }
   
-  // @ts-ignore
+  
   async searchContactDetails(contactInfo: { name: string; company: string }): Promise<Partial<Contact>> {
     // This is just a stub - in a real implementation, this would call an external service
     return {
@@ -1134,7 +1134,7 @@ export class ReplitStorage implements IStorage {
   }
   
   // Contact validation and feedback
-  // @ts-ignore
+  
   async addContactFeedback(feedback: InsertContactFeedback): Promise<ContactFeedback> {
     const id = await this.getNextId('contactFeedback');
     const now = new Date().toISOString();
@@ -1154,11 +1154,11 @@ export class ReplitStorage implements IStorage {
       await this.set(`contact:${feedback.contactId}`, contact);
     }
     
-    // @ts-ignore: Date handling issues
+    
     return newFeedback;
   }
   
-  // @ts-ignore
+  
   async getContactFeedback(contactId: number): Promise<ContactFeedback[]> {
     // Get all feedback keys
     const keys = await this.list('contactFeedback:');
@@ -1168,7 +1168,7 @@ export class ReplitStorage implements IStorage {
     for (const key of keys) {
       const feedback = await this.get<ContactFeedback>(key);
       if (feedback && feedback.contactId === contactId) {
-        // @ts-ignore: Date handling issues
+        
         feedbacks.push(feedback);
       }
     }
@@ -1176,7 +1176,7 @@ export class ReplitStorage implements IStorage {
     return feedbacks;
   }
   
-  // @ts-ignore
+  
   async updateContactConfidenceScore(id: number, score: number): Promise<Contact | undefined> {
     const contact = await this.getContact(id);
     if (!contact) return undefined;
@@ -1184,11 +1184,11 @@ export class ReplitStorage implements IStorage {
     contact.nameConfidenceScore = score;
     await this.set(`contact:${id}`, contact);
     
-    // @ts-ignore: Date handling issues
+    
     return contact;
   }
   
-  // @ts-ignore
+  
   async updateContactValidationStatus(id: number): Promise<Contact | undefined> {
     const contact = await this.getContact(id);
     if (!contact) return undefined;
@@ -1196,37 +1196,37 @@ export class ReplitStorage implements IStorage {
     contact.lastValidated = new Date().toISOString();
     await this.set(`contact:${id}`, contact);
     
-    // @ts-ignore: Date handling issues
+    
     return contact;
   }
   
   // Search Test Results
-  // @ts-ignore
+  
   async getSearchTestResult(id: number): Promise<SearchTestResult | undefined> {
     return this.get<SearchTestResult>(`searchTestResult:${id}`);
   }
 
-  // @ts-ignore
+  
   async listSearchTestResults(userId: number): Promise<SearchTestResult[]> {
     const resultIds = await this.get<number[]>(`searchTestResults:user:${userId}`) || [];
     const results: SearchTestResult[] = [];
     
     for (const id of resultIds) {
       const result = await this.get<SearchTestResult>(`searchTestResult:${id}`);
-      // @ts-ignore: Date handling issues
+      
       if (result) results.push(result);
     }
     
     return results;
   }
 
-  // @ts-ignore
+  
   async getTestResultsByStrategy(strategyId: number, userId: number): Promise<SearchTestResult[]> {
     const results = await this.listSearchTestResults(userId);
     return results.filter(r => r.strategyId === strategyId);
   }
 
-  // @ts-ignore
+  
   async createSearchTestResult(result: InsertSearchTestResult): Promise<SearchTestResult> {
     const id = await this.getNextId('searchTestResult');
     const now = new Date().toISOString();
@@ -1250,11 +1250,11 @@ export class ReplitStorage implements IStorage {
     strategyResults.push(id);
     await this.set(`testResults:strategy:${result.strategyId}`, strategyResults);
     
-    // @ts-ignore: Date handling issues
+    
     return newResult;
   }
 
-  // @ts-ignore
+  
   async updateTestResultStatus(
     id: number, 
     status: 'completed' | 'running' | 'failed', 
@@ -1271,11 +1271,11 @@ export class ReplitStorage implements IStorage {
     
     await this.set(`searchTestResult:${id}`, updatedResult);
     
-    // @ts-ignore: Date handling issues
+    
     return updatedResult;
   }
 
-  // @ts-ignore
+  
   async getStrategyPerformanceHistory(
     strategyId: number, 
     userId: number
