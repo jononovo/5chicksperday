@@ -193,7 +193,11 @@ export function setupAuth(app: Express) {
     )
   );
 
-  passport.serializeUser((user, done) => {
+  passport.serializeUser((user: any, done) => {
+    if (!user || !user.id) {
+      console.error('Serialization error: user or user.id is missing:', user);
+      return done(new Error('Invalid user object for serialization'));
+    }
     done(null, user.id);
   });
 
@@ -201,10 +205,12 @@ export function setupAuth(app: Express) {
     try {
       const user = await storage.getUserById(id);
       if (!user) {
+        console.error('Deserialization error: user not found for id:', id);
         return done(null, false);
       }
       done(null, user);
     } catch (err) {
+      console.error('Deserialization error:', err);
       done(err);
     }
   });
@@ -549,11 +555,25 @@ export function setupAuth(app: Express) {
         }
       }
 
+      // Validate user object before login
+      if (!user || !user.id) {
+        console.error('❌ Invalid user object for login:', user);
+        return res.status(500).json({ error: "Invalid user data" });
+      }
+
       // Login user
       req.login(user, (err) => {
         if (err) {
-          console.error('❌ Login failed after Google auth:', err);
-          return next(err);
+          console.error('❌ Login failed after Google auth:', {
+            error: err instanceof Error ? err.message : 'Unknown error',
+            userId: user?.id,
+            timestamp: new Date().toISOString()
+          });
+          return res.status(500).json({ 
+            error: "Failed to serialize user into session",
+            status: 500,
+            timestamp: new Date().toISOString()
+          });
         }
         
         console.log('✅ Google auth login successful:', {
