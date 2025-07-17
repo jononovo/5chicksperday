@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useStrategyOverlay } from "@/lib/strategy-overlay-context";
 
 interface StrategicProfile {
   id: number;
@@ -54,6 +55,7 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
   const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const { setState } = useStrategyOverlay();
   
   // Scroll state for tabs
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -173,11 +175,81 @@ export function UniqueStrategyPage({ product, onClose }: UniqueStrategyPageProps
           </div>
           
           <div className="flex items-center gap-2 mt-7">
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                setState('sidebar');
+                onClose();
+              }}
+            >
               <Edit className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Edit Strategy</span>
             </Button>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                const strategicData = {
+                  productName: product.name,
+                  businessType: product.businessType,
+                  productService: product.productService,
+                  customerFeedback: product.customerFeedback,
+                  website: product.website,
+                  productAnalysisSummary: productSummary?.content || 'Not completed',
+                  strategyHighLevelBoundary: product.strategyHighLevelBoundary || 'Not completed',
+                  exampleSprintPlanningPrompt: product.exampleSprintPlanningPrompt || 'Not completed',
+                  dailySearchQueries: dailyQueries?.length > 0 ? dailyQueries.join('\n') : 'Not completed',
+                  reportSalesContextGuidance: salesContext?.content || 'Not completed',
+                  reportSalesTargetingGuidance: salesTargeting?.content || 'Not completed'
+                };
+                
+                const exportContent = `# Strategic Plan: ${product.name}
+
+## Business Information
+- **Business Type**: ${product.businessType === 'product' ? '📦 Product' : '🛠️ Service'}
+- **Product/Service**: ${product.productService}
+- **Customer Feedback**: ${product.customerFeedback}
+- **Website**: ${product.website}
+- **Created**: ${new Date(product.createdAt).toLocaleDateString()}
+
+## Product Analysis Summary
+${strategicData.productAnalysisSummary}
+
+## Strategic Boundary
+${strategicData.strategyHighLevelBoundary}
+
+## Sprint Planning Prompt
+${strategicData.exampleSprintPlanningPrompt}
+
+## Daily Search Queries
+${strategicData.dailySearchQueries}
+
+## Sales Context Guidance
+${strategicData.reportSalesContextGuidance}
+
+## Sales Targeting Strategy
+${strategicData.reportSalesTargetingGuidance}
+
+---
+*Exported from 5Ducks Strategic Planning Platform*`;
+
+                const blob = new Blob([exportContent], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${product.name.replace(/[^a-zA-Z0-9]/g, '_')}_strategy.md`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                toast({
+                  title: "Strategy exported",
+                  description: "Your strategic plan has been downloaded as a markdown file."
+                });
+              }}
+            >
               <Download className="h-4 w-4 md:mr-2" />
               <span className="hidden md:inline">Export</span>
             </Button>

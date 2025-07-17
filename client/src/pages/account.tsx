@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MyProducts } from "@/components/my-products";
 
 // Schema for profile updates
 const profileSchema = z.object({
@@ -517,119 +518,7 @@ ${profile?.username}`
         </Card>
 
         {/* Products Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              My Products
-            </CardTitle>
-            <CardDescription>
-              Manage the products and services you sell. Each product can have its own strategy.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {productsLoading ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Loading products...
-              </div>
-            ) : products.length === 0 ? (
-              <div className="text-center py-8">
-                <Package className="h-12 w-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-                <p className="text-muted-foreground mb-4">No products yet. Create your first product to get started.</p>
-                <Button onClick={handleNewProduct}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add New Product
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-muted-foreground">
-                    {products.length} product{products.length !== 1 ? 's' : ''}
-                  </p>
-                  <Button onClick={handleNewProduct} size="sm">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add New Product
-                  </Button>
-                </div>
-                
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {products.map((product) => (
-                    <Card key={product.id} className="relative">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1 flex-1">
-                            <CardTitle className="text-lg">
-                              {product.name || `${product.businessType === 'product' ? 'Product' : 'Service'} ${product.id}`}
-                            </CardTitle>
-                            {product.short_description && (
-                              <CardDescription className="text-sm line-clamp-2">
-                                {product.short_description}
-                              </CardDescription>
-                            )}
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEditProduct(product)}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleCloneProduct(product)}>
-                                <Copy className="mr-2 h-4 w-4" />
-                                Clone
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => handleDeleteProduct(product)}
-                                className="text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Type:</span>
-                            <span className="capitalize text-muted-foreground">{product.businessType}</span>
-                          </div>
-                          <div className="space-y-1">
-                            <span className="font-medium">Description:</span>
-                            <p className="text-muted-foreground line-clamp-3 text-xs">
-                              {product.businessDescription}
-                            </p>
-                          </div>
-                          <div className="space-y-1">
-                            <span className="font-medium">Target Customers:</span>
-                            <p className="text-muted-foreground line-clamp-2 text-xs">
-                              {product.targetCustomers}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2 pt-2">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              product.status === 'completed' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {product.status === 'completed' ? 'Complete' : 'In Progress'}
-                            </span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <MyProducts />
 
         {/* Billing Section */}
         <Card>
