@@ -168,6 +168,10 @@ export class ReplitStorage implements IStorage {
     return this.get<User>(`user:${id}`);
   }
 
+  async getUserById(id: number): Promise<User | undefined> {
+    return this.getUser(id);
+  }
+
   async updateUser(
     id: number,
     updates: Partial<User>,
@@ -793,6 +797,200 @@ export class ReplitStorage implements IStorage {
     const scores = results.map((r) => (r.metadata as any)?.score || 0);
 
     return { dates, scores };
+  }
+
+  // Strategic Profiles
+  async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
+    const profileIds = await this.get<number[]>(`strategic_profiles:${userId}`);
+    
+    if (!Array.isArray(profileIds)) {
+      return [];
+    }
+    
+    const profiles: StrategicProfile[] = [];
+    for (const id of profileIds) {
+      const profile = await this.get<StrategicProfile>(`strategic_profile:${id}`);
+      if (profile) {
+        profiles.push(profile);
+      }
+    }
+    
+    return profiles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async getStrategicProfile(id: number, userId: number): Promise<StrategicProfile | undefined> {
+    const profile = await this.get<StrategicProfile>(`strategic_profile:${id}`);
+    if (profile && profile.userId === userId) {
+      return profile;
+    }
+    return undefined;
+  }
+
+  async createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile> {
+    const id = await this.getNextId("strategic_profile");
+    const profile: StrategicProfile = {
+      id,
+      userId: data.userId,
+      businessType: data.businessType,
+      productName: data.productName,
+      targetMarket: data.targetMarket,
+      businessDescription: data.businessDescription || "",
+      uniqueAttributes: data.uniqueAttributes || [],
+      targetCustomers: data.targetCustomers || "",
+      marketNiche: data.marketNiche || "broad",
+      productService: data.productService || "",
+      customerFeedback: data.customerFeedback || "",
+      website: data.website || "",
+      businessLocation: data.businessLocation || "",
+      primaryCustomerType: data.primaryCustomerType || "",
+      primarySalesChannel: data.primarySalesChannel || "",
+      primaryBusinessGoal: data.primaryBusinessGoal || "",
+      strategyHighLevelBoundary: data.strategyHighLevelBoundary || "",
+      exampleSprintPlanningPrompt: data.exampleSprintPlanningPrompt || "",
+      exampleDailySearchQuery: data.exampleDailySearchQuery || "",
+      productAnalysisSummary: data.productAnalysisSummary || "",
+      reportSalesContextGuidance: data.reportSalesContextGuidance || "",
+      reportSalesTargetingGuidance: data.reportSalesTargetingGuidance || "",
+      dailySearchQueries: data.dailySearchQueries || "",
+      strategicPlan: data.strategicPlan || {},
+      searchPrompts: data.searchPrompts || [],
+      status: data.status || "in_progress",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await this.set(`strategic_profile:${id}`, profile);
+    
+    // Update user's profile list
+    const profileIds = await this.get<number[]>(`strategic_profiles:${data.userId}`) || [];
+    if (!Array.isArray(profileIds)) {
+      profileIds = [];
+    }
+    profileIds.push(id);
+    await this.set(`strategic_profiles:${data.userId}`, profileIds);
+
+    return profile;
+  }
+
+  async updateStrategicProfile(id: number, updates: Partial<StrategicProfile>, userId: number): Promise<StrategicProfile | undefined> {
+    const profile = await this.getStrategicProfile(id, userId);
+    if (!profile) return undefined;
+
+    const updated = { ...profile, ...updates, updatedAt: new Date() };
+    await this.set(`strategic_profile:${id}`, updated);
+    return updated;
+  }
+
+  async deleteStrategicProfile(id: number, userId: number): Promise<void> {
+    const profile = await this.getStrategicProfile(id, userId);
+    if (!profile) return;
+
+    await this.delete(`strategic_profile:${id}`);
+    
+    // Remove from user's profile list
+    const profileIds = await this.get<number[]>(`strategic_profiles:${userId}`) || [];
+    if (Array.isArray(profileIds)) {
+      const filteredIds = profileIds.filter(pid => pid !== id);
+      await this.set(`strategic_profiles:${userId}`, filteredIds);
+    }
+  }
+
+  async cloneStrategicProfile(id: number, userId: number): Promise<StrategicProfile | undefined> {
+    const original = await this.getStrategicProfile(id, userId);
+    if (!original) return undefined;
+
+    const cloneData: InsertStrategicProfile = {
+      userId,
+      businessType: original.businessType,
+      productName: `${original.productName} (Copy)`,
+      targetMarket: original.targetMarket,
+      businessDescription: original.businessDescription,
+      uniqueAttributes: original.uniqueAttributes,
+      targetCustomers: original.targetCustomers,
+      marketNiche: original.marketNiche,
+      productService: original.productService,
+      customerFeedback: original.customerFeedback,
+      website: original.website,
+      businessLocation: original.businessLocation,
+      primaryCustomerType: original.primaryCustomerType,
+      primarySalesChannel: original.primarySalesChannel,
+      primaryBusinessGoal: original.primaryBusinessGoal,
+      strategyHighLevelBoundary: original.strategyHighLevelBoundary,
+      exampleSprintPlanningPrompt: original.exampleSprintPlanningPrompt,
+      exampleDailySearchQuery: original.exampleDailySearchQuery,
+      productAnalysisSummary: original.productAnalysisSummary,
+      reportSalesContextGuidance: original.reportSalesContextGuidance,
+      reportSalesTargetingGuidance: original.reportSalesTargetingGuidance,
+      dailySearchQueries: original.dailySearchQueries,
+      strategicPlan: original.strategicPlan,
+      searchPrompts: original.searchPrompts,
+      status: "in_progress",
+    };
+
+    return this.createStrategicProfile(cloneData);
+  }
+
+  async migrateFromPostgres(data: {
+    users: User[];
+    lists: List[];
+    companies: Company[];
+    contacts: Contact[];
+    campaigns: Campaign[];
+    emailTemplates: EmailTemplate[];
+    strategicProfiles: StrategicProfile[];
+  }): Promise<void> {
+    console.log("Starting migration from PostgreSQL to Replit Database...");
+    
+    // Migrate users
+    for (const user of data.users) {
+      await this.set(`user:${user.id}`, user);
+      await this.set(`index:user:email:${user.email}`, user.id);
+      if (user.username) {
+        await this.set(`index:user:username:${user.username}`, user.id);
+      }
+    }
+    
+    // Migrate lists
+    for (const list of data.lists) {
+      await this.set(`list:${list.userId}:${list.listId}`, list);
+    }
+    
+    // Migrate companies
+    for (const company of data.companies) {
+      await this.set(`company:${company.userId}:${company.id}`, company);
+    }
+    
+    // Migrate contacts
+    for (const contact of data.contacts) {
+      await this.set(`contact:${contact.userId}:${contact.id}`, contact);
+    }
+    
+    // Migrate campaigns
+    for (const campaign of data.campaigns) {
+      await this.set(`campaign:${campaign.userId}:${campaign.id}`, campaign);
+    }
+    
+    // Migrate email templates
+    for (const template of data.emailTemplates) {
+      await this.set(`template:${template.userId}:${template.id}`, template);
+    }
+    
+    // Migrate strategic profiles
+    for (const profile of data.strategicProfiles) {
+      await this.set(`strategic_profile:${profile.id}`, profile);
+      
+      // Update user's profile list
+      const profileIds = await this.get<number[]>(`strategic_profiles:${profile.userId}`) || [];
+      if (!Array.isArray(profileIds)) {
+        profileIds = [];
+      }
+      if (!profileIds.includes(profile.id)) {
+        profileIds.push(profile.id);
+        await this.set(`strategic_profiles:${profile.userId}`, profileIds);
+      }
+    }
+    
+    console.log("Migration completed successfully");
   }
 }
 
