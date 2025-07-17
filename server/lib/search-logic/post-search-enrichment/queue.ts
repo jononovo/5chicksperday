@@ -1,5 +1,5 @@
 import type { EnrichmentQueueItem, QueueStatus, EnrichmentResult } from './types';
-import { storage } from '../../../storage';
+import { storage } from '../../../db/storage-replit';
 import { searchContactDetails } from '../../api-interactions';
 
 class EnrichmentQueue {

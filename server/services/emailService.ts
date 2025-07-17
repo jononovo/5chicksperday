@@ -84,7 +84,7 @@ export class MockEmailProvider implements EmailProvider {
 
 // Gmail provider - real implementation
 import { google, gmail_v1 } from 'googleapis';
-import { storage } from '../storage';
+import { storage } from '../db/storage-replit';
 import type { Contact } from "@shared/schema";
 
 export class GmailProvider implements EmailProvider {

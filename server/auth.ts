@@ -4,7 +4,7 @@ import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
+import { storage } from "./db/storage-replit";
 import { User, User as SelectUser } from "@shared/schema";
 import admin from "firebase-admin";
 import { TokenService, UserTokens } from "./lib/tokens";

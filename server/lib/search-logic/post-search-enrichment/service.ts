@@ -1,6 +1,6 @@
 import { enrichmentQueue } from './queue';
 import type { EnrichmentQueueItem, QueueStatus } from './types';
-import { storage } from '../../../storage';
+import { storage } from '../../../db/storage-replit';
 
 class PostSearchEnrichmentService {
   async startEnrichment(searchId: string, contactIds: number[]): Promise<string> {

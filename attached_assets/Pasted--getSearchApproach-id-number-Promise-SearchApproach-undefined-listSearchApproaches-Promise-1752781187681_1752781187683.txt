@@ -1,0 +1,63 @@
+
+getSearchApproach(id: number): Promise<SearchApproach | undefined>;
+listSearchApproaches(): Promise<SearchApproach[]>;
+createSearchApproach(approach: InsertSearchApproach): Promise<SearchApproach>;
+updateSearchApproach(
+  id: number,
+  approach: Partial<SearchApproach>,
+): Promise<SearchApproach | undefined>;
+initializeDefaultSearchApproaches(): Promise<void>;
+
+// Campaign Lists (entire section missing)
+addListToCampaign(campaignList: InsertCampaignList): Promise<CampaignList>;
+removeListFromCampaign(campaignId: number, listId: number): Promise<void>;
+getListsByCampaign(campaignId: number): Promise<List[]>;
+updateCampaignTotalCompanies(campaignId: number): Promise<void>;
+
+// Contact Search and Enrichment (entire section missing)
+enrichContact(
+  id: number,
+  contactData: Partial<Contact>,
+): Promise<Contact | undefined>;
+searchContactDetails(contactInfo: {
+  name: string;
+  company: string;
+}): Promise<Partial<Contact>>;
+
+// Contact Validation and Feedback (entire section missing)
+addContactFeedback(feedback: InsertContactFeedback): Promise<ContactFeedback>;
+getContactFeedback(contactId: number): Promise<ContactFeedback[]>;
+updateContactConfidenceScore(
+  id: number,
+  score: number,
+): Promise<Contact | undefined>;
+updateContactValidationStatus(id: number): Promise<Contact | undefined>;
+
+// Search Test Results (entire section missing)
+getSearchTestResult(id: number): Promise<SearchTestResult | undefined>;
+listSearchTestResults(userId: number): Promise<SearchTestResult[]>;
+getTestResultsByStrategy(
+  strategyId: number,
+  userId: number,
+): Promise<SearchTestResult[]>;
+createSearchTestResult(
+  result: InsertSearchTestResult,
+): Promise<SearchTestResult>;
+updateTestResultStatus(
+  id: number,
+  status: "completed" | "running" | "failed",
+  metadata?: Record<string, unknown>,
+): Promise<SearchTestResult>;
+getStrategyPerformanceHistory(
+  strategyId: number,
+  userId: number,
+): Promise<{ dates: string[]; scores: number[] }>;
+
+// Modified methods with different signatures
+getUserByUsername(username: string): Promise<User | undefined>;
+updateList(
+  listId: number,
+  data: Partial<InsertList>,
+  userId: number,
+): Promise<List | undefined>;
+deleteEmailTemplate(id: number, userId: number): Promise<void>;
