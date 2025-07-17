@@ -1,12 +1,8 @@
-import { PgDatabase } from 'drizzle-orm/pg-core';
-import { eq } from 'drizzle-orm';
 import {
   type Company,
   type InsertCompany,
   type List,
-  type InsertList,
-  companies,
-  lists
+  type InsertList
 } from '@shared/schema';
 
 export class CompanyStorage {

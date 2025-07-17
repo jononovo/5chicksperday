@@ -1,14 +1,9 @@
-import { PgDatabase } from 'drizzle-orm/pg-core';
-import { eq, max } from 'drizzle-orm';
 import {
   type Campaign,
   type InsertCampaign,
   type CampaignList,
   type InsertCampaignList,
-  type List,
-  campaigns,
-  campaignLists,
-  lists
+  type List
 } from '@shared/schema';
 
 export class CampaignStorage {

@@ -1,9 +1,6 @@
-import { PgDatabase } from 'drizzle-orm/pg-core';
-import { eq } from 'drizzle-orm';
 import {
   type Contact,
-  type InsertContact,
-  contacts
+  type InsertContact
 } from '@shared/schema';
 
 export class ContactStorage {

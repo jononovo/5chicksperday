@@ -1,6 +1,4 @@
-import { PgDatabase } from 'drizzle-orm/pg-core';
-import { eq } from 'drizzle-orm';
-import { type User, type InsertUser, users } from '@shared/schema';
+import { type User, type InsertUser } from '@shared/schema';
 
 export class UserStorage {
   constructor(private db: PgDatabase<any>) {}

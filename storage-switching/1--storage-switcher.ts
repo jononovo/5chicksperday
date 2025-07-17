@@ -2,7 +2,7 @@
  * Storage switcher - allows easy transition between PostgreSQL and Replit DB
  */
 import { storage as pgStorage } from '../server/1--storage/database';
-import { storage as replitStorage } from './simplified-storage-replit';
+import { storage as replitStorage } from './simplified-storage-replit.ts';
 import { IStorage } from '../server/1--storage/index';
 
 // Set to true to use Replit DB, false to use PostgreSQL

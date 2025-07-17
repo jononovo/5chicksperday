@@ -1,9 +1,6 @@
-import { PgDatabase } from 'drizzle-orm/pg-core';
-import { eq, and, or } from 'drizzle-orm';
 import {
   type EmailTemplate,
-  type InsertEmailTemplate,
-  emailTemplates
+  type InsertEmailTemplate
 } from '@shared/schema';
 
 export class TemplateStorage {

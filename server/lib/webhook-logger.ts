@@ -1,10 +1,8 @@
-import { db } from "../1--db";
-import { webhookLogs } from "@shared/schema";
-import type { WebhookLog } from "@shared/schema";
-import { eq, gte, sql } from "drizzle-orm";
+// Webhook logging disabled - PostgreSQL dependency removed
 
 /**
  * Logs outgoing webhook requests to N8N workflows
+ * Note: Database logging disabled - using console logging only
  */
 export async function logOutgoingRequest(
   searchId: string,
@@ -22,19 +20,8 @@ export async function logOutgoingRequest(
       payload
     });
     
-    // Store in database
-    await db.insert(webhookLogs).values({
-      requestId,
-      searchId,
-      source: "n8n-send",
-      method: "POST",
-      url,
-      headers: { "Content-Type": "application/json" },
-      body: payload,
-      status: "pending",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    // Database logging disabled - using console logging only
+    // TODO: Implement Replit Database logging if needed
     
     return requestId;
   } catch (error) {

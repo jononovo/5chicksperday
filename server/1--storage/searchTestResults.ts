@@ -1,7 +1,7 @@
-import { PgDatabase } from "drizzle-orm/pg-core";
-import { eq } from "drizzle-orm";
-import { searchTestResults, InsertSearchTestResult, SearchTestResult } from "../../shared/schema";
-import { v4 as uuidv4 } from 'uuid';
+import {
+  type SearchTestResult,
+  type InsertSearchTestResult
+} from "../../shared/schema";
 
 /**
  * Storage class for managing search test results
