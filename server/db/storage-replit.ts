@@ -366,6 +366,17 @@ export class ReplitStorage implements IStorage {
     return undefined;
   }
 
+  async getCompanyByName(name: string, userId: number): Promise<Company | undefined> {
+    const keys = await this.list(`company:${userId}:`);
+    for (const key of keys) {
+      const company = await this.get<Company>(key);
+      if (company && company.name === name && company.userId === userId) {
+        return company;
+      }
+    }
+    return undefined;
+  }
+
   async createCompany(data: InsertCompany): Promise<Company> {
     const id = await this.getNextId("company");
     const company: Company = {
@@ -415,13 +426,17 @@ export class ReplitStorage implements IStorage {
   }
 
   // Contacts
-  async listContactsByCompany(companyId: number): Promise<Contact[]> {
+  async listContactsByCompany(companyId: number, userId?: number): Promise<Contact[]> {
     const keys = await this.list("contact:");
     const contacts: Contact[] = [];
 
     for (const key of keys) {
       const contact = await this.get<Contact>(key);
       if (contact && contact.companyId === companyId) {
+        // If userId is provided, filter by userId as well
+        if (userId && contact.userId !== userId) {
+          continue;
+        }
         contacts.push(contact);
       }
     }
@@ -439,6 +454,17 @@ export class ReplitStorage implements IStorage {
       }
     }
 
+    return undefined;
+  }
+
+  async getContactByEmail(email: string, userId: number): Promise<Contact | undefined> {
+    const keys = await this.list(`contact:${userId}:`);
+    for (const key of keys) {
+      const contact = await this.get<Contact>(key);
+      if (contact && contact.email === email && contact.userId === userId) {
+        return contact;
+      }
+    }
     return undefined;
   }
 

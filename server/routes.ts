@@ -34,10 +34,11 @@ import { registerCreditRoutes } from "./routes/credits";
 import { registerStripeRoutes } from "./routes/stripe";
 import { CreditService } from "./lib/credits";
 import { SearchType } from "./lib/credits/types";
-import { TokenService } from "./lib/tokens";
 import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow-service";
 import { logIncomingWebhook } from "./lib/webhook-logger";
 import { getEmailProvider } from "./services/emailService";
+import multer from 'multer';
+import { parse } from 'csv-parse/sync';
 
 // Global session storage for search results
 interface SearchSessionResult {
@@ -4872,6 +4873,133 @@ Respond in this exact JSON format:
       console.error('Error cloning product:', error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : 'Failed to clone product' 
+      });
+    }
+  });
+
+  // Configure multer for file uploads
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only CSV files are allowed'));
+      }
+    }
+  });
+
+  // CSV Import endpoint for bulk contact creation
+  app.post("/api/contacts/import-csv", requireAuth, upload.single('file'), async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const csvContent = req.file.buffer.toString('utf8');
+      
+      // Parse CSV content
+      const records = parse(csvContent, {
+        columns: true,
+        skip_empty_lines: true,
+        trim: true
+      });
+
+      if (!records || records.length === 0) {
+        return res.status(400).json({ message: "No valid records found in CSV file" });
+      }
+
+      console.log(`[CSV Import] Processing ${records.length} contacts for user ${userId}`);
+      
+      const results = {
+        imported: 0,
+        skipped: 0,
+        errors: []
+      };
+
+      for (const record of records) {
+        try {
+          const { company, role, name, email } = record;
+          
+          if (!company || !name || !email) {
+            results.skipped++;
+            results.errors.push(`Skipped contact: Missing required fields (company: ${company}, name: ${name}, email: ${email})`);
+            continue;
+          }
+
+          // Check if company exists, create if not
+          let companyRecord = await storage.getCompanyByName(company, userId);
+          if (!companyRecord) {
+            companyRecord = await storage.createCompany({
+              userId,
+              name: company,
+              website: '',
+              description: `Imported from CSV`,
+              industry: '',
+              location: '',
+              size: '',
+              foundingYear: null,
+              revenue: null,
+              funding: null,
+              tags: [],
+              probability: 85,
+              confidence: 0.8,
+              source: 'csv_import'
+            });
+          }
+
+          // Check if contact already exists
+          const existingContact = await storage.getContactByEmail(email, userId);
+          if (existingContact) {
+            results.skipped++;
+            results.errors.push(`Skipped contact: ${name} (${email}) - already exists`);
+            continue;
+          }
+
+          // Create contact
+          await storage.createContact({
+            userId,
+            companyId: companyRecord.id,
+            name,
+            email,
+            role: role || '',
+            linkedinUrl: '',
+            phoneNumber: '',
+            probability: 85,
+            confidence: 0.8,
+            nameConfidenceScore: 85,
+            source: 'csv_import'
+          });
+
+          results.imported++;
+          
+        } catch (error) {
+          console.error(`[CSV Import] Error processing contact ${record.name}:`, error);
+          results.errors.push(`Error importing ${record.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      console.log(`[CSV Import] Completed: ${results.imported} imported, ${results.skipped} skipped, ${results.errors.length} errors`);
+      
+      res.json({
+        success: true,
+        message: `Successfully imported ${results.imported} contacts`,
+        results
+      });
+      
+    } catch (error) {
+      console.error('[CSV Import] Error:', error);
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : "Failed to import contacts"
       });
     }
   });

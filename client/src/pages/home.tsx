@@ -39,6 +39,7 @@ import {
   Target,
   Rocket,
   Plus,
+  Upload,
 } from "lucide-react";
 import {
   Tooltip,
@@ -69,6 +70,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ContactActionColumn } from "@/components/contact-action-column";
 import { SearchSessionManager } from "@/lib/search-session-manager";
 import { SavedSearchesDrawer } from "@/components/saved-searches-drawer";
+import { CSVImportModal } from "@/components/csv-import-modal";
 
 // Extend Company type to include contacts
 interface CompanyWithContacts extends Company {
@@ -121,6 +123,7 @@ export default function Home() {
   const [pendingHunterIds, setPendingHunterIds] = useState<Set<number>>(new Set());
   const [pendingApolloIds, setPendingApolloIds] = useState<Set<number>>(new Set());
   const [savedSearchesDrawerOpen, setSavedSearchesDrawerOpen] = useState(false);
+  const [csvImportVisible, setCsvImportVisible] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -2422,6 +2425,18 @@ export default function Home() {
                 onSessionIdChange={setCurrentSessionId}
             />
             </Suspense>
+            
+            {/* CSV Import Button */}
+            <div className="flex justify-end mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setCsvImportVisible(true)}
+                className="flex items-center gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                Import CSV
+              </Button>
+            </div>
           </div>
 
           {/* Companies Analysis Section - Moved to top */}
@@ -2601,6 +2616,25 @@ export default function Home() {
                       </TooltipTrigger>
                       <TooltipContent side="top">
                         <p className="text-xs">Expand or collapse all company rows of contacts</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex items-center gap-1 h-8 opacity-45 hover:opacity-100 hover:bg-white transition-all"
+                          onClick={() => setCsvImportVisible(true)}
+                        >
+                          <Upload className="h-4 w-4" />
+                          <span className="hidden md:inline">Import CSV</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p className="text-xs">Import contacts from CSV file (company, role, name, email)</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -2838,6 +2872,12 @@ export default function Home() {
         open={savedSearchesDrawerOpen}
         onOpenChange={setSavedSearchesDrawerOpen}
         onLoadSearch={handleLoadSavedSearch}
+      />
+
+      {/* CSV Import Modal */}
+      <CSVImportModal
+        isOpen={csvImportVisible}
+        onClose={() => setCsvImportVisible(false)}
       />
 
       {/* Notification System */}

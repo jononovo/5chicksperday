@@ -9,10 +9,24 @@ async function investigateDatabase() {
     // Get all keys
     console.log('\n1. ALL DATABASE KEYS:');
     const keys = await db.list();
-    console.log(`Total keys: ${keys.length}`);
-    keys.forEach((key, index) => {
-      console.log(`${index + 1}. ${key}`);
-    });
+    console.log(`Total keys: ${keys ? keys.length : 0}`);
+    console.log('Keys type:', typeof keys);
+    console.log('Keys value:', keys);
+    
+    if (keys && typeof keys === 'object') {
+      // If keys is an object, convert to array
+      const keyArray = Object.keys(keys);
+      console.log('Converted to array:', keyArray);
+      keyArray.forEach((key, index) => {
+        console.log(`${index + 1}. ${key}`);
+      });
+    } else if (Array.isArray(keys)) {
+      keys.forEach((key, index) => {
+        console.log(`${index + 1}. ${key}`);
+      });
+    } else {
+      console.log('Keys is not an array or object');
+    }
     
     // Look for strategic profile keys
     console.log('\n2. STRATEGIC PROFILE KEYS:');
