@@ -962,10 +962,17 @@ export default function Home() {
     });
 
     // Use the filtering logic
-    return filterTopProspects(allContacts, {
+    const filteredContacts = filterTopProspects(allContacts, {
       maxPerCompany: 3,
       minProbability: 50
     });
+    
+    // Remove duplicates by contact ID to prevent React key warnings
+    const uniqueContacts = filteredContacts.filter((contact, index, self) => 
+      index === self.findIndex(c => c.id === contact.id)
+    );
+    
+    return uniqueContacts;
   };
 
   // Updated navigation handlers

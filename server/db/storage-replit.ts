@@ -37,6 +37,28 @@ export class ReplitStorage implements IStorage {
   }
 
   // Core helper methods
+  private convertDates<T>(obj: T): T {
+    if (!obj || typeof obj !== 'object') return obj;
+    
+    const converted = { ...obj };
+    
+    // Convert common date fields
+    const dateFields = ['createdAt', 'updatedAt', 'lastUpdated', 'startDate', 'deliveryDate', 'lastEnriched', 'lastValidated'];
+    
+    for (const field of dateFields) {
+      if (field in converted && typeof (converted as any)[field] === 'string') {
+        try {
+          (converted as any)[field] = new Date((converted as any)[field]);
+        } catch (e) {
+          // If date conversion fails, keep the original value
+          console.warn(`Failed to convert date field ${field}:`, e);
+        }
+      }
+    }
+    
+    return converted;
+  }
+
   private async get<T>(key: string): Promise<T | undefined> {
     try {
       const result = await this.db.get(key);
@@ -56,12 +78,12 @@ export class ReplitStorage implements IStorage {
         ) {
           // If value is already an object/array, return it directly
           if (typeof wrappedResult.value === "object") {
-            return wrappedResult.value as T;
+            return this.convertDates(wrappedResult.value as T);
           }
           // If value is a string, try to parse it as JSON
           if (typeof wrappedResult.value === "string") {
             try {
-              return JSON.parse(wrappedResult.value) as T;
+              return this.convertDates(JSON.parse(wrappedResult.value) as T);
             } catch {
               // If JSON parsing fails, return the string as-is
               return wrappedResult.value as T;
@@ -270,7 +292,9 @@ export class ReplitStorage implements IStorage {
 
     for (const key of keys) {
       const list = await this.get<List>(key);
-      if (list) lists.push(list);
+      if (list) {
+        lists.push(list);
+      }
     }
 
     return lists.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
