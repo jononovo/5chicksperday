@@ -12,7 +12,7 @@ import type {
   InsertSearchTestResult, UserPreferences, InsertUserPreferences,
   ContactFeedback, InsertContactFeedback, StrategicProfile, InsertStrategicProfile
 } from "../shared/schema";
-import { IStorage } from '../server/storage/index';
+import { IStorage } from '../server/storage';
 
 // This class implementation intentionally ignores TypeScript errors to simplify the migration
 // @ts-ignore
