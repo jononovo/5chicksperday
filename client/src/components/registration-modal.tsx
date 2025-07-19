@@ -197,44 +197,8 @@ export function RegistrationModal() {
       } catch (error: any) {
         console.error("Login error:", error);
         
-        // Specific error handling for different Firebase auth errors
-        if (error.code === 'auth/invalid-credential') {
-          toast({
-            title: "Invalid Password",
-            description: "The password you entered is incorrect. Please try again.",
-            variant: "destructive",
-          });
-        } else if (error.code === 'auth/user-not-found') {
-          toast({
-            title: "Account Not Found",
-            description: "No account found with this email address.",
-            variant: "destructive",
-          });
-        } else if (error.code === 'auth/wrong-password') {
-          toast({
-            title: "Wrong Password",
-            description: "The password you entered is incorrect. Please try again.",
-            variant: "destructive",
-          });
-        } else if (error.code === 'auth/invalid-email') {
-          toast({
-            title: "Invalid Email",
-            description: "Please enter a valid email address.",
-            variant: "destructive",
-          });
-        } else if (error.code === 'auth/user-disabled') {
-          toast({
-            title: "Account Disabled",
-            description: "This account has been disabled. Please contact support.",
-            variant: "destructive",
-          });
-        } else if (error.code === 'auth/too-many-requests') {
-          toast({
-            title: "Too Many Attempts",
-            description: "Too many failed login attempts. Please try again later.",
-            variant: "destructive",
-          });
-        } else if (error.code === 'auth/operation-not-allowed') {
+        // Special handling for operation-not-allowed error
+        if (error.code === 'auth/operation-not-allowed') {
           toast({
             title: "Email/Password Login Not Enabled",
             description: "Email/Password authentication needs to be enabled in the Firebase Console.",

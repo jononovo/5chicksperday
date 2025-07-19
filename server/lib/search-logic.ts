@@ -12,10 +12,9 @@ import { extractContacts } from "./results-analysis/email-extraction-format";
 import { validateNames } from "./results-analysis/contact-ai-name-scorer";
 import { findKeyDecisionMakers } from "./search-logic/contact-discovery/enhanced-contact-finder";
 import { cleanPerplexityResponse } from "./utils";
-import { CompanyResults } from "@shared/util.types";
 
 // Core search functions
-export async function searchCompanies(query: string): Promise<CompanyResults> {
+export async function searchCompanies(query: string): Promise<Array<{name: string, website: string | null, description: string | null}>> {
   console.log(`[PERPLEXITY API CALL] searchCompanies called with query: "${query}"`);
   console.log(`[PERPLEXITY API CALL] Timestamp: ${new Date().toISOString()}`);
   
@@ -84,17 +83,17 @@ Please output a JSON array containing 7 objects, where each object has exactly t
       const nameMatch = nameMatches[i].match(/"name":\s*"([^"]*)"/);
       if (nameMatch && nameMatch[1]) {
         // Find corresponding website if available
-        let website = '';
+        let website = null;
         if (i < websiteMatches.length) {
           const websiteMatch = websiteMatches[i].match(/"website":\s*"([^"]*)"/);
-          website = websiteMatch && websiteMatch[1] ? websiteMatch[1].trim() : '';
+          website = websiteMatch && websiteMatch[1] ? websiteMatch[1].trim() : null;
         }
         
         // Find corresponding description if available
-        let description = '';
+        let description = null;
         if (i < descriptionMatches.length) {
           const descriptionMatch = descriptionMatches[i].match(/"description":\s*"([^"]*)"/);
-          description = descriptionMatch && descriptionMatch[1] ? descriptionMatch[1].trim() : '';
+          description = descriptionMatch && descriptionMatch[1] ? descriptionMatch[1].trim() : null;
         }
         
         companies.push({
@@ -124,12 +123,12 @@ Please output a JSON array containing 7 objects, where each object has exactly t
           const nameMatch = line.match(/"name":\s*"([^"]+)"/);
           // Try to find a website in the same line
           const websiteMatch = line.match(/"website":\s*"([^"]*)"/);
-          const website = websiteMatch && websiteMatch[1] ? websiteMatch[1] : '';
+          const website = websiteMatch && websiteMatch[1] ? websiteMatch[1] : null;
           
           return {
             name: nameMatch ? nameMatch[1] : line,
             website: website,
-            description: ''
+            description: null
           };
         })
         .slice(0, 5);
@@ -146,7 +145,7 @@ Please output a JSON array containing 7 objects, where each object has exactly t
     const companies = response.split('\n')
       .filter((line: string) => line.trim())
       .slice(0, 5)
-      .map((name: string) => ({ name, website: '', description: '' }));
+      .map((name: string) => ({ name, website: null, description: null }));
       
     console.log('Fallback company data after JSON parse error:', companies);
     return companies;

@@ -256,7 +256,7 @@ High-level strategic guidance for email generation.`;
 }
 
 export async function queryOpenAI(
-  messages:   ChatCompletionMessageParam[],
+  messages: ChatCompletionMessageParam[],
   productContext: any
 ): Promise<FunctionCallResult> {
   try {

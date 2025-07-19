@@ -1,245 +1,123 @@
-import { ideahub } from "googleapis/build/src/apis/ideahub";
+import { pgTable, text, serial, integer, jsonb, timestamp, boolean, uuid } from "drizzle-orm/pg-core";
 import { z } from "zod";
 
-// User types for Replit Database
-export interface User {
-  id: number;
-  username: string;
-  password: string;
-  email: string;
-  createdAt: Date;
-}
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull(),
+  password: text("password").notNull(),
+  email: text("email").notNull(),
+  createdAt: timestamp("created_at").defaultNow()
+});
 
-export interface InsertUser {
-  username: string;
-  password: string;
-  email: string;
-}
+export const lists = pgTable("lists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),  
+  listId: integer("list_id").notNull(),
+  prompt: text("prompt").notNull(),
+  resultCount: integer("result_count").notNull(),
+  customSearchTargets: text("custom_search_targets").array(),
+  createdAt: timestamp("created_at").defaultNow()
+});
 
-// List types for Replit Database
-export interface List {
-  id: number;
-  userId: number;
-  listId: number;
-  prompt: string;
-  resultCount: number;
-  customSearchTargets: string[] | null;
-  createdAt: Date;
-}
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  listId: integer("list_id"),  
+  description: text("description"),
+  age: integer("age"),
+  size: integer("size"),
+  website: text("website"),
+  alternativeProfileUrl: text("alternative_profile_url"), 
+  defaultContactEmail: text("default_contact_email"), 
+  ranking: integer("website_ranking"),
+  linkedinProminence: integer("linkedin_prominence"),
+  customerCount: integer("customer_count"),
+  rating: integer("rating"),
+  services: text("services").array(),
+  validationPoints: text("validation_points").array(),
+  differentiation: text("differentiation").array(),
+  totalScore: integer("total_score"),
+  snapshot: jsonb("snapshot"),
+  createdAt: timestamp("created_at").defaultNow()
+});
 
-export interface InsertList {
-  userId: number;
-  listId: number;
-  prompt: string;
-  resultCount: number;
-  customSearchTargets?: string[] | null;
-}
- 
+export const contacts = pgTable("contacts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  companyId: integer("company_id").notNull(),
+  name: text("name").notNull(),
+  role: text("role"),
+  email: text("email"),
+  alternativeEmails: text("alternative_emails").array(), // Added support for multiple email addresses
+  probability: integer("probability"),
+  linkedinUrl: text("linkedin_url"),
+  twitterHandle: text("twitter_handle"),
+  phoneNumber: text("phone_number"),
+  department: text("department"),
+  location: text("location"),
+  verificationSource: text("verification_source"),
+  lastEnriched: timestamp("last_enriched"),
+  nameConfidenceScore: integer("name_confidence_score"), 
+  userFeedbackScore: integer("user_feedback_score"), 
+  feedbackCount: integer("feedback_count").default(0), 
+  lastValidated: timestamp("last_validated"), 
+  createdAt: timestamp("created_at").defaultNow(),
+  completedSearches: text("completed_searches").array()
+});
 
-
-// Contact types for Replit Database
-export interface Contact {
-  id: number;
-  userId: number;
-  companyId: number;
-  name: string;
-  priority?: number | null;
-  role: string | null;
-  email: string | null;
-  alternativeEmails: string[] | null;
-  probability: number | null;
-  linkedinUrl: string | null;
-  twitterHandle: string | null;
-  phoneNumber: string | null;
-  department: string | null;
-  location: string | null;
-  verificationSource: string | null;
-  lastEnriched: Date | null;
-  nameConfidenceScore: number | null;
-  userFeedbackScore: number | null;
-  feedbackCount: number;
-  lastValidated: Date | null;
-  createdAt: Date;
-  completedSearches: string[] | null;
-}
-
-export interface InsertContact {
-  userId: number;
-  companyId: number;
-  name: string;
-  role?: string | null;
-  priority?: number | null;
-  email?: string | null;
-  alternativeEmails?: string[] | null;
-  probability?: number | null;
-  linkedinUrl?: string | null;
-  twitterHandle?: string | null;
-  phoneNumber?: string | null;
-  department?: string | null;
-  location?: string | null;
-  verificationSource?: string | null;
-  lastEnriched?: Date | null;
-  nameConfidenceScore?: number | null;
-  userFeedbackScore?: number | null;
-  feedbackCount?: number;
-  lastValidated?: Date | null;
-  completedSearches?: string[] | null;
-}
-
-// Contact Feedback types for Replit Database
-export interface ContactFeedback {
-  id: number;
-  contactId: number;
-  feedbackType: string;
-  createdAt: Date;
-}
-
-export interface InsertContactFeedback {
-  contactId: number;
-  feedbackType: string;
-}
+export const contactFeedback = pgTable("contact_feedback", {
+  id: serial("id").primaryKey(),
+  contactId: integer("contact_id").notNull(),
+  feedbackType: text("feedback_type").notNull(), 
+  createdAt: timestamp("created_at").defaultNow()
+});
 
 
 
-// Campaign types for Replit Database
-export interface Campaign {
-  id: number;
-  userId: number;
-  campaignId: number;
-  name: string;
-  description: string | null;
-  status: string;
-  startDate: Date | null;
-  createdAt: Date;
-  totalCompanies: number;
-}
+export const campaigns = pgTable("campaigns", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  campaignId: integer("campaign_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  status: text("status").default('draft'),  
+  startDate: timestamp("start_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  totalCompanies: integer("total_companies").default(0)
+});
 
-export interface InsertCampaign {
-  userId: number;
-  campaignId: number;
-  name: string;
-  description?: string | null;
-  status?: string;
-  startDate?: Date | null;
-  totalCompanies?: number;
-}
+export const campaignLists = pgTable("campaign_lists", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull(),
+  listId: integer("list_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow()
+});
 
-// Campaign List types for Replit Database
-export interface CampaignList {
-  id: number;
-  campaignId: number;
-  listId: number;
-  createdAt: Date;
-}
+export const emailTemplates = pgTable("email_templates", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  subject: text("subject").notNull(),
+  content: text("content").notNull(),
+  description: text("description"),
+  category: text("category").default('general'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
 
-export interface InsertCampaignList {
-  campaignId: number;
-  listId: number;
-}
-
-// Email Template types for Replit Database
-export interface EmailTemplate {
-  id: number;
-  userId: number;
-  name: string;
-  subject: string;
-  content: string;
-  description: string | null;
-  category: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface InsertEmailTemplate {
-  userId: number;
-  name: string;
-  subject: string;
-  content: string;
-  description?: string | null;
-  category?: string;
-}
-
-// User Preferences types for Replit Database
-export interface UserPreferences {
-  id: number;
-  userId: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface InsertUserPreferences {
-  userId: number;
-}
+export const userPreferences = pgTable("user_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  // hasSeenTour field removed
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
 
 
 
-// Additional types for email threads and messages
-export interface EmailThread {
-  id: number;
-  userId: number;
-  contactId: number;
-  subject: string;
-  lastUpdated: Date;
-  createdAt: Date;
-  isArchived: boolean;
-  messages: EmailMessage[];
-}
+// N8N Workflow tables have been removed
 
-export interface EmailMessage {
-  id: number;
-  threadId: number;
-  sender: string;
-  recipient: string;
-  subject: string;
-  content: string;
-  timestamp: Date;
-  direction: 'inbound' | 'outbound';
-  isRead: boolean;
-}
-
-// SearchApproach types 
-export interface SearchApproach {
-  moduleType: string;
-  active: boolean;
-  prompt:string;
-  technicalPrompt:string;
-  responseStructure:string;
-  id: number;
-  name: string;
-  description: string;
-  targetTypes: string[];
-  prompts: string[];
-  isActive: boolean;
-  createdAt: Date;
-}
-
-export interface InsertSearchApproach {
-  name: string;
-  description: string;
-  targetTypes: string[];
-  prompts: string[];
-  isActive?: boolean;
-}
-
-// SearchTestResult types
-export interface SearchTestResult {
-  id: number;
-  userId: number;
-  strategyId: number;
-  status: 'completed' | 'running' | 'failed';
-  metadata: Record<string, any>;
-  createdAt: Date;
-}
-
-export interface InsertSearchTestResult {
-  userId: number;
-  strategyId: number;
-  status: 'completed' | 'running' | 'failed';
-  metadata: Record<string, any>;
-}
- 
-
-// Zod validation schemas
 const listSchema = z.object({
   listId: z.number().min(1001),
   prompt: z.string().min(1, "Search prompt is required"),
@@ -248,34 +126,24 @@ const listSchema = z.object({
 });
 
 const companySchema = z.object({
-  id: z.number(),
-  userId: z.number(),
   name: z.string().min(1, "Company name is required"),
-  listId: z.number().optional(),
-  description: z.string().optional(),
-  age: z.number().optional(),
-  size: z.number().optional(),
-  website: z.string().optional(),
-  location: z.string().optional(),
-  industry: z.string().optional(),
-  alternativeProfileUrl: z.string().optional(),
-  defaultContactEmail: z.string().email().optional(),
-  ranking: z.number().optional(),
-  linkedinProminence: z.number().optional(),
-  customerCount: z.number().optional(),
-  rating: z.number().optional(),
-  services: z.array(z.string()).optional(),
-  validationPoints: z.array(z.string()).optional(),
-  differentiation: z.array(z.string()).optional(),
-  totalScore: z.number().optional(),
-  snapshot: z.record(z.unknown()).optional(),
-  createdAt: z.date(),
+  listId: z.number().nullable(),
+  description: z.string().nullable(),
+  age: z.number().nullable(),
+  size: z.number().nullable(),
+  website: z.string().nullable(),
+  alternativeProfileUrl: z.string().nullable(),
+  defaultContactEmail: z.string().email().nullable(),
+  ranking: z.number().nullable(),
+  linkedinProminence: z.number().nullable(),
+  customerCount: z.number().nullable(),
+  rating: z.number().nullable(),
+  services: z.array(z.string()).nullable(),
+  validationPoints: z.array(z.string()).nullable(),
+  differentiation: z.array(z.string()).nullable(),
+  totalScore: z.number().nullable(),
+  snapshot: z.record(z.unknown()).nullable()
 });
-export const insertCompanySchema = companySchema.omit({
-  id: true,
-  createdAt: true,
-})
-
 
 const contactSchema = z.object({
   name: z.string().min(1, "Contact name is required"),
@@ -300,76 +168,16 @@ const contactFeedbackSchema = z.object({
   feedbackType: z.enum(['excellent', 'ok', 'terrible'])
 });
 
-// First define the schema
-export const strategicProfileSchema = z.object({
-  id: z.number(),
-  userId: z.number(),
-  businessType: z.enum(["product", "service"]),
-  productName: z.string().min(1, "Product name is required"),
-  targetMarket: z.string().min(1, "Target market is required"),
-  name: z.string().optional(),
-  short_description: z.string().optional(),
-  businessDescription: z.string().optional(),
-  uniqueAttributes: z.array(z.string()).optional(),
-  targetCustomers: z.string().optional(),
-  marketNiche: z.enum(["niche", "broad"]).optional(),
-  productService: z.string().optional(),
-  customerFeedback: z.string().optional(),
-  website: z.string().optional(),
-  businessLocation: z.string().optional(),
-  primaryCustomerType: z.string().optional(),
-  primarySalesChannel: z.string().optional(),
-  primaryBusinessGoal: z.string().optional(),
-  strategyHighLevelBoundary: z.string().optional(),
-  exampleSprintPlanningPrompt: z.string().optional(),
-  exampleDailySearchQuery: z.string().optional(),
-  productAnalysisSummary: z.string().optional(),
-  reportSalesContextGuidance: z.string().optional(),
-  reportSalesTargetingGuidance: z.string().optional(),
-  dailySearchQueries: z.string().optional(),
-  strategicPlan: z.record(z.unknown()).optional(),
-  searchPrompts: z.array(z.string()).optional(),
-  status: z.enum(["in_progress", "completed"]).default("in_progress"),
-  createdAt: z.date(),
-  updatedAt: z.date().optional()
-});
 
-// For insertion, create a schema without the auto-generated fields
-export const insertStrategicProfileSchema = strategicProfileSchema
-  .omit({ id: true, createdAt: true, updatedAt: true }) // Remove fields that are auto-generated
-  .partial({ // Make these fields optional
-    name: true,
-    short_description: true,
-    businessDescription: true,
-    uniqueAttributes: true,
-    targetCustomers: true,
-    marketNiche: true,
-    productService: true,
-    customerFeedback: true,
-    website: true,
-    businessLocation: true,
-    primaryCustomerType: true,
-    primarySalesChannel: true,
-    primaryBusinessGoal: true,
-    strategyHighLevelBoundary: true,
-    exampleSprintPlanningPrompt: true,
-    exampleDailySearchQuery: true,
-    productAnalysisSummary: true,
-    reportSalesContextGuidance: true,
-    reportSalesTargetingGuidance: true,
-    dailySearchQueries: true,
-    strategicPlan: true,
-    searchPrompts: true,
-    status: true
-  });
- 
+
+
 
 const campaignSchema = z.object({
   campaignId: z.number().min(2001),
   name: z.string().min(1, "Campaign name is required"),
   description: z.string().nullable(),
   status: z.enum(['draft', 'active', 'completed', 'paused']).default('draft'),
-  startDate: z.date().nullable(),
+  startDate: z.string().nullable(),
   totalCompanies: z.number().default(0)
 });
 
@@ -397,7 +205,8 @@ const userPreferencesSchema = z.object({
 
 export const insertListSchema = listSchema.extend({
   userId: z.number()
-}); 
+});
+export const insertCompanySchema = companySchema;
 export const insertContactSchema = contactSchema;
 export const insertCampaignSchema = campaignSchema.extend({
   userId: z.number()
@@ -409,7 +218,22 @@ export const insertEmailTemplateSchema = emailTemplateSchema.extend({
 export const insertContactFeedbackSchema = contactFeedbackSchema;
 export const insertUserPreferencesSchema = userPreferencesSchema;
 
-// Zod-based type exports have been moved to interface definitions above
+export type List = typeof lists.$inferSelect;
+export type InsertList = z.infer<typeof insertListSchema>;
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Contact = typeof contacts.$inferSelect;
+export type InsertContact = z.infer<typeof insertContactSchema>;
+export type Campaign = typeof campaigns.$inferSelect;
+export type InsertCampaign = z.infer<typeof insertCampaignSchema>;
+export type CampaignList = typeof campaignLists.$inferSelect;
+export type InsertCampaignList = z.infer<typeof insertCampaignListSchema>;
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type InsertEmailTemplate = z.infer<typeof insertEmailTemplateSchema>;
+export type ContactFeedback = typeof contactFeedback.$inferSelect;
+export type InsertContactFeedback = z.infer<typeof insertContactFeedbackSchema>;
+export type UserPreferences = typeof userPreferences.$inferSelect;
+export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 
 // N8N workflow types have been removed
 
@@ -422,48 +246,102 @@ export const userSchema = z.object({
 
 export const insertUserSchema = userSchema;
 
+// Add webhook logs table for N8N workflow integration
+// Email conversation tables
+export const emailThreads = pgTable("email_threads", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  contactId: integer("contact_id").notNull().references(() => contacts.id),
+  subject: text("subject").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  isArchived: boolean("is_archived").default(false)
+});
 
+export const emailMessages = pgTable("email_messages", {
+  id: serial("id").primaryKey(),
+  threadId: integer("thread_id").notNull().references(() => emailThreads.id),
+  from: text("from").notNull(),
+  fromEmail: text("from_email").notNull(),
+  to: text("to").notNull(),
+  toEmail: text("to_email").notNull(),
+  content: text("content").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  isRead: boolean("is_read").default(false),
+  direction: text("direction").notNull() // "outbound" or "inbound"
+});
 
-// Onboarding Chat types
-export interface OnboardingChat {
-  id: number;
-  userId: number;
-  profileId: number;
-  messages: Record<string, any>;
-  currentStep: string;
-  isComplete: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+export const webhookLogs = pgTable("webhook_logs", {
+  id: serial("id").primaryKey(),
+  requestId: text("request_id").notNull(),
+  searchId: text("search_id"),
+  source: text("source").notNull(),  // Format: "provider-operation" (e.g. "n8n-send", "n8n-receive")
+  method: text("method"),
+  url: text("url"),
+  headers: jsonb("headers").default({}),
+  body: jsonb("body").default({}),
+  status: text("status").default("pending"), // pending, success, error
+  statusCode: integer("status_code"),
+  processingDetails: jsonb("processing_details").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
+});
 
-export interface InsertOnboardingChat {
-  userId: number;
-  profileId: number;
-  messages?: Record<string, any>;
-  currentStep?: string;
-  isComplete?: boolean;
-}
+// Strategic onboarding tables
+export const strategicProfiles = pgTable("strategic_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  name: text("name"), // Product/service name for display
+  short_description: text("short_description"), // Brief description for product cards
+  businessType: text("business_type").notNull(), // "product" or "service"
+  businessDescription: text("business_description").notNull(),
+  uniqueAttributes: text("unique_attributes").array(),
+  targetCustomers: text("target_customers").notNull(),
+  marketNiche: text("market_niche"), // "niche" or "broad"
+  // Enhanced product profile fields
+  productService: text("product_service"), // What they sell
+  customerFeedback: text("customer_feedback"), // What customers say
+  website: text("website"), // Company website
+  businessLocation: text("business_location"), // Where they're located
+  primaryCustomerType: text("primary_customer_type"), // Who they sell to
+  primarySalesChannel: text("primary_sales_channel"), // How they find customers
+  primaryBusinessGoal: text("primary_business_goal"), // Main business objective
+  // Strategy fields for cold email outreach
+  strategyHighLevelBoundary: text("strategy_high_level_boundary"), // "3-4 star family-friendly hotels in coastal SE US"
+  exampleSprintPlanningPrompt: text("example_sprint_planning_prompt"), // "family-friendly hotels on space coast, florida"
+  exampleDailySearchQuery: text("example_daily_search_query"), // "family-friendly hotels in cocoa beach"
+  productAnalysisSummary: text("product_analysis_summary"), // AI-generated product profile summary
+  reportSalesContextGuidance: text("report_sales_context_guidance"), // AI-generated context for cold email approach
+  reportSalesTargetingGuidance: text("report_sales_targeting_guidance"), // AI-generated targeting recommendations
+  dailySearchQueries: text("daily_search_queries"), // JSON array of 8 daily search queries from strategy
+  strategicPlan: jsonb("strategic_plan").default({}),
+  searchPrompts: text("search_prompts").array(),
+  status: text("status").default("in_progress"), // "in_progress", "completed"
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
 
-// Prospect Delivery types
-export interface ProspectDelivery {
-  id: number;
-  userId: number;
-  profileId: number;
-  searchPrompt: string;
-  deliveryDate: Date;
-  status: string;
-  prospectCount: number;
-  createdAt: Date;
-}
+export const onboardingChats = pgTable("onboarding_chats", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  profileId: integer("profile_id").notNull().references(() => strategicProfiles.id),
+  messages: jsonb("messages").default([]),
+  currentStep: text("current_step").default("business_description"),
+  isComplete: boolean("is_complete").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
 
-export interface InsertProspectDelivery {
-  userId: number;
-  profileId: number;
-  searchPrompt: string;
-  deliveryDate: Date;
-  status?: string;
-  prospectCount?: number;
-}
+export const prospectDeliveries = pgTable("prospect_deliveries", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  profileId: integer("profile_id").notNull().references(() => strategicProfiles.id),
+  searchPrompt: text("search_prompt").notNull(),
+  deliveryDate: timestamp("delivery_date").notNull(),
+  status: text("status").default("scheduled"), // "scheduled", "delivered", "failed"
+  prospectCount: integer("prospect_count").default(0),
+  createdAt: timestamp("created_at").defaultNow()
+});
 
 // Define Schema for webhook logs
 // Email conversation schemas
@@ -504,7 +382,36 @@ export const insertEmailThreadSchema = emailThreadSchema.extend({
 export const insertEmailMessageSchema = emailMessageSchema;
 
 export const insertWebhookLogSchema = webhookLogSchema;
- 
+
+// Strategic onboarding schemas
+export const strategicProfileSchema = z.object({
+  name: z.string().optional(),
+  short_description: z.string().optional(),
+  businessType: z.enum(["product", "service"]),
+  businessDescription: z.string().min(1, "Business description is required"),
+  uniqueAttributes: z.array(z.string()).optional(),
+  targetCustomers: z.string().min(1, "Target customers description is required"),
+  marketNiche: z.enum(["niche", "broad"]).optional(),
+  // Enhanced product profile fields
+  productService: z.string().optional(),
+  customerFeedback: z.string().optional(),
+  website: z.string().optional(),
+  businessLocation: z.string().optional(),
+  primaryCustomerType: z.string().optional(),
+  primarySalesChannel: z.string().optional(),
+  primaryBusinessGoal: z.string().optional(),
+  // Strategy fields for cold email outreach
+  strategyHighLevelBoundary: z.string().optional(),
+  exampleSprintPlanningPrompt: z.string().optional(),
+  exampleDailySearchQuery: z.string().optional(),
+  productAnalysisSummary: z.string().optional(),
+  reportSalesContextGuidance: z.string().optional(),
+  reportSalesTargetingGuidance: z.string().optional(),
+  dailySearchQueries: z.string().optional(),
+  strategicPlan: z.record(z.unknown()).optional(),
+  searchPrompts: z.array(z.string()).optional(),
+  status: z.enum(["in_progress", "completed"]).default("in_progress")
+});
 
 export const onboardingChatSchema = z.object({
   profileId: z.number(),
@@ -525,7 +432,10 @@ export const prospectDeliverySchema = z.object({
   status: z.enum(["scheduled", "delivered", "failed"]).default("scheduled"),
   prospectCount: z.number().default(0)
 });
- 
+
+export const insertStrategicProfileSchema = strategicProfileSchema.extend({
+  userId: z.number()
+});
 
 export const insertOnboardingChatSchema = onboardingChatSchema.extend({
   userId: z.number()
@@ -534,15 +444,23 @@ export const insertOnboardingChatSchema = onboardingChatSchema.extend({
 export const insertProspectDeliverySchema = prospectDeliverySchema.extend({
   userId: z.number()
 });
-export type InsertCompany = z.infer<typeof insertCompanySchema>;
-export type Company = z.infer<typeof companySchema>;
 
-
+export type EmailThread = typeof emailThreads.$inferSelect;
 export type InsertEmailThread = z.infer<typeof insertEmailThreadSchema>;
+export type EmailMessage = typeof emailMessages.$inferSelect;
 export type InsertEmailMessage = z.infer<typeof insertEmailMessageSchema>;
+export type WebhookLog = typeof webhookLogs.$inferSelect;
 export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
 
-export type StrategicProfile = z.infer<typeof strategicProfileSchema>;
+// Strategic onboarding types
+export type StrategicProfile = typeof strategicProfiles.$inferSelect;
 export type InsertStrategicProfile = z.infer<typeof insertStrategicProfileSchema>;
- 
+export type OnboardingChat = typeof onboardingChats.$inferSelect;
+export type InsertOnboardingChat = z.infer<typeof insertOnboardingChatSchema>;
+export type ProspectDelivery = typeof prospectDeliveries.$inferSelect;
+export type InsertProspectDelivery = z.infer<typeof insertProspectDeliverySchema>;
+
+// Add User type
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 

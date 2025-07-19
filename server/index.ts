@@ -2,8 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
-import { storage } from "./db/storage-replit";
-import { setupRouteCompanies } from "./routes/companies";
+import { storage } from "../storage-switching/1--storage-switcher";
 
 const app = express();
 
@@ -125,7 +124,6 @@ process.on('SIGINT', () => {
     console.log('Registering routes...');
     const server = registerRoutes(app);
     console.log('Routes registered successfully');
-    setupRouteCompanies(app);
 
     if (app.get("env") === "development") {
       console.log('Setting up Vite for development...');
