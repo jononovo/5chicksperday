@@ -26,27 +26,37 @@ import type {
   InsertStrategicProfile,
   EmailThread,
   EmailMessage,
-} from "../shared/schema";
-import { IStorage } from "../server/1--storage/index";
+} from "../../shared/schema";
+
+import { IStorage } from "./index";
+let globalCounter = 0;
 
 export class ReplitStorage implements IStorage {
   private db: Database;
-
+  private mutex = Promise.resolve();
   constructor() {
     this.db = new Database();
   }
 
   // Core helper methods
   private convertDates<T>(obj: T): T {
-    if (!obj || typeof obj !== 'object') return obj;
-    
+    if (!obj || typeof obj !== "object") return obj;
+
     const converted = { ...obj };
-    
+
     // Convert common date fields
-    const dateFields = ['createdAt', 'updatedAt', 'lastUpdated', 'startDate', 'deliveryDate', 'lastEnriched', 'lastValidated'];
-    
+    const dateFields = [
+      "createdAt",
+      "updatedAt",
+      "lastUpdated",
+      "startDate",
+      "deliveryDate",
+      "lastEnriched",
+      "lastValidated",
+    ];
+
     for (const field of dateFields) {
-      if (field in converted && typeof (converted as any)[field] === 'string') {
+      if (field in converted && typeof (converted as any)[field] === "string") {
         try {
           (converted as any)[field] = new Date((converted as any)[field]);
         } catch (e) {
@@ -55,7 +65,7 @@ export class ReplitStorage implements IStorage {
         }
       }
     }
-    
+
     return converted;
   }
 
@@ -101,7 +111,7 @@ export class ReplitStorage implements IStorage {
       if (result && typeof result === "object" && "error" in result) {
         return undefined;
       }
-      
+
       return result as T;
     } catch {
       return undefined;
@@ -119,21 +129,26 @@ export class ReplitStorage implements IStorage {
   private async list(prefix: string): Promise<string[]> {
     try {
       const result = await this.db.list(prefix);
-      
+
       // Handle Replit DB wrapped response format
-      if (result && typeof result === "object" && "ok" in result && "value" in result) {
+      if (
+        result &&
+        typeof result === "object" &&
+        "ok" in result &&
+        "value" in result
+      ) {
         const wrappedResult = result as { ok: boolean; value: any };
         if (wrappedResult.ok && Array.isArray(wrappedResult.value)) {
           return wrappedResult.value;
         }
         return [];
       }
-      
+
       // For direct array responses
       if (Array.isArray(result)) {
         return result;
       }
-      
+
       return [];
     } catch (e) {
       console.error(`Error listing keys with prefix ${prefix}:`, e);
@@ -142,47 +157,59 @@ export class ReplitStorage implements IStorage {
   }
 
   private async getNextId(entity: string): Promise<number> {
-    const key = `counter:${entity}`;
+    return this.mutex = this.mutex.then(async () => {
+      const key = `counter:${entity}`;
+      const current = (await this.get<number>(key)) ?? 0;
+      const next = current + 1;
+      await this.set(key, next);
+      return next;
+    });
+  }
 
+  private async OldgetNextId(entity: string): Promise<number> {
+    globalCounter++;
+    const key = `counter:${entity}`;
     // Get current counter value, ensuring we extract the numeric value properly
     let current = 0;
     try {
       const counterValue = await this.get<number>(key);
+      console.log(`Current counter value for ${entity}:`, counterValue);
       // Ensure we have a valid number, not a wrapped response or corrupted value
       if (typeof counterValue === "number" && !isNaN(counterValue)) {
         current = counterValue;
       } else {
         // Reset to 0 if we have corrupted data
-        current = 0;
+        current = Date.now();
       }
     } catch (error) {
       // Fallback to 0 if there's any error
-      current = 0;
+      current = Date.now();
     }
 
-    const next = current + 1;
+    const next = current + globalCounter;
+    console.log(`Next   counter value for ${entity}:`, next, globalCounter);
     await this.set(key, next);
     return next;
   }
 
   // User Auth Methods
   async getUserByEmail(email: string): Promise<User | undefined> {
-    console.log('🔍 Looking up user by email:', email?.split('@')[0] + '@...');
-    
+    console.log("🔍 Looking up user by email:", email?.split("@")[0] + "@...");
+
     const userId = await this.get<number>(`index:user:email:${email}`);
-    console.log('🔍 Email index result:', { userId, hasUserId: !!userId });
-    
+    console.log("🔍 Email index result:", { userId, hasUserId: !!userId });
+
     if (!userId) return undefined;
-    
+
     const user = await this.getUser(userId);
-    console.log('🔍 User lookup result:', { 
-      found: !!user, 
-      userId, 
-      hasId: user && 'id' in user, 
+    console.log("🔍 User lookup result:", {
+      found: !!user,
+      userId,
+      hasId: user && "id" in user,
       type: typeof user,
-      user: user
+      user: user,
     });
-    
+
     return user;
   }
 
@@ -390,7 +417,10 @@ export class ReplitStorage implements IStorage {
     return undefined;
   }
 
-  async getCompanyByName(name: string, userId: number): Promise<Company | undefined> {
+  async getCompanyByName(
+    name: string,
+    userId: number,
+  ): Promise<Company | undefined> {
     const keys = await this.list(`company:${userId}:`);
     for (const key of keys) {
       const company = await this.get<Company>(key);
@@ -450,7 +480,10 @@ export class ReplitStorage implements IStorage {
   }
 
   // Contacts
-  async listContactsByCompany(companyId: number, userId?: number): Promise<Contact[]> {
+  async listContactsByCompany(
+    companyId: number,
+    userId?: number,
+  ): Promise<Contact[]> {
     const keys = await this.list("contact:");
     const contacts: Contact[] = [];
 
@@ -481,7 +514,10 @@ export class ReplitStorage implements IStorage {
     return undefined;
   }
 
-  async getContactByEmail(email: string, userId: number): Promise<Contact | undefined> {
+  async getContactByEmail(
+    email: string,
+    userId: number,
+  ): Promise<Contact | undefined> {
     const keys = await this.list(`contact:${userId}:`);
     for (const key of keys) {
       const contact = await this.get<Contact>(key);
@@ -890,23 +926,31 @@ export class ReplitStorage implements IStorage {
   // Strategic Profiles
   async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
     const profileIds = await this.get<number[]>(`strategic_profiles:${userId}`);
-    
+
     if (!Array.isArray(profileIds)) {
       return [];
     }
-    
+
     const profiles: StrategicProfile[] = [];
     for (const id of profileIds) {
-      const profile = await this.get<StrategicProfile>(`strategic_profile:${id}`);
+      const profile = await this.get<StrategicProfile>(
+        `strategic_profile:${id}`,
+      );
       if (profile) {
         profiles.push(profile);
       }
     }
-    
-    return profiles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return profiles.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
   }
 
-  async getStrategicProfile(id: number, userId: number): Promise<StrategicProfile | undefined> {
+  async getStrategicProfile(
+    id: number,
+    userId: number,
+  ): Promise<StrategicProfile | undefined> {
     const profile = await this.get<StrategicProfile>(`strategic_profile:${id}`);
     if (profile && profile.userId === userId) {
       return profile;
@@ -914,7 +958,9 @@ export class ReplitStorage implements IStorage {
     return undefined;
   }
 
-  async createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile> {
+  async createStrategicProfile(
+    data: InsertStrategicProfile,
+  ): Promise<StrategicProfile> {
     const id = await this.getNextId("strategic_profile");
     const profile: StrategicProfile = {
       id,
@@ -948,9 +994,10 @@ export class ReplitStorage implements IStorage {
     };
 
     await this.set(`strategic_profile:${id}`, profile);
-    
+
     // Update user's profile list
-    const profileIds = await this.get<number[]>(`strategic_profiles:${data.userId}`) || [];
+    const profileIds =
+      (await this.get<number[]>(`strategic_profiles:${data.userId}`)) || [];
     if (!Array.isArray(profileIds)) {
       profileIds = [];
     }
@@ -960,7 +1007,11 @@ export class ReplitStorage implements IStorage {
     return profile;
   }
 
-  async updateStrategicProfile(id: number, updates: Partial<StrategicProfile>, userId: number): Promise<StrategicProfile | undefined> {
+  async updateStrategicProfile(
+    id: number,
+    updates: Partial<StrategicProfile>,
+    userId: number,
+  ): Promise<StrategicProfile | undefined> {
     const profile = await this.getStrategicProfile(id, userId);
     if (!profile) return undefined;
 
@@ -974,16 +1025,20 @@ export class ReplitStorage implements IStorage {
     if (!profile) return;
 
     await this.delete(`strategic_profile:${id}`);
-    
+
     // Remove from user's profile list
-    const profileIds = await this.get<number[]>(`strategic_profiles:${userId}`) || [];
+    const profileIds =
+      (await this.get<number[]>(`strategic_profiles:${userId}`)) || [];
     if (Array.isArray(profileIds)) {
-      const filteredIds = profileIds.filter(pid => pid !== id);
+      const filteredIds = profileIds.filter((pid) => pid !== id);
       await this.set(`strategic_profiles:${userId}`, filteredIds);
     }
   }
 
-  async cloneStrategicProfile(id: number, userId: number): Promise<StrategicProfile | undefined> {
+  async cloneStrategicProfile(
+    id: number,
+    userId: number,
+  ): Promise<StrategicProfile | undefined> {
     const original = await this.getStrategicProfile(id, userId);
     if (!original) return undefined;
 
@@ -1028,7 +1083,7 @@ export class ReplitStorage implements IStorage {
     strategicProfiles: StrategicProfile[];
   }): Promise<void> {
     console.log("Starting migration from PostgreSQL to Replit Database...");
-    
+
     // Migrate users
     for (const user of data.users) {
       await this.set(`user:${user.id}`, user);
@@ -1037,38 +1092,40 @@ export class ReplitStorage implements IStorage {
         await this.set(`index:user:username:${user.username}`, user.id);
       }
     }
-    
+
     // Migrate lists
     for (const list of data.lists) {
       await this.set(`list:${list.userId}:${list.listId}`, list);
     }
-    
+
     // Migrate companies
     for (const company of data.companies) {
       await this.set(`company:${company.userId}:${company.id}`, company);
     }
-    
+
     // Migrate contacts
     for (const contact of data.contacts) {
       await this.set(`contact:${contact.userId}:${contact.id}`, contact);
     }
-    
+
     // Migrate campaigns
     for (const campaign of data.campaigns) {
       await this.set(`campaign:${campaign.userId}:${campaign.id}`, campaign);
     }
-    
+
     // Migrate email templates
     for (const template of data.emailTemplates) {
       await this.set(`template:${template.userId}:${template.id}`, template);
     }
-    
+
     // Migrate strategic profiles
     for (const profile of data.strategicProfiles) {
       await this.set(`strategic_profile:${profile.id}`, profile);
-      
+
       // Update user's profile list
-      const profileIds = await this.get<number[]>(`strategic_profiles:${profile.userId}`) || [];
+      const profileIds =
+        (await this.get<number[]>(`strategic_profiles:${profile.userId}`)) ||
+        [];
       if (!Array.isArray(profileIds)) {
         profileIds = [];
       }
@@ -1077,7 +1134,7 @@ export class ReplitStorage implements IStorage {
         await this.set(`strategic_profiles:${profile.userId}`, profileIds);
       }
     }
-    
+
     console.log("Migration completed successfully");
   }
 }
