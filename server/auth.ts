@@ -337,6 +337,7 @@ export function setupAuth(app: Express) {
         const user = await storage.createUser({
           email,
           password: hashedPassword,
+          username: ""
         });
 
         console.log("User created successfully:", {
@@ -736,9 +737,9 @@ export function setupAuth(app: Express) {
         type: typeof user,
         hasId: user && 'id' in user
       });
-    } catch (error) {
+    } catch (error:any) {
       console.error('🔍 User lookup error:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error?.message });
     }
   });
 

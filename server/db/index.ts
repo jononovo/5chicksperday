@@ -56,7 +56,7 @@ export interface IStorage {
     id: number,
     contact: Partial<Contact>,
   ): Promise<Contact | undefined>;
-  deleteContactsByCompany(companyId: number): Promise<void>;
+  deleteContactsByCompany(companyId: number, userId:number): Promise<void>;
 
   // Search Approaches
   getSearchApproach(id: number): Promise<SearchApproach | undefined>;

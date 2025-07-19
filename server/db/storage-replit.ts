@@ -33,7 +33,7 @@ let globalCounter = 0;
 
 export class ReplitStorage implements IStorage {
   private db: Database;
-  private mutex = Promise.resolve();
+  private mutex: Promise<number> = Promise.resolve(Date.now());
   constructor() {
     this.db = new Database();
   }
@@ -375,7 +375,7 @@ export class ReplitStorage implements IStorage {
   }
 
   // Companies
-  async listCompanies(): Promise<Company[]> {
+  async listCompanies(userId?:number): Promise<Company[]> {
     const keys = await this.list("company:");
     const companies: Company[] = [];
 
@@ -404,12 +404,12 @@ export class ReplitStorage implements IStorage {
     return companies;
   }
 
-  async getCompany(id: number): Promise<Company | undefined> {
+  async getCompany(companyId: number): Promise<Company | undefined> {
     const keys = await this.list("company:");
 
     for (const key of keys) {
       const company = await this.get<Company>(key);
-      if (company && company.id === id) {
+      if (company && company.id === companyId) {
         return company;
       }
     }
@@ -434,26 +434,9 @@ export class ReplitStorage implements IStorage {
   async createCompany(data: InsertCompany): Promise<Company> {
     const id = await this.getNextId("company");
     const company: Company = {
+      ...data,
       id,
-      userId: data.userId,
-      name: data.name,
-      listId: data.listId || null,
-      description: data.description || null,
-      age: data.age || null,
-      size: data.size || null,
-      website: data.website || null,
-      alternativeProfileUrl: data.alternativeProfileUrl || null,
-      defaultContactEmail: data.defaultContactEmail || null,
-      ranking: data.ranking || null,
-      linkedinProminence: data.linkedinProminence || null,
-      customerCount: data.customerCount || null,
-      rating: data.rating || null,
-      services: data.services || null,
-      validationPoints: data.validationPoints || null,
-      differentiation: data.differentiation || null,
-      totalScore: data.totalScore || null,
-      snapshot: data.snapshot || null,
-      createdAt: new Date(),
+      createdAt: new Date()
     };
 
     await this.set(`company:${data.userId}:${id}`, company);
@@ -570,8 +553,8 @@ export class ReplitStorage implements IStorage {
     return updated;
   }
 
-  async deleteContactsByCompany(companyId: number): Promise<void> {
-    const contacts = await this.listContactsByCompany(companyId);
+  async deleteContactsByCompany(companyId: number, userId:number): Promise<void> {
+    const contacts = await this.listContactsByCompany(companyId, userId);
 
     for (const contact of contacts) {
       await this.delete(`contact:${contact.userId}:${contact.id}`);
@@ -614,6 +597,11 @@ export class ReplitStorage implements IStorage {
       prompts: data.prompts,
       isActive: data.isActive || true,
       createdAt: new Date(),
+      moduleType: "",
+      active: false,
+      prompt: "",
+      technicalPrompt: "",
+      responseStructure: ""
     };
 
     await this.set(`search_approach:${id}`, approach);
@@ -995,9 +983,7 @@ export class ReplitStorage implements IStorage {
 
     await this.set(`strategic_profile:${id}`, profile);
 
-    // Update user's profile list
-    const profileIds =
-      (await this.get<number[]>(`strategic_profiles:${data.userId}`)) || [];
+    let  profileIds = await this.get<number[]>(`strategic_profiles:${data.userId}`);
     if (!Array.isArray(profileIds)) {
       profileIds = [];
     }
@@ -1123,7 +1109,7 @@ export class ReplitStorage implements IStorage {
       await this.set(`strategic_profile:${profile.id}`, profile);
 
       // Update user's profile list
-      const profileIds =
+      let profileIds =
         (await this.get<number[]>(`strategic_profiles:${profile.userId}`)) ||
         [];
       if (!Array.isArray(profileIds)) {

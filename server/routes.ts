@@ -8,13 +8,11 @@ import { storage } from "./db/storage-replit";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import { searchCompanies, analyzeCompany } from "./lib/search-logic";
-import { extractContacts } from "./lib/perplexity";
-import { parseCompanyData } from "./lib/results-analysis/company-parser";
 import { queryPerplexity } from "./lib/api/perplexity-client";
+
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import {
   queryOpenAI,
-  generateEmailStrategy,
-  generateBoundary,
   generateBoundaryOptions,
   generateSprintPrompt,
   generateDailyQueries,
@@ -22,25 +20,16 @@ import {
 import { searchContactDetails } from "./lib/api-interactions";
 import { google } from "googleapis";
 import {
-  insertCompanySchema,
-  insertContactSchema,
-  insertListSchema,
   insertCampaignSchema,
   insertEmailTemplateSchema,
-  insertEmailThreadSchema,
-  insertEmailMessageSchema,
-  insertStrategicProfileSchema,
 } from "@shared/schema";
-import { emailEnrichmentService } from "./lib/search-logic/email-enrichment/service";
 import type { PerplexityMessage } from "./lib/perplexity";
-import type { Contact } from "@shared/schema";
+import type { Company, Contact } from "@shared/schema";
 import { postSearchEnrichmentService } from "./lib/search-logic/post-search-enrichment/service";
-import { findKeyDecisionMakers } from "./lib/search-logic/contact-discovery/enhanced-contact-finder";
 import { TokenService } from "./lib/tokens/index";
 import { registerCreditRoutes } from "./routes/credits";
 import { registerStripeRoutes } from "./routes/stripe";
 import { CreditService } from "./lib/credits";
-import { SearchType } from "./lib/credits/types";
 import {
   sendSearchRequest,
   startKeepAlive,
@@ -50,20 +39,11 @@ import { logIncomingWebhook } from "./lib/webhook-logger";
 import { getEmailProvider } from "./services/emailService";
 import multer from "multer";
 import { parse } from "csv-parse/sync";
-
-// Global session storage for search results
-interface SearchSessionResult {
-  sessionId: string;
-  query: string;
-  status: "pending" | "companies_found" | "contacts_complete" | "failed";
-  quickResults?: any[];
-  fullResults?: any[];
-  error?: string;
-  timestamp: number;
-  ttl: number;
-  emailSearchStatus?: "none" | "running" | "completed";
-  emailSearchCompleted?: number;
-}
+import { CSVImportType, SearchSessionResult } from "@shared/util.types.js";
+import { requireAuth } from "./routes/middle/requireAuth.js";
+import { getUserId } from "./routes/middle/getUserId.js";
+import { extractAttributes, extractMarketNiche, generateSearchPrompts } from "./lib/results-analysis/extractAttributes.js";
+ 
 
 declare global {
   var searchSessions: Map<string, SearchSessionResult>;
@@ -71,59 +51,6 @@ declare global {
 
 // Initialize global search sessions storage
 global.searchSessions = global.searchSessions || new Map();
-
-// Helper function to safely get user ID from request
-function getUserId(req: express.Request): number {
-  try {
-    // First check if user is authenticated through session
-    if (
-      req.isAuthenticated &&
-      req.isAuthenticated() &&
-      req.user &&
-      (req.user as any).id
-    ) {
-      return (req.user as any).id;
-    }
-
-    // Then check for Firebase authentication - this should now be properly set after the middleware fix
-    if ((req as any).firebaseUser && (req as any).firebaseUser.id) {
-      return (req as any).firebaseUser.id;
-    }
-  } catch (error) {
-    console.error("Error accessing user ID:", error);
-  }
-
-  // For routes that handle list/company data, we need to determine if this is:
-  // 1. A new user who should see demo data (return 1)
-  // 2. A user who just logged out and needs a clean state (don't return user 1's data)
-
-  // Check for recent logout by looking at the logout timestamp in the session
-  const recentlyLoggedOut =
-    (req.session as any)?.logoutTime &&
-    Date.now() - (req.session as any).logoutTime < 60000; // Within last minute
-
-  if (recentlyLoggedOut) {
-    // For recently logged out users, return a non-existent user ID
-    // This ensures they don't see the previous user's data
-    console.log("Recently logged out user - returning non-existent user ID");
-    return -1; // This ID won't match any real user, preventing data leakage
-  }
-
-  console.log(
-    "No authenticated user found - using demo user ID for compatibility",
-    {
-      isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-      hasUser: !!req.user,
-      hasFirebaseUser: !!(req as any).firebaseUser,
-      path: req.path,
-      method: req.method,
-      timestamp: new Date().toISOString(),
-    },
-  );
-
-  // For regular unauthenticated users, return demo user ID
-  return 1;
-}
 
 // Helper functions for improved search test scoring and AI agent support
 function normalizeScore(score: number): number {
@@ -161,40 +88,6 @@ function calculateImprovement(results: any[]): string | null {
 }
 
 // Authentication middleware
-function requireAuth(
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction,
-) {
-  console.log("Auth check:", {
-    isAuthenticated: req.isAuthenticated(),
-    hasUser: !!req.user,
-    hasFirebaseUser: !!(req as any).firebaseUser,
-    path: req.path,
-    method: req.method,
-    timestamp: new Date().toISOString(),
-  });
-
-  // In a production environment, we would require authentication
-  // For now, we'll still allow access but flag it for easier development
-
-  // If we have either a session user or Firebase user, set proper user context
-  if (req.isAuthenticated() && req.user) {
-    // Already authenticated via session
-    next();
-    return;
-  }
-
-  // Firebase token verification would have happened in middleware
-  if ((req as any).firebaseUser) {
-    // User authenticated via Firebase token
-    next();
-    return;
-  }
-
-  // For development only - we'll still allow the request
-  next();
-}
 
 // Generate static sitemap XML
 function generateSitemap(req: express.Request, res: express.Response) {
@@ -468,6 +361,17 @@ export function registerRoutes(app: Express) {
       // Exchange code for tokens
       const { tokens } = await oauth2Client.getToken(code as string);
 
+      if (!tokens || !tokens.access_token || !tokens.refresh_token || !tokens.expiry_date) {
+        console.error(`[Gmail OAuth] Invalid token response for user ${userId}`);
+        return res.status(400).json({ error: "Failed to obtain valid tokens" });
+      }
+      
+      // Validate expiration (optional, but good practice)
+      if (tokens.expiry_date && new Date(tokens.expiry_date) <= new Date()) {
+        console.error(`[Gmail OAuth] Received expired token for user ${userId}`);
+        return res.status(400).json({ error: "Received expired token" });
+      }
+      
       // Set credentials for Gmail API call
       oauth2Client.setCredentials(tokens);
 
@@ -477,7 +381,7 @@ export function registerRoutes(app: Express) {
 
       console.log(`[Gmail OAuth] Fetched profile for user ${userId}:`, {
         email: profile.data.emailAddress,
-        name: profile.data.displayName || profile.data.emailAddress,
+        name: profile.data.emailAddress ,
       });
 
       // Store tokens and user info using TokenService
@@ -490,7 +394,7 @@ export function registerRoutes(app: Express) {
         },
         {
           email: profile.data.emailAddress!,
-          name: profile.data.displayName || profile.data.emailAddress!,
+          name: profile.data.emailAddress!,
         },
       );
 
@@ -679,6 +583,14 @@ export function registerRoutes(app: Express) {
 
   // Simplified webhook endpoint to receive search results
   app.post("/api/webhooks/search-results", async (req, res) => {
+    let userId = req?.user?.id;
+    if (!userId) {
+      console.error("Webhook error: User not authenticated");
+      return res.status(403).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
     try {
       // Extract the search results from the request body
       const { searchId, results, status, error } = req.body;
@@ -728,14 +640,10 @@ export function registerRoutes(app: Express) {
               name: company.name,
               website: company.website || null,
               industry: company.industry || null,
-              size: company.size ? parseInt(company.size) : null,
+              size: company.size ? parseInt(company.size) : undefined,
               location: company.location || null,
               description: company.description || null,
-              services: company.services || [],
-              keyPeople: company.keyPeople || [],
-              foundedYear: company.foundedYear
-                ? parseInt(company.foundedYear)
-                : null,
+              services: company.services || [], 
               userId: req.user.id,
             });
 
@@ -816,8 +724,7 @@ export function registerRoutes(app: Express) {
                 probability: contact.probability
                   ? parseFloat(contact.probability)
                   : null,
-                alternativeEmails: contact.alternativeEmails || null,
-                confidence: contact.confidence || null,
+                alternativeEmails: contact.alternativeEmails || null, 
               });
 
               console.log(
@@ -904,6 +811,14 @@ export function registerRoutes(app: Express) {
 
   // Endpoint to trigger a search via workflow
   app.post("/api/workflow-search", requireAuth, async (req, res) => {
+    let userId = req?.user?.id;
+    if (!userId) {
+      console.error("Webhook error: User not authenticated");
+      return res.status(403).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
     const { query, strategyId, provider, targetUrl, resultsUrl } = req.body;
 
     if (!query || typeof query !== "string") {
@@ -913,9 +828,7 @@ export function registerRoutes(app: Express) {
       });
     }
 
-    try {
-      // Skip strategy selection - using direct search approach
-      let selectedStrategy = null;
+    try { 
 
       // Map strategy IDs to providers if no provider was explicitly specified
       let workflowProvider = provider;
@@ -948,12 +861,7 @@ export function registerRoutes(app: Express) {
         additionalParams.resultsUrl = resultsUrl;
         console.log(`Using custom results URL: ${resultsUrl}`);
       }
-
-      if (selectedStrategy) {
-        additionalParams.strategyName = selectedStrategy.name;
-        additionalParams.strategyConfig = selectedStrategy.config;
-        additionalParams.responseStructure = selectedStrategy.responseStructure;
-      }
+ 
 
       // Send the search request to the workflow
       const searchResult = await sendSearchRequest(query, {
@@ -1078,7 +986,7 @@ export function registerRoutes(app: Express) {
       req.isAuthenticated && req.isAuthenticated() && req.user;
     const listId = parseInt(req.params.listId);
 
-    let companies = [];
+    let companies:Company[] = [];
 
     // First try to find companies for the authenticated user's list
     if (isAuthenticated) {
@@ -1112,7 +1020,7 @@ export function registerRoutes(app: Express) {
     try {
       const userId = getUserId(req);
       const listId = await storage.getNextListId();
-
+      
       // Extract custom search targets from contactSearchConfig
       const customSearchTargets: string[] = [];
       if (contactSearchConfig) {
@@ -1158,9 +1066,9 @@ export function registerRoutes(app: Express) {
   });
 
   // Update list endpoint
-  app.put("/api/lists/:listId", requireAuth, async (req, res) => {
+  app.put("/api/lists/:listId", requireAuth, async (req, res) => {    
+    const userId = getUserId(req);
     try {
-      const userId = getUserId(req);
       const listId = parseInt(req.params.listId);
       const { companies, prompt, contactSearchConfig } = req.body;
 
@@ -1188,7 +1096,7 @@ export function registerRoutes(app: Express) {
       }
 
       console.log(
-        `Found existing list ${listId} for user ${userId}: ${existingList.name}`,
+        `Found existing list ${listId} for user ${userId}: ${existingList.prompt}`,
       );
 
       // Validate companies array
@@ -1208,7 +1116,7 @@ export function registerRoutes(app: Express) {
               error: "Invalid company ID",
             };
           }
-          const exists = await storage.getCompany(company.id, userId);
+          const exists = await storage.getCompany(company.id);
           return { id: company.id, exists: !!exists };
         }),
       );
@@ -1281,792 +1189,7 @@ export function registerRoutes(app: Express) {
       });
     }
   });
-
-  // Companies
-  app.get("/api/companies", requireAuth, async (req, res) => {
-    // Check if the user is authenticated with their own account
-    const isAuthenticated =
-      req.isAuthenticated && req.isAuthenticated() && req.user;
-
-    if (isAuthenticated) {
-      // Return authenticated user's companies
-      const companies = await storage.listCompanies(req.user!.id);
-      res.json(companies);
-    } else {
-      // For demo/unauthenticated users, return only the demo companies
-      const demoCompanies = await storage.listCompanies(1); // Demo user ID = 1
-      res.json(demoCompanies);
-    }
-  });
-
-  app.get("/api/companies/:id", requireAuth, async (req, res) => {
-    try {
-      const companyId = parseInt(req.params.id);
-      const isAuthenticated =
-        req.isAuthenticated && req.isAuthenticated() && req.user;
-
-      console.log("GET /api/companies/:id - Request params:", {
-        id: req.params.id,
-        isAuthenticated: isAuthenticated,
-      });
-
-      let company = null;
-
-      // First try to find the company for the authenticated user
-      if (isAuthenticated) {
-        company = await storage.getCompany(companyId, req.user!.id);
-      }
-
-      // If not found or not authenticated, check if it's a demo company
-      if (!company) {
-        company = await storage.getCompany(companyId, 1); // Check demo user (ID 1)
-      }
-
-      console.log("GET /api/companies/:id - Retrieved company:", {
-        requested: req.params.id,
-        found: company ? { id: company.id, name: company.name } : null,
-        isDemo: company && (!isAuthenticated || company.userId === 1),
-      });
-
-      if (!company) {
-        res.status(404).json({ message: "Company not found" });
-        return;
-      }
-      res.json(company);
-    } catch (error) {
-      console.error("Error fetching company:", error);
-      res.status(500).json({
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      });
-    }
-  });
-
-  // Quick company search endpoint - returns companies immediately without waiting for contacts
-  app.post("/api/companies/quick-search", async (req, res) => {
-    // For compatibility with the existing search functionality
-    // This temporary fix uses a default user ID if authentication fails
-    const userId = req.isAuthenticated() && req.user ? (req.user as any).id : 1;
-
-    const { query, strategyId, contactSearchConfig, sessionId, searchType } =
-      req.body;
-
-    if (!query || typeof query !== "string") {
-      res.status(400).json({
-        message: "Invalid request: query must be a non-empty string",
-      });
-      return;
-    }
-
-    try {
-      console.log(`[Quick Search] Processing query: ${query}`);
-      console.log(
-        `[Quick Search] Using strategy ID: ${strategyId || "default"}`,
-      );
-      console.log(`[Quick Search] Search type: ${searchType || "emails"}`);
-
-      // Credit blocking check: Prevent searches if user has negative balance
-      if (req.isAuthenticated() && req.user) {
-        const credits = await CreditService.getUserCredits(
-          (req.user as any).id,
-        );
-        if (credits.currentBalance < 0) {
-          return res.status(402).json({
-            message: "Account blocked due to insufficient credits",
-            currentBalance: credits.currentBalance,
-          });
-        }
-      }
-
-      // First, get the company search results quickly
-      const companyResults = await searchCompanies(query);
-
-      if (!companyResults || companyResults.length === 0) {
-        return res.json({
-          companies: [],
-          query,
-        });
-      }
-
-      // Prepare companies with minimal processing for quick display
-      const companies = [];
-
-      for (const company of companyResults) {
-        const companyName =
-          typeof company === "string" ? company : company.name;
-        const companyWebsite =
-          typeof company === "string" ? null : company.website || null;
-        const companyDescription =
-          typeof company === "string" ? null : company.description || null;
-
-        // Create the company record with basic info
-        const createdCompany = await storage.createCompany({
-          name: companyName,
-          website: companyWebsite,
-          description: companyDescription,
-          industry: null,
-          employeeCount: null,
-          headquarters: null,
-          founded: null,
-          revenue: null,
-          fundingStatus: null,
-          socialMedia: {},
-          userId,
-        });
-
-        companies.push(createdCompany);
-      }
-
-      // Cache both API results and created company records for full search reuse
-      const cacheKey = `search_${Buffer.from(query).toString("base64")}_companies`;
-      global.searchCache = global?.searchCache || new Map();
-      global.searchCache.set(cacheKey, {
-        apiResults: companyResults,
-        companyRecords: companies,
-        timestamp: Date.now(),
-        ttl: 5 * 60 * 1000, // 5 minutes
-      });
-
-      console.log(
-        `[Quick Search] Cached ${companyResults.length} company API results and ${companies.length} database records for reuse`,
-      );
-      console.log(`[Quick Search] Cache key: ${cacheKey}`);
-
-      // Store session if sessionId provided
-      if (sessionId) {
-        const session: SearchSessionResult = {
-          sessionId,
-          query,
-          status: "companies_found",
-          quickResults: companies,
-          timestamp: Date.now(),
-          ttl: 30 * 60 * 1000, // 30 minutes
-        };
-        global.searchSessions.set(sessionId, session);
-        console.log(
-          `[Quick Search] Session ${sessionId} updated with companies`,
-        );
-      }
-
-      // Pre-response billing: Deduct credits based on actual search type selected
-      if (req.isAuthenticated() && req.user && companies.length > 0) {
-        try {
-          // Map frontend search type to backend search type for billing
-          function mapSearchTypeToCredits(
-            frontendSearchType: string,
-          ): SearchType {
-            switch (frontendSearchType) {
-              case "companies":
-                return "company_search"; // 10 credits
-              case "contacts":
-                return "company_and_contacts"; // 70 credits (10 + 60)
-              case "emails":
-                return "company_contacts_emails"; // 240 credits (10 + 60 + 170)
-              default:
-                return "company_search"; // fallback to 10 credits
-            }
-          }
-
-          const creditSearchType = mapSearchTypeToCredits(
-            searchType || "companies",
-          );
-
-          await CreditService.deductCredits(
-            (req.user as any).id,
-            creditSearchType,
-            true,
-          );
-          console.log(
-            `Credits deducted for user ${(req.user as any).id}: ${creditSearchType} (frontend type: ${searchType})`,
-          );
-        } catch (creditError) {
-          console.error("Credit deduction error:", creditError);
-          // Don't fail the search if credit deduction fails
-        }
-      }
-
-      // Return the quick company data
-      res.json({
-        companies,
-        query,
-        strategyId: strategyId || null,
-        sessionId,
-        searchType: searchType || "emails",
-      });
-    } catch (error) {
-      console.error("Quick search error:", error);
-      res.status(500).json({
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
-      });
-    }
-  });
-
-  // Companies search endpoint
-  app.post("/api/companies/search", async (req, res) => {
-    // For compatibility with the existing search functionality
-    // This temporary fix uses a default user ID if authentication fails
-    const userId = req.isAuthenticated() && req.user ? (req.user as any).id : 1;
-
-    const {
-      query,
-      strategyId,
-      includeContacts = true,
-      contactSearchConfig,
-      sessionId,
-    } = req.body;
-
-    // Debug: Log contact search configuration at batch level
-    console.log(`[BATCH CONFIG] Contact search configuration:`, {
-      enableCoreLeadership: contactSearchConfig?.enableCoreLeadership,
-      enableDepartmentHeads: contactSearchConfig?.enableDepartmentHeads,
-      enableMiddleManagement: contactSearchConfig?.enableMiddleManagement,
-      enableCustomSearch: contactSearchConfig?.enableCustomSearch,
-      customSearchTarget: contactSearchConfig?.customSearchTarget,
-      query: query,
-    });
-
-    if (!query || typeof query !== "string") {
-      res.status(400).json({
-        message: "Invalid request: query must be a non-empty string",
-      });
-      return;
-    }
-
-    try {
-      // Check cache first to avoid duplicate API calls
-      const cacheKey = `search_${Buffer.from(query).toString("base64")}_companies`;
-      global.searchCache = global.searchCache || new Map();
-
-      let companyResults;
-      let cachedCompanies = null;
-      const cached = global.searchCache.get(cacheKey);
-
-      console.log(`[Full Search] Cache key: ${cacheKey}`);
-      console.log(`[Full Search] Cache has ${global.searchCache.size} entries`);
-      console.log(`[Full Search] Cache entry exists: ${!!cached}`);
-
-      if (cached && Date.now() - cached.timestamp < cached.ttl) {
-        console.log(
-          `[Full Search] Using cached company data for query: ${query}`,
-        );
-        companyResults = cached.apiResults;
-        cachedCompanies = cached.companyRecords;
-      } else {
-        if (cached) {
-          console.log(
-            `[Full Search] Cache expired - age: ${Date.now() - cached.timestamp}ms, TTL: ${cached.ttl}ms`,
-          );
-        }
-        console.log(
-          `[Full Search] Cache miss - fetching fresh company results for query: ${query}`,
-        );
-        companyResults = await searchCompanies(query);
-      }
-
-      // Use direct search approach without strategy database dependency
-      let selectedStrategy = null;
-      if (strategyId) {
-        console.log(
-          `Strategy ID ${strategyId} requested - using direct search flow`,
-        );
-      }
-
-      // Process search using direct modules without strategy dependency
-
-      // Use direct search without strategy dependency
-      console.log("Processing company search with direct search approach");
-
-      // If we have cached companies, reuse them and enrich with contacts
-      if (cachedCompanies) {
-        console.log(
-          `[Full Search] Reusing ${cachedCompanies.length} cached company records - enriching with contacts`,
-        );
-
-        // Helper function to process companies in parallel batches
-        async function processBatch<T, R>(
-          items: T[],
-          processor: (item: T) => Promise<R>,
-          batchSize: number = 4,
-        ): Promise<R[]> {
-          const results: R[] = [];
-          for (let i = 0; i < items.length; i += batchSize) {
-            const batch = items.slice(i, i + batchSize);
-            const batchResults = await Promise.all(batch.map(processor));
-            results.push(...batchResults);
-          }
-          return results;
-        }
-
-        // Enrich existing companies with contacts using parallel batch processing
-        const enrichedCompanies = await processBatch(
-          cachedCompanies,
-          async (existingCompany) => {
-            const companyName = existingCompany.name;
-            const companyWebsite = existingCompany.website;
-            const companyDescription = existingCompany.description;
-
-            // Use direct contact search without strategy dependency
-            console.log(
-              `Processing contacts for existing company: ${companyName}`,
-            );
-
-            // Skip company update - use existing company data
-            const updatedCompany = existingCompany;
-
-            // Determine industry from company name and description
-            let industry: string | undefined = undefined;
-
-            // Simple industry detection using company name and description
-            const companyText =
-              `${companyName} ${companyDescription || ""}`.toLowerCase();
-            const industryKeywords: Record<string, string> = {
-              software: "technology",
-              tech: "technology",
-              development: "technology",
-              it: "technology",
-              programming: "technology",
-              cloud: "technology",
-              healthcare: "healthcare",
-              medical: "healthcare",
-              hospital: "healthcare",
-              doctor: "healthcare",
-              finance: "financial",
-              banking: "financial",
-              investment: "financial",
-              construction: "construction",
-              building: "construction",
-              "real estate": "construction",
-              legal: "legal",
-              law: "legal",
-              attorney: "legal",
-              retail: "retail",
-              shop: "retail",
-              store: "retail",
-              education: "education",
-              school: "education",
-              university: "education",
-              manufacturing: "manufacturing",
-              factory: "manufacturing",
-              production: "manufacturing",
-              consulting: "consulting",
-              advisor: "consulting",
-            };
-
-            for (const [keyword, industryValue] of Object.entries(
-              industryKeywords,
-            )) {
-              if (companyText.includes(keyword)) {
-                industry = industryValue;
-                break;
-              }
-            }
-
-            if (!industry && companyName) {
-              const nameLower = companyName.toLowerCase();
-              if (
-                nameLower.includes("tech") ||
-                nameLower.includes("software")
-              ) {
-                industry = "technology";
-              } else if (
-                nameLower.includes("health") ||
-                nameLower.includes("medical")
-              ) {
-                industry = "healthcare";
-              } else if (
-                nameLower.includes("financ") ||
-                nameLower.includes("bank")
-              ) {
-                industry = "financial";
-              } else if (nameLower.includes("consult")) {
-                industry = "consulting";
-              }
-            }
-
-            console.log(
-              `Detected industry for ${companyName}: ${industry || "unknown"}`,
-            );
-
-            // Debug: Log company-level configuration before enhanced contact finder
-            console.log(`[COMPANY CONFIG] ${companyName} - Search config:`, {
-              enableCoreLeadership: contactSearchConfig?.enableCoreLeadership,
-              enableDepartmentHeads: contactSearchConfig?.enableDepartmentHeads,
-              enableMiddleManagement:
-                contactSearchConfig?.enableMiddleManagement,
-              enableCustomSearch: contactSearchConfig?.enableCustomSearch,
-              customSearchTarget: contactSearchConfig?.customSearchTarget,
-            });
-
-            // Use enhanced contact finder with user configuration
-            const contacts = await findKeyDecisionMakers(companyName, {
-              industry: industry,
-              minimumConfidence: 30,
-              maxContacts: 20,
-              includeMiddleManagement: true,
-              prioritizeLeadership: true,
-              useMultipleQueries: true,
-              // Use frontend-configured search phases
-              enableCoreLeadership: contactSearchConfig?.enableCoreLeadership,
-              enableDepartmentHeads: contactSearchConfig?.enableDepartmentHeads,
-              enableMiddleManagement:
-                contactSearchConfig?.enableMiddleManagement,
-              enableCustomSearch:
-                contactSearchConfig?.enableCustomSearch ?? false,
-              customSearchTarget: contactSearchConfig?.customSearchTarget ?? "",
-              enableCustomSearch2:
-                contactSearchConfig?.enableCustomSearch2 ?? false,
-              customSearchTarget2:
-                contactSearchConfig?.customSearchTarget2 ?? "",
-            });
-
-            console.log(
-              `Found ${contacts.length} contacts using enhanced contact finder`,
-            );
-
-            // Create contact records
-            const createdContacts = [];
-
-            for (const contact of contacts) {
-              const created = storage.createContact({
-                companyId: existingCompany.id,
-                name: contact.name!,
-                role: contact.role ?? null,
-                email: contact.email ?? null,
-                probability: contact.probability ?? null,
-                linkedinUrl: null,
-                twitterHandle: null,
-                phoneNumber: null,
-                department: null,
-                location: null,
-                verificationSource: "Decision-maker Analysis",
-                nameConfidenceScore: contact.nameConfidenceScore ?? null,
-                userFeedbackScore: null,
-                feedbackCount: 0,
-                userId: userId,
-              });
-
-              createdContacts.push(created);
-            }
-
-            return {
-              ...(updatedCompany || existingCompany),
-              contacts: await Promise.all(createdContacts),
-            };
-          },
-          4, // batch size
-        );
-
-        // Return enriched companies using existing records
-        res.json({
-          companies: enrichedCompanies,
-          query,
-          strategyId: null,
-          strategyName: "Direct Search Flow",
-        });
-
-        return; // Early return to skip the new company creation logic
-      }
-
-      // If no cached companies, create new ones (fallback logic)
-      const companies = await Promise.all(
-        companyResults.map(async (company: any) => {
-          // Extract company name, website and description (if available)
-          const companyName =
-            typeof company === "string" ? company : company.name;
-          const companyWebsite =
-            typeof company === "string" ? null : company.website || null;
-          const companyDescription =
-            typeof company === "string" ? null : company.description || null;
-
-          console.log(
-            `Processing company: ${companyName}, Website: ${companyWebsite || "Not available"}`,
-          );
-
-          // Skip broken analysis and use direct contact search
-          console.log(`Processing contacts for new company: ${companyName}`);
-
-          // Create the company record with minimal data
-          const createdCompany = await storage.createCompany({
-            name: companyName,
-            website: companyWebsite,
-            description: companyDescription,
-          });
-
-          // Use direct contact search without broken strategy dependencies
-          const contacts = await findKeyDecisionMakers(companyName, {
-            industry: "unknown",
-            minimumConfidence: 30,
-            maxContacts: 15,
-            includeMiddleManagement: true,
-            prioritizeLeadership: true,
-            useMultipleQueries: true,
-          });
-
-          console.log(`Found ${contacts.length} contacts for ${companyName}`);
-
-          // Create contact records
-          const createdContacts = await Promise.all(
-            contacts.map((contact) =>
-              storage.createContact({
-                companyId: createdCompany.id,
-                name: contact.name!,
-                role: contact.role ?? null,
-                email: contact.email ?? null,
-                probability: contact.probability ?? null,
-                linkedinUrl: null,
-                twitterHandle: null,
-                phoneNumber: null,
-                department: null,
-                location: null,
-                verificationSource: "Contact Search",
-                nameConfidenceScore: contact.nameConfidenceScore ?? null,
-                userFeedbackScore: null,
-                feedbackCount: 0,
-              }),
-            ),
-          );
-
-          return { ...createdCompany, contacts: createdContacts };
-        }),
-      );
-
-      // Store complete session results if sessionId provided
-      if (sessionId) {
-        const session = global.searchSessions.get(sessionId);
-        if (session) {
-          session.status = "contacts_complete";
-          session.fullResults = companies;
-          session.timestamp = Date.now();
-          global.searchSessions.set(sessionId, session);
-          console.log(
-            `[Full Search] Session ${sessionId} completed with ${companies.length} companies and contacts`,
-          );
-        }
-      }
-
-      // Return results immediately to complete the search
-      res.json({
-        companies: companies,
-        query: query,
-        strategyId: null,
-        strategyName: "Direct Search Flow",
-        sessionId,
-      });
-
-      // Contact discovery complete - return results immediately
-      console.log(
-        `Search completed successfully with ${companies.length} companies`,
-      );
-    } catch (error) {
-      console.error("Company search error:", error);
-      res.status(500).json({
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred during company search",
-      });
-    }
-  });
-
-  // Contacts
-  app.get(
-    "/api/companies/:companyId/contacts",
-    requireAuth,
-    async (req, res) => {
-      try {
-        const userId = getUserId(req);
-        const companyId = parseInt(req.params.companyId);
-
-        // Handle cache invalidation for fresh data requests
-        const cacheTimestamp = req.query.t;
-
-        const contacts = await storage.listContactsByCompany(companyId, userId);
-
-        // Set no-cache headers for fresh data requests
-        if (cacheTimestamp) {
-          res.set({
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            Pragma: "no-cache",
-            Expires: "0",
-          });
-        }
-
-        res.json(contacts);
-      } catch (error) {
-        console.error("Error fetching contacts by company:", error);
-        res.status(500).json({ message: "Failed to fetch contacts" });
-      }
-    },
-  );
-
-  app.post(
-    "/api/companies/:companyId/enrich-contacts",
-    requireAuth,
-    async (req, res) => {
-      try {
-        const userId = getUserId(req);
-        const companyId = parseInt(req.params.companyId);
-        const company = await storage.getCompany(companyId, userId);
-
-        if (!company) {
-          res.status(404).json({ message: "Company not found" });
-          return;
-        }
-
-        // Get any active decision-maker module approach
-        const approaches = await storage.listSearchApproaches();
-        const decisionMakerApproach = approaches.find(
-          (a) => a.moduleType === "decision_maker" && a.active,
-        );
-
-        if (!decisionMakerApproach) {
-          res.status(400).json({
-            message: "Decision-maker analysis approach is not configured",
-          });
-          return;
-        }
-
-        try {
-          console.log(
-            "Starting decision-maker analysis for company:",
-            company.name,
-          );
-
-          // Perform decision-maker analysis with technical prompt
-          const analysisResult = await analyzeCompany(
-            company.name,
-            decisionMakerApproach.prompt,
-            decisionMakerApproach.technicalPrompt,
-            decisionMakerApproach.responseStructure,
-          );
-          console.log("Decision-maker analysis result:", analysisResult);
-
-          // Extract contacts focusing on core fields only
-          // Determine industry from company name
-          let industry: string | undefined = undefined;
-          if (company.name) {
-            const nameLower = company.name.toLowerCase();
-            // Simple industry detection from company name
-            if (nameLower.includes("tech") || nameLower.includes("software")) {
-              industry = "technology";
-            } else if (
-              nameLower.includes("health") ||
-              nameLower.includes("medical")
-            ) {
-              industry = "healthcare";
-            } else if (
-              nameLower.includes("financ") ||
-              nameLower.includes("bank")
-            ) {
-              industry = "financial";
-            } else if (nameLower.includes("consult")) {
-              industry = "consulting";
-            }
-            // Check for industry in company services if available
-            if (!industry && company.services && company.services.length > 0) {
-              const serviceString = company.services.join(" ").toLowerCase();
-              if (
-                serviceString.includes("tech") ||
-                serviceString.includes("software") ||
-                serviceString.includes("development")
-              ) {
-                industry = "technology";
-              } else if (
-                serviceString.includes("health") ||
-                serviceString.includes("medical")
-              ) {
-                industry = "healthcare";
-              } else if (
-                serviceString.includes("financ") ||
-                serviceString.includes("bank")
-              ) {
-                industry = "financial";
-              }
-            }
-          }
-          console.log(
-            `Detected industry for contact enrichment: ${industry || "unknown"}`,
-          );
-
-          // Use enhanced contact finder for enrichment with default settings
-          const newContacts = await findKeyDecisionMakers(company.name, {
-            industry: industry,
-            minimumConfidence: 30,
-            maxContacts: 10,
-            includeMiddleManagement: true,
-            prioritizeLeadership: true,
-            useMultipleQueries: true,
-            // Enable all search types for enrichment
-            enableCoreLeadership: true,
-            enableDepartmentHeads: true,
-            enableMiddleManagement: true,
-            enableCustomSearch: false,
-            customSearchTarget: "",
-          });
-          console.log("Enhanced contact finder results:", newContacts);
-
-          // Remove existing contacts
-          await storage.deleteContactsByCompany(companyId, req.user!.id);
-
-          // Create new contacts with only the essential fields and minimum confidence score
-          const validContacts = newContacts.filter(
-            (contact: Contact) =>
-              contact.name &&
-              contact.name !== "Unknown" &&
-              (!contact.probability || contact.probability >= 40), // Filter out contacts with low confidence/probability scores
-          );
-          console.log("Valid contacts for enrichment:", validContacts);
-
-          const createdContacts = await Promise.all(
-            validContacts.map(async (contact: Contact) => {
-              console.log(`Processing contact enrichment for: ${contact.name}`);
-
-              return storage.createContact({
-                companyId,
-                name: contact.name!,
-                role: contact.role || null,
-                email: contact.email || null,
-                priority: contact.priority ?? null,
-                linkedinUrl: null,
-                twitterHandle: null,
-                phoneNumber: null,
-                department: null,
-                location: null,
-                verificationSource: "Decision-maker Analysis",
-                userId: userId,
-              });
-            }),
-          );
-
-          console.log("Created contacts:", createdContacts);
-          res.json(createdContacts);
-        } catch (error) {
-          console.error("Contact enrichment error:", error);
-          res.status(500).json({
-            message:
-              error instanceof Error
-                ? error.message
-                : "An unexpected error occurred during contact enrichment",
-          });
-        }
-      } catch (error) {
-        console.error("Contact enrichment error:", error);
-        res.status(500).json({
-          message:
-            error instanceof Error
-              ? error.message
-              : "An unexpected error occurred during contact enrichment",
-        });
-      }
-    },
-  );
-
-  // Add new route for getting a single contact
+  
   app.get("/api/contacts/:id", requireAuth, async (req, res) => {
     try {
       const userId = getUserId(req);
@@ -2076,7 +1199,7 @@ export function registerRoutes(app: Express) {
         userId: userId,
       });
 
-      const contact = await storage.getContact(parseInt(req.params.id), userId);
+      const contact = await storage.getContact(parseInt(req.params.id));
 
       console.log("GET /api/contacts/:id - Retrieved contact:", {
         requested: req.params.id,
@@ -2149,7 +1272,8 @@ export function registerRoutes(app: Express) {
     res.json(campaign);
   });
 
-  app.post("/api/campaigns", requireAuth, async (req, res) => {
+  app.post("/api/campaigns", requireAuth, async (req, res) => {    
+    const userId = getUserId(req);
     try {
       // Get next available campaign ID (starting from 2001)
       const campaignId = await storage.getNextCampaignId();
@@ -2173,7 +1297,7 @@ export function registerRoutes(app: Express) {
       const campaign = await storage.createCampaign({
         ...result.data,
         description: result.data.description || null,
-        startDate: result.data.startDate || null,
+        startDate: result.data.startDate ? new Date(result.data.startDate) : null,
         status: result.data.status || "draft",
       });
 
@@ -2198,7 +1322,7 @@ export function registerRoutes(app: Express) {
 
     const updated = await storage.updateCampaign(
       parseInt(req.params.campaignId),
-      result.data,
+      {...result.data, startDate : result.data.startDate || null},
       req.user!.id,
     );
 
@@ -2309,12 +1433,13 @@ export function registerRoutes(app: Express) {
       const template = await storage.updateEmailTemplate(
         templateId,
         result.data,
+        userId,
       );
-      console.log("Updated email template:", {
+      console.log("Updated email template:", template?{
         id: template.id,
         name: template.name,
         userId: template.userId,
-      });
+      }:'notfound');
 
       res.json(template);
     } catch (error) {
@@ -2327,10 +1452,7 @@ export function registerRoutes(app: Express) {
       });
     }
   });
-
-  // Leave the search approaches endpoints without auth since they are system-wide
-
-  // Keep other existing routes with requireAuth
+ 
   app.post("/api/generate-email", requireAuth, async (req, res) => {
     const { emailPrompt, contact, company } = req.body;
 
@@ -2404,7 +1526,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         return;
       }
 
-      const contact = await storage.getContact(contactId, userId);
+      const contact = await storage.getContact(contactId);
       if (!contact) {
         res.status(404).json({ message: "Contact not found" });
         return;
@@ -2415,7 +1537,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         companyId: contact.companyId,
       });
 
-      const company = await storage.getCompany(contact.companyId, userId);
+      const company = await storage.getCompany(contact.companyId);
       if (!company) {
         res.status(404).json({ message: "Company not found" });
         return;
@@ -2528,39 +1650,6 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       });
     }
   });
-
-  app.post(
-    "/api/companies/:companyId/enrich-top-prospects",
-    requireAuth,
-    async (req, res) => {
-      try {
-        const companyId = parseInt(req.params.companyId);
-        const searchId = `search_${Date.now()}`;
-        const { contactIds } = req.body; // Get the specific contact IDs to enrich
-
-        // Start the enrichment process
-        const queueId = await postSearchEnrichmentService.startEnrichment(
-          companyId,
-          searchId,
-          contactIds,
-        );
-
-        res.json({
-          message: "Top prospects enrichment started",
-          queueId,
-          status: "processing",
-        });
-      } catch (error) {
-        console.error("Enrichment start error:", error);
-        res.status(500).json({
-          message:
-            error instanceof Error
-              ? error.message
-              : "Failed to start enrichment process",
-        });
-      }
-    },
-  );
 
   // Add these routes before the return statement in registerRoutes
   // User Preferences
@@ -2812,873 +1901,6 @@ Then, on a new line, write the body of the email. Keep both subject and content 
     }
   });
 
-  app.post("/api/test/health", async (req, res) => {
-    try {
-      const tests: any = {};
-
-      // Test Perplexity API
-      try {
-        await queryPerplexity([
-          {
-            role: "user",
-            content: "Test connection",
-          },
-        ]);
-        tests.perplexity = {
-          status: "passed",
-          message: "Perplexity API responding",
-        };
-      } catch (error) {
-        tests.perplexity = {
-          status: "failed",
-          message: "Perplexity API not responding",
-          error: error instanceof Error ? error.message : String(error),
-        };
-      }
-
-      // Test AeroLeads API
-      const aeroLeadsKey = process.env.AEROLEADS_API_KEY;
-      tests.aeroleads = {
-        status: aeroLeadsKey ? "passed" : "failed",
-        message: aeroLeadsKey
-          ? "AeroLeads API key configured"
-          : "AeroLeads API key missing",
-      };
-
-      // Test Apollo API
-      const apolloKey = process.env.APOLLO_API_KEY;
-      tests.apollo = {
-        status: apolloKey ? "passed" : "failed",
-        message: apolloKey
-          ? "Apollo API key configured"
-          : "Apollo API key missing",
-      };
-
-      // Test Hunter API
-      const hunterKey = process.env.HUNTER_API_KEY;
-      tests.hunter = {
-        status: hunterKey ? "passed" : "failed",
-        message: hunterKey
-          ? "Hunter API key configured"
-          : "Hunter API key missing",
-      };
-
-      // Test Gmail API
-      try {
-        const emailProvider = getEmailProvider();
-        tests.gmail = {
-          status: emailProvider ? "passed" : "warning",
-          message: emailProvider
-            ? "Gmail service available"
-            : "Gmail service in test mode",
-        };
-      } catch (error) {
-        tests.gmail = {
-          status: "warning",
-          message: "Gmail API in verification process",
-          error: error instanceof Error ? error.message : String(error),
-        };
-      }
-
-      const allPassed = Object.values(tests).every(
-        (test: any) => test.status === "passed",
-      );
-
-      res.json({
-        message: allPassed
-          ? "All API services healthy"
-          : "Some API services have issues",
-        status: allPassed ? "healthy" : "warning",
-        tests,
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: "Health check failed",
-        details: error instanceof Error ? error.message : String(error),
-      });
-    }
-  });
-
-  // Backend Email Search Orchestration Endpoint
-  app.post("/api/companies/find-all-emails", requireAuth, async (req, res) => {
-    try {
-      const userId = getUserId(req);
-      const { companyIds, sessionId } = req.body;
-
-      if (
-        !companyIds ||
-        !Array.isArray(companyIds) ||
-        companyIds.length === 0
-      ) {
-        res.status(400).json({ message: "companyIds array is required" });
-        return;
-      }
-
-      // Mark email search as started in session if sessionId provided
-      if (sessionId) {
-        const session = global.searchSessions?.get(sessionId);
-        if (session) {
-          session.emailSearchStatus = "running";
-          global.searchSessions.set(sessionId, session);
-          console.log(
-            `[Email Search] Session ${sessionId} marked as email search running`,
-          );
-        }
-      }
-
-      let totalProcessed = 0;
-      let totalEmailsFound = 0;
-      const results = [];
-
-      // Helper function to add delay
-      const delay = (ms: number): Promise<void> =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-
-      // Process individual company with waterfall search
-      const processCompany = async (companyId: number, index: number) => {
-        // Add staggered delay before starting each company
-        await delay(index * 400);
-
-        try {
-          const company = await storage.getCompany(companyId, userId);
-          if (!company) {
-            console.log(`Company ${companyId} not found, skipping`);
-            return { processed: 0, emailsFound: 0, result: null };
-          }
-
-          console.log(
-            `Processing emails for company: ${company.name} (started after ${index * 400}ms delay)`,
-          );
-
-          // Get current contacts for this company
-          const contacts = await storage.listContactsByCompany(
-            company.id,
-            userId,
-          );
-
-          // Filter to contacts needing emails (top 3 contacts without emails)
-          const topContacts = contacts
-            .sort((a, b) => (b.probability || 0) - (a.probability || 0))
-            .slice(0, 3)
-            .filter((contact) => !contact.email || contact.email.length <= 5);
-
-          if (topContacts.length === 0) {
-            console.log(`No contacts need email search for ${company.name}`);
-            return { processed: 0, emailsFound: 0, result: null };
-          }
-
-          // Helper function: Search multiple contacts with Apollo
-          const searchApolloContacts = async (contacts: Contact[]) => {
-            let emailsFound = 0;
-            let contactsProcessed = 0;
-            const sources = [];
-
-            for (const contact of contacts) {
-              try {
-                const apolloResponse = await fetch(
-                  `http://localhost:5000/api/contacts/${contact.id}/apollo`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: req.headers.authorization || "",
-                    },
-                  },
-                );
-
-                const apolloData = await apolloResponse.json();
-                if (
-                  apolloResponse.status === 200 ||
-                  apolloResponse.status === 422
-                ) {
-                  const contactData =
-                    apolloResponse.status === 200
-                      ? apolloData
-                      : apolloData.contact;
-                  if (contactData.email && contactData.email.length > 5) {
-                    emailsFound++;
-                    sources.push(`Apollo-${contact.name}`);
-                    console.log(
-                      `Apollo found email for ${contact.name}: ${contactData.email}`,
-                    );
-                  }
-                  contactsProcessed++;
-                }
-              } catch (error) {
-                console.error(
-                  `Apollo search failed for contact ${contact.id}:`,
-                  error,
-                );
-                contactsProcessed++;
-              }
-            }
-
-            return { emailsFound, contactsProcessed, sources };
-          };
-
-          // Helper function: Search multiple contacts with Perplexity
-          const searchPerplexityContacts = async (contacts: Contact[]) => {
-            let emailsFound = 0;
-            let contactsProcessed = 0;
-            const sources = [];
-
-            for (const contact of contacts) {
-              try {
-                const enrichedDetails = await searchContactDetails(
-                  contact.name,
-                  company.name,
-                );
-                if (
-                  enrichedDetails &&
-                  enrichedDetails.email &&
-                  enrichedDetails.email.length > 5
-                ) {
-                  await storage.updateContact(
-                    contact.id,
-                    {
-                      ...enrichedDetails,
-                      completedSearches: [
-                        ...(contact.completedSearches || []),
-                        "contact_enrichment",
-                      ],
-                    },
-                    userId,
-                  );
-                  emailsFound++;
-                  sources.push(`Perplexity-${contact.name}`);
-                  console.log(
-                    `Perplexity found email for ${contact.name}: ${enrichedDetails.email}`,
-                  );
-                }
-                contactsProcessed++;
-              } catch (error) {
-                console.error(
-                  `Perplexity search failed for contact ${contact.id}:`,
-                  error,
-                );
-                contactsProcessed++;
-              }
-            }
-
-            return { emailsFound, contactsProcessed, sources };
-          };
-
-          // Helper function: Search multiple contacts with Hunter
-          const searchHunterContacts = async (contacts: Contact[]) => {
-            let emailsFound = 0;
-            let contactsProcessed = 0;
-            const sources = [];
-
-            for (const contact of contacts) {
-              try {
-                const hunterResponse = await fetch(
-                  `http://localhost:5000/api/contacts/${contact.id}/hunter`,
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: req.headers.authorization || "",
-                    },
-                  },
-                );
-
-                const hunterData = await hunterResponse.json();
-                if (
-                  hunterResponse.status === 200 ||
-                  hunterResponse.status === 422
-                ) {
-                  const contactData =
-                    hunterResponse.status === 200
-                      ? hunterData
-                      : hunterData.contact;
-                  if (contactData.email && contactData.email.length > 5) {
-                    emailsFound++;
-                    sources.push(`Hunter-${contact.name}`);
-                    console.log(
-                      `Hunter found email for ${contact.name}: ${contactData.email}`,
-                    );
-                  }
-                  contactsProcessed++;
-                }
-              } catch (error) {
-                console.error(
-                  `Hunter search failed for contact ${contact.id}:`,
-                  error,
-                );
-                contactsProcessed++;
-              }
-            }
-
-            return { emailsFound, contactsProcessed, sources };
-          };
-
-          // Define contact assignments
-          const contact1 = topContacts[0]; // Highest scored
-          const contact2 = topContacts[1]; // Second highest
-          const contact3 = topContacts[2]; // Third highest
-
-          // Tier 1 & 2: Run Apollo and Perplexity in parallel
-          console.log(
-            `Starting parallel search - Apollo: contacts 1&2, Perplexity: contacts 1&3 for ${company.name}`,
-          );
-          const [apolloResults, perplexityResults] = await Promise.all([
-            searchApolloContacts([contact1, contact2].filter(Boolean)),
-            searchPerplexityContacts([contact1, contact3].filter(Boolean)),
-          ]);
-
-          const combinedEmailsFound =
-            apolloResults.emailsFound + perplexityResults.emailsFound;
-          const combinedContactsProcessed =
-            apolloResults.contactsProcessed +
-            perplexityResults.contactsProcessed;
-          const combinedSources = [
-            ...apolloResults.sources,
-            ...perplexityResults.sources,
-          ];
-
-          // Early return if emails found
-          if (combinedEmailsFound > 0) {
-            console.log(
-              `Parallel search success for ${company.name}: ${combinedEmailsFound} emails found`,
-            );
-            return {
-              processed: combinedContactsProcessed,
-              emailsFound: combinedEmailsFound,
-              result: {
-                companyId: company.id,
-                companyName: company.name,
-                emailsFound: combinedEmailsFound,
-                source: combinedSources.join(", "),
-              },
-            };
-          }
-
-          // Tier 3: Hunter only if no emails found in Tiers 1 & 2
-          console.log(
-            `No emails found in parallel search, trying Hunter for ${company.name}`,
-          );
-          const hunterResults = await searchHunterContacts(
-            [contact1, contact2].filter(Boolean),
-          );
-
-          return {
-            processed:
-              combinedContactsProcessed + hunterResults.contactsProcessed,
-            emailsFound: hunterResults.emailsFound,
-            result: {
-              companyId: company.id,
-              companyName: company.name,
-              emailsFound: hunterResults.emailsFound,
-              source:
-                hunterResults.emailsFound > 0
-                  ? hunterResults.sources.join(", ")
-                  : "None",
-            },
-          };
-        } catch (error) {
-          console.error(`Error processing company ${companyId}:`, error);
-          return { processed: 0, emailsFound: 0, result: null };
-        }
-      };
-
-      // Process all companies in parallel with staggered starts
-      const companyResults = await Promise.all(
-        companyIds.map((companyId, index) => processCompany(companyId, index)),
-      );
-
-      // Collect results and calculate totals + source breakdown
-      const sourceBreakdown = { Perplexity: 0, Apollo: 0, Hunter: 0 };
-
-      for (const { processed, emailsFound, result } of companyResults) {
-        totalProcessed += processed;
-        totalEmailsFound += emailsFound;
-        if (result) {
-          results.push(result);
-          if (result.source && result.emailsFound > 0) {
-            // Handle parallel search results with multiple sources
-            const sources = result.source.split(", ");
-            sources.forEach((source) => {
-              if (source.includes("Apollo")) {
-                sourceBreakdown.Apollo++;
-              } else if (source.includes("Perplexity")) {
-                sourceBreakdown.Perplexity++;
-              } else if (source.includes("Hunter")) {
-                sourceBreakdown.Hunter++;
-              }
-            });
-          }
-        }
-      }
-
-      console.log(
-        `Backend email orchestration completed: ${totalEmailsFound} emails found from ${totalProcessed} searches across ${companyIds.length} companies`,
-      );
-      console.log(
-        `Source breakdown - Perplexity: ${sourceBreakdown.Perplexity}, Apollo: ${sourceBreakdown.Apollo}, Hunter: ${sourceBreakdown.Hunter}`,
-      );
-
-      // Mark email search as completed in session if sessionId provided
-      if (sessionId) {
-        const session = global.searchSessions?.get(sessionId);
-        if (session) {
-          session.emailSearchStatus = "completed";
-          session.emailSearchCompleted = Date.now();
-          global.searchSessions.set(sessionId, session);
-          console.log(
-            `[Email Search] Session ${sessionId} marked as email search completed`,
-          );
-        }
-      }
-
-      res.json({
-        success: true,
-        summary: {
-          companiesProcessed: companyIds.length,
-          contactsProcessed: totalProcessed,
-          emailsFound: totalEmailsFound,
-          sourceBreakdown,
-        },
-        results,
-      });
-    } catch (error) {
-      console.error("Backend email orchestration error:", error);
-      res.status(500).json({
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to orchestrate email search",
-      });
-    }
-  });
-
-  // Search Quality Testing Endpoint
-  app.post("/api/search-test", requireAuth, async (req, res) => {
-    try {
-      const { strategyId, query } = req.body;
-
-      if (!strategyId || !query) {
-        res.status(400).json({
-          message:
-            "Missing required parameters: strategyId and query are required",
-        });
-        return;
-      }
-
-      console.log("Running search quality test:", { strategyId, query });
-
-      // Get the search strategy
-      const approach = await storage.getSearchApproach(strategyId);
-      if (!approach) {
-        res.status(404).json({ message: "Search strategy not found" });
-        return;
-      }
-
-      // In a real implementation, we would:
-      // 1. Run the actual search using this strategy
-      // 2. Analyze company quality based on relevance, data completeness
-      // 3. Analyze contact quality based on role importance, data validation
-      // 4. Analyze email quality based on pattern validation, verifiability
-
-      // Calculate quality scores based on search approach
-      // In a real implementation, these would be based on actual search results
-
-      // Get configuration and weightings from the approach
-      const { config: configObject } = approach;
-      const config =
-        typeof configObject === "string"
-          ? JSON.parse(configObject || "{}")
-          : configObject;
-
-      // Calculate weighted scores based on search approach configuration
-      // We assign higher scores to approaches with more comprehensive settings
-      const baseScoreRange = { min: 55, max: 85 }; // Reasonable range for scores
-
-      // Company quality factors
-      const hasCompanyFilters =
-        config?.filters?.ignoreFranchises ||
-        config?.filters?.locallyHeadquartered;
-      const hasCompanyVerification = config?.validation?.requireVerification;
-
-      // Contact quality factors - IMPROVED VERSION with better validation
-      const hasContactValidation = config?.validation?.minimumConfidence > 0.5;
-      const hasNameValidation =
-        config?.validation?.nameValidation?.minimumScore > 50;
-      const requiresRole = config?.validation?.nameValidation?.requireRole;
-      const hasFocusOnLeadership =
-        config?.searchOptions?.focusOnLeadership || false;
-      const hasRoleMinimumScore =
-        config?.decision_maker?.searchOptions?.roleMinimumScore > 75;
-
-      // NEW: Additional enhanced contact scoring factors (higher quality results)
-      const hasEnhancedNameValidation =
-        config?.enhancedNameValidation ||
-        config?.subsearches?.["enhanced-name-validation"] ||
-        false;
-      const hasPositionWeighting =
-        config?.validation?.positionWeighting || false;
-      const hasTitleRecognition = config?.validation?.titleRecognition || false;
-      const hasLeadershipValidation =
-        config?.subsearches?.["leadership-role-validation"] || false;
-
-      // Email quality factors - IMPROVED VERSION with deeper validation
-      const hasEmailValidation = config?.emailValidation?.minimumScore > 0.6;
-      const hasPatternAnalysis = config?.emailValidation?.patternScore > 0.5;
-      const hasBusinessDomainCheck =
-        config?.emailValidation?.businessDomainScore > 0.5;
-      const hasCrossReferenceValidation =
-        config?.searchOptions?.crossReferenceValidation || false;
-      const hasEnhancedEmailSearch =
-        config?.email_discovery?.subsearches?.[
-          "enhanced-pattern-prediction-search"
-        ] || false;
-      const hasDomainAnalysis =
-        config?.email_discovery?.subsearches?.["domain-analysis-search"] ||
-        false;
-
-      // NEW: Advanced email validation techniques with higher success rates
-      const hasHeuristicValidation =
-        config?.enhancedValidation?.heuristicRules || false;
-      const hasAiPatternRecognition =
-        config?.enhancedValidation?.aiPatternRecognition || false;
-
-      // Calculate individual scores with some randomness for variety
-      const randomFactor = () => Math.floor(Math.random() * 15) - 5; // -5 to +10 random adjustment
-
-      const companyQuality =
-        baseScoreRange.min +
-        (hasCompanyFilters ? 10 : 0) +
-        (hasCompanyVerification ? 15 : 0) +
-        randomFactor();
-
-      const contactQuality =
-        baseScoreRange.min +
-        (hasContactValidation ? 10 : 0) +
-        (hasNameValidation ? 10 : 0) +
-        (requiresRole ? 5 : 0) +
-        (hasFocusOnLeadership ? 8 : 0) +
-        (hasLeadershipValidation ? 7 : 0) +
-        (hasRoleMinimumScore ? 5 : 0) +
-        (hasEnhancedNameValidation ? 6 : 0) +
-        randomFactor();
-
-      const emailQuality =
-        baseScoreRange.min +
-        (hasEmailValidation ? 10 : 0) +
-        (hasPatternAnalysis ? 10 : 0) +
-        (hasBusinessDomainCheck ? 5 : 0) +
-        (hasCrossReferenceValidation ? 8 : 0) +
-        (hasEnhancedEmailSearch ? 7 : 0) +
-        (hasDomainAnalysis ? 6 : 0) +
-        (hasHeuristicValidation ? 8 : 0) +
-        (hasAiPatternRecognition ? 9 : 0) +
-        randomFactor();
-
-      // Ensure scores are in the valid range (30-100)
-      const normalizeScore = (score: number) =>
-        Math.min(Math.max(Math.round(score), 30), 100);
-
-      const metrics = {
-        companyQuality: normalizeScore(companyQuality),
-        contactQuality: normalizeScore(contactQuality),
-        emailQuality: normalizeScore(emailQuality),
-      };
-
-      // Calculate overall score with weighted emphasis on contact quality
-      const overallScore = normalizeScore(
-        metrics.companyQuality * 0.25 +
-          metrics.contactQuality * 0.5 +
-          metrics.emailQuality * 0.25,
-      );
-
-      // Generate a response object
-      const testResponse = {
-        id: `test-${Date.now()}`,
-        strategyId,
-        strategyName: approach.name,
-        query,
-        timestamp: new Date().toISOString(),
-        status: "completed",
-        metrics,
-        overallScore,
-      };
-
-      try {
-        // Persist the test result to the database
-        const testData = {
-          testId: testResponse.id,
-          userId: userId,
-          strategyId: strategyId,
-          query: query,
-          companyQuality: metrics.companyQuality,
-          contactQuality: metrics.contactQuality,
-          emailQuality: metrics.emailQuality,
-          overallScore: overallScore,
-          status: "completed",
-          metadata: {
-            strategyName: approach.name,
-            scoringFactors: {
-              companyFactors: {
-                hasCompanyFilters,
-                hasCompanyVerification,
-              },
-              contactFactors: {
-                hasContactValidation,
-                hasNameValidation,
-                requiresRole,
-                hasFocusOnLeadership,
-                hasLeadershipValidation,
-                hasEnhancedNameValidation,
-              },
-              emailFactors: {
-                hasEmailValidation,
-                hasPatternAnalysis,
-                hasBusinessDomainCheck,
-                hasCrossReferenceValidation,
-                hasEnhancedEmailSearch,
-                hasDomainAnalysis,
-                hasHeuristicValidation,
-                hasAiPatternRecognition,
-              },
-            },
-          },
-        };
-
-        console.log(
-          "Attempting to save test result to database with payload:",
-          testData,
-        );
-        await storage.createSearchTestResult(testData);
-      } catch (error) {
-        console.error("Error saving test result to database:", error);
-        // We still return the response even if saving to DB fails
-      }
-
-      res.json(testResponse);
-    } catch (error) {
-      console.error("Search quality test error:", error);
-      res.status(500).json({
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred during search test",
-      });
-    }
-  });
-
-  // API endpoint designed for AI agents to run tests and get results
-  app.post("/api/agent/run-search-test", async (req, res) => {
-    try {
-      const { strategyId, query, saveToDatabase = true } = req.body;
-
-      if (!strategyId || !query) {
-        return res.status(400).json({ error: "Missing required fields" });
-      }
-
-      console.log(
-        `[AI Agent] Running search test: { strategyId: ${strategyId}, query: '${query}' }`,
-      );
-
-      // Get the strategy
-      const approach = await storage.getSearchApproach(Number(strategyId));
-      if (!approach) {
-        return res.status(404).json({ error: "Strategy not found" });
-      }
-
-      // Get configuration and weightings for scoring
-      const { config: configObject } = approach;
-      const config =
-        typeof configObject === "string"
-          ? JSON.parse(configObject || "{}")
-          : configObject;
-
-      // Use the same scoring logic as the regular endpoint
-      const baseScoreRange = { min: 55, max: 85 };
-
-      // Company quality factors
-      const hasCompanyFilters =
-        config?.filters?.ignoreFranchises ||
-        config?.filters?.locallyHeadquartered;
-      const hasCompanyVerification = config?.validation?.requireVerification;
-
-      // Contact quality factors
-      const hasContactValidation = config?.validation?.minimumConfidence > 0.5;
-      const hasNameValidation =
-        config?.validation?.nameValidation?.minimumScore > 50;
-      const requiresRole = config?.validation?.nameValidation?.requireRole;
-      const hasFocusOnLeadership =
-        config?.searchOptions?.focusOnLeadership || false;
-      const hasEnhancedNameValidation =
-        config?.enhancedNameValidation ||
-        config?.subsearches?.["enhanced-name-validation"] ||
-        false;
-      const hasLeadershipValidation =
-        config?.subsearches?.["leadership-role-validation"] || false;
-
-      // Email quality factors
-      const hasEmailValidation = config?.validation?.email?.enabled;
-      const hasPatternAnalysis = config?.validation?.email?.patternAnalysis;
-      const hasBusinessDomainCheck =
-        config?.validation?.email?.businessDomainCheck;
-      const hasCrossReferenceValidation =
-        config?.validation?.email?.crossReferenceValidation;
-      const hasEnhancedEmailSearch = config?.searchOptions?.enhancedEmailSearch;
-      const hasDomainAnalysis = config?.searchOptions?.domainAnalysis;
-      const hasHeuristicValidation = config?.searchOptions?.heuristicValidation;
-      const hasAiPatternRecognition =
-        config?.validation?.email?.aiPatternRecognition;
-
-      // Calculate metrics based on search approach configuration and randomization
-      const getRandomWithWeights = (
-        base: number,
-        hasFeature: boolean,
-        weight: number,
-      ) => {
-        const randomFactor = Math.random() * 20 - 10; // -10 to +10
-        return base + (hasFeature ? weight : 0) + randomFactor;
-      };
-
-      // Calculate metrics with a base normal distribution and feature weighting
-      const companyQuality = normalizeScore(
-        getRandomWithWeights(65, hasCompanyFilters, 8) +
-          getRandomWithWeights(0, hasCompanyVerification, 12),
-      );
-
-      const contactQuality = normalizeScore(
-        getRandomWithWeights(60, hasContactValidation, 6) +
-          getRandomWithWeights(0, hasNameValidation, 8) +
-          getRandomWithWeights(0, requiresRole, 10) +
-          getRandomWithWeights(0, hasFocusOnLeadership, 8) +
-          getRandomWithWeights(0, hasEnhancedNameValidation, 7) +
-          getRandomWithWeights(0, hasLeadershipValidation, 9),
-      );
-
-      const emailQuality = normalizeScore(
-        getRandomWithWeights(55, hasEmailValidation, 5) +
-          getRandomWithWeights(0, hasPatternAnalysis, 7) +
-          getRandomWithWeights(0, hasBusinessDomainCheck, 8) +
-          getRandomWithWeights(0, hasCrossReferenceValidation, 6) +
-          getRandomWithWeights(0, hasEnhancedEmailSearch, 10) +
-          getRandomWithWeights(0, hasDomainAnalysis, 8) +
-          getRandomWithWeights(0, hasHeuristicValidation, 5) +
-          getRandomWithWeights(0, hasAiPatternRecognition, 9),
-      );
-
-      const metrics = { companyQuality, contactQuality, emailQuality };
-
-      // Calculate overall score (weighted average)
-      const overallScore = normalizeScore(
-        metrics.companyQuality * 0.25 +
-          metrics.contactQuality * 0.5 +
-          metrics.emailQuality * 0.25,
-      );
-
-      // Create test result object
-      const testUuid = crypto.randomUUID();
-      const timestamp = new Date().toISOString();
-
-      const testResult = {
-        id: testUuid,
-        userId: 4, // Default user ID
-        strategyId: Number(strategyId),
-        strategyName: approach.name,
-        query,
-        companyQuality: metrics.companyQuality,
-        contactQuality: metrics.contactQuality,
-        emailQuality: metrics.emailQuality,
-        overallScore,
-        status: "completed",
-        timestamp,
-        createdAt: timestamp,
-      };
-
-      // Save to database if requested
-      if (saveToDatabase) {
-        try {
-          await storage.createSearchTestResult({
-            testId: testUuid,
-            userId: 4, // Default user ID
-            strategyId: Number(strategyId),
-            query,
-            companyQuality: metrics.companyQuality,
-            contactQuality: metrics.contactQuality,
-            emailQuality: metrics.emailQuality,
-            overallScore,
-            status: "completed",
-            metadata: {
-              strategyName: approach.name,
-              timestamp,
-              scoringFactors: {
-                companyFactors: { hasCompanyFilters, hasCompanyVerification },
-                contactFactors: {
-                  hasContactValidation,
-                  hasNameValidation,
-                  requiresRole,
-                  hasFocusOnLeadership,
-                  hasEnhancedNameValidation,
-                  hasLeadershipValidation,
-                },
-                emailFactors: {
-                  hasEmailValidation,
-                  hasPatternAnalysis,
-                  hasBusinessDomainCheck,
-                  hasCrossReferenceValidation,
-                  hasEnhancedEmailSearch,
-                  hasDomainAnalysis,
-                  hasHeuristicValidation,
-                  hasAiPatternRecognition,
-                },
-              },
-            },
-          });
-          console.log(
-            `[AI Agent] Test result saved to database with ID: ${testUuid}`,
-          );
-        } catch (dbError) {
-          console.error(
-            "[AI Agent] Error saving test result to database:",
-            dbError,
-          );
-          // Continue even if DB save fails
-        }
-      }
-
-      // Get the 5 most recent test results for this strategy (for comparison)
-      let recentResults = [];
-      try {
-        recentResults = await storage.getTestResultsByStrategy(
-          Number(strategyId),
-          4,
-        );
-      } catch (error) {
-        console.error("[AI Agent] Error fetching recent test results:", error);
-        // Continue even if retrieval fails
-      }
-
-      // Format response in an AI-friendly way
-      res.json({
-        currentTest: testResult,
-        recentTests: recentResults
-          .slice(0, 5)
-          .sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-          ),
-        summary: {
-          strategyName: approach.name,
-          averageOverallScore: calculateAverage(
-            recentResults.map((r) => r.overallScore),
-          ),
-          testCount: recentResults.length,
-          latestScore: overallScore,
-          improvement: calculateImprovement(recentResults),
-        },
-      });
-    } catch (error) {
-      console.error("[AI Agent] Error running search test:", error);
-      res.status(500).json({ error: "Failed to run search test" });
-    }
-  });
-
   // Hunter.io email finder endpoint
   app.post("/api/contacts/:contactId/hunter", requireAuth, async (req, res) => {
     try {
@@ -3687,7 +1909,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       console.log("Starting Hunter.io search for contact ID:", contactId);
       console.log("User ID:", userId);
 
-      const contact = await storage.getContact(contactId, userId);
+      const contact = await storage.getContact(contactId);
       if (!contact) {
         console.error("Contact not found in database for ID:", contactId);
         res.status(404).json({ message: "Contact not found" });
@@ -3710,7 +1932,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         companyId: contact.companyId,
       });
 
-      const company = await storage.getCompany(contact.companyId, userId);
+      const company = await storage.getCompany(contact.companyId);
       if (!company) {
         console.error(
           "Company not found in database for ID:",
@@ -3758,8 +1980,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
         const updatedContact = await storage.updateContact(
           contactId,
-          updateData,
-          userId,
+          updateData
         );
         console.log("Hunter search completed:", {
           success: true,
@@ -3781,8 +2002,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
         const updatedContact = await storage.updateContact(
           contactId,
-          updateData,
-          userId,
+          updateData
         );
         res.status(422).json({
           message: searchResult.metadata.error || "No email found",
@@ -3809,7 +2029,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       console.log("Starting Apollo.io search for contact ID:", contactId);
       console.log("User ID:", userId);
 
-      const contact = await storage.getContact(contactId, userId);
+      const contact = await storage.getContact(contactId);
       if (!contact) {
         console.error("Contact not found in database for ID:", contactId);
         res.status(404).json({ message: "Contact not found" });
@@ -3832,7 +2052,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         companyId: contact.companyId,
       });
 
-      const company = await storage.getCompany(contact.companyId, userId);
+      const company = await storage.getCompany(contact.companyId);
       if (!company) {
         console.error(
           "Company not found in database for ID:",
@@ -3880,8 +2100,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
         const updatedContact = await storage.updateContact(
           contactId,
-          updateData,
-          userId,
+          updateData
         );
         console.log("Apollo search completed:", {
           success: true,
@@ -3903,8 +2122,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
         const updatedContact = await storage.updateContact(
           contactId,
-          updateData,
-          userId,
+          updateData
         );
         res.status(422).json({
           message: searchResult.metadata.error || "No email found",
@@ -3933,7 +2151,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         console.log("Starting AeroLeads search for contact ID:", contactId);
         console.log("User ID:", userId);
 
-        const contact = await storage.getContact(contactId, userId);
+        const contact = await storage.getContact(contactId);
         if (!contact) {
           console.error("Contact not found in database for ID:", contactId);
           res.status(404).json({ message: "Contact not found" });
@@ -3957,7 +2175,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
           companyId: contact.companyId,
         });
 
-        const company = await storage.getCompany(contact.companyId, userId);
+        const company = await storage.getCompany(contact.companyId);
         if (!company) {
           console.error(
             "Company not found in database for ID:",
@@ -4239,6 +2457,8 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         businessDescription: "", // Will be filled by strategy chat
         targetCustomers: "", // Will be filled by strategy chat
         status: "in_progress",
+        productName: autoName,
+        targetMarket: ""
       });
 
       res.json({
@@ -4340,7 +2560,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       }
 
       // Prepare messages for OpenAI with conversation history
-      const openaiMessages = [
+      const openaiMessages:{role:string,content:string}[] = [
         {
           role: "system" as const,
           content: currentStepConfig.systemPrompt,
@@ -4353,10 +2573,10 @@ Then, on a new line, write the body of the email. Keep both subject and content 
         // Start from the first user message (customer example)
         const previousMessages = conversationHistory.slice(0, -1);
         const userMessages = previousMessages.filter(
-          (msg) => msg.sender === "user",
+          (msg:any) => msg.sender === "user",
         );
         const aiMessages = previousMessages.filter(
-          (msg) =>
+          (msg:any) =>
             msg.sender === "ai" &&
             !msg.content.includes("Perfect! So you're selling"),
         );
@@ -4457,7 +2677,7 @@ Then, on a new line, write the body of the email. Keep both subject and content 
               ...profileUpdate,
               businessType,
               updatedAt: new Date(),
-            });
+            }, userId);
           } else {
             // Profile should have been created by the form, but fallback to create if missing
             const productNumber = existingProfiles.length + 1;
@@ -4560,7 +2780,7 @@ Focus on actionable insights that directly support their stated business goal an
         research: researchResults,
         timestamp: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch (error:any) {
       console.error("Background research error:", error);
       res.status(500).json({
         message: "Failed to complete background research",
@@ -4588,7 +2808,7 @@ Focus on actionable insights that directly support their stated business goal an
       // Determine conversation phase based on conversation content
       const hasProductSummary =
         conversationHistory?.some(
-          (msg) =>
+          (msg:any) =>
             msg.sender === "ai" &&
             msg.content &&
             (msg.content.toLowerCase().includes("product analysis summary") ||
@@ -4603,14 +2823,14 @@ Focus on actionable insights that directly support their stated business goal an
         ) || false;
       const hasEmailStrategy =
         conversationHistory?.some(
-          (msg) =>
+          (msg:any) =>
             msg.sender === "ai" &&
             (msg.content?.includes("90-day email sales strategy") ||
               msg.content?.includes("EMAIL STRATEGY")),
         ) || false;
       const hasSalesApproach =
         conversationHistory?.some(
-          (msg) =>
+          (msg:any) =>
             msg.sender === "ai" &&
             msg.content?.includes("Sales Approach Strategy"),
         ) || false;
@@ -4618,7 +2838,7 @@ Focus on actionable insights that directly support their stated business goal an
       // Track target market collection phases
       const targetMessages =
         conversationHistory?.filter(
-          (msg) =>
+          (msg:any) =>
             msg.sender === "user" &&
             msg.content &&
             !msg.content.toLowerCase().includes("generate product summary") &&
@@ -4659,14 +2879,14 @@ Focus on actionable insights that directly support their stated business goal an
         hasEmailStrategy,
         currentPhase,
         targetMessagesCount: targetMessages.length,
-        conversationHistory: conversationHistory?.map((m) => ({
+        conversationHistory: conversationHistory?.map((m:any) => ({
           sender: m.sender,
           contentStart: m.content?.substring(0, 50),
         })),
       });
 
       // Build conversation messages for OpenAI
-      const messages = [
+      const messages:ChatCompletionMessageParam[] = [
         {
           role: "system",
           content: `You are a strategic onboarding assistant managing a 3-report generation process.
@@ -4700,7 +2920,7 @@ PHASE-SPECIFIC INSTRUCTIONS:
 
       // Add conversation history
       if (conversationHistory && conversationHistory.length > 0) {
-        conversationHistory.forEach((msg) => {
+        conversationHistory.forEach((msg:any) => {
           if (msg.sender && msg.content) {
             messages.push({
               role: msg.sender === "user" ? "user" : "assistant",
@@ -4848,12 +3068,12 @@ High-level strategic guidance for email generation.`;
               userId,
               name: `Product ${Date.now()}`, // Auto-generate name
               businessType: "product", // Default, will be updated by form
-              productService:
-                productContext.productService || "Product/Service",
-              customerFeedback:
-                productContext.customerFeedback || "Customer feedback",
+              productService: productContext.productService || "Product/Service",
+              customerFeedback: productContext.customerFeedback || "Customer feedback",
               website: productContext.website || "",
               status: "in_progress",
+              productName: "",
+              targetMarket: ""
             });
 
             profiles = [newProfile];
@@ -4867,18 +3087,21 @@ High-level strategic guidance for email generation.`;
             if (result.type === "product_summary") {
               await storage.updateStrategicProfile(profileId, {
                 productAnalysisSummary: JSON.stringify(result.data),
-              });
+              },
+              userId);
               console.log("✅ Product summary saved to profile:", profileId);
             } else if (result.type === "email_strategy") {
               // Legacy email strategy - database updates handled by progressive endpoints
               await storage.updateStrategicProfile(profileId, {
                 reportSalesTargetingGuidance: JSON.stringify(result.data),
-              });
+              },
+              userId);
               console.log("✅ Email strategy saved to profile:", profileId);
             } else if (result.type === "sales_approach") {
               await storage.updateStrategicProfile(profileId, {
                 reportSalesContextGuidance: JSON.stringify(result.data),
-              });
+              },
+              userId);
               console.log("✅ Sales approach saved to profile:", profileId);
             }
           }
@@ -5026,12 +3249,12 @@ Return only the final boundary statement, no additional text.`;
               userId,
               name: `Product ${Date.now()}`,
               businessType: "product",
-              productService:
-                productContext.productService || "Product/Service",
-              customerFeedback:
-                productContext.customerFeedback || "Customer feedback",
+              productService: productContext.productService || "Product/Service",
+              customerFeedback: productContext.customerFeedback || "Customer feedback",
               website: productContext.website || "",
               status: "in_progress",
+              productName: "",
+              targetMarket: ""
             });
 
             profiles = [newProfile];
@@ -5041,7 +3264,8 @@ Return only the final boundary statement, no additional text.`;
           if (profiles.length > 0) {
             await storage.updateStrategicProfile(profiles[0].id, {
               strategyHighLevelBoundary: finalBoundary,
-            });
+            },
+            userId);
             console.log("✅ Boundary saved to profile:", profiles[0].id);
           }
         } catch (dbError) {
@@ -5104,12 +3328,12 @@ Return only the final boundary statement, no additional text.`;
               userId,
               name: `Product ${Date.now()}`,
               businessType: "product",
-              productService:
-                productContext.productService || "Product/Service",
-              customerFeedback:
-                productContext.customerFeedback || "Customer feedback",
+              productService: productContext.productService || "Product/Service",
+              customerFeedback: productContext.customerFeedback || "Customer feedback",
               website: productContext.website || "",
               status: "in_progress",
+              productName: "",
+              targetMarket: ""
             });
 
             profiles = [newProfile];
@@ -5119,7 +3343,8 @@ Return only the final boundary statement, no additional text.`;
           if (profiles.length > 0) {
             await storage.updateStrategicProfile(profiles[0].id, {
               exampleSprintPlanningPrompt: sprintPrompt,
-            });
+            },
+            userId);
             console.log("✅ Sprint prompt saved to profile:", profiles[0].id);
           }
         } catch (dbError) {
@@ -5193,12 +3418,12 @@ Return only the final boundary statement, no additional text.`;
               userId,
               name: `Product ${Date.now()}`,
               businessType: "product",
-              productService:
-                productContext.productService || "Product/Service",
-              customerFeedback:
-                productContext.customerFeedback || "Customer feedback",
+              productService: productContext.productService || "Product/Service",
+              customerFeedback: productContext.customerFeedback || "Customer feedback",
               website: productContext.website || "",
               status: "in_progress",
+              productName: "",
+              targetMarket: ""
             });
 
             profiles = [newProfile];
@@ -5209,7 +3434,8 @@ Return only the final boundary statement, no additional text.`;
             await storage.updateStrategicProfile(profiles[0].id, {
               dailySearchQueries: JSON.stringify(dailyQueries),
               reportSalesTargetingGuidance: JSON.stringify(fullStrategy),
-            });
+            },
+            userId);
             console.log("✅ Queries saved to profile:", profiles[0].id);
           }
         } catch (dbError) {
@@ -5313,7 +3539,7 @@ Respond in this exact JSON format:
       console.log("Strategy processing completed successfully");
 
       res.json(strategyData);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Strategy processing error:", error);
       res.status(500).json({
         message: "Failed to process strategy",
@@ -5511,7 +3737,7 @@ Respond in this exact JSON format:
         ];
 
         const completedFields = strategicFields.filter(
-          (field) => product[field],
+          (field) => field in product && !product[field as keyof typeof product],
         );
         const isStrategicComplete = completedFields.length === 6;
 
@@ -5615,6 +3841,7 @@ Respond in this exact JSON format:
       const updatedProduct = await storage.updateStrategicProfile(
         productId,
         req.body,
+        userId
       );
       res.json(updatedProduct);
     } catch (error) {
@@ -5709,7 +3936,7 @@ Respond in this exact JSON format:
           columns: ["company", "role", "name", "email"],
           skip_empty_lines: true,
           trim: true,
-        });
+        }) as CSVImportType[];
         console.log(
           `[CSV Import] Parsed ${records.length} records from CSV`,
           records,
@@ -5728,7 +3955,7 @@ Respond in this exact JSON format:
         const results = {
           imported: 0,
           skipped: 0,
-          errors: [],
+          errors: [] as string[],
         };
 
         for (const record of records) {
@@ -5756,14 +3983,7 @@ Respond in this exact JSON format:
                 description: `Imported from CSV`,
                 industry: "",
                 location: "",
-                size: "",
-                foundingYear: null,
-                revenue: null,
-                funding: null,
-                tags: [],
-                probability: 85,
-                confidence: 0.8,
-                source: "csv_import",
+                size: 5,      
               });
             }
 
@@ -5789,10 +4009,8 @@ Respond in this exact JSON format:
               role: role || "",
               linkedinUrl: "",
               phoneNumber: "",
-              probability: 85,
-              confidence: 0.8,
-              nameConfidenceScore: 85,
-              source: "csv_import",
+              probability: 85, 
+              nameConfidenceScore: 85, 
             });
 
             results.imported++;

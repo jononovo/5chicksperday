@@ -1,3 +1,4 @@
+import { ideahub } from "googleapis/build/src/apis/ideahub";
 import { z } from "zod";
 
 // User types for Replit Database
@@ -33,51 +34,8 @@ export interface InsertList {
   resultCount: number;
   customSearchTargets?: string[] | null;
 }
+ 
 
-// Company types for Replit Database
-export interface Company {
-  id: number;
-  userId: number;
-  name: string;
-  listId: number | null;
-  description: string | null;
-  age: number | null;
-  size: number | null;
-  website: string | null;
-  alternativeProfileUrl: string | null;
-  defaultContactEmail: string | null;
-  ranking: number | null;
-  linkedinProminence: number | null;
-  customerCount: number | null;
-  rating: number | null;
-  services: string[] | null;
-  validationPoints: string[] | null;
-  differentiation: string[] | null;
-  totalScore: number | null;
-  snapshot: Record<string, any> | null;
-  createdAt: Date;
-}
-
-export interface InsertCompany {
-  userId: number;
-  name: string;
-  listId?: number | null;
-  description?: string | null;
-  age?: number | null;
-  size?: number | null;
-  website?: string | null;
-  alternativeProfileUrl?: string | null;
-  defaultContactEmail?: string | null;
-  ranking?: number | null;
-  linkedinProminence?: number | null;
-  customerCount?: number | null;
-  rating?: number | null;
-  services?: string[] | null;
-  validationPoints?: string[] | null;
-  differentiation?: string[] | null;
-  totalScore?: number | null;
-  snapshot?: Record<string, any> | null;
-}
 
 // Contact types for Replit Database
 export interface Contact {
@@ -85,6 +43,7 @@ export interface Contact {
   userId: number;
   companyId: number;
   name: string;
+  priority?: number | null;
   role: string | null;
   email: string | null;
   alternativeEmails: string[] | null;
@@ -109,6 +68,7 @@ export interface InsertContact {
   companyId: number;
   name: string;
   role?: string | null;
+  priority?: number | null;
   email?: string | null;
   alternativeEmails?: string[] | null;
   probability?: number | null;
@@ -239,6 +199,11 @@ export interface EmailMessage {
 
 // SearchApproach types 
 export interface SearchApproach {
+  moduleType: string;
+  active: boolean;
+  prompt:string;
+  technicalPrompt:string;
+  responseStructure:string;
   id: number;
   name: string;
   description: string;
@@ -272,23 +237,7 @@ export interface InsertSearchTestResult {
   status: 'completed' | 'running' | 'failed';
   metadata: Record<string, any>;
 }
-
-// Strategic Profile types
-export interface StrategicProfile {
-  id: number;
-  userId: number;
-  businessType: string;
-  productName: string;
-  targetMarket: string;
-  createdAt: Date;
-}
-
-export interface InsertStrategicProfile {
-  userId: number;
-  businessType: string;
-  productName: string;
-  targetMarket: string;
-}
+ 
 
 // Zod validation schemas
 const listSchema = z.object({
@@ -299,24 +248,34 @@ const listSchema = z.object({
 });
 
 const companySchema = z.object({
+  id: z.number(),
+  userId: z.number(),
   name: z.string().min(1, "Company name is required"),
-  listId: z.number().nullable(),
-  description: z.string().nullable(),
-  age: z.number().nullable(),
-  size: z.number().nullable(),
-  website: z.string().nullable(),
-  alternativeProfileUrl: z.string().nullable(),
-  defaultContactEmail: z.string().email().nullable(),
-  ranking: z.number().nullable(),
-  linkedinProminence: z.number().nullable(),
-  customerCount: z.number().nullable(),
-  rating: z.number().nullable(),
-  services: z.array(z.string()).nullable(),
-  validationPoints: z.array(z.string()).nullable(),
-  differentiation: z.array(z.string()).nullable(),
-  totalScore: z.number().nullable(),
-  snapshot: z.record(z.unknown()).nullable()
+  listId: z.number().optional(),
+  description: z.string().optional(),
+  age: z.number().optional(),
+  size: z.number().optional(),
+  website: z.string().optional(),
+  location: z.string().optional(),
+  industry: z.string().optional(),
+  alternativeProfileUrl: z.string().optional(),
+  defaultContactEmail: z.string().email().optional(),
+  ranking: z.number().optional(),
+  linkedinProminence: z.number().optional(),
+  customerCount: z.number().optional(),
+  rating: z.number().optional(),
+  services: z.array(z.string()).optional(),
+  validationPoints: z.array(z.string()).optional(),
+  differentiation: z.array(z.string()).optional(),
+  totalScore: z.number().optional(),
+  snapshot: z.record(z.unknown()).optional(),
+  createdAt: z.date(),
 });
+export const insertCompanySchema = companySchema.omit({
+  id: true,
+  createdAt: true,
+})
+
 
 const contactSchema = z.object({
   name: z.string().min(1, "Contact name is required"),
@@ -341,16 +300,76 @@ const contactFeedbackSchema = z.object({
   feedbackType: z.enum(['excellent', 'ok', 'terrible'])
 });
 
+// First define the schema
+export const strategicProfileSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  businessType: z.enum(["product", "service"]),
+  productName: z.string().min(1, "Product name is required"),
+  targetMarket: z.string().min(1, "Target market is required"),
+  name: z.string().optional(),
+  short_description: z.string().optional(),
+  businessDescription: z.string().optional(),
+  uniqueAttributes: z.array(z.string()).optional(),
+  targetCustomers: z.string().optional(),
+  marketNiche: z.enum(["niche", "broad"]).optional(),
+  productService: z.string().optional(),
+  customerFeedback: z.string().optional(),
+  website: z.string().optional(),
+  businessLocation: z.string().optional(),
+  primaryCustomerType: z.string().optional(),
+  primarySalesChannel: z.string().optional(),
+  primaryBusinessGoal: z.string().optional(),
+  strategyHighLevelBoundary: z.string().optional(),
+  exampleSprintPlanningPrompt: z.string().optional(),
+  exampleDailySearchQuery: z.string().optional(),
+  productAnalysisSummary: z.string().optional(),
+  reportSalesContextGuidance: z.string().optional(),
+  reportSalesTargetingGuidance: z.string().optional(),
+  dailySearchQueries: z.string().optional(),
+  strategicPlan: z.record(z.unknown()).optional(),
+  searchPrompts: z.array(z.string()).optional(),
+  status: z.enum(["in_progress", "completed"]).default("in_progress"),
+  createdAt: z.date(),
+  updatedAt: z.date().optional()
+});
 
-
-
+// For insertion, create a schema without the auto-generated fields
+export const insertStrategicProfileSchema = strategicProfileSchema
+  .omit({ id: true, createdAt: true, updatedAt: true }) // Remove fields that are auto-generated
+  .partial({ // Make these fields optional
+    name: true,
+    short_description: true,
+    businessDescription: true,
+    uniqueAttributes: true,
+    targetCustomers: true,
+    marketNiche: true,
+    productService: true,
+    customerFeedback: true,
+    website: true,
+    businessLocation: true,
+    primaryCustomerType: true,
+    primarySalesChannel: true,
+    primaryBusinessGoal: true,
+    strategyHighLevelBoundary: true,
+    exampleSprintPlanningPrompt: true,
+    exampleDailySearchQuery: true,
+    productAnalysisSummary: true,
+    reportSalesContextGuidance: true,
+    reportSalesTargetingGuidance: true,
+    dailySearchQueries: true,
+    strategicPlan: true,
+    searchPrompts: true,
+    status: true
+  });
+ 
 
 const campaignSchema = z.object({
   campaignId: z.number().min(2001),
   name: z.string().min(1, "Campaign name is required"),
   description: z.string().nullable(),
   status: z.enum(['draft', 'active', 'completed', 'paused']).default('draft'),
-  startDate: z.string().nullable(),
+  startDate: z.date().nullable(),
   totalCompanies: z.number().default(0)
 });
 
@@ -378,8 +397,7 @@ const userPreferencesSchema = z.object({
 
 export const insertListSchema = listSchema.extend({
   userId: z.number()
-});
-export const insertCompanySchema = companySchema;
+}); 
 export const insertContactSchema = contactSchema;
 export const insertCampaignSchema = campaignSchema.extend({
   userId: z.number()
@@ -404,37 +422,7 @@ export const userSchema = z.object({
 
 export const insertUserSchema = userSchema;
 
-// Strategic Profile types (consolidated)
-export interface StrategicProfileExpanded {
-  id: number;
-  userId: number;
-  name: string | null;
-  short_description: string | null;
-  businessType: string;
-  businessDescription: string;
-  uniqueAttributes: string[] | null;
-  targetCustomers: string;
-  marketNiche: string | null;
-  productService: string | null;
-  customerFeedback: string | null;
-  website: string | null;
-  businessLocation: string | null;
-  primaryCustomerType: string | null;
-  primarySalesChannel: string | null;
-  primaryBusinessGoal: string | null;
-  strategyHighLevelBoundary: string | null;
-  exampleSprintPlanningPrompt: string | null;
-  exampleDailySearchQuery: string | null;
-  productAnalysisSummary: string | null;
-  reportSalesContextGuidance: string | null;
-  reportSalesTargetingGuidance: string | null;
-  dailySearchQueries: string | null;
-  strategicPlan: Record<string, any>;
-  searchPrompts: string[] | null;
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+
 
 // Onboarding Chat types
 export interface OnboardingChat {
@@ -516,36 +504,7 @@ export const insertEmailThreadSchema = emailThreadSchema.extend({
 export const insertEmailMessageSchema = emailMessageSchema;
 
 export const insertWebhookLogSchema = webhookLogSchema;
-
-// Strategic onboarding schemas
-export const strategicProfileSchema = z.object({
-  name: z.string().optional(),
-  short_description: z.string().optional(),
-  businessType: z.enum(["product", "service"]),
-  businessDescription: z.string().min(1, "Business description is required"),
-  uniqueAttributes: z.array(z.string()).optional(),
-  targetCustomers: z.string().min(1, "Target customers description is required"),
-  marketNiche: z.enum(["niche", "broad"]).optional(),
-  // Enhanced product profile fields
-  productService: z.string().optional(),
-  customerFeedback: z.string().optional(),
-  website: z.string().optional(),
-  businessLocation: z.string().optional(),
-  primaryCustomerType: z.string().optional(),
-  primarySalesChannel: z.string().optional(),
-  primaryBusinessGoal: z.string().optional(),
-  // Strategy fields for cold email outreach
-  strategyHighLevelBoundary: z.string().optional(),
-  exampleSprintPlanningPrompt: z.string().optional(),
-  exampleDailySearchQuery: z.string().optional(),
-  productAnalysisSummary: z.string().optional(),
-  reportSalesContextGuidance: z.string().optional(),
-  reportSalesTargetingGuidance: z.string().optional(),
-  dailySearchQueries: z.string().optional(),
-  strategicPlan: z.record(z.unknown()).optional(),
-  searchPrompts: z.array(z.string()).optional(),
-  status: z.enum(["in_progress", "completed"]).default("in_progress")
-});
+ 
 
 export const onboardingChatSchema = z.object({
   profileId: z.number(),
@@ -566,10 +525,7 @@ export const prospectDeliverySchema = z.object({
   status: z.enum(["scheduled", "delivered", "failed"]).default("scheduled"),
   prospectCount: z.number().default(0)
 });
-
-export const insertStrategicProfileSchema = strategicProfileSchema.extend({
-  userId: z.number()
-});
+ 
 
 export const insertOnboardingChatSchema = onboardingChatSchema.extend({
   userId: z.number()
@@ -578,20 +534,15 @@ export const insertOnboardingChatSchema = onboardingChatSchema.extend({
 export const insertProspectDeliverySchema = prospectDeliverySchema.extend({
   userId: z.number()
 });
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Company = z.infer<typeof companySchema>;
 
-export type EmailThread = typeof emailThreads.$inferSelect;
+
 export type InsertEmailThread = z.infer<typeof insertEmailThreadSchema>;
-export type EmailMessage = typeof emailMessages.$inferSelect;
 export type InsertEmailMessage = z.infer<typeof insertEmailMessageSchema>;
-export type WebhookLog = typeof webhookLogs.$inferSelect;
 export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
 
-// Strategic onboarding types
-export type StrategicProfile = typeof strategicProfiles.$inferSelect;
+export type StrategicProfile = z.infer<typeof strategicProfileSchema>;
 export type InsertStrategicProfile = z.infer<typeof insertStrategicProfileSchema>;
-export type OnboardingChat = typeof onboardingChats.$inferSelect;
-export type InsertOnboardingChat = z.infer<typeof insertOnboardingChatSchema>;
-export type ProspectDelivery = typeof prospectDeliveries.$inferSelect;
-export type InsertProspectDelivery = z.infer<typeof insertProspectDeliverySchema>;
-  
+ 
 

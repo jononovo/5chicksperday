@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupAuth } from "./auth";
 import { storage } from "./db/storage-replit";
+import { setupRouteCompanies } from "./routes/companies";
 
 const app = express();
 
@@ -124,6 +125,7 @@ process.on('SIGINT', () => {
     console.log('Registering routes...');
     const server = registerRoutes(app);
     console.log('Routes registered successfully');
+    setupRouteCompanies(app);
 
     if (app.get("env") === "development") {
       console.log('Setting up Vite for development...');

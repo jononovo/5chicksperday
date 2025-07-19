@@ -65,7 +65,7 @@ export function parseCompanyData(analysisResults: string[]): Partial<Company> {
           const uniqueServices = new Set([...companyData.services]);
           jsonData.services
             .filter((s: unknown): s is string => typeof s === 'string')
-            .forEach(s => uniqueServices.add(s));
+            .forEach((s:string) => uniqueServices.add(s));
           companyData.services = Array.from(uniqueServices);
         }
 
@@ -75,7 +75,7 @@ export function parseCompanyData(analysisResults: string[]): Partial<Company> {
             const uniqueDifferentiators = new Set([...companyData.differentiation]);
             points
               .filter((p: unknown): p is string => typeof p === 'string')
-              .forEach(p => uniqueDifferentiators.add(p));
+              .forEach((p:string) => uniqueDifferentiators.add(p));
             companyData.differentiation = Array.from(uniqueDifferentiators);
           }
         }
