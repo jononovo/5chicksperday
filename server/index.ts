@@ -67,50 +67,12 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Add process error handlers
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
-
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received, shutting down gracefully');
-  process.exit(0);
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT signal received, shutting down gracefully');
-  process.exit(0);
-});
-
 (async () => {
   try {
-    console.log('Starting server initialization...');
-    console.log('Environment:', process.env.NODE_ENV);
-    console.log('Port:', process.env.PORT || '5000');
-    
-    // Log critical environment variables (without exposing secrets)
-    console.log('Environment check:', {
-      NODE_ENV: process.env.NODE_ENV,
-      PORT: process.env.PORT,
-      DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Missing',
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY ? 'Set' : 'Missing',
-      APOLLO_API_KEY: process.env.APOLLO_API_KEY ? 'Set' : 'Missing',
-      VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY ? 'Set' : 'Missing'
-    });
-
     // Setup authentication before registering routes
-    console.log('Setting up authentication...');
     setupAuth(app);
-    console.log('Authentication setup complete');
     
     // Database already initialized through Drizzle
-    console.log('Database initialization...');
     
     // Initialize default search approaches
     try {
@@ -121,18 +83,12 @@ process.on('SIGINT', () => {
       // Continue with server startup even if this fails
     }
 
-    console.log('Registering routes...');
     const server = registerRoutes(app);
-    console.log('Routes registered successfully');
 
     if (app.get("env") === "development") {
-      console.log('Setting up Vite for development...');
       await setupVite(app, server);
-      console.log('Vite setup complete');
     } else {
-      console.log('Setting up static serving for production...');
       serveStatic(app);
-      console.log('Static serving setup complete');
     }
 
     // Global error handler - place after Vite setup
@@ -150,16 +106,11 @@ process.on('SIGINT', () => {
     });
 
     const PORT = parseInt(process.env.PORT || "5000", 10);
-    console.log(`Starting server on port ${PORT}...`);
-    
     server.listen(PORT, "0.0.0.0", () => {
-      console.log(`✅ Express server serving on port ${PORT}`);
       log(`Express server serving on port ${PORT}`);
     });
-    
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 })();

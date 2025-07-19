@@ -1,15 +1,0 @@
-# React Strategy Chat
-
-As you know, there is a strategic on boarding flow chat, which initiates from the static HTML landing page.  I realize that in order to utilize this chat flow within the application, I would need to re-create it in react, and so I did.  However, in the process among other things, I broke some core functionality.  So I had to revert to using a previous version of the application that did not include all the work I did for the react strategy chat.  1.  I need you to do a deep technical research into the react strategy chat. 2. I need you to either give detailed instructions of how we can export that chat and then import and apply it.( perhaps just by copying files into a specific place.) or  B. if we need to refactor it so that it is fully contained as a sort of self sustained app within a folder, so that it can be easy to copy and then paste/ migrate into that other version.  What do you think about these ideas?.  Do deep technical research into this. But don't change anything yet
-
-
-
-======  Ok, so about a week ago, I began work on the my product section, within the /account page.
-
-After that, I began work on the strategy on boarding react chat version as prior to that we only had this more static version which was launched from the static HTML landing page.
-
-To finish it off I worked on a strategy cage, which listed products.
-
-Now, when I started this process, I wasn't testing the functionality of the rest of the platform as I should've.
-
-And as a result now further down the line, I realize that something changed in the way lists and contacts, and perhaps other things were saved.  The main place where I think this could have changed/been originally broken is in the files below:   https://github.com/jononovo/5chicksperday/compare/250710_account-page_v1...250710_my-product-form_v1?diff=split&w   server/routes.ts  server/storage.ts shared/schema.ts storage-switching/simplified-storage-replit.ts   The first branch where the saving of data is broken for search: lists, contacts, etc.  250710_my-product-form_v1  The last branch where everything was working well for search saving: 250710_account-page_v1  Can you do deep technical research into this and give me some options of how I can revert, any changes made to the way lists, companies contacts and emails are saved or loaded?  Don't change anything yet.

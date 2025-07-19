@@ -9,7 +9,6 @@ interface Message {
   content: string;
   sender: 'user' | 'ai';
   timestamp: Date;
-  isHTML?: boolean;
 }
 
 type ChatState = 'hidden' | 'minimized' | 'sidebar' | 'fullscreen';
@@ -21,7 +20,7 @@ interface ChatOverlayProps {
 }
 
 interface ChatOverlayRef {
-  initializeChat: (type: BusinessType, formData?: any) => void;
+  initializeChat: (type: BusinessType) => void;
 }
 
 const ChatOverlay = forwardRef<ChatOverlayRef, ChatOverlayProps>(({ initialState = 'hidden', onStateChange }, ref) => {
@@ -48,142 +47,23 @@ const ChatOverlay = forwardRef<ChatOverlayRef, ChatOverlayProps>(({ initialState
     onStateChange?.(chatState);
   }, [chatState, onStateChange]);
 
-  const initializeChat = (type: BusinessType, formData?: any) => {
+  const initializeChat = (type: BusinessType) => {
     setBusinessType(type);
-    
-    let welcomeMessage: Message;
-    
-    if (formData) {
-      // Store form data for strategy generation immediately
-      setProfileData(formData);
-      
-      // If form data is provided, show personalized message like in the static implementation
-      const productService = formData.productService?.trim() || `your ${type}`;
-      const customerFeedback = formData.customerFeedback?.trim() || 'positive feedback';
-      const website = formData.website?.trim() || 'no website provided';
-      
-      welcomeMessage = {
-        id: Date.now().toString(),
-        content: `Perfect!
-
-**Your ${type} is:** ${productService}
-**Customers like:** ${customerFeedback}
-**And I can learn more at:** ${website !== 'no website provided' ? website : 'no website was provided'}
-
-Give me 5 seconds. I'm **building a product summary** so I can understand what you're selling.`,
-        sender: 'ai',
-        timestamp: new Date()
-      };
-    } else {
-      // Default welcome message
-      welcomeMessage = {
-        id: Date.now().toString(),
-        content: `Hi! I love that you're selling a ${type}! Let's create your strategic sales plan together.
+    const welcomeMessage: Message = {
+      id: Date.now().toString(),
+      content: `Hi! I love that you're selling a ${type}! Let's create your strategic sales plan together.
 
 To get started, please tell me about your ${type}. What exactly are you offering, and what makes it special?`,
-        sender: 'ai',
-        timestamp: new Date()
-      };
-    }
-    
+      sender: 'ai',
+      timestamp: new Date()
+    };
     setMessages([welcomeMessage]);
-    setChatState(isMobile ? 'fullscreen' : 'sidebar');
-    
-    // Automatically trigger AI response after initial message with form data
-    if (formData) {
-      setTimeout(() => {
-        triggerAIResponse(type, formData);
-      }, 2000);
-    }
+    setChatState(isMobile ? 'fullscreen' : 'fullscreen');
   };
 
   useImperativeHandle(ref, () => ({
     initializeChat
   }));
-
-  const triggerAIResponse = async (overrideBusinessType?: BusinessType, overrideFormData?: any) => {
-    if (isLoading) return;
-    
-    setIsLoading(true);
-    
-    // Use override values if provided (for initial call), otherwise use state
-    const effectiveBusinessType = overrideBusinessType || businessType;
-    const effectiveProfileData = overrideFormData || profileData;
-    
-    // Debug logging
-    console.log('triggerAIResponse called with:', {
-      businessType: effectiveBusinessType,
-      currentStep,
-      profileData: effectiveProfileData,
-      messagesLength: messages.length
-    });
-    
-    try {
-      const response: any = await apiRequest('POST', '/api/onboarding/strategy-chat', {
-        userInput: overrideFormData ? "Generate product summary" : "I want to create a strategic plan for my business. Please help me get started.",
-        productContext: {
-          productService: effectiveProfileData?.productService,
-          customerFeedback: effectiveProfileData?.customerFeedback,
-          website: effectiveProfileData?.website
-        },
-        conversationHistory: messages
-      });
-
-      // Handle report types just like static implementation
-      if (response.type === 'product_summary' || response.type === 'email_strategy' || response.type === 'sales_approach') {
-        displayReport(response);
-      } else if (response.type === 'progressive_strategy') {
-        // Handle progressive strategy generation
-        const aiMessage: Message = {
-          id: Date.now().toString(),
-          content: response.message,
-          sender: 'ai',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, aiMessage]);
-        
-        // TODO: Implement progressive strategy generation if needed
-      } else if (response.type === 'conversation') {
-        // Handle conversation messages (like refinement requests)
-        const aiMessage: Message = {
-          id: Date.now().toString(),
-          content: response.message,
-          sender: 'ai',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, aiMessage]);
-      } else if (response.aiResponse) {
-        // Fallback for old format
-        const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: response.aiResponse,
-          sender: 'ai',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, aiMessage]);
-      }
-
-      if (response.profileUpdate) {
-        setProfileData((prev: any) => ({ ...prev, ...response.profileUpdate }));
-      }
-
-      if (response.nextStep) {
-        setCurrentStep(response.nextStep);
-      }
-
-    } catch (error) {
-      console.error('Error triggering AI response:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: "I apologize, but I'm having trouble processing your message right now. Please try again.",
-        sender: 'ai',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -196,17 +76,16 @@ To get started, please tell me about your ${type}. What exactly are you offering
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentInput = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
     try {
       const response: any = await apiRequest('POST', '/api/onboarding/chat', {
-        message: currentInput,
-        businessType: businessType || 'product', // Ensure businessType is not null
+        message: inputMessage,
+        businessType,
         currentStep,
         profileData,
-        conversationHistory: [...messages, userMessage]
+        conversationHistory: messages
       });
 
       if (response.aiResponse) {
@@ -263,60 +142,6 @@ To get started, please tell me about your ${type}. What exactly are you offering
     setChatState(isMobile ? 'fullscreen' : 'sidebar');
   };
 
-  // Markdown rendering function copied from static implementation
-  const renderMarkdown = (markdown: string) => {
-    // Simple markdown to HTML conversion
-    return markdown
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-blue-700 mt-4 mb-2">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-blue-800 mt-4 mb-3">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-blue-900 mt-4 mb-4">$1</h1>')
-      .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
-      .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4"><strong>$1.</strong> $2</li>')
-      .replace(/\n/g, '<br>');
-  };
-
-  // Display report function copied exactly from static implementation
-  const displayReport = (reportData: any) => {
-    console.log('displayReport called with:', reportData);
-    console.log('reportData.data:', reportData.data);
-    console.log('reportData.data.content:', reportData.data?.content);
-    
-    const reportHtml = `
-      <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
-        <div class="report-content text-gray-700">
-          ${renderMarkdown(reportData.data.content)}
-        </div>
-      </div>`;
-    
-    const reportMessage: Message = {
-      id: Date.now().toString(),
-      content: reportHtml,
-      sender: 'ai',
-      timestamp: new Date(),
-      isHTML: true
-    };
-    
-    console.log('Adding report message:', reportMessage);
-    setMessages(prev => [...prev, reportMessage]);
-
-    // Add target business query after product summary
-    if (reportData.type === 'product_summary') {
-      setTimeout(() => {
-        const followUpMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
-          sender: 'ai',
-          timestamp: new Date(),
-          isHTML: true
-        };
-        setMessages(prev => [...prev, followUpMessage]);
-      }, 1000);
-    }
-  };
-
   // Hidden state
   if (chatState === 'hidden') {
     return null;
@@ -353,13 +178,12 @@ To get started, please tell me about your ${type}. What exactly are you offering
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          {chatState === 'fullscreen' && (
+          {chatState === 'fullscreen' && !isMobile && (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setChatState('sidebar')}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-              title="Switch to sidebar view"
             >
               <Minimize2 className="w-4 h-4" />
             </Button>
@@ -370,7 +194,6 @@ To get started, please tell me about your ${type}. What exactly are you offering
               size="icon"
               onClick={handleMaximize}
               className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-              title="Switch to fullscreen view"
             >
               <Maximize2 className="w-4 h-4" />
             </Button>
@@ -380,7 +203,6 @@ To get started, please tell me about your ${type}. What exactly are you offering
             size="icon"
             onClick={handleClose}
             className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-            title="Close chat"
           >
             <X className="w-4 h-4" />
           </Button>
@@ -401,14 +223,7 @@ To get started, please tell me about your ${type}. What exactly are you offering
                   : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700'
               }`}
             >
-              {message.isHTML ? (
-                <div 
-                  className="text-sm whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: message.content }}
-                />
-              ) : (
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-              )}
+              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
               <span className="text-xs opacity-70 mt-1 block">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>

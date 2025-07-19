@@ -9,9 +9,6 @@ import { Layout, AppLayout } from "@/components/layout";
 import { SearchStrategyProvider } from "@/lib/search-strategy-context";
 import { RegistrationModalProvider } from "@/hooks/use-registration-modal";
 import { RegistrationModalContainer } from "@/components/registration-modal-container";
-import { StrategyOverlayProvider } from "@/lib/strategy-overlay-context";
-import { StrategyOverlay } from "@/components/strategy-overlay";
-import { useStrategyOverlay } from "@/lib/strategy-overlay-context";
 import { useEffect, lazy, Suspense } from "react";
 import { initGA } from "./lib/analytics";
 import { useAnalytics } from "./hooks/use-analytics";
@@ -29,8 +26,6 @@ import Auth from "@/pages/auth";
 const Home = lazy(() => import("@/pages/home"));
 const Build = lazy(() => import("@/pages/build"));
 const Account = lazy(() => import("@/pages/account"));
-const StrategyDashboard = lazy(() => import("@/pages/strategy-dashboard"));
-// Strategy functionality moved to overlay system
 // Lists functionality moved to drawer in Home page
 const Campaigns = lazy(() => import("@/pages/campaigns"));
 const CampaignDetails = lazy(() => import("@/pages/campaign-details"));
@@ -184,8 +179,6 @@ function Router() {
                   </Suspense>
                 } />
                 
-                {/* Strategy functionality moved to overlay system */}
-                
                 {/* Fully protected routes - require login */}
                 <ProtectedRoute path="/build" component={() => 
                   <Suspense fallback={<LoadingScreen />}>
@@ -195,11 +188,6 @@ function Router() {
                 <ProtectedRoute path="/account" component={() => 
                   <Suspense fallback={<LoadingScreen />}>
                     <Account />
-                  </Suspense>
-                } />
-                <ProtectedRoute path="/strategy" component={() => 
-                  <Suspense fallback={<LoadingScreen />}>
-                    <StrategyDashboard />
                   </Suspense>
                 } />
                 {/* Lists routes removed - functionality moved to drawer in Home page */}
@@ -256,17 +244,6 @@ function Router() {
   );
 }
 
-function StrategyOverlayWrapper() {
-  const { state, setState } = useStrategyOverlay();
-  
-  return (
-    <StrategyOverlay 
-      state={state} 
-      onStateChange={setState}
-    />
-  );
-}
-
 function App() {
   // Initialize Google Analytics when app loads
   useEffect(() => {
@@ -283,14 +260,11 @@ function App() {
       <AuthProvider>
         <RegistrationModalProvider>
           <SearchStrategyProvider>
-            <StrategyOverlayProvider>
-              {/* Default SEO tags for the entire site */}
-              <SEOHead />
-              <Router />
-              <RegistrationModalContainer />
-              <StrategyOverlayWrapper />
-              <Toaster />
-            </StrategyOverlayProvider>
+            {/* Default SEO tags for the entire site */}
+            <SEOHead />
+            <Router />
+            <RegistrationModalContainer />
+            <Toaster />
           </SearchStrategyProvider>
         </RegistrationModalProvider>
       </AuthProvider>

@@ -90,51 +90,20 @@ async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
       return null;
     }
 
-    // Get or create user in our database with enhanced error handling
+    // Get or create user in our database
     let user = await storage.getUserByEmail(decodedToken.email);
 
     if (!user) {
-      console.log('🔧 Creating new user in verifyFirebaseToken:', {
+      console.log('Creating new user in backend:', {
         email: decodedToken.email?.split('@')[0] + '@...',
-        name: decodedToken.name,
         timestamp: new Date().toISOString()
       });
 
-      // Retry logic for user creation
-      let createAttempts = 3;
-      while (createAttempts > 0 && !user) {
-        try {
-          user = await storage.createUser({
-            email: decodedToken.email,
-            username: decodedToken.name || decodedToken.email.split('@')[0],
-            password: '',  // Not used for Firebase auth
-          });
-          
-          console.log('✅ Firebase token user created successfully:', {
-            id: user.id,
-            email: decodedToken.email?.split('@')[0] + '@...',
-            timestamp: new Date().toISOString()
-          });
-          break;
-          
-        } catch (createError) {
-          createAttempts--;
-          console.error('❌ Firebase token user creation failed:', {
-            error: createError instanceof Error ? createError.message : 'Unknown error',
-            attemptsLeft: createAttempts,
-            timestamp: new Date().toISOString()
-          });
-          
-          if (createAttempts > 0) {
-            await new Promise(resolve => setTimeout(resolve, 200));
-          }
-        }
-      }
-      
-      if (!user) {
-        console.error('❌ Failed to create user after all attempts');
-        return null;
-      }
+      user = await storage.createUser({
+        email: decodedToken.email,
+        username: decodedToken.name || decodedToken.email.split('@')[0],
+        password: '',  // Not used for Firebase auth
+      });
     }
 
     return user;
@@ -459,116 +428,50 @@ export function setupAuth(app: Express) {
     try {
       const { email, username, firebaseUid } = req.body;
 
-      console.log('🔧 Google auth endpoint received request:', { 
+      console.log('Google auth endpoint received request:', { 
         hasEmail: !!email, 
         hasUsername: !!username,
-        hasFirebaseUid: !!firebaseUid,
-        email: email?.split('@')[0] + '@...',
-        timestamp: new Date().toISOString()
+        hasFirebaseUid: !!firebaseUid
       });
 
       if (!email) {
         return res.status(400).json({ error: "Email is required" });
       }
 
-      // Try to find user by email with retry logic
+      // Try to find user by email
       let user = await storage.getUserByEmail(email);
-      console.log('🔧 User lookup result:', { 
-        found: !!user, 
-        userId: user?.id,
-        timestamp: new Date().toISOString()
-      });
 
       if (!user) {
-        // Create new user if doesn't exist - with enhanced error handling
-        console.log('🔧 Creating new user via Google auth...');
-        
-        let createAttempts = 3;
-        while (createAttempts > 0) {
-          try {
-            user = await storage.createUser({
-              email,
-              username: username || email.split('@')[0],
-              password: '',  // Not used for Google auth
-            });
-            
-            console.log('✅ Google auth user created successfully:', { 
-              id: user.id, 
-              email: email.split('@')[0] + '@...',
-              timestamp: new Date().toISOString()
-            });
-            break;
-            
-          } catch (createError) {
-            createAttempts--;
-            console.error('❌ Google auth user creation failed:', {
-              error: createError instanceof Error ? createError.message : 'Unknown error',
-              attemptsLeft: createAttempts,
-              timestamp: new Date().toISOString()
-            });
-            
-            if (createAttempts === 0) {
-              return res.status(500).json({ 
-                error: "Failed to create user account after multiple attempts" 
-              });
-            }
-            
-            // Wait before retry
-            await new Promise(resolve => setTimeout(resolve, 200));
-          }
+        // Create new user if doesn't exist
+        try {
+          user = await storage.createUser({
+            email,
+            username: username || email.split('@')[0],
+            password: '',  // Not used for Google auth
+          });
+          console.log('Created new user:', { id: user.id, email: email.split('@')[0] + '@...' });
+        } catch (createError) {
+          console.error('Failed to create user:', createError);
+          return res.status(500).json({ error: "Failed to create user account" });
         }
       }
 
-      // Enhanced Firebase UID mapping with retry logic
-      if (firebaseUid && user) {
-        let mappingAttempts = 3;
-        while (mappingAttempts > 0) {
-          try {
-            await TokenService.storeFirebaseUidMapping(firebaseUid, user.id);
-            console.log('✅ Firebase UID mapping stored:', {
-              uid: firebaseUid.substring(0, 8) + '...',
-              userId: user.id,
-              timestamp: new Date().toISOString()
-            });
-            break;
-          } catch (tokenError) {
-            mappingAttempts--;
-            console.error('❌ Firebase UID mapping failed:', {
-              error: tokenError instanceof Error ? tokenError.message : 'Unknown error',
-              attemptsLeft: mappingAttempts,
-              timestamp: new Date().toISOString()
-            });
-            
-            if (mappingAttempts === 0) {
-              // Don't fail the authentication if mapping storage fails
-              console.warn('⚠️ Continuing without Firebase UID mapping');
-            } else {
-              await new Promise(resolve => setTimeout(resolve, 100));
-            }
-          }
+      // Optional: Store Firebase UID mapping for fast lookup
+      if (firebaseUid) {
+        try {
+          await TokenService.storeFirebaseUidMapping(firebaseUid, user.id);
+        } catch (tokenError) {
+          console.error('Failed to store Firebase UID mapping:', tokenError);
+          // Don't fail the authentication if mapping storage fails
         }
       }
 
-      // Login user
       req.login(user, (err) => {
-        if (err) {
-          console.error('❌ Login failed after Google auth:', err);
-          return next(err);
-        }
-        
-        console.log('✅ Google auth login successful:', {
-          userId: user.id,
-          email: email.split('@')[0] + '@...',
-          timestamp: new Date().toISOString()
-        });
-        
+        if (err) return next(err);
         res.json(user);
       });
     } catch (err) {
-      console.error('❌ Google auth endpoint error:', {
-        error: err instanceof Error ? err.message : 'Unknown error',
-        timestamp: new Date().toISOString()
-      });
+      console.error('Google auth endpoint error:', err);
       res.status(500).json({ error: "Authentication failed" });
     }
   });

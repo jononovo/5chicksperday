@@ -10,7 +10,7 @@ import type {
   InsertCampaignList, EmailTemplate, InsertEmailTemplate,
   SearchApproach, InsertSearchApproach, SearchTestResult, 
   InsertSearchTestResult, UserPreferences, InsertUserPreferences,
-  ContactFeedback, InsertContactFeedback
+  ContactFeedback, InsertContactFeedback, StrategicProfile, InsertStrategicProfile
 } from "../shared/schema";
 import { IStorage } from '../server/storage/index';
 
@@ -26,7 +26,32 @@ export class ReplitStorage implements IStorage {
   // Core helper methods
   private async get<T>(key: string): Promise<T | undefined> {
     try {
-      return await this.db.get(key) as T;
+      const result = await this.db.get(key);
+      
+      // Handle Replit DB wrapped response format
+      if (result && typeof result === 'object' && 'ok' in result && 'value' in result) {
+        const wrappedResult = result as { ok: boolean; value: any };
+        if (wrappedResult.ok && wrappedResult.value !== null && wrappedResult.value !== undefined) {
+          // If value is already an object/array, return it directly
+          if (typeof wrappedResult.value === 'object') {
+            return wrappedResult.value as T;
+          }
+          // If value is a string, try to parse it as JSON
+          if (typeof wrappedResult.value === 'string') {
+            try {
+              return JSON.parse(wrappedResult.value) as T;
+            } catch {
+              // If JSON parsing fails, return the string as-is
+              return wrappedResult.value as T;
+            }
+          }
+          // For other types (numbers, booleans), return as-is
+          return wrappedResult.value as T;
+        }
+      }
+      
+      // For direct responses (strings, numbers, etc.)
+      return result as T;
     } catch {
       return undefined;
     }
@@ -52,7 +77,23 @@ export class ReplitStorage implements IStorage {
   
   private async getNextId(entity: string): Promise<number> {
     const key = `counter:${entity}`;
-    const current = await this.get<number>(key) || 0;
+    
+    // Get current counter value, ensuring we extract the numeric value properly
+    let current = 0;
+    try {
+      const counterValue = await this.get<number>(key);
+      // Ensure we have a valid number, not a wrapped response or corrupted value
+      if (typeof counterValue === 'number' && !isNaN(counterValue)) {
+        current = counterValue;
+      } else {
+        // Reset to 0 if we have corrupted data
+        current = 0;
+      }
+    } catch (error) {
+      // Fallback to 0 if there's any error
+      current = 0;
+    }
+    
     const next = current + 1;
     await this.set(key, next);
     return next;
@@ -181,16 +222,27 @@ export class ReplitStorage implements IStorage {
   // Lists
   // @ts-ignore
   async listLists(userId: number): Promise<List[]> {
-    const listIds = await this.get<number[]>(`lists:user:${userId}`) || [];
-    const lists: List[] = [];
-    
-    for (const id of listIds) {
-      const list = await this.get<List>(`list:${id}`);
-      // @ts-ignore: Date handling issues
-      if (list) lists.push(list);
+    try {
+      const listIds = await this.get<number[]>(`lists:user:${userId}`);
+      
+      // Ensure we have a valid array
+      if (!Array.isArray(listIds)) {
+        return [];
+      }
+      
+      const lists: List[] = [];
+      
+      for (const id of listIds) {
+        const list = await this.get<List>(`list:${id}`);
+        // @ts-ignore: Date handling issues
+        if (list) lists.push(list);
+      }
+      
+      return lists;
+    } catch (error) {
+      console.error('Error in listLists:', error);
+      return [];
     }
-    
-    return lists;
   }
 
   // @ts-ignore
@@ -201,16 +253,27 @@ export class ReplitStorage implements IStorage {
 
   // @ts-ignore
   async listCompaniesByList(listId: number, userId: number): Promise<Company[]> {
-    const companies = await this.get<number[]>(`companies:list:${listId}`) || [];
-    const result: Company[] = [];
-    
-    for (const id of companies) {
-      const company = await this.getCompany(id);
-      // @ts-ignore: Date handling issues
-      if (company && company.userId === userId) result.push(company);
+    try {
+      const companies = await this.get<number[]>(`companies:list:${listId}`);
+      
+      // Ensure we have a valid array
+      if (!Array.isArray(companies)) {
+        return [];
+      }
+      
+      const result: Company[] = [];
+      
+      for (const id of companies) {
+        const company = await this.getCompany(id);
+        // @ts-ignore: Date handling issues
+        if (company && company.userId === userId) result.push(company);
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error in listCompaniesByList:', error);
+      return [];
     }
-    
-    return result;
   }
 
   // @ts-ignore
@@ -235,9 +298,10 @@ export class ReplitStorage implements IStorage {
     await this.set(`list:${id}`, list);
     
     // Add to user's lists (add at beginning for newest-first order)
-    const userLists = await this.get<number[]>(`lists:user:${data.userId}`) || [];
-    userLists.unshift(id);
-    await this.set(`lists:user:${data.userId}`, userLists);
+    const userLists = await this.get<number[]>(`lists:user:${data.userId}`);
+    const listArray = Array.isArray(userLists) ? userLists : [];
+    listArray.unshift(id);
+    await this.set(`lists:user:${data.userId}`, listArray);
     
     // @ts-ignore: Date handling issues
     return list;
@@ -852,6 +916,119 @@ export class ReplitStorage implements IStorage {
     
     // Delete the template
     await this.delete(`emailTemplate:${id}`);
+  }
+
+  // Strategic Profiles - CRITICAL MISSING METHODS
+  // @ts-ignore
+  async getStrategicProfiles(userId: number): Promise<StrategicProfile[]> {
+    try {
+      const profileIds = await this.get<number[]>(`strategicProfiles:user:${userId}`);
+      
+      // Ensure we have a valid array
+      if (!Array.isArray(profileIds)) {
+        return [];
+      }
+      
+      const profiles: StrategicProfile[] = [];
+      
+      for (const id of profileIds) {
+        try {
+          const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
+          // @ts-ignore: Date handling issues
+          // Only add profile if it exists and has valid data
+          if (profile && typeof profile === 'object' && profile.id && profile.userId === userId) {
+            profiles.push(profile);
+          }
+        } catch (profileError) {
+          console.error(`Error retrieving profile ${id}:`, profileError);
+          // Continue with other profiles instead of failing entirely
+        }
+      }
+      
+      return profiles;
+    } catch (error) {
+      console.error('Error in getStrategicProfiles:', error);
+      return [];
+    }
+  }
+
+  // @ts-ignore
+  async getStrategicProfile(id: number, userId: number): Promise<StrategicProfile | undefined> {
+    const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
+    if (!profile || profile.userId !== userId) return undefined;
+    return profile;
+  }
+
+  // @ts-ignore
+  async createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile> {
+    const id = await this.getNextId('strategicProfile');
+    const now = new Date().toISOString();
+    
+    const newProfile = {
+      ...data,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    // Store the profile
+    await this.set(`strategicProfile:${id}`, newProfile);
+    
+    // Add to user's profiles
+    const userProfiles = await this.get<number[]>(`strategicProfiles:user:${data.userId}`);
+    const profileArray = Array.isArray(userProfiles) ? userProfiles : [];
+    profileArray.push(id);
+    await this.set(`strategicProfiles:user:${data.userId}`, profileArray);
+    
+    // @ts-ignore: Date handling issues
+    return newProfile;
+  }
+
+  // @ts-ignore
+  async updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile> {
+    const profile = await this.get<StrategicProfile>(`strategicProfile:${id}`);
+    if (!profile) throw new Error(`Strategic profile with id ${id} not found`);
+    
+    const now = new Date().toISOString();
+    const updatedProfile = { ...profile, ...data, updatedAt: now };
+    await this.set(`strategicProfile:${id}`, updatedProfile);
+    
+    // @ts-ignore: Date handling issues
+    return updatedProfile;
+  }
+
+  // @ts-ignore
+  async deleteStrategicProfile(id: number, userId: number): Promise<void> {
+    const profile = await this.getStrategicProfile(id, userId);
+    if (!profile) return;
+    
+    // Remove from user's profiles
+    const userProfiles = await this.get<number[]>(`strategicProfiles:user:${userId}`) || [];
+    const updatedProfiles = userProfiles.filter(pid => pid !== id);
+    await this.set(`strategicProfiles:user:${userId}`, updatedProfiles);
+    
+    // Delete the profile
+    await this.delete(`strategicProfile:${id}`);
+  }
+
+  // @ts-ignore
+  async cloneStrategicProfile(id: number, userId: number): Promise<StrategicProfile> {
+    const originalProfile = await this.getStrategicProfile(id, userId);
+    if (!originalProfile) throw new Error(`Strategic profile with id ${id} not found`);
+    
+    // Create clone data with new name
+    const cloneData = {
+      ...originalProfile,
+      name: `${originalProfile.name || 'Untitled Product'} (Copy)`,
+      status: 'in_progress' as const
+    };
+    
+    // Remove fields that shouldn't be cloned
+    delete (cloneData as any).id;
+    delete (cloneData as any).createdAt;
+    delete (cloneData as any).updatedAt;
+    
+    return this.createStrategicProfile(cloneData);
   }
   
   // Contact enrichment
