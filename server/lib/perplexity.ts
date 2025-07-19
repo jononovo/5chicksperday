@@ -1,29 +1,28 @@
+import type { Company, Contact } from "@shared/schema";
 import { queryPerplexity } from "./api/perplexity-client";
 import type { PerplexityMessage } from "./types/perplexity";
-import {
-  validateEmailPattern,
-  isValidBusinessEmail,
-  isPlaceholderEmail,
-} from "./results-analysis/email-analysis";
+import { validateEmailPattern, isValidBusinessEmail, isPlaceholderEmail } from "./results-analysis/email-analysis";
+import type { ValidationOptions } from "./results-analysis/contact-name-validation";
+
+/**
+ * Core Perplexity AI interaction module
+ * Handles direct interactions with the Perplexity API for company and contact analysis
+ */
 
 export async function analyzeWithPerplexity(
   prompt: string,
   systemPrompt: string,
-  responseFormat?: string,
+  responseFormat?: string
 ): Promise<string> {
   const messages: PerplexityMessage[] = [
     {
       role: "system",
-      content:
-        systemPrompt +
-        (responseFormat
-          ? `\n\nFormat your response as JSON:\n${responseFormat}`
-          : ""),
+      content: systemPrompt + (responseFormat ? `\n\nFormat your response as JSON:\n${responseFormat}` : '')
     },
     {
       role: "user",
-      content: prompt,
-    },
+      content: prompt
+    }
   ];
 
   return queryPerplexity(messages);
@@ -39,9 +38,7 @@ export interface EmailValidationResult {
   };
 }
 
-export async function validateEmails(
-  emails: string[],
-): Promise<EmailValidationResult> {
+export async function validateEmails(emails: string[]): Promise<EmailValidationResult> {
   try {
     // First perform local validation
     let patternScore = 0;
@@ -80,12 +77,12 @@ export async function validateEmails(
             {
               "score": number,
               "analysis": string
-            }`,
+            }`
         },
         {
           role: "user",
-          content: `Validate these email addresses: ${JSON.stringify(emails)}`,
-        },
+          content: `Validate these email addresses: ${JSON.stringify(emails)}`
+        }
       ];
 
       const response = await queryPerplexity(messages);
@@ -98,16 +95,15 @@ export async function validateEmails(
           aiConfidence = result.score || 0;
         }
       } catch (e) {
-        console.error("Failed to parse AI validation response:", e);
+        console.error('Failed to parse AI validation response:', e);
       }
 
       // Combine scores with weights
-      const finalScore = Math.min(
-        100,
-        Math.floor(
-          patternScore * 0.4 + businessDomainScore * 0.3 + aiConfidence * 0.3,
-        ),
-      );
+      const finalScore = Math.min(100, Math.floor(
+        (patternScore * 0.4) +
+        (businessDomainScore * 0.3) +
+        (aiConfidence * 0.3)
+      ));
 
       return {
         score: finalScore,
@@ -115,8 +111,8 @@ export async function validateEmails(
           aiConfidence,
           patternScore,
           businessDomainScore,
-          placeholderCheck,
-        },
+          placeholderCheck
+        }
       };
     }
 
@@ -126,18 +122,19 @@ export async function validateEmails(
       validationDetails: {
         patternScore,
         businessDomainScore,
-        placeholderCheck,
-      },
+        placeholderCheck
+      }
     };
+
   } catch (error) {
-    console.error("Error in email validation:", error);
+    console.error('Error in email validation:', error);
     return {
       score: 0,
       validationDetails: {
         patternScore: 0,
         businessDomainScore: 0,
-        placeholderCheck: true,
-      },
+        placeholderCheck: true
+      }
     };
   }
 }

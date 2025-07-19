@@ -4,13 +4,13 @@ import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./db/storage-replit";
+import { storage } from "./storage";
 import { User, User as SelectUser } from "@shared/schema";
 import admin from "firebase-admin";
 import { TokenService, UserTokens } from "./lib/tokens";
 
 // Extend the session type to include gmailToken
-declare module "express-session" {
+declare module 'express-session' {
   interface SessionData {
     gmailToken?: string;
   }
@@ -41,83 +41,63 @@ async function comparePasswords(supplied: string, stored: string) {
 async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
   // Try to get token from various sources
   let token: string | null = null;
-
+  
   // 1. Check Authorization header (traditional method)
   const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith("Bearer ")) {
-    token = authHeader.split("Bearer ")[1];
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.split('Bearer ')[1];
   }
-
+  
   // 2. Check cookies if header not available
   if (!token && req.cookies?.authToken) {
     token = req.cookies.authToken;
   }
-
+  
   // 3. Check custom header as fallback
-  if (!token && req.headers["x-auth-token"]) {
-    token = req.headers["x-auth-token"] as string;
+  if (!token && req.headers['x-auth-token']) {
+    token = req.headers['x-auth-token'] as string;
   }
 
-  console.log("Verifying Firebase token:", {
+  console.log('Verifying Firebase token:', {
     hasAuthHeader: !!authHeader,
-    headerFormat: authHeader?.startsWith("Bearer ") ? "valid" : "invalid",
+    headerFormat: authHeader?.startsWith('Bearer ') ? 'valid' : 'invalid',
     hasToken: !!token,
-    tokenSource: token
-      ? authHeader
-        ? "header"
-        : req.cookies?.authToken
-          ? "cookie"
-          : "custom-header"
-      : "none",
+    tokenSource: token ? (authHeader ? 'header' : (req.cookies?.authToken ? 'cookie' : 'custom-header')) : 'none',
     hasFirebaseAdmin: !!admin.apps.length,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString()
   });
 
   if (!token || !admin.apps.length) {
-    console.warn("Token verification failed:", {
-      reason: !token ? "no token found" : "firebase admin not initialized",
+    console.warn('Token verification failed:', {
+      reason: !token ? 'no token found' : 'firebase admin not initialized',
       timestamp: new Date().toISOString(),
     });
     return null;
   }
 
   try {
-    console.log("Verifying ID token with Firebase Admin");
+    console.log('Verifying ID token with Firebase Admin');
     const decodedToken = await admin.auth().verifyIdToken(token);
 
     // Log the token scopes and claims
-    console.log("Token verified successfully:", {
-      email: decodedToken.email?.split("@")[0] + "@...",
-      timestamp: new Date().toISOString(),
+    console.log('Token verified successfully:', {
+      email: decodedToken.email?.split('@')[0] + '@...',
+      timestamp: new Date().toISOString()
     });
 
     if (!decodedToken.email) {
-      console.warn("Token missing email claim");
+      console.warn('Token missing email claim');
       return null;
     }
 
     // Get or create user in our database with enhanced error handling
-    console.log("🔍 Looking up user in Firebase token verification:", {
-      email: decodedToken.email?.split("@")[0] + "@...",
-      timestamp: new Date().toISOString(),
-    });
-    
     let user = await storage.getUserByEmail(decodedToken.email);
-    
-    console.log("🔍 Firebase token user lookup result:", {
-      found: !!user,
-      userId: user?.id,
-      hasId: user && 'id' in user,
-      type: typeof user,
-      userObject: user,
-      timestamp: new Date().toISOString(),
-    });
 
     if (!user) {
-      console.log("🔧 Creating new user in verifyFirebaseToken:", {
-        email: decodedToken.email?.split("@")[0] + "@...",
+      console.log('🔧 Creating new user in verifyFirebaseToken:', {
+        email: decodedToken.email?.split('@')[0] + '@...',
         name: decodedToken.name,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
 
       // Retry logic for user creation
@@ -126,52 +106,40 @@ async function verifyFirebaseToken(req: Request): Promise<SelectUser | null> {
         try {
           user = await storage.createUser({
             email: decodedToken.email,
-            username: decodedToken.name || decodedToken.email.split("@")[0],
-            password: "", // Not used for Firebase auth
+            username: decodedToken.name || decodedToken.email.split('@')[0],
+            password: '',  // Not used for Firebase auth
           });
-
-          console.log("✅ Firebase token user created successfully:", {
+          
+          console.log('✅ Firebase token user created successfully:', {
             id: user.id,
-            email: decodedToken.email?.split("@")[0] + "@...",
-            userObject: user,
-            timestamp: new Date().toISOString(),
+            email: decodedToken.email?.split('@')[0] + '@...',
+            timestamp: new Date().toISOString()
           });
           break;
+          
         } catch (createError) {
           createAttempts--;
-          console.error("❌ Firebase token user creation failed:", {
-            error:
-              createError instanceof Error
-                ? createError.message
-                : "Unknown error",
-            createError: createError,
+          console.error('❌ Firebase token user creation failed:', {
+            error: createError instanceof Error ? createError.message : 'Unknown error',
             attemptsLeft: createAttempts,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toISOString()
           });
-
+          
           if (createAttempts > 0) {
-            await new Promise((resolve) => setTimeout(resolve, 200));
+            await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
       }
-
+      
       if (!user) {
-        console.error("❌ Failed to create user after all attempts");
+        console.error('❌ Failed to create user after all attempts');
         return null;
       }
     }
 
-    console.log("🔍 Final user object before return:", {
-      user: user,
-      type: typeof user,
-      hasId: user && 'id' in user,
-      id: user?.id,
-      timestamp: new Date().toISOString(),
-    });
-
     return user;
   } catch (error) {
-    console.error("Firebase token verification error:", {
+    console.error('Firebase token verification error:', {
       error,
       timestamp: new Date().toISOString(),
     });
@@ -190,14 +158,14 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "temporary-secret-key",
+    secret: process.env.SESSION_SECRET || 'temporary-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    },
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    }
   };
 
   app.use(session(sessionSettings));
@@ -208,8 +176,8 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(
       {
-        usernameField: "email", // Change this to use email field
-        passwordField: "password",
+        usernameField: 'email', // Change this to use email field
+        passwordField: 'password'
       },
       async (email, password, done) => {
         try {
@@ -221,16 +189,11 @@ export function setupAuth(app: Express) {
         } catch (err) {
           return done(err);
         }
-      },
-    ),
+      }
+    )
   );
 
-  passport.serializeUser((user: any, done) => {
-    if (!user) console.error("SerialError: user is null or undefined");
-    if (!user || !user.id) {
-      console.error("SerialError: user.id is missing:", user);
-      return done(new Error("Invalid user object for serialization"));
-    }
+  passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
@@ -238,12 +201,10 @@ export function setupAuth(app: Express) {
     try {
       const user = await storage.getUserById(id);
       if (!user) {
-        console.error("Deserialization error: user not found for id:", id);
         return done(null, false);
       }
       done(null, user);
     } catch (err) {
-      console.error("Deserialization error:", err);
       done(err);
     }
   });
@@ -252,31 +213,32 @@ export function setupAuth(app: Express) {
   if (process.env.VITE_FIREBASE_PROJECT_ID) {
     try {
       if (!admin.apps.length) {
-        console.log("Initializing Firebase Admin with config:", {
+        console.log('Initializing Firebase Admin with config:', {
           projectId: process.env.VITE_FIREBASE_PROJECT_ID,
           environment: process.env.NODE_ENV,
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
         });
 
         admin.initializeApp({
           projectId: process.env.VITE_FIREBASE_PROJECT_ID,
         });
-        console.log("Firebase Admin initialized successfully");
+        console.log('Firebase Admin initialized successfully');
       }
     } catch (error) {
-      console.error("Firebase Admin initialization error:", {
+      console.error('Firebase Admin initialization error:', {
         error,
         projectId: process.env.VITE_FIREBASE_PROJECT_ID,
         environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
     }
   } else {
-    console.warn("Firebase Admin not initialized: missing project ID", {
+    console.warn('Firebase Admin not initialized: missing project ID', {
       environment: process.env.NODE_ENV,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     });
   }
+
 
   // Add Firebase token verification to all authenticated routes
   app.use(async (req, res, next) => {
@@ -285,14 +247,14 @@ export function setupAuth(app: Express) {
       if (firebaseUser) {
         // Attach the Firebase user to the request for other middleware to access
         (req as any).firebaseUser = firebaseUser;
-
+        
         // Also log the user in to create a session - WAIT for completion
         req.login(firebaseUser, (err) => {
           if (err) return next(err);
-          console.log("Firebase user logged in:", {
+          console.log('Firebase user logged in:', {
             id: firebaseUser.id,
-            email: firebaseUser.email?.split("@")[0] + "@...",
-            timestamp: new Date().toISOString(),
+            email: firebaseUser.email?.split('@')[0] + '@...',
+            timestamp: new Date().toISOString()
           });
           next(); // Only call next() after login completes
         });
@@ -311,16 +273,14 @@ export function setupAuth(app: Express) {
     try {
       const { email, password } = req.body;
 
-      console.log("Registration request received:", {
+      console.log('Registration request received:', {
         hasEmail: !!email,
         hasPassword: !!password,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
 
       if (!email || !password) {
-        return res
-          .status(400)
-          .json({ error: "Email and password are required" });
+        return res.status(400).json({ error: "Email and password are required" });
       }
 
       // Check for existing email
@@ -337,62 +297,47 @@ export function setupAuth(app: Express) {
         const user = await storage.createUser({
           email,
           password: hashedPassword,
-          username: ""
         });
 
-        console.log("User created successfully:", {
+        console.log('User created successfully:', {
           id: user.id,
-          email: email.split("@")[0] + "@...",
-          timestamp: new Date().toISOString(),
+          email: email.split('@')[0] + '@...',
+          timestamp: new Date().toISOString()
         });
 
         // Login the user
         req.login(user, (err) => {
           if (err) {
-            console.error("Login error after registration:", err);
+            console.error('Login error after registration:', err);
             return next(err);
           }
-
+          
           // Return success response with user data
-          console.log("User logged in after registration");
+          console.log('User logged in after registration');
           return res.status(201).json(user);
         });
       } catch (createError) {
-        console.error("User creation error:", createError);
+        console.error('User creation error:', createError);
         return res.status(500).json({ error: "Failed to create user account" });
       }
     } catch (err) {
-      console.error("Registration error:", err);
+      console.error('Registration error:', err);
       // Send proper JSON response instead of passing to generic error handler
-      return res
-        .status(500)
-        .json({
-          error: "Registration failed",
-          details: err instanceof Error ? err.message : "Unknown error",
-        });
+      return res.status(500).json({ error: "Registration failed", details: err instanceof Error ? err.message : "Unknown error" });
     }
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate(
-      "local",
-      (
-        err: Error | null,
-        user: SelectUser | false,
-        info: { message: string } | undefined,
-      ) => {
+    passport.authenticate("local", (err: Error | null, user: SelectUser | false, info: { message: string } | undefined) => {
+      if (err) return next(err);
+      if (!user) {
+        return res.status(401).json({ error: info?.message || "Invalid credentials" });
+      }
+      req.login(user, (err: Error | null) => {
         if (err) return next(err);
-        if (!user) {
-          return res
-            .status(401)
-            .json({ error: info?.message || "Invalid credentials" });
-        }
-        req.login(user, (err: Error | null) => {
-          if (err) return next(err);
-          res.json(user);
-        });
-      },
-    )(req, res, next);
+        res.json(user);
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {
@@ -400,9 +345,9 @@ export function setupAuth(app: Express) {
     // This will help us prevent showing previous user data to a new user
     if (req.session) {
       (req.session as any).logoutTime = Date.now();
-      console.log("Set logout timestamp:", { time: new Date().toISOString() });
+      console.log('Set logout timestamp:', { time: new Date().toISOString() });
     }
-
+    
     req.logout((err) => {
       if (err) return next(err);
       res.sendStatus(200);
@@ -420,23 +365,23 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-
+    
     try {
       const userId = (req.user as any).id;
       const user = await storage.getUserById(userId);
-
+      
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
-
+      
       res.json({
         id: user.id,
         email: user.email,
         username: user.username,
-        createdAt: user.createdAt,
+        createdAt: user.createdAt
       });
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error('Error fetching user profile:', error);
       res.status(500).json({ error: "Failed to fetch user profile" });
     }
   });
@@ -445,39 +390,37 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-
+    
     try {
       const { username } = req.body;
       const userId = (req.user as any).id;
-
-      if (!username || typeof username !== "string") {
+      
+      if (!username || typeof username !== 'string') {
         return res.status(400).json({ error: "Username is required" });
       }
-
+      
       if (username.length < 1) {
         return res.status(400).json({ error: "Name is required" });
       }
-
+      
       if (username.length > 50) {
-        return res
-          .status(400)
-          .json({ error: "Name must be less than 50 characters" });
+        return res.status(400).json({ error: "Name must be less than 50 characters" });
       }
-
+      
       const updatedUser = await storage.updateUser(userId, { username });
-
+      
       if (!updatedUser) {
         return res.status(404).json({ error: "User not found" });
       }
-
+      
       res.json({
         id: updatedUser.id,
         email: updatedUser.email,
         username: updatedUser.username,
-        createdAt: updatedUser.createdAt,
+        createdAt: updatedUser.createdAt
       });
     } catch (error) {
-      console.error("Error updating user profile:", error);
+      console.error('Error updating user profile:', error);
       res.status(500).json({ error: "Failed to update user profile" });
     }
   });
@@ -486,29 +429,27 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-
+    
     try {
       const userId = (req.user as any).id;
       const { CreditService } = await import("./lib/credits");
       const credits = await CreditService.getUserCredits(userId);
-
+      
       const planMap = {
-        "ugly-duckling": "The Duckling",
-        "duckin-awesome": "Mama Duck",
+        'ugly-duckling': 'The Duckling',
+        'duckin-awesome': 'Mama Duck'
       };
-
+      
       const currentPlan = credits.currentPlan || null;
-      const isSubscribed = credits.subscriptionStatus === "active";
-
+      const isSubscribed = credits.subscriptionStatus === 'active';
+      
       res.json({
         isSubscribed,
         currentPlan,
-        planDisplayName: currentPlan
-          ? planMap[currentPlan as keyof typeof planMap]
-          : null,
+        planDisplayName: currentPlan ? planMap[currentPlan as keyof typeof planMap] : null
       });
     } catch (error) {
-      console.error("Error fetching subscription status:", error);
+      console.error('Error fetching subscription status:', error);
       res.status(500).json({ error: "Failed to fetch subscription status" });
     }
   });
@@ -518,12 +459,12 @@ export function setupAuth(app: Express) {
     try {
       const { email, username, firebaseUid } = req.body;
 
-      console.log("🔧 Google auth endpoint received request:", {
-        hasEmail: !!email,
+      console.log('🔧 Google auth endpoint received request:', { 
+        hasEmail: !!email, 
         hasUsername: !!username,
         hasFirebaseUid: !!firebaseUid,
-        email: email?.split("@")[0] + "@...",
-        timestamp: new Date().toISOString(),
+        email: email?.split('@')[0] + '@...',
+        timestamp: new Date().toISOString()
       });
 
       if (!email) {
@@ -532,52 +473,48 @@ export function setupAuth(app: Express) {
 
       // Try to find user by email with retry logic
       let user = await storage.getUserByEmail(email);
-      console.log("🔧 User lookup result:", {
-        found: !!user,
+      console.log('🔧 User lookup result:', { 
+        found: !!user, 
         userId: user?.id,
-        userObject: user, // Log the full user object for debugging
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
 
       if (!user) {
         // Create new user if doesn't exist - with enhanced error handling
-        console.log("🔧 Creating new user via Google auth...");
-
+        console.log('🔧 Creating new user via Google auth...');
+        
         let createAttempts = 3;
         while (createAttempts > 0) {
           try {
             user = await storage.createUser({
               email,
-              username: username || email.split("@")[0],
-              password: "", // Not used for Google auth
+              username: username || email.split('@')[0],
+              password: '',  // Not used for Google auth
             });
-
-            console.log("✅ Google auth user created successfully:", {
-              id: user.id,
-              email: email.split("@")[0] + "@...",
-              userObject: user, // Log the full user object for debugging
-              timestamp: new Date().toISOString(),
+            
+            console.log('✅ Google auth user created successfully:', { 
+              id: user.id, 
+              email: email.split('@')[0] + '@...',
+              timestamp: new Date().toISOString()
             });
             break;
+            
           } catch (createError) {
             createAttempts--;
-            console.error("❌ Google auth user creation failed:", {
-              error:
-                createError instanceof Error
-                  ? createError.message
-                  : "Unknown error",
+            console.error('❌ Google auth user creation failed:', {
+              error: createError instanceof Error ? createError.message : 'Unknown error',
               attemptsLeft: createAttempts,
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
-
+            
             if (createAttempts === 0) {
-              return res.status(500).json({
-                error: "Failed to create user account after multiple attempts",
+              return res.status(500).json({ 
+                error: "Failed to create user account after multiple attempts" 
               });
             }
-
+            
             // Wait before retry
-            await new Promise((resolve) => setTimeout(resolve, 200));
+            await new Promise(resolve => setTimeout(resolve, 200));
           }
         }
       }
@@ -588,66 +525,49 @@ export function setupAuth(app: Express) {
         while (mappingAttempts > 0) {
           try {
             await TokenService.storeFirebaseUidMapping(firebaseUid, user.id);
-            console.log("✅ Firebase UID mapping stored:", {
-              uid: firebaseUid.substring(0, 8) + "...",
+            console.log('✅ Firebase UID mapping stored:', {
+              uid: firebaseUid.substring(0, 8) + '...',
               userId: user.id,
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
             break;
           } catch (tokenError) {
             mappingAttempts--;
-            console.error("❌ Firebase UID mapping failed:", {
-              error:
-                tokenError instanceof Error
-                  ? tokenError.message
-                  : "Unknown error",
+            console.error('❌ Firebase UID mapping failed:', {
+              error: tokenError instanceof Error ? tokenError.message : 'Unknown error',
               attemptsLeft: mappingAttempts,
-              timestamp: new Date().toISOString(),
+              timestamp: new Date().toISOString()
             });
-
+            
             if (mappingAttempts === 0) {
               // Don't fail the authentication if mapping storage fails
-              console.warn("⚠️ Continuing without Firebase UID mapping");
+              console.warn('⚠️ Continuing without Firebase UID mapping');
             } else {
-              await new Promise((resolve) => setTimeout(resolve, 100));
+              await new Promise(resolve => setTimeout(resolve, 100));
             }
           }
         }
       }
 
-      // Validate user object before login
-      if (!user || !user.id) {
-        console.error("❌ Invalid user object for login:", user);
-        return res.status(500).json({ error: "Invalid user data" });
-      }
-
       // Login user
       req.login(user, (err) => {
         if (err) {
-          console.error("❌ Login failed after Google auth:", {
-            error: err instanceof Error ? err.message : "Unknown error",
-            userId: user?.id,
-            timestamp: new Date().toISOString(),
-          });
-          return res.status(500).json({
-            error: "Failed to serialize user into session",
-            status: 500,
-            timestamp: new Date().toISOString(),
-          });
+          console.error('❌ Login failed after Google auth:', err);
+          return next(err);
         }
-
-        console.log("✅ Google auth login successful:", {
+        
+        console.log('✅ Google auth login successful:', {
           userId: user.id,
-          email: email.split("@")[0] + "@...",
-          timestamp: new Date().toISOString(),
+          email: email.split('@')[0] + '@...',
+          timestamp: new Date().toISOString()
         });
-
+        
         res.json(user);
       });
     } catch (err) {
-      console.error("❌ Google auth endpoint error:", {
-        error: err instanceof Error ? err.message : "Unknown error",
-        timestamp: new Date().toISOString(),
+      console.error('❌ Google auth endpoint error:', {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        timestamp: new Date().toISOString()
       });
       res.status(500).json({ error: "Authentication failed" });
     }
@@ -658,22 +578,22 @@ export function setupAuth(app: Express) {
     try {
       const userId = (req.user as any).id;
       const hasValidAuth = await TokenService.hasValidGmailAuth(userId);
-
-      console.log("Checking Gmail auth status:", {
+      
+      console.log('Checking Gmail auth status:', {
         userId,
         hasValidAuth,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
-
-      res.json({
+      
+      res.json({ 
         authorized: hasValidAuth,
-        hasValidToken: hasValidAuth,
+        hasValidToken: hasValidAuth
       });
     } catch (error) {
-      console.error("Error checking Gmail auth status:", error);
-      res.json({
+      console.error('Error checking Gmail auth status:', error);
+      res.json({ 
         authorized: false,
-        hasValidToken: false,
+        hasValidToken: false
       });
     }
   });
@@ -683,15 +603,15 @@ export function setupAuth(app: Express) {
     try {
       const userId = (req.user as any).id;
       await TokenService.deleteUserTokens(userId);
-
-      console.log("Revoked Gmail tokens:", {
+      
+      console.log('Revoked Gmail tokens:', {
         userId,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
-
+      
       res.json({ success: true, message: "Gmail access revoked" });
     } catch (error) {
-      console.error("Error revoking Gmail tokens:", error);
+      console.error('Error revoking Gmail tokens:', error);
       res.status(500).json({ error: "Failed to revoke Gmail access" });
     }
   });
@@ -701,45 +621,18 @@ export function setupAuth(app: Express) {
     try {
       const userId = (req.user as any).id;
       const userInfo = await TokenService.getGmailUserInfo(userId);
-
-      console.log("Retrieved Gmail user info:", {
+      
+      console.log('Retrieved Gmail user info:', {
         userId,
         hasEmail: !!userInfo.email,
         hasName: !!userInfo.name,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
-
+      
       res.json(userInfo);
     } catch (error) {
-      console.error("Error retrieving Gmail user info:", error);
+      console.error('Error retrieving Gmail user info:', error);
       res.status(500).json({ error: "Failed to retrieve Gmail user info" });
-    }
-  });
-
-  // Test endpoint for debugging storage
-  app.post("/api/test-user-lookup", async (req, res) => {
-    try {
-      const { email } = req.body;
-      console.log('🔍 Testing user lookup for:', email);
-      
-      const user = await storage.getUserByEmail(email);
-      console.log('🔍 User lookup result:', {
-        found: !!user,
-        user: user,
-        type: typeof user,
-        hasId: user && 'id' in user,
-        id: user?.id
-      });
-      
-      res.json({
-        found: !!user,
-        user: user,
-        type: typeof user,
-        hasId: user && 'id' in user
-      });
-    } catch (error:any) {
-      console.error('🔍 User lookup error:', error);
-      res.status(500).json({ error: error?.message });
     }
   });
 
@@ -747,23 +640,22 @@ export function setupAuth(app: Express) {
   app.post("/api/gmail/reauthorize", requireAuth, async (req, res) => {
     try {
       const userId = (req.user as any).id;
-
-      console.log("Gmail re-authorization requested:", {
+      
+      console.log('Gmail re-authorization requested:', {
         userId,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       });
-
+      
       // Delete existing tokens to force fresh authorization
       await TokenService.deleteUserTokens(userId);
-
-      res.json({
-        success: true,
-        message:
-          "Please complete Google OAuth flow again to re-authorize Gmail access",
-        requiresOAuth: true,
+      
+      res.json({ 
+        success: true, 
+        message: "Please complete Google OAuth flow again to re-authorize Gmail access",
+        requiresOAuth: true
       });
     } catch (error) {
-      console.error("Error preparing Gmail re-authorization:", error);
+      console.error('Error preparing Gmail re-authorization:', error);
       res.status(500).json({ error: "Failed to prepare re-authorization" });
     }
   });

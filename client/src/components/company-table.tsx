@@ -242,7 +242,7 @@ export default function CompanyTable({
             const topContacts = getTopContacts(company);
             
             return (
-              <React.Fragment key={`company-${company.id}-${company.name}`}>
+              <React.Fragment key={`company-${company.id}`}>
                 {/* Main company row - always visible */}
                 <TableRow 
                   className={`cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-800/40 hover:opacity-100 bg-transparent ${isExpanded ? 'h-5 opacity-50' : 'h-10 opacity-100'} transition-all duration-200`}
@@ -337,7 +337,7 @@ export default function CompanyTable({
                 {/* Expanded details row - only visible when expanded */}
                 {isExpanded && topContacts.map((contact) => (
                   <TableRow 
-                    key={`company-${company.id}-contact-${contact.id}-${contact.name}`} 
+                    key={`${company.id}-contact-${contact.id}`} 
                     className="border-t-0 h-10 bg-white/75 dark:bg-slate-900/75 hover:bg-white dark:hover:bg-slate-800 hover:scale-[1.01] hover:origin-left hover:font-medium transition-all"
                   >
                     <TableCell className="px-2 py-1">
