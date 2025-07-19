@@ -157,13 +157,13 @@ export class ReplitStorage implements IStorage {
   }
 
   private async getNextId(entity: string): Promise<number> {
-    return this.mutex = this.mutex.then(async () => {
+    return (this.mutex = this.mutex.then(async () => {
       const key = `counter:${entity}`;
       const current = (await this.get<number>(key)) ?? 0;
       const next = current + 1;
       await this.set(key, next);
       return next;
-    });
+    }));
   }
 
   private async OldgetNextId(entity: string): Promise<number> {
@@ -375,7 +375,7 @@ export class ReplitStorage implements IStorage {
   }
 
   // Companies
-  async listCompanies(userId?:number): Promise<Company[]> {
+  async listCompanies(userId?: number): Promise<Company[]> {
     const keys = await this.list("company:");
     const companies: Company[] = [];
 
@@ -436,7 +436,7 @@ export class ReplitStorage implements IStorage {
     const company: Company = {
       ...data,
       id,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     await this.set(`company:${data.userId}:${id}`, company);
@@ -468,18 +468,21 @@ export class ReplitStorage implements IStorage {
     userId?: number,
   ): Promise<Contact[]> {
     const keys = await this.list("contact:");
-    const contacts: Contact[] = [];
-
-    for (const key of keys) {
-      const contact = await this.get<Contact>(key);
-      if (contact && contact.companyId === companyId) {
-        // If userId is provided, filter by userId as well
-        if (userId && contact.userId !== userId) {
-          continue;
-        }
-        contacts.push(contact);
-      }
-    }
+    const contacts = (
+      await Promise.all(
+        keys.map(async (key) => {
+          const contact = await this.get<Contact>(key);
+          if (
+            contact &&
+            contact.companyId === companyId &&
+            (!userId || contact.userId === userId)
+          ) {
+            return contact;
+          }
+          return null;
+        }),
+      )
+    ).filter((c): c is Contact => c !== null);
 
     return contacts;
   }
@@ -553,7 +556,10 @@ export class ReplitStorage implements IStorage {
     return updated;
   }
 
-  async deleteContactsByCompany(companyId: number, userId:number): Promise<void> {
+  async deleteContactsByCompany(
+    companyId: number,
+    userId: number,
+  ): Promise<void> {
     const contacts = await this.listContactsByCompany(companyId, userId);
 
     for (const contact of contacts) {
@@ -601,7 +607,7 @@ export class ReplitStorage implements IStorage {
       active: false,
       prompt: "",
       technicalPrompt: "",
-      responseStructure: ""
+      responseStructure: "",
     };
 
     await this.set(`search_approach:${id}`, approach);
@@ -983,7 +989,9 @@ export class ReplitStorage implements IStorage {
 
     await this.set(`strategic_profile:${id}`, profile);
 
-    let  profileIds = await this.get<number[]>(`strategic_profiles:${data.userId}`);
+    let profileIds = await this.get<number[]>(
+      `strategic_profiles:${data.userId}`,
+    );
     if (!Array.isArray(profileIds)) {
       profileIds = [];
     }
