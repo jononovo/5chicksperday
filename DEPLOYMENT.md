@@ -31,6 +31,29 @@ The application automatically binds to:
 
 ## Troubleshooting
 
+### Production Deployment Failures ("signal: terminated")
+If the deployment fails with "signal: terminated" error:
+
+1. **Check Environment Variables**: Ensure all required environment variables are set in Replit Secrets:
+   - `OPENAI_API_KEY` (required)
+   - `APOLLO_API_KEY` (required)
+   - `VITE_FIREBASE_API_KEY` (required)
+   - `DATABASE_URL` (auto-provided by Replit)
+
+2. **Check Build Process**: Verify the build completes successfully:
+   ```bash
+   npm run build
+   ```
+
+3. **Check Memory Usage**: The application might be exceeding memory limits. Consider:
+   - Reducing bundle size
+   - Optimizing dependencies
+   - Using production-optimized builds
+
+4. **Check Database Access**: Ensure Replit Database is accessible in production environment
+
+5. **Check Logs**: Look for specific error messages in deployment logs before the "signal: terminated" message
+
 ### Payment Features Disabled
 If you see "Payment service unavailable" errors, add the Stripe environment variables to your Replit Secrets.
 

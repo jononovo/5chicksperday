@@ -1,7 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { LogOut, User, Menu, LayoutDashboard, ListTodo, Mail, MessageCircle } from "lucide-react";
+import { LogOut, User, Menu, LayoutDashboard, ListTodo, Mail, MessageCircle, Target } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRegistrationModal } from "@/hooks/use-registration-modal";
+
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { CreditUpgradeDropdown } from "@/components/credit-upgrade-dropdown";
@@ -16,6 +17,7 @@ import {
 const navigation = [
   { name: "Search", href: "/app", icon: "dashboard" },
   { name: "Outreach", href: "/outreach", icon: "mail" },
+  { name: "Strategy", href: "/strategy", icon: "target" },
   // { name: "Replies", href: "/replies", icon: "message" }
 ];
 
@@ -40,10 +42,12 @@ export function MainNav() {
     // This is acceptable for public routes - just don't show user menu
   }
 
+
+
   return (
     <nav className="flex items-center justify-between border-b mb-2 px-4 py-1.5">
-      <div className="flex items-center space-x-4">
-        <Logo size="sm" className="mr-8" />
+      <div className="flex items-center space-x-2 md:space-x-4">
+        <Logo size="sm" className="mr-4 md:mr-8" />
         {navigation.map((item) => {
           const isActive = item.href === location || 
             (item.href === "/" && location === "/");
@@ -56,19 +60,20 @@ export function MainNav() {
                 isActive
                   ? "text-primary font-semibold border-b-2 border-primary"
                   : "text-muted-foreground hover:text-foreground"
-              } px-2 py-1.5 text-sm font-medium transition-colors`}
+              } px-2 md:px-3 py-1.5 text-sm font-medium transition-colors`}
             >
-              <div className="flex items-center">
-                {item.icon === "dashboard" && <LayoutDashboard className="mr-1 h-4 w-4" />}
-                {item.icon === "mail" && <Mail className="mr-1 h-4 w-4" />}
-                {item.icon === "message" && <MessageCircle className="mr-1 h-4 w-4" />}
+              <div className="flex items-center justify-center">
+                {item.icon === "dashboard" && <LayoutDashboard className="md:mr-1 h-4 w-4" />}
+                {item.icon === "target" && <Target className="md:mr-1 h-4 w-4" />}
+                {item.icon === "mail" && <Mail className="md:mr-1 h-4 w-4" />}
+                {item.icon === "message" && <MessageCircle className="md:mr-1 h-4 w-4" />}
                 <span className="md:inline hidden">{item.name}</span>
               </div>
             </Link>
           );
         })}
       </div>
-      <div className="flex items-center ml-auto gap-3">
+      <div className="flex items-center ml-auto gap-2 md:gap-3">
         {user ? (
           <>
             <CreditUpgradeDropdown />
