@@ -1,8 +1,24 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { 
   Target, 
@@ -16,7 +32,9 @@ import {
   FileText,
   CheckCircle,
   Clock,
-  Search
+  Search,
+  MoreVertical,
+  Trash2
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
@@ -24,6 +42,9 @@ import { SEOHead } from "@/components/ui/seo-head";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { UniqueStrategyPage } from "@/components/unique-strategy-page";
 import { useStrategyOverlay } from "@/lib/strategy-overlay-context";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 
 interface StrategicProfile {
   id: number;
@@ -48,6 +69,8 @@ export default function StrategyDashboard() {
   const { setState } = useStrategyOverlay();
   const [selectedProduct, setSelectedProduct] = useState<StrategicProfile | null>(null);
   const [showUniqueStrategy, setShowUniqueStrategy] = useState(false);
+  const [deleteConfirmProduct, setDeleteConfirmProduct] = useState<StrategicProfile | null>(null);
+  const { toast } = useToast();
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -69,6 +92,49 @@ export default function StrategyDashboard() {
   const handleCloseUniqueStrategy = () => {
     setShowUniqueStrategy(false);
     setSelectedProduct(null);
+  };
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const response = await apiRequest("DELETE", `/api/strategic-profiles/${productId}`);
+      if (!response.ok) {
+        throw new Error('Failed to delete strategy');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      // Invalidate and refetch products
+      queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+      toast({
+        title: "Strategy Deleted",
+        description: "Your strategy has been permanently removed.",
+      });
+      setDeleteConfirmProduct(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Delete Failed",
+        description: error instanceof Error ? error.message : "Failed to delete strategy. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDeleteConfirm = () => {
+    if (deleteConfirmProduct) {
+      deleteMutation.mutate(deleteConfirmProduct.id);
+    }
+  };
+
+  const handleMenuAction = (e: React.MouseEvent, action: string, product: StrategicProfile) => {
+    e.stopPropagation(); // Prevent card click
+    
+    if (action === 'view') {
+      handleProductClick(product);
+    } else if (action === 'delete') {
+      setDeleteConfirmProduct(product);
+    }
   };
 
 
@@ -228,13 +294,34 @@ export default function StrategyDashboard() {
                               </>
                             )}
                             
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuItem 
+                                  onClick={(e) => handleMenuAction(e, 'view', product)}
+                                  className="cursor-pointer"
+                                >
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={(e) => handleMenuAction(e, 'delete', product)}
+                                  className="cursor-pointer text-red-600 focus:text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete Strategy
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </div>
@@ -340,6 +427,37 @@ export default function StrategyDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirmProduct} onOpenChange={() => setDeleteConfirmProduct(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Strategy</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deleteConfirmProduct?.name}"? This action cannot be undone and will permanently remove this strategy from your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={deleteMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 focus:bg-red-700"
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                'Delete Strategy'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Unique Strategy Page Dialog */}
       <Dialog open={showUniqueStrategy} onOpenChange={setShowUniqueStrategy}>
