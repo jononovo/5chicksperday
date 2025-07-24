@@ -1512,14 +1512,6 @@ export default function Outreach() {
                   {/* Gmail Status Badge */}
                   {gmailStatus?.authorized ? (
                     <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 border-green-300 flex items-center">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-4 w-4 p-0 mr-1 hover:bg-green-200 rounded-sm"
-                        onClick={openSenderProfileDialog}
-                      >
-                        <Edit className="w-3 h-3" />
-                      </Button>
                       <Mail className="w-3 h-3 mr-1" />
                       {gmailUserInfo?.email 
                         ? gmailUserInfo.email.length > 20 
@@ -1527,6 +1519,14 @@ export default function Outreach() {
                           : gmailUserInfo.email
                         : 'Gmail Connected'
                       }
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-4 w-4 p-0 ml-1 hover:bg-green-200 rounded-sm"
+                        onClick={openSenderProfileDialog}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
                     </Badge>
                   ) : (
                     <Button

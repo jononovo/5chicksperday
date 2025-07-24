@@ -48,11 +48,13 @@ export function SenderProfileDialog({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Initialize sender name based on mode
+  // Initialize sender name based on available data
   useEffect(() => {
-    if (mode === 'edit' && currentSenderName) {
+    if (currentSenderName) {
+      // Always preload if data exists, regardless of mode
       setSenderName(currentSenderName);
-    } else if (mode === 'create') {
+    } else {
+      // Only clear if truly no data
       setSenderName("");
     }
   }, [mode, currentSenderName, isOpen]);
@@ -190,7 +192,7 @@ export function SenderProfileDialog({
           {/* Sender Name Section */}
           <div className="space-y-3">
             <Label htmlFor="senderName" className="text-sm font-medium">
-              Professional Name
+              Sender Name
             </Label>
             <Input
               id="senderName"
@@ -223,7 +225,7 @@ export function SenderProfileDialog({
                     <AlertDialogTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                        className="w-full border border-gray-300 bg-gray-50 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                       >
                         Disconnect Gmail Account
                       </Button>
