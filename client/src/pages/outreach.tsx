@@ -1604,10 +1604,7 @@ export default function Outreach() {
       currentEmail={gmailUserInfo?.email}
       currentSenderName={userPreferences?.senderName}
       onSuccess={() => {
-        toast({
-          title: senderProfileMode === 'create' ? "Sender Profile Created" : "Sender Profile Updated",
-          description: "Your professional identity will now appear in all outreach emails",
-        });
+        // Success handling is done in the dialog component to prevent duplicate toasts
       }}
     />
     </>

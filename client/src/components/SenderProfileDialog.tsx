@@ -66,13 +66,13 @@ export function SenderProfileDialog({
       }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: mode === 'create' ? "Sender Profile Created" : "Sender Profile Updated",
         description: "Your professional name will now appear in all outreach emails",
       });
-      // Invalidate user preferences cache
-      queryClient.invalidateQueries({ queryKey: ['/api/user/preferences'] });
+      // Force immediate refetch to prevent race condition
+      await queryClient.refetchQueries({ queryKey: ['/api/user/preferences'] });
       onSuccess?.();
       onClose();
     },
