@@ -1,0 +1,134 @@
+index-Czl2q0bt.js:1759 Starting Firebase initialization... {timestamp: '2025-07-24T22:19:45.817Z', domain: '5duck.replit.app'}
+index-Czl2q0bt.js:1759 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-Czl2q0bt.js:1759 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-Czl2q0bt.js:1761 Firebase initialized successfully: {domain: '5duck.replit.app', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-07-24T22:19:45.819Z'}
+index-Czl2q0bt.js:1761 Setting up Firebase auth state listener
+index-Czl2q0bt.js:1761 Firebase auth state changed: undefined
+index-Czl2q0bt.js:1761 Firebase persistence set to LOCAL
+index-Czl2q0bt.js:1761 User signed out, removed auth token
+prompt-editor-CLWGnD4p.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+prompt-editor-CLWGnD4p.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-yCg0SrAQ.js:29 No saved search state found or session data already restored
+prompt-editor-CLWGnD4p.js:57 PromptEditor received config update: {enableCoreLeadership: true, enableDepartmentHeads: false, enableMiddleManagement: false, enableCustomSearch: false, customSearchTarget: '', …}
+home-yCg0SrAQ.js:29 Skipping localStorage save - no meaningful data to save
+index-Czl2q0bt.js:1761 Starting Google sign-in process {environment: 'production', domain: '5duck.replit.app', origin: 'https://5duck.replit.app'}
+index-Czl2q0bt.js:1761 Calling signInWithPopup...
+index-Czl2q0bt.js:1761 Firebase auth state changed: jon@5ducks.ai
+index-Czl2q0bt.js:1761 SignInWithPopup completed {success: true, hasUser: true, hasEmail: true, hasCredential: true, hasAccessToken: true, …}
+index-Czl2q0bt.js:1761 Google sign-in successful, syncing with backend {email: 'jon@...', displayName: 'Jon Hamilton'}
+index-Czl2q0bt.js:1761 Making backend sync request {endpoint: '/api/google-auth', domain: '5duck.replit.app', selectedPlan: null, planSource: null, joinWaitlist: null}
+index-Czl2q0bt.js:1761 Making backend sync request {endpoint: '/api/google-auth', domain: '5duck.replit.app', selectedPlan: null, planSource: null, joinWaitlist: null}
+index-Czl2q0bt.js:1761 Auth token set successfully: {uid: 'mG2rEdiQ7GhQVExp3XIm4YaPyoz2', email: 'jon@...', timestamp: '2025-07-24T22:19:54.656Z'}
+index-Czl2q0bt.js:1761 Successfully synced with backend
+index-Czl2q0bt.js:1761 Successfully synced with backend
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: []
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: []
+home-yCg0SrAQ.js:29 Registration success detected, triggering welcome notification
+home-yCg0SrAQ.js:29 Extracted guest data: {originalQuery: null}
+home-yCg0SrAQ.js:29 Guest data cleared successfully
+index-Czl2q0bt.js:49 API Request: POST /api/notifications/trigger {hasData: true, timestamp: '2025-07-24T22:19:55.055Z'}
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: []
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+index-Czl2q0bt.js:49 API Request Error: POST /api/notifications/trigger {error: '409: {"shouldShow":false,"message":"Notification already shown or not found"}', timestamp: '2025-07-24T22:19:55.246Z'}
+Zi @ index-Czl2q0bt.js:49
+await in Zi
+triggerNotification @ home-yCg0SrAQ.js:27
+s @ home-yCg0SrAQ.js:29
+(anonymous) @ index-Czl2q0bt.js:1761
+setTimeout
+(anonymous) @ index-Czl2q0bt.js:1761
+lh @ index-Czl2q0bt.js:41
+ra @ index-Czl2q0bt.js:41
+gF @ index-Czl2q0bt.js:41
+Ni @ index-Czl2q0bt.js:41
+cw @ index-Czl2q0bt.js:41
+Si @ index-Czl2q0bt.js:39
+(anonymous) @ index-Czl2q0bt.js:41
+setTimeout
+s @ index-Czl2q0bt.js:49
+o @ index-Czl2q0bt.js:49
+batch @ index-Czl2q0bt.js:49
+Kr @ index-Czl2q0bt.js:49
+setData @ index-Czl2q0bt.js:49
+setQueryData @ index-Czl2q0bt.js:49
+d @ index-Czl2q0bt.js:1761
+await in d
+l @ index-Czl2q0bt.js:1761
+await in l
+C @ index-Czl2q0bt.js:1761
+DL @ index-Czl2q0bt.js:38
+LL @ index-Czl2q0bt.js:38
+FL @ index-Czl2q0bt.js:38
+Rx @ index-Czl2q0bt.js:38
+Pk @ index-Czl2q0bt.js:38
+(anonymous) @ index-Czl2q0bt.js:38
+cv @ index-Czl2q0bt.js:41
+X1 @ index-Czl2q0bt.js:38
+pp @ index-Czl2q0bt.js:38
+Ly @ index-Czl2q0bt.js:38
+e2 @ index-Czl2q0bt.js:38
+home-yCg0SrAQ.js:27 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at oN (index-Czl2q0bt.js:49:42832)
+    at async Zi (index-Czl2q0bt.js:49:43694)
+    at async triggerNotification (home-yCg0SrAQ.js:27:4606)
+    at async s (home-yCg0SrAQ.js:29:21082)
+triggerNotification @ home-yCg0SrAQ.js:27
+await in triggerNotification
+s @ home-yCg0SrAQ.js:29
+(anonymous) @ index-Czl2q0bt.js:1761
+setTimeout
+(anonymous) @ index-Czl2q0bt.js:1761
+lh @ index-Czl2q0bt.js:41
+ra @ index-Czl2q0bt.js:41
+gF @ index-Czl2q0bt.js:41
+Ni @ index-Czl2q0bt.js:41
+cw @ index-Czl2q0bt.js:41
+Si @ index-Czl2q0bt.js:39
+(anonymous) @ index-Czl2q0bt.js:41
+setTimeout
+s @ index-Czl2q0bt.js:49
+o @ index-Czl2q0bt.js:49
+batch @ index-Czl2q0bt.js:49
+Kr @ index-Czl2q0bt.js:49
+setData @ index-Czl2q0bt.js:49
+setQueryData @ index-Czl2q0bt.js:49
+d @ index-Czl2q0bt.js:1761
+await in d
+l @ index-Czl2q0bt.js:1761
+await in l
+C @ index-Czl2q0bt.js:1761
+DL @ index-Czl2q0bt.js:38
+LL @ index-Czl2q0bt.js:38
+FL @ index-Czl2q0bt.js:38
+Rx @ index-Czl2q0bt.js:38
+Pk @ index-Czl2q0bt.js:38
+(anonymous) @ index-Czl2q0bt.js:38
+cv @ index-Czl2q0bt.js:41
+X1 @ index-Czl2q0bt.js:38
+pp @ index-Czl2q0bt.js:38
+Ly @ index-Czl2q0bt.js:38
+e2 @ index-Czl2q0bt.js:38
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 Gmail Connect - User object: {hasUser: true, userId: 432, userIdType: 'number', userEmail: 'jon@5ducks.ai', fullUser: {…}}
+outreach-C46DpbEa.js:29 Opening Gmail OAuth with URL: /api/gmail/auth?userId=432
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+index-Czl2q0bt.js:49 API Request: POST /api/user/sender-name {hasData: true, timestamp: '2025-07-24T22:20:04.480Z'}
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 Page focused - invalidating contact caches for fresh data
+outreach-C46DpbEa.js:29 Page focused - invalidating contact caches for fresh data
+outreach-C46DpbEa.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-C46DpbEa.js:29 Page focused - invalidating contact caches for fresh data
