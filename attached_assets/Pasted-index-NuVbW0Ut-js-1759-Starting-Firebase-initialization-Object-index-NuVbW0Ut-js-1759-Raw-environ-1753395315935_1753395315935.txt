@@ -1,0 +1,52 @@
+index-NuVbW0Ut.js:1759 Starting Firebase initialization... Object
+index-NuVbW0Ut.js:1759 Raw environment variables: Object
+index-NuVbW0Ut.js:1759 Firebase Configuration: Object
+index-NuVbW0Ut.js:1761 Firebase initialized successfully: Object
+index-NuVbW0Ut.js:1761 Setting up Firebase auth state listener
+index-NuVbW0Ut.js:1761 Firebase auth state changed: jon@codetribe.com
+index-NuVbW0Ut.js:1761 Firebase persistence set to LOCAL
+index-NuVbW0Ut.js:1761 Making backend sync request Object
+index-NuVbW0Ut.js:1761 Auth token set successfully: Object
+prompt-editor-CA9rN_kV.js:57 PromptEditor received config update: Object
+prompt-editor-CA9rN_kV.js:57 PromptEditor received config update: Object
+home-CK7-4REM.js:29 Found pending search query: Automotive component suppliers in Boston
+index-NuVbW0Ut.js:1761 Successfully synced with backend
+prompt-editor-CA9rN_kV.js:57 PromptEditor received config update: Object
+home-CK7-4REM.js:29 Registration success detected, triggering welcome notification
+home-CK7-4REM.js:29 Extracted guest data: Object
+home-CK7-4REM.js:29 Guest data cleared successfully
+index-NuVbW0Ut.js:49 API Request: POST /api/notifications/trigger Object
+api/notifications/trigger:1  Failed to load resource: the server responded with a status of 409 ()
+index-NuVbW0Ut.js:49 API Request Error: POST /api/notifications/trigger Object
+Zi @ index-NuVbW0Ut.js:49
+home-CK7-4REM.js:27 Failed to trigger notification: Error: 409: {"shouldShow":false,"message":"Notification already shown or not found"}
+    at oN (index-NuVbW0Ut.js:49:42832)
+    at async Zi (index-NuVbW0Ut.js:49:43694)
+    at async triggerNotification (home-CK7-4REM.js:27:4606)
+    at async s (home-CK7-4REM.js:29:21082)
+triggerNotification @ home-CK7-4REM.js:27
+home-CK7-4REM.js:29 Saving search state: Object
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(0)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(0)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+index-NuVbW0Ut.js:49 API Request: POST /api/user/sender-name Object
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+index-NuVbW0Ut.js:49 API Request: POST /api/user/sender-name Object
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-D7_Xzxns.js:29 QuickTemplates - Loaded templates: Array(1)

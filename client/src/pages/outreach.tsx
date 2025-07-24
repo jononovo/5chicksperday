@@ -134,6 +134,7 @@ export default function Outreach() {
   // Sender name dialog state
   const [showSenderProfileDialog, setShowSenderProfileDialog] = useState(false);
   const [senderProfileMode, setSenderProfileMode] = useState<'create' | 'edit'>('create');
+  const [profileCreatedThisSession, setProfileCreatedThisSession] = useState(false);
 
   // Auto-resize functions
   const handleTextareaResize = () => {
@@ -257,11 +258,11 @@ export default function Outreach() {
 
   // Trigger sender profile dialog when Gmail is connected but no sender name is set
   useEffect(() => {
-    if (gmailStatus?.authorized && userPreferences && !userPreferences.senderName && !showSenderProfileDialog) {
+    if (gmailStatus?.authorized && userPreferences && !userPreferences.senderName && !showSenderProfileDialog && !profileCreatedThisSession) {
       setSenderProfileMode('create');
       setShowSenderProfileDialog(true);
     }
-  }, [gmailStatus?.authorized, userPreferences, showSenderProfileDialog]);
+  }, [gmailStatus?.authorized, userPreferences, showSenderProfileDialog, profileCreatedThisSession]);
 
   // Open sender profile dialog in edit mode
   const openSenderProfileDialog = () => {
@@ -1604,7 +1605,8 @@ export default function Outreach() {
       currentEmail={gmailUserInfo?.email}
       currentSenderName={userPreferences?.senderName}
       onSuccess={() => {
-        // Success handling is done in the dialog component to prevent duplicate toasts
+        // Mark profile as created to prevent reopening
+        setProfileCreatedThisSession(true);
       }}
     />
     </>
