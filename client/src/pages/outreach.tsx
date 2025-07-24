@@ -45,6 +45,7 @@ import {Loader2} from "lucide-react";
 import { queryClient } from "@/lib/queryClient"; // Import queryClient
 import type { InsertEmailTemplate } from "@shared/schema"; // Import the type
 import { ContactActionColumn } from "@/components/contact-action-column";
+import { SenderNameDialog } from "@/components/sender-name-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,6 +126,9 @@ export default function Outreach() {
   
   // Scroll compression state
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Sender name dialog state
+  const [showSenderNameDialog, setShowSenderNameDialog] = useState(false);
   
   // Textarea refs for auto-resizing
   const promptTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -611,14 +615,8 @@ export default function Outreach() {
         // Clean up event listener
         window.removeEventListener('message', handleMessage);
         
-        // Refresh Gmail status
-        refetchGmailStatus();
-        
-        // Show success toast
-        toast({
-          title: "Gmail Connected",
-          description: "You can now send emails via Gmail!",
-        });
+        // Show sender name dialog instead of immediate success
+        setShowSenderNameDialog(true);
       }
     };
     
@@ -968,6 +966,40 @@ export default function Outreach() {
         return newSet;
       });
     }
+  };
+
+  // Sender name dialog handlers
+  const handleSenderNameSave = async (senderName: string) => {
+    try {
+      const response = await apiRequest("POST", "/api/gmail/sender-name", { senderName });
+      if (!response.ok) {
+        throw new Error("Failed to save sender name");
+      }
+      
+      setShowSenderNameDialog(false);
+      refetchGmailStatus();
+      
+      toast({
+        title: "Gmail Connected Successfully",
+        description: `Sender name set to "${senderName}". You can now send emails via Gmail!`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save sender name",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSenderNameSkip = () => {
+    setShowSenderNameDialog(false);
+    refetchGmailStatus();
+    
+    toast({
+      title: "Gmail Connected",
+      description: "You can now send emails via Gmail! (Using email address only)",
+    });
   };
 
   return (
@@ -1555,6 +1587,13 @@ export default function Outreach() {
           </div>
         </div>
       </div>
+
+      {/* Sender Name Dialog - Shows after Gmail OAuth success */}
+      <SenderNameDialog
+        open={showSenderNameDialog}
+        onSave={handleSenderNameSave}
+        onSkip={handleSenderNameSkip}
+      />
     </div>
   );
 }

@@ -431,13 +431,13 @@ export class GmailProvider implements EmailProvider {
         throw new Error('Contact not found or has no email');
       }
       
-      // 2. Get Gmail user info for proper sender identity
-      const gmailUserInfo = await TokenService.getGmailUserInfo(data.userId);
-      const senderName = gmailUserInfo?.name;
-      const senderEmail = gmailUserInfo?.email || userEmail;
+      // 2. Get sender info from database user and stored sender name
+      const senderName = await TokenService.getSenderName(data.userId);
+      const user = await storage.getUserById(data.userId);
+      const senderEmail = user?.email || userEmail;
 
       // Format From header with display name (RFC 2822 compliant)
-      const fromHeader = senderName && senderName !== senderEmail
+      const fromHeader = senderName && senderName.trim()
         ? `From: ${senderName.includes(' ') || senderName.includes(',') || senderName.includes('"') 
             ? `"${senderName.replace(/"/g, '\\"')}"` 
             : senderName} <${senderEmail}>`
@@ -495,16 +495,14 @@ export class GmailProvider implements EmailProvider {
       const headers = firstMessage.payload?.headers || [];
       const subject = headers.find(h => h.name === 'Subject')?.value || '(No Subject)';
       
-      // 3. Get user and contact emails with proper sender identity
+      // 3. Get sender info from database user and stored sender name
       const userEmail = await this.getUserEmail();
-      
-      // Get Gmail user info for proper sender identity
-      const gmailUserInfo = await TokenService.getGmailUserInfo(this.userId);
-      const senderName = gmailUserInfo?.name;
-      const senderEmail = gmailUserInfo?.email || userEmail;
+      const senderName = await TokenService.getSenderName(this.userId);
+      const user = await storage.getUserById(this.userId);
+      const senderEmail = user?.email || userEmail;
 
       // Format From header with display name (RFC 2822 compliant)
-      const fromHeader = senderName && senderName !== senderEmail
+      const fromHeader = senderName && senderName.trim()
         ? `From: ${senderName.includes(' ') || senderName.includes(',') || senderName.includes('"') 
             ? `"${senderName.replace(/"/g, '\\"')}"` 
             : senderName} <${senderEmail}>`

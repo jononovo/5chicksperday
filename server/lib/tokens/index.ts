@@ -140,15 +140,12 @@ export class TokenService {
   }
 
   /**
-   * Store Gmail tokens after OAuth flow
+   * Store Gmail tokens after OAuth flow (simplified - no user info)
    */
   static async storeGmailTokens(userId: number, gmailTokens: {
     access_token: string;
     refresh_token?: string;
     expiry_date?: number;
-  }, gmailUserInfo?: {
-    email: string;
-    name: string;
   }): Promise<void> {
     try {
       const existingTokens = await this.getUserTokens(userId);
@@ -157,11 +154,10 @@ export class TokenService {
         gmailAccessToken: gmailTokens.access_token,
         gmailRefreshToken: gmailTokens.refresh_token,
         tokenExpiry: gmailTokens.expiry_date || (Date.now() + (3600 * 1000)), // Default 1 hour
-        scopes: ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.modify'],
+        scopes: ['https://www.googleapis.com/auth/gmail.modify', 'https://www.googleapis.com/auth/userinfo.email'],
         createdAt: existingTokens?.createdAt || Date.now(),
         updatedAt: Date.now(),
-        gmailEmail: gmailUserInfo?.email,
-        gmailName: gmailUserInfo?.name
+        senderName: existingTokens?.senderName // Preserve existing sender name if set
       };
       
       await this.saveUserTokens(userId, tokens);
@@ -280,24 +276,42 @@ export class TokenService {
   }
 
   /**
-   * Get Gmail user info (email and name)
+   * Get sender name from stored tokens
    */
-  static async getGmailUserInfo(userId: number): Promise<{ email: string | null; name: string | null }> {
+  static async getSenderName(userId: number): Promise<string | null> {
     try {
       const tokens = await this.getUserTokens(userId);
       if (!tokens) {
         console.log(`[TokenService] No tokens found for user ${userId}`);
-        return { email: null, name: null };
+        return null;
       }
 
-      console.log(`[TokenService] Retrieved Gmail user info for user ${userId}`);
-      return {
-        email: tokens.gmailEmail || null,
-        name: tokens.gmailName || null
-      };
+      console.log(`[TokenService] Retrieved sender name for user ${userId}: ${tokens.senderName ? 'set' : 'not set'}`);
+      return tokens.senderName || null;
     } catch (error) {
-      console.error(`Error getting Gmail user info for user ${userId}:`, error);
-      return { email: null, name: null };
+      console.error(`Error getting sender name for user ${userId}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Update sender name for user
+   */
+  static async updateSenderName(userId: number, senderName: string): Promise<void> {
+    try {
+      const tokens = await this.getUserTokens(userId);
+      if (!tokens) {
+        throw new Error(`No Gmail tokens found for user ${userId}`);
+      }
+
+      tokens.senderName = senderName.trim();
+      tokens.updatedAt = Date.now();
+      
+      await this.saveUserTokens(userId, tokens);
+      console.log(`[TokenService] Updated sender name for user ${userId}`);
+    } catch (error) {
+      console.error(`Error updating sender name for user ${userId}:`, error);
+      throw new Error(`Failed to update sender name: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

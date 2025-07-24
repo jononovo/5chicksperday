@@ -5,8 +5,7 @@ export interface UserTokens {
   scopes: string[];
   createdAt: number;
   updatedAt: number;
-  gmailEmail?: string;
-  gmailName?: string;
+  senderName?: string;    // User-provided sender name from dialog
 }
 
 export interface TokenValidationResult {

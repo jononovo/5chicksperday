@@ -400,11 +400,10 @@ export function registerRoutes(app: Express) {
         redirectUri
       );
       
-      // Generate authentication URL
+      // Generate authentication URL - optimized scopes
       const scopes = [
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/gmail.send',
-        'https://www.googleapis.com/auth/gmail.modify'
+        'https://www.googleapis.com/auth/gmail.modify',      // Includes sending + email operations
+        'https://www.googleapis.com/auth/userinfo.email'     // Email address only
       ];
       
       const authUrl = oauth2Client.generateAuthUrl({
@@ -447,26 +446,23 @@ export function registerRoutes(app: Express) {
       // Exchange code for tokens
       const { tokens } = await oauth2Client.getToken(code as string);
       
-      // Set credentials for Gmail API call
+      // Set credentials for OAuth2 userinfo call
       oauth2Client.setCredentials(tokens);
       
-      // Fetch user's Gmail profile information
-      const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-      const profile = await gmail.users.getProfile({ userId: 'me' });
+      // Fetch user's email via OAuth2 userinfo endpoint (no Gmail profile needed)
+      const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+      const userInfo = await oauth2.userinfo.get();
       
-      console.log(`[Gmail OAuth] Fetched profile for user ${userId}:`, {
-        email: profile.data.emailAddress,
-        name: profile.data.displayName || profile.data.emailAddress
+      console.log(`[Gmail OAuth] Fetched userinfo for user ${userId}:`, {
+        email: userInfo.data.email,
+        verified: userInfo.data.verified_email
       });
       
-      // Store tokens and user info using TokenService
+      // Store tokens (email address only, no name - will be collected via UI)
       await TokenService.storeGmailTokens(userId, {
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
         expiry_date: tokens.expiry_date
-      }, {
-        email: profile.data.emailAddress!,
-        name: profile.data.displayName || profile.data.emailAddress!
       });
       
       // Send HTML that closes the pop-up and notifies parent window
@@ -507,6 +503,41 @@ export function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Error checking Gmail status:', error);
       res.status(500).json({ error: 'Failed to check Gmail connection status' });
+    }
+  });
+
+  // Sender name management endpoint
+  app.post('/api/gmail/sender-name', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+      const { senderName } = req.body;
+
+      if (!senderName || typeof senderName !== 'string' || !senderName.trim()) {
+        return res.status(400).json({ error: 'Valid sender name is required' });
+      }
+
+      await TokenService.updateSenderName(userId, senderName);
+      
+      res.json({ 
+        success: true, 
+        message: 'Sender name updated successfully',
+        senderName: senderName.trim()
+      });
+    } catch (error) {
+      console.error('Error updating sender name:', error);
+      res.status(500).json({ error: 'Failed to update sender name' });
+    }
+  });
+
+  app.get('/api/gmail/sender-name', requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).user.id;
+      const senderName = await TokenService.getSenderName(userId);
+      
+      res.json({ senderName });
+    } catch (error) {
+      console.error('Error getting sender name:', error);
+      res.status(500).json({ error: 'Failed to get sender name' });
     }
   });
   
@@ -3508,13 +3539,12 @@ Then, on a new line, write the body of the email. Keep both subject and content 
 
       const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
-      // Get Gmail user info for proper sender identity
-      const gmailUserInfo = await TokenService.getGmailUserInfo(userId);
-      const senderName = gmailUserInfo?.name;
-      const senderEmail = gmailUserInfo?.email || req.user!.email;
+      // Get sender info from database user and stored sender name
+      const senderName = await TokenService.getSenderName(userId);
+      const senderEmail = req.user!.email; // Always use database email
 
       // Format From header with display name (RFC 2822 compliant)
-      const fromHeader = senderName && senderName !== senderEmail
+      const fromHeader = senderName && senderName.trim()
         ? `From: ${senderName.includes(' ') || senderName.includes(',') || senderName.includes('"') 
             ? `"${senderName.replace(/"/g, '\\"')}"` 
             : senderName} <${senderEmail}>`
