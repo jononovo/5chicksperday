@@ -1,0 +1,61 @@
+ Starting Firebase initialization... Object
+ Raw environment variables: Object
+ Firebase Configuration: Object
+ Firebase initialized successfully: Object
+ Setting up Firebase auth state listener
+api/user:1  Failed to load resource: the server responded with a status of 401 ()
+ Firebase auth state changed: jon@codetribe.com
+ Firebase persistence set to LOCAL
+ Making backend sync request Object
+ Auth token set successfully: Object
+ Successfully synced with backend
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(1)
+ QuickTemplates - Loaded templates: Array(1)
+ PromptEditor received config update: Object
+ PromptEditor received config update: Object
+ No saved search state found or session data already restored
+ PromptEditor received config update: Object
+ Registration success detected, triggering welcome notification
+ Extracted guest data: Object
+ Guest data cleared successfully
+ Restored guest query to input: Automotive component suppliers in Boston
+ API Request: POST /api/notifications/trigger Object
+api/notifications/trigger:1  Failed to load resource: the server responded with a status of 409 ()
+ API Request Error: POST /api/notifications/trigger Object
+Zi @ index-hA8S-t4x.js:49
+ Failed to trigger notification: 
+triggerNotification @ home-D53wqOHT.js:27
+ Saving search state: Object
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(0)
+ QuickTemplates - Loaded templates: Array(1)
+ Gmail Connect - User object: Object
+ Opening Gmail OAuth with URL: /api/gmail/auth?userId=427
+outreach-CYsEZb3O.js:29 Cross-Origin-Opener-Policy policy would block the window.closed call.
+(anonymous) @ outreach-CYsEZb3O.js:29
+outreach-CYsEZb3O.js:29 Cross-Origin-Opener-Policy policy would block the window.closed call.
+(anonymous) @ outreach-CYsEZb3O.js:29
+outreach-CYsEZb3O.js:29 Cross-Origin-Opener-Policy policy would block the window.closed call.
+(anonymous) @ outreach-CYsEZb3O.js:29
+outreach-CYsEZb3O.js:29 Cross-Origin-Opener-Policy policy would block the window.closed call.
+(anonymous) @ outreach-CYsEZb3O.js:29
+outreach-CYsEZb3O.js:29 Cross-Origin-Opener-Policy policy would block the window.closed call.
+(anonymous) @ outreach-CYsEZb3O.js:29
+outreach-CYsEZb3O.js:29 Cross-Origin-Opener-Policy policy would block the window.closed call.
+(anonymous) @ outreach-CYsEZb3O.js:29
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+index-hA8S-t4x.js:49 API Request: POST /api/user/sender-name Object
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: Array(1)

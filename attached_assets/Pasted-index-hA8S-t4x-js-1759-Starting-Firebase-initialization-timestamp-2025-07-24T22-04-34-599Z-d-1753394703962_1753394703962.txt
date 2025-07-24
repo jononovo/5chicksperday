@@ -1,0 +1,34 @@
+index-hA8S-t4x.js:1759 Starting Firebase initialization... {timestamp: '2025-07-24T22:04:34.599Z', domain: '5duck.replit.app'}
+index-hA8S-t4x.js:1759 Raw environment variables: {apiKey: '....aDbuzU', projectId: 'fire-5-ducks', appId: '....b133e8', mode: 'production', dev: false, …}
+index-hA8S-t4x.js:1759 Firebase Configuration: {hasApiKey: true, hasProjectId: true, hasAppId: true, authDomain: 'fire-5-ducks.firebaseapp.com', environment: 'production', …}
+index-hA8S-t4x.js:1761 Firebase initialized successfully: {domain: '5duck.replit.app', isAuth: true, isProvider: true, authDomain: 'fire-5-ducks.firebaseapp.com', timestamp: '2025-07-24T22:04:34.601Z'}
+index-hA8S-t4x.js:1761 Setting up Firebase auth state listener
+index-hA8S-t4x.js:1761 Firebase auth state changed: ale@codetribe.com
+index-hA8S-t4x.js:1761 Firebase persistence set to LOCAL
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: []
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: []
+index-hA8S-t4x.js:1761 Making backend sync request {endpoint: '/api/google-auth', domain: '5duck.replit.app', selectedPlan: null, planSource: null, joinWaitlist: null}
+index-hA8S-t4x.js:1761 Auth token set successfully: {uid: 'Zqq7kXq1ujY2c9hy8XHReEm3wRa2', email: 'ale@...', timestamp: '2025-07-24T22:04:34.942Z'}
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+index-hA8S-t4x.js:1761 Successfully synced with backend
+outreach-CYsEZb3O.js:29 Prefetching contacts for companies 0 to 5 (current: 2)
+index-hA8S-t4x.js:49 API Request: GET /api/companies/10214/contacts {hasData: false, timestamp: '2025-07-24T22:04:35.190Z'}
+index-hA8S-t4x.js:49 API Request: GET /api/companies/10213/contacts {hasData: false, timestamp: '2025-07-24T22:04:35.191Z'}
+index-hA8S-t4x.js:49 API Request: GET /api/companies/10211/contacts {hasData: false, timestamp: '2025-07-24T22:04:35.191Z'}
+index-hA8S-t4x.js:49 API Request: GET /api/companies/10215/contacts {hasData: false, timestamp: '2025-07-24T22:04:35.191Z'}
+index-hA8S-t4x.js:49 API Request: GET /api/companies/10212/contacts {hasData: false, timestamp: '2025-07-24T22:04:35.191Z'}
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+index-hA8S-t4x.js:49 API Request: POST /api/user/sender-name {hasData: true, timestamp: '2025-07-24T22:04:50.979Z'}
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
+outreach-CYsEZb3O.js:29 Page focused - invalidating contact caches for fresh data
+outreach-CYsEZb3O.js:29 QuickTemplates - Loaded templates: [{…}]
