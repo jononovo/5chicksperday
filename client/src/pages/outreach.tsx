@@ -261,7 +261,7 @@ export default function Outreach() {
       setSenderProfileMode('create');
       setShowSenderProfileDialog(true);
     }
-  }, [gmailStatus?.authorized, userPreferences]);
+  }, [gmailStatus?.authorized, userPreferences, showSenderProfileDialog]);
 
   // Open sender profile dialog in edit mode
   const openSenderProfileDialog = () => {
