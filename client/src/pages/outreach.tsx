@@ -41,7 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
-import {Loader2} from "lucide-react";
+import {Loader2, Settings} from "lucide-react";
 import { queryClient } from "@/lib/queryClient"; // Import queryClient
 import type { InsertEmailTemplate } from "@shared/schema"; // Import the type
 import { ContactActionColumn } from "@/components/contact-action-column";
@@ -59,7 +59,7 @@ import {
 } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "framer-motion";
 import { resolveMergeField, resolveAllMergeFields, hasMergeFields, type MergeFieldContext } from '@/lib/merge-field-resolver';
-import { SenderNameDialog } from '@/components/SenderNameDialog';
+import { SenderProfileDialog } from '@/components/SenderProfileDialog';
 
 
 // Define interface for the saved state
@@ -132,6 +132,7 @@ export default function Outreach() {
   
   // Sender name dialog state
   const [showSenderNameDialog, setShowSenderNameDialog] = useState(false);
+  const [senderDialogMode, setSenderDialogMode] = useState<'create' | 'edit' | 'manage'>('create');
 
   // Auto-resize functions
   const handleTextareaResize = () => {
@@ -256,6 +257,7 @@ export default function Outreach() {
   // Trigger sender name dialog when Gmail is connected but no sender name is set
   useEffect(() => {
     if (gmailStatus?.authorized && userPreferences && !userPreferences.senderName && !showSenderNameDialog) {
+      setSenderDialogMode('create');
       setShowSenderNameDialog(true);
     }
   }, [gmailStatus?.authorized, userPreferences]);
@@ -1501,7 +1503,7 @@ export default function Outreach() {
                 <div className="absolute bottom-2 right-2 flex items-center gap-2">
                   {/* Gmail Status Badge */}
                   {gmailStatus?.authorized ? (
-                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 border-green-300">
+                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 border-green-300 pr-1">
                       <Mail className="w-3 h-3 mr-1" />
                       {gmailUserInfo?.email 
                         ? gmailUserInfo.email.length > 20 
@@ -1509,6 +1511,17 @@ export default function Outreach() {
                           : gmailUserInfo.email
                         : 'Gmail Connected'
                       }
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSenderDialogMode('manage');
+                          setShowSenderNameDialog(true);
+                        }}
+                        className="ml-1 p-0.5 rounded hover:bg-green-200 transition-colors"
+                        title="Manage sender profile"
+                      >
+                        <Settings className="w-3 h-3" />
+                      </button>
                     </Badge>
                   ) : (
                     <Button
@@ -1579,15 +1592,22 @@ export default function Outreach() {
       </div>
     </div>
 
-    {/* Sender Name Dialog */}
-    <SenderNameDialog
+    {/* Sender Profile Dialog */}
+    <SenderProfileDialog
       isOpen={showSenderNameDialog}
       onClose={() => setShowSenderNameDialog(false)}
+      mode={senderDialogMode}
+      currentSenderName={userPreferences?.senderName}
+      currentGmailEmail={gmailUserInfo?.email}
       onSuccess={() => {
         toast({
           title: "Email Identity Set",
           description: "Your professional name will now appear in all outreach emails",
         });
+      }}
+      onGmailDisconnect={() => {
+        // Refresh Gmail status when disconnected
+        refetchGmailStatus();
       }}
     />
     </>

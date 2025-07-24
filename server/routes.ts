@@ -530,6 +530,10 @@ export function registerRoutes(app: Express) {
       await TokenService.deleteUserTokens(userId);
       delete (req.session as any).gmailRefreshToken;
       
+      // Also clear sender name from user preferences when disconnecting Gmail
+      // This ensures clean state when user reconnects with different account
+      await storage.updateUserPreferences(userId, { senderName: '' });
+      
       // Save session
       req.session.save(err => {
         if (err) {
@@ -2304,12 +2308,14 @@ Then, on a new line, write the body of the email. Keep both subject and content 
       const userId = req.user!.id;
       const { senderName } = req.body;
       
-      if (!senderName || typeof senderName !== 'string' || !senderName.trim()) {
+      // Allow empty string to clear sender name
+      if (senderName !== '' && (!senderName || typeof senderName !== 'string' || !senderName.trim())) {
         res.status(400).json({ message: "Valid sender name is required" });
         return;
       }
       
-      const preferences = await storage.updateUserPreferences(userId, { senderName: senderName.trim() });
+      const cleanSenderName = senderName === '' ? '' : senderName.trim();
+      const preferences = await storage.updateUserPreferences(userId, { senderName: cleanSenderName });
       res.json({ success: true, senderName: preferences.senderName });
     } catch (error) {
       console.error('Error updating sender name:', error);
