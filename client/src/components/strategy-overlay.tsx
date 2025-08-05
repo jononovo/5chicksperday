@@ -67,6 +67,127 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     setCustomBoundaryInput(value);
   };
 
+  // Offer generation functions
+  const generateSingleOfferStrategy = async (offerType: string) => {
+    if (!salesApproachContext) return;
+    
+    try {
+      const loadingMessage: Message = {
+        id: Date.now().toString(),
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Generating ${offerType} offer strategy...</span></div>`,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true,
+        isLoading: true
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/offers/generate-single', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          offerType,
+          marketingContext: salesApproachContext,
+          productContext: {
+            productService: formData?.productService,
+            customerFeedback: formData?.customerFeedback,
+            website: formData?.website
+          }
+        })
+      });
+
+      setMessages(prev => prev.filter(msg => !msg.isLoading));
+
+      if (response.ok) {
+        const data = await response.json();
+        displaySingleOffer(data.offer);
+      }
+    } catch (error) {
+      console.error('Single offer generation error:', error);
+      setMessages(prev => prev.filter(msg => !msg.isLoading));
+    }
+  };
+
+  const generateAllOfferStrategies = async () => {
+    if (!salesApproachContext) return;
+    
+    setMessages(prev => [...prev.filter(msg => !msg.content.includes('offer-generation-ui'))]);
+    
+    const loadingMessage: Message = {
+      id: Date.now().toString(),
+      content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Generating all 6 offer strategies...</span></div>`,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true,
+      isLoading: true
+    };
+    setMessages(prev => [...prev, loadingMessage]);
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/offers/generate-all', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          marketingContext: salesApproachContext,
+          productContext: {
+            productService: formData?.productService,
+            customerFeedback: formData?.customerFeedback,
+            website: formData?.website
+          }
+        })
+      });
+
+      setMessages(prev => prev.filter(msg => !msg.isLoading));
+
+      if (response.ok) {
+        const data = await response.json();
+        displayOfferStrategies(data.offers);
+      }
+    } catch (error) {
+      console.error('All offers generation error:', error);
+      setMessages(prev => prev.filter(msg => !msg.isLoading));
+    }
+  };
+
+  const displaySingleOffer = (offer: any) => {
+    const offerHtml = `
+      <div class="offer-strategy mb-3 p-3 bg-white border border-purple-200 rounded-lg shadow-sm">
+        <h5 class="font-medium text-gray-900 mb-2 flex items-center">
+          <span class="w-6 h-6 bg-purple-100 text-purple-800 rounded-full text-xs font-bold flex items-center justify-center mr-2">
+            ✨
+          </span>
+          ${offer.name} Approach
+        </h5>
+        <p class="text-xs text-gray-500 mb-2">${offer.description}</p>
+        <div class="text-sm text-gray-700 leading-relaxed">
+          ${renderMarkdown(offer.content)}
+        </div>
+      </div>`;
+    
+    const offerMessage: Message = {
+      id: `single-offer-${Date.now()}`,
+      content: offerHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, offerMessage]);
+    
+    // Show completion choice after any single offer
+    setTimeout(() => {
+      setShowCompletionChoice(true);
+    }, 1000);
+  };
+
   // Prepare form data for saving
   const prepareFormData = () => {
     return {
@@ -196,14 +317,18 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     (window as any).selectBoundaryOption = selectBoundaryOption;
     (window as any).selectCustomBoundary = selectCustomBoundary;
     (window as any).updateCustomBoundaryInput = updateCustomBoundaryInput;
+    (window as any).generateOfferStrategy = generateSingleOfferStrategy;
+    (window as any).generateAllOffers = generateAllOfferStrategies;
     
     // Cleanup on unmount
     return () => {
       delete (window as any).selectBoundaryOption;
       delete (window as any).selectCustomBoundary;
       delete (window as any).updateCustomBoundaryInput;
+      delete (window as any).generateOfferStrategy;
+      delete (window as any).generateAllOffers;
     };
-  }, [selectBoundaryOption, selectCustomBoundary, updateCustomBoundaryInput]);
+  }, [selectBoundaryOption, selectCustomBoundary, updateCustomBoundaryInput, generateSingleOfferStrategy, generateAllOfferStrategies]);
 
   const confirmBoundarySelection = async (selectedOption: string | null, customBoundary: string | null) => {
     try {
@@ -752,6 +877,33 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
           displayOfferStrategies(reportData.offers);
         }, 1000);
       }
+    } else if (reportData.type === 'sales_approach') {
+      // Store marketing context for offer generation
+      setSalesApproachContext(reportData.data);
+      
+      // Display marketing context document
+      const reportHtml = `
+        <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+          <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+          <div class="report-content text-gray-700">
+            ${renderMarkdown(reportData.data.content)}
+          </div>
+        </div>`;
+      
+      const reportMessage: Message = {
+        id: Date.now().toString(),
+        content: reportHtml,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true
+      };
+      
+      setMessages(prev => [...prev, reportMessage]);
+      
+      // Show offer generation UI after short delay
+      setTimeout(() => {
+        displayOfferGenerationButtons();
+      }, 1000);
     } else {
       // Standard report display for other types
       const reportHtml = `
@@ -787,6 +939,70 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     }
   };
   
+  // Display interactive offer generation buttons
+  const displayOfferGenerationButtons = () => {
+    const offerButtonsHtml = `
+      <div class="offer-generation-ui bg-purple-50 border border-purple-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-purple-800 mb-2">🎯 Generate Your Offer Strategies</h3>
+        <p class="text-sm text-purple-600 mb-4">Choose which offer strategies to generate for your marketing context:</p>
+        
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <button onclick="window.generateOfferStrategy && window.generateOfferStrategy('hormozi')" 
+                  class="offer-btn p-3 bg-white border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left">
+            <div class="font-medium text-gray-900">💪 Hormozi Approach</div>
+            <div class="text-xs text-gray-500">High-value, scarcity-driven offers</div>
+          </button>
+          
+          <button onclick="window.generateOfferStrategy && window.generateOfferStrategy('formula')" 
+                  class="offer-btn p-3 bg-white border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left">
+            <div class="font-medium text-gray-900">📊 Formula Approach</div>
+            <div class="text-xs text-gray-500">Data-driven, systematic offers</div>
+          </button>
+          
+          <button onclick="window.generateOfferStrategy && window.generateOfferStrategy('one-on-one')" 
+                  class="offer-btn p-3 bg-white border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left">
+            <div class="font-medium text-gray-900">🤝 1-on-1 Approach</div>
+            <div class="text-xs text-gray-500">Personal, relationship-focused offers</div>
+          </button>
+          
+          <button onclick="window.generateOfferStrategy && window.generateOfferStrategy('guarantee')" 
+                  class="offer-btn p-3 bg-white border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left">
+            <div class="font-medium text-gray-900">🛡️ Guarantee Approach</div>
+            <div class="text-xs text-gray-500">Risk-reversal, confidence-building offers</div>
+          </button>
+          
+          <button onclick="window.generateOfferStrategy && window.generateOfferStrategy('shiny')" 
+                  class="offer-btn p-3 bg-white border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left">
+            <div class="font-medium text-gray-900">✨ Shiny Approach</div>
+            <div class="text-xs text-gray-500">Innovative, cutting-edge offers</div>
+          </button>
+          
+          <button onclick="window.generateOfferStrategy && window.generateOfferStrategy('study')" 
+                  class="offer-btn p-3 bg-white border border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left">
+            <div class="font-medium text-gray-900">📚 Study Approach</div>
+            <div class="text-xs text-gray-500">Research-backed, educational offers</div>
+          </button>
+        </div>
+        
+        <div class="text-center">
+          <button onclick="window.generateAllOffers && window.generateAllOffers()" 
+                  class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+            Generate All 6 Strategies
+          </button>
+        </div>
+      </div>`;
+    
+    const offerButtonsMessage: Message = {
+      id: `offer-buttons-${Date.now()}`,
+      content: offerButtonsHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, offerButtonsMessage]);
+  };
+
   const displayOfferStrategies = (offers: any[]) => {
     // Show offer strategies header
     const headerMessage: Message = {
@@ -893,10 +1109,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         // Ensure we have valid data structure
         if (data && data.type && data.data) {
           displayReport(data);
-          
-          setTimeout(() => {
-            setShowCompletionChoice(true);
-          }, 1000);
+          // Note: Completion choice will be shown after offer generation, not automatically
         } else {
           console.error('Invalid sales approach response structure:', data);
           setMessages(prev => prev.filter(msg => !msg.isLoading));
