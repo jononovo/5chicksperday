@@ -464,6 +464,13 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         
         if (data.type === 'product_summary' || data.type === 'email_strategy' || data.type === 'sales_approach') {
           displayReport(data);
+          
+          // Show offer strategies prompt after marketing context displays
+          if (data.type === 'sales_approach') {
+            setTimeout(() => {
+              showOfferStrategiesPrompt();
+            }, 500);
+          }
         } else if (data.type === 'progressive_strategy') {
           const aiMessage: Message = {
             id: Date.now().toString(),
