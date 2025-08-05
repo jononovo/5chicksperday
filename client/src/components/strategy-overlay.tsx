@@ -48,6 +48,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const [customBoundaryInput, setCustomBoundaryInput] = useState("");
   const [salesApproachContext, setSalesApproachContext] = useState<any>(null);
   const [showCompletionChoice, setShowCompletionChoice] = useState(false);
+  const [generatedOffers, setGeneratedOffers] = useState<any[]>([]);
   const messagesRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +74,8 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       businessType,
       productService: formData.productService,
       customerFeedback: formData.customerFeedback,
-      website: formData.website
+      website: formData.website,
+      productOfferStrategies: generatedOffers
     };
   };
 
@@ -846,33 +848,39 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const displayOfferStrategies = (data: any) => {
     setMessages(prev => prev.filter(msg => !msg.isLoading));
     
-    const offersHtml = `
-      <div class="offers-container bg-green-50 border border-green-200 rounded-lg p-4 my-3">
-        <h3 class="font-bold text-lg text-green-800 mb-2">🎯 Product Offer Strategies</h3>
-        <div class="offers-content text-gray-700">
-          ${data.content.map((offer: any, index: number) => `
-            <div class="offer-item mb-4 p-3 bg-white rounded border">
-              <h4 class="font-semibold text-green-700">${offer.title}</h4>
-              <p class="text-sm text-gray-600 mt-1">${offer.description}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>`;
+    // Store offers for database saving
+    setGeneratedOffers(data.content || []);
     
-    const offerMessage: Message = {
-      id: Date.now().toString(),
-      content: offersHtml,
-      sender: 'ai',
-      timestamp: new Date(),
-      isHTML: true
-    };
-    
-    setMessages(prev => [...prev, offerMessage]);
-    
-    // Show completion choice after offers are displayed
-    setTimeout(() => {
-      setShowCompletionChoice(true);
-    }, 1000);
+    // Display each offer progressively with delays
+    const offers = data.content || [];
+    offers.forEach((offer: any, index: number) => {
+      setTimeout(() => {
+        const offerHtml = `
+          <div class="strategy-step mb-4 p-4 bg-purple-50 border-l-4 border-purple-400 rounded">
+            <h4 class="font-semibold text-purple-800 mb-2">
+              🎯 Offer Strategy ${index + 1} of ${offers.length}: ${offer.title || offer.name || `Strategy ${index + 1}`}
+            </h4>
+            <div class="text-gray-700">${offer.description || offer.strategy || ''}</div>
+          </div>`;
+        
+        const offerMessage: Message = {
+          id: `offer-${index}-${Date.now()}`,
+          content: offerHtml,
+          sender: 'ai',
+          timestamp: new Date(),
+          isHTML: true
+        };
+        
+        setMessages(prev => [...prev, offerMessage]);
+        
+        // Show completion after last offer
+        if (index === offers.length - 1) {
+          setTimeout(() => {
+            setShowCompletionChoice(true);
+          }, 500);
+        }
+      }, index * 800); // 800ms delay between each offer
+    });
   };
 
   const generateSalesApproach = async () => {

@@ -4913,7 +4913,8 @@ Respond in this exact JSON format:
       if (matchingProfile) {
         // Update existing profile to completed status
         const updatedProfile = await storage.updateStrategicProfile(matchingProfile.id, {
-          status: 'completed'
+          status: 'completed',
+          productOfferStrategies: formData.productOfferStrategies || []
         });
         res.json(updatedProfile);
       } else {
@@ -4927,7 +4928,8 @@ Respond in this exact JSON format:
           customerFeedback: formData.customerFeedback,
           website: formData.website,
           targetCustomers: formData.productService || 'Target audience',
-          status: 'completed'
+          status: 'completed',
+          productOfferStrategies: formData.productOfferStrategies || []
         };
         
         const savedProfile = await storage.createStrategicProfile(profileData);
