@@ -757,6 +757,40 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     return null;
   };
 
+  // Show manual trigger for offer strategies
+  const showOfferStrategiesPrompt = () => {
+    const promptHtml = `
+      <div class="offer-strategies-prompt mt-6 p-6 bg-green-50 border border-green-200 rounded-lg">
+        <h3 class="text-xl font-bold text-green-900 mb-4">🎯 Product Offer Strategies</h3>
+        <p class="text-gray-700 mb-4">Generate 6 compelling offer frameworks specifically tailored to your product using the marketing context above.</p>
+        <div class="text-center">
+          <button 
+            onclick="window.triggerOfferStrategies()" 
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200"
+          >
+            Generate Offer Strategies
+          </button>
+        </div>
+      </div>`;
+    
+    const promptMessage: Message = {
+      id: `offer-prompt-${Date.now()}`,
+      content: promptHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, promptMessage]);
+    
+    // Make generateOfferStrategies available globally for the button
+    (window as any).triggerOfferStrategies = () => {
+      // Remove the prompt message when triggered
+      setMessages(prev => prev.filter(msg => msg.id !== promptMessage.id));
+      generateOfferStrategies();
+    };
+  };
+
 
 
   const generateSalesApproach = async () => {
@@ -796,11 +830,11 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         const data = await response.json();
         displayReport(data);
         
-        // Auto-trigger offer strategies generation after marketing context displays
+        // Show manual trigger for offer strategies after marketing context displays
         if (data.type === 'sales_approach') {
           setTimeout(() => {
-            generateOfferStrategies();
-          }, 1000);
+            showOfferStrategiesPrompt();
+          }, 500);
         }
         
         setTimeout(() => {
