@@ -622,46 +622,14 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const displayReport = (reportData: any) => {
     setMessages(prev => prev.filter(msg => !msg.isLoading));
     
-    let reportHtml = '';
-    
-    // Handle enhanced sales_approach response with marketing context and offer strategies
-    if (reportData.type === 'sales_approach' && reportData.data.marketingContext && reportData.data.productOfferStrategies) {
-      // Display marketing context first
-      reportHtml = `
-        <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-          <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
-          <div class="report-content text-gray-700 mb-4">
-            ${renderMarkdown(reportData.data.marketingContext.content)}
-          </div>
-          
-          <div class="offer-strategies-section mt-6">
-            <h4 class="font-bold text-lg text-blue-800 mb-3">🎯 Product-Specific Offer Strategies</h4>
-            <div class="space-y-4">
-              ${reportData.data.productOfferStrategies.map((offer: any, index: number) => `
-                <div class="offer-strategy bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                  <div class="flex items-center mb-2">
-                    <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded mr-2">${index + 1}</span>
-                    <h5 class="font-semibold text-blue-700">${offer.name}</h5>
-                  </div>
-                  <p class="text-gray-600 text-sm mb-2">${offer.description}</p>
-                  <div class="strategy-content text-gray-700">
-                    ${renderMarkdown(offer.strategy)}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>`;
-    } else {
-      // Fallback for standard report structure
-      reportHtml = `
-        <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-          <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
-          <div class="report-content text-gray-700">
-            ${renderMarkdown(reportData.data.content)}
-          </div>
-        </div>`;
-    }
+    // Standard report structure
+    const reportHtml = `
+      <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+        <div class="report-content text-gray-700">
+          ${renderMarkdown(reportData.data.content)}
+        </div>
+      </div>`;
     
     const reportMessage: Message = {
       id: Date.now().toString(),
@@ -688,6 +656,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   };
 
   const renderMarkdown = (markdown: string) => {
+    if (!markdown) return '';
     return markdown
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -697,6 +666,77 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
       .replace(/^\- (.*$)/gim, '<li class="ml-4">$1</li>')
       .replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4"><strong>$1.</strong> $2</li>')
       .replace(/\n/g, '<br>');
+  };
+
+  const generateOfferStrategies = async () => {
+    try {
+      const loadingMessage: Message = {
+        id: Date.now().toString(),
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Generating product-specific offer strategies...</span></div>`,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true,
+        isLoading: true
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+      
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/onboarding/generate-offer-strategies', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productContext: {
+            productService: formData?.productService,
+            customerFeedback: formData?.customerFeedback,
+            website: formData?.website
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        displayOfferStrategies(data);
+      }
+    } catch (error) {
+      console.error('Offer strategies generation error:', error);
+      setMessages(prev => prev.filter(msg => !msg.isLoading));
+    }
+  };
+
+  const displayOfferStrategies = (offerData: any) => {
+    setMessages(prev => prev.filter(msg => !msg.isLoading));
+    
+    const offersHtml = `
+      <div class="offer-strategies-section mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 class="font-bold text-lg text-blue-800 mb-3">🎯 Product-Specific Offer Strategies</h4>
+        <div class="space-y-4">
+          ${offerData.offerStrategies.map((offer: any, index: number) => `
+            <div class="offer-strategy bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+              <div class="flex items-center mb-2">
+                <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded mr-2">${index + 1}</span>
+                <h5 class="font-semibold text-blue-700">${offer.name}</h5>
+              </div>
+              <p class="text-gray-600 text-sm mb-2">${offer.description}</p>
+              <div class="strategy-content text-gray-700">
+                ${renderMarkdown(offer.strategy)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    
+    const offerMessage: Message = {
+      id: Date.now().toString(),
+      content: offersHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, offerMessage]);
   };
 
 
@@ -738,6 +778,13 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         const data = await response.json();
         displayReport(data);
         
+        // Auto-trigger offer strategies generation after marketing context displays
+        if (data.type === 'sales_approach') {
+          setTimeout(() => {
+            generateOfferStrategies();
+          }, 1000);
+        }
+        
         setTimeout(() => {
           const currentDomain = window.location.origin;
           const finalMessage: Message = {
@@ -748,7 +795,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
             isHTML: true
           };
           setMessages(prev => [...prev, finalMessage]);
-        }, 1000);
+        }, 3000);
       }
     } catch (error) {
       console.error('Sales approach generation error:', error);

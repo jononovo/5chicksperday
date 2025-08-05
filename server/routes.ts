@@ -4101,65 +4101,16 @@ High-level strategic guidance for email generation.`;
             { role: "user", content: perplexityPrompt }
           ] as PerplexityMessage[]);
           
-          const salesApproachData = {
-            title: "Sales Approach Strategy",
-            content: content,
-            sections: {
-              approaches: "4 relationship initiation methods",
-              subjectLines: "4 subject line formats"
-            }
-          };
-          
-          // Generate product offer strategies after marketing context
-          console.log('Generating product offer strategies...');
-          
-          const offerStrategies = [];
-          const offerSequence = ['hormozi', 'oneOnOne', 'ifWeCant', 'shinyFree', 'caseStudy', 'coldEmailFormula'];
-          
-          for (const offerId of offerSequence) {
-            const offerConfig = OFFER_CONFIGS[offerId];
-            
-            const offerPrompt = `
-Product: ${productContext.productService}
-Customer Feedback: ${productContext.customerFeedback}
-Marketing Context: ${content}
-
-${offerConfig.framework}
-
-Create an ultra-compelling ${offerConfig.name} offer strategy for ${productContext.productService}:
-${offerConfig.actionableStructure}
-
-Make it highly specific, detailed, and immediately actionable for this exact product/service.`;
-
-            try {
-              const strategy = await queryPerplexity([
-                { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
-                { role: "user", content: offerPrompt }
-              ] as PerplexityMessage[]);
-              
-              offerStrategies.push({
-                id: offerConfig.id,
-                name: offerConfig.name,
-                description: offerConfig.description,
-                strategy: strategy,
-                generatedAt: new Date().toISOString()
-              });
-              
-              console.log(`Generated ${offerConfig.name} strategy:`, strategy.substring(0, 100) + '...');
-            } catch (offerError) {
-              console.error(`Error generating ${offerConfig.name} strategy:`, offerError);
-              // Continue with other strategies even if one fails
-            }
-          }
-          
-          console.log(`Successfully generated ${offerStrategies.length} offer strategies`);
-          
           result = {
             type: 'sales_approach',
-            message: "Here's your complete marketing strategy:",
+            message: "Here's your marketing context document:",
             data: {
-              marketingContext: salesApproachData,
-              productOfferStrategies: offerStrategies
+              title: "Sales Approach Strategy",
+              content: content,
+              sections: {
+                approaches: "4 relationship initiation methods",
+                subjectLines: "4 subject line formats"
+              }
             }
           };
         } catch (error) {
@@ -4821,6 +4772,99 @@ Respond in this exact JSON format:
       res.status(500).json({ 
         message: error instanceof Error ? error.message : 'Failed to save strategy' 
       });
+    }
+  });
+
+  // New endpoint for generating offer strategies separately
+  app.post('/api/onboarding/generate-offer-strategies', requireAuth, async (req, res) => {
+    try {
+      const { productContext } = req.body;
+      
+      if (!productContext?.productService) {
+        return res.status(400).json({ error: 'Product context is required' });
+      }
+
+      const { queryPerplexity } = await import('./lib/api/perplexity-client.js');
+      const { OFFER_CONFIGS } = await import('./email-content-generation/offer-configs.js');
+      
+      console.log('Generating product offer strategies for:', productContext.productService);
+      
+      const offerStrategies = [];
+      const offerSequence = ['hormozi', 'oneOnOne', 'ifWeCant', 'shinyFree', 'caseStudy', 'coldEmailFormula'];
+      
+      for (const offerId of offerSequence) {
+        const offerConfig = OFFER_CONFIGS[offerId];
+        
+        const offerPrompt = `
+Product: ${productContext.productService}
+Customer Feedback: ${productContext.customerFeedback}
+
+${offerConfig.framework}
+
+Create an ultra-compelling ${offerConfig.name} offer strategy for ${productContext.productService}:
+${offerConfig.actionableStructure}
+
+Make it highly specific, detailed, and immediately actionable for this exact product/service.`;
+
+        try {
+          const strategy = await queryPerplexity([
+            { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
+            { role: "user", content: offerPrompt }
+          ] as PerplexityMessage[]);
+          
+          // Only include offers with valid strategy content
+          if (strategy && strategy.trim().length > 0) {
+            offerStrategies.push({
+              id: offerConfig.id,
+              name: offerConfig.name,
+              description: offerConfig.description,
+              strategy: strategy,
+              generatedAt: new Date().toISOString()
+            });
+            
+            console.log(`Generated ${offerConfig.name} strategy: ${strategy.substring(0, 100)}...`);
+          }
+        } catch (offerError) {
+          console.error(`Error generating ${offerConfig.name} strategy:`, offerError);
+          // Continue with other strategies even if one fails
+        }
+      }
+      
+      console.log(`Successfully generated ${offerStrategies.length} offer strategies`);
+      
+      // Save offer strategies to database if user is authenticated
+      if (req.user) {
+        try {
+          const userId = getUserId(req);
+          
+          // Find matching in-progress profile for this strategy
+          const existingProfiles = await storage.getStrategicProfiles(userId);
+          const matchingProfile = existingProfiles.find(profile => 
+            profile.status === 'in_progress' &&
+            profile.productService === productContext.productService &&
+            profile.customerFeedback === productContext.customerFeedback &&
+            profile.website === productContext.website
+          );
+          
+          if (matchingProfile) {
+            await storage.updateStrategicProfile(matchingProfile.id, { 
+              productOfferStrategies: JSON.stringify(offerStrategies)
+            });
+            console.log('Saved offer strategies to database for profile:', matchingProfile.id);
+          }
+        } catch (dbError) {
+          console.warn('Failed to save offer strategies to database:', dbError);
+        }
+      }
+      
+      res.json({
+        type: 'offer_strategies',
+        message: `Generated ${offerStrategies.length} product-specific offer strategies`,
+        offerStrategies: offerStrategies
+      });
+    } catch (error) {
+      console.error('Offer strategies generation error:', error);
+      res.status(500).json({ error: 'Failed to generate offer strategies' });
     }
   });
 
