@@ -34,6 +34,7 @@ import { sendSearchRequest, startKeepAlive, stopKeepAlive } from "./lib/workflow
 // import { logIncomingWebhook } from "./lib/webhook-logger"; // COMMENTED: webhook logging inactive
 import { getEmailProvider } from "./services/emailService";
 import { registerEmailGenerationRoutes } from "./email-content-generation/routes";
+import { OFFER_CONFIGS } from "./email-content-generation/offer-configs";
 
 // Global session storage for search results
 interface SearchSessionResult {
@@ -4109,10 +4110,57 @@ High-level strategic guidance for email generation.`;
             }
           };
           
+          // Generate product offer strategies after marketing context
+          console.log('Generating product offer strategies...');
+          
+          const offerStrategies = [];
+          const offerSequence = ['hormozi', 'oneOnOne', 'ifWeCant', 'shinyFree', 'caseStudy', 'coldEmailFormula'];
+          
+          for (const offerId of offerSequence) {
+            const offerConfig = OFFER_CONFIGS[offerId];
+            
+            const offerPrompt = `
+Product: ${productContext.productService}
+Customer Feedback: ${productContext.customerFeedback}
+Marketing Context: ${content}
+
+${offerConfig.framework}
+
+Create an ultra-compelling ${offerConfig.name} offer strategy for ${productContext.productService}:
+${offerConfig.actionableStructure}
+
+Make it highly specific, detailed, and immediately actionable for this exact product/service.`;
+
+            try {
+              const strategy = await queryPerplexity([
+                { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
+                { role: "user", content: offerPrompt }
+              ]);
+              
+              offerStrategies.push({
+                id: offerConfig.id,
+                name: offerConfig.name,
+                description: offerConfig.description,
+                strategy: strategy,
+                generatedAt: new Date().toISOString()
+              });
+              
+              console.log(`Generated ${offerConfig.name} strategy:`, strategy.substring(0, 100) + '...');
+            } catch (offerError) {
+              console.error(`Error generating ${offerConfig.name} strategy:`, offerError);
+              // Continue with other strategies even if one fails
+            }
+          }
+          
+          console.log(`Successfully generated ${offerStrategies.length} offer strategies`);
+          
           result = {
             type: 'sales_approach',
-            message: "Here's your marketing context document:",
-            data: salesApproachData
+            message: "Here's your complete marketing strategy:",
+            data: {
+              marketingContext: salesApproachData,
+              productOfferStrategies: offerStrategies
+            }
           };
         } catch (error) {
           console.error('Sales approach generation error:', error);
@@ -4172,9 +4220,18 @@ High-level strategic guidance for email generation.`;
                 reportSalesTargetingGuidance: JSON.stringify(result.data)
               });
             } else if (result.type === 'sales_approach') {
-              await storage.updateStrategicProfile(profileId, { 
-                reportSalesContextGuidance: JSON.stringify(result.data) 
-              });
+              // Handle new enhanced sales_approach response structure
+              if (result.data.marketingContext && result.data.productOfferStrategies) {
+                await storage.updateStrategicProfile(profileId, { 
+                  reportSalesContextGuidance: JSON.stringify(result.data.marketingContext),
+                  productOfferStrategies: JSON.stringify(result.data.productOfferStrategies)
+                });
+              } else {
+                // Fallback for old structure
+                await storage.updateStrategicProfile(profileId, { 
+                  reportSalesContextGuidance: JSON.stringify(result.data) 
+                });
+              }
             }
           }
         } catch (dbError) {
