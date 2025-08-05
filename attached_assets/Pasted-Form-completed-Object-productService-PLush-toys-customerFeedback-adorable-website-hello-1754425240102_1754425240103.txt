@@ -1,0 +1,29 @@
+Form completed: 
+Object {productService: "PLush toys", customerFeedback: "adorable", website: "hellokitty.com"}
+Error creating profile: 
+SyntaxError {}
+
+Processing strategy chat with input: Generate product summary
+Strategy chat response: 
+Object {type: "product_summary", message: "Here's your product analysis summary:", phase: "PRODUCT_SUMMARY", data: {…}}
+Processing strategy chat with input: department store toy sections
+Strategy chat response: 
+Object {type: "conversation", message: "Great! Now, let's refine this target. ↵↵Is there an additional niche or another example that you…", phase: "TARGET_COLLECTION"}
+Processing strategy chat with input: upscale department store toy sections 
+Strategy chat response: 
+Object {type: "progressive_strategy", message: "Perfect! Now I'll create your **strategic sales plan** step by step.", phase: "TARGET_REFINEMENT", initialTarget: "department store toy sections", refinedTarget: "upscale department store toy sections", …}
+Calling boundary API with: 
+Object {initialTarget: "department store toy sections", refinedTarget: "upscale department store toy sections", productContext: {…}}
+Boundary data received: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+About to display boundary options...
+Displaying boundary options: 
+Object {type: "boundary_options", title: "Target Boundary Options", content: Array(3), step: 1, totalSteps: 3, …}
+Boundary options displayed, returning to wait for selection
+Sales approach generation error: 
+TypeError {}
+message: "Cannot read properties of undefined (reading 'replace')"
+stack: "TypeError: Cannot read properties of undefined (reading 'replace')↵ at renderMarkdown (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/components/strategy-overlay.tsx:647:21)↵ at displayReport (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/components/strategy-overlay.tsx:614:13)↵ at generateSalesApproach (https://3223af30-a19b-47c5-ab14-a698c118cd66-00-38xs4kvuqdka9.janeway.replit.dev/src/components/strategy-overlay.tsx:682:9)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
