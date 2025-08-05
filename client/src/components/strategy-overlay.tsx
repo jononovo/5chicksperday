@@ -772,6 +772,109 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
 
 
 
+  // Show manual trigger for offer strategies
+  const showOfferStrategiesPrompt = () => {
+    const promptHtml = `
+      <div class="offer-strategies-prompt mt-6 p-6 bg-green-50 border border-green-200 rounded-lg">
+        <h3 class="text-xl font-bold text-green-900 mb-4">🎯 Product Offer Strategies</h3>
+        <p class="text-gray-700 mb-4">Generate 6 compelling offer frameworks specifically tailored to your product using the marketing context above.</p>
+        <div class="text-center">
+          <button 
+            onclick="window.triggerOfferStrategies()" 
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200"
+          >
+            Generate Offer Strategies
+          </button>
+        </div>
+      </div>`;
+    
+    const promptMessage: Message = {
+      id: `offer-prompt-${Date.now()}`,
+      content: promptHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, promptMessage]);
+    
+    // Make generateOfferStrategies available globally for the button
+    (window as any).triggerOfferStrategies = () => {
+      // Remove the prompt message when triggered
+      setMessages(prev => prev.filter(msg => msg.id !== promptMessage.id));
+      generateOfferStrategies();
+    };
+  };
+
+  const generateOfferStrategies = async () => {
+    try {
+      const loadingMessage: Message = {
+        id: Date.now().toString(),
+        content: `<div class="flex items-center space-x-2"><div class="loading-spinner"></div><span>Generating product-specific offer strategies...</span></div>`,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true,
+        isLoading: true
+      };
+      setMessages(prev => [...prev, loadingMessage]);
+      
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/onboarding/generate-offer-strategies', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          productContext: {
+            productService: formData?.productService,
+            customerFeedback: formData?.customerFeedback,
+            website: formData?.website
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        displayOfferStrategies(data);
+      }
+    } catch (error) {
+      console.error('Offer strategies generation error:', error);
+    }
+  };
+
+  const displayOfferStrategies = (data: any) => {
+    setMessages(prev => prev.filter(msg => !msg.isLoading));
+    
+    const offersHtml = `
+      <div class="offers-container bg-green-50 border border-green-200 rounded-lg p-4 my-3">
+        <h3 class="font-bold text-lg text-green-800 mb-2">🎯 Product Offer Strategies</h3>
+        <div class="offers-content text-gray-700">
+          ${data.content.map((offer: any, index: number) => `
+            <div class="offer-item mb-4 p-3 bg-white rounded border">
+              <h4 class="font-semibold text-green-700">${offer.title}</h4>
+              <p class="text-sm text-gray-600 mt-1">${offer.description}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    
+    const offerMessage: Message = {
+      id: Date.now().toString(),
+      content: offersHtml,
+      sender: 'ai',
+      timestamp: new Date(),
+      isHTML: true
+    };
+    
+    setMessages(prev => [...prev, offerMessage]);
+    
+    // Show completion choice after offers are displayed
+    setTimeout(() => {
+      setShowCompletionChoice(true);
+    }, 1000);
+  };
+
   const generateSalesApproach = async () => {
     try {
       const loadingMessage: Message = {
@@ -809,9 +912,10 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         const data = await response.json();
         displayReport(data);
         
+        // Show offer strategies prompt instead of immediate completion
         setTimeout(() => {
-          setShowCompletionChoice(true);
-        }, 1000);
+          showOfferStrategiesPrompt();
+        }, 500);
       }
     } catch (error) {
       console.error('Sales approach generation error:', error);
