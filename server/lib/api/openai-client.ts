@@ -353,13 +353,21 @@ Format as practical, ready-to-use offer guidance.`;
 export { generateOfferStrategiesSync };
 
 export async function queryOpenAI(
-  messages: ChatCompletionMessageParam[],
+  messages: any[],
   productContext: any
 ): Promise<FunctionCallResult> {
   try {
+    // Ensure proper message format for OpenAI
+    const formattedMessages: ChatCompletionMessageParam[] = messages.map(msg => ({
+      role: msg.role as "system" | "user" | "assistant",
+      content: msg.content
+    }));
+    
+    console.log('OpenAI request - formatted messages:', formattedMessages.length);
+    
     const response = await getOpenAIClient().chat.completions.create({
       model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages,
+      messages: formattedMessages,
       tools: [
         {
           type: "function",
@@ -430,12 +438,15 @@ export async function queryOpenAI(
     });
 
     const assistantMessage = response.choices[0].message;
+    console.log('OpenAI response - has tool calls:', !!assistantMessage.tool_calls);
 
     // Handle function calls
     if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
       const toolCall = assistantMessage.tool_calls[0];
       const functionName = toolCall.function.name;
       const functionArgs = JSON.parse(toolCall.function.arguments);
+      
+      console.log('OpenAI function call:', functionName, 'with args:', Object.keys(functionArgs));
 
       if (functionName === 'generateProductSummary') {
         const summary = await generateProductSummary(functionArgs, productContext);
@@ -467,6 +478,27 @@ export async function queryOpenAI(
       }
     }
 
+    console.log('OpenAI - no function calls, returning conversation response');
+    console.log('Assistant message content length:', assistantMessage.content?.length || 0);
+    
+    // Check if this should be a sales approach generation based on input
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.content && lastMessage.content.includes('Generate sales approach')) {
+      console.log('Manually triggering sales approach generation for input:', lastMessage.content);
+      
+      // Manually call generateSalesApproach
+      const approach = await generateSalesApproach({}, productContext);
+      
+      // Start background offer generation
+      generateOfferStrategiesAsync(approach, productContext).catch(console.error);
+      
+      return {
+        type: 'sales_approach',
+        message: "Here's your marketing context document:",
+        data: approach
+      };
+    }
+    
     // Regular conversation response
     return {
       type: 'conversation',

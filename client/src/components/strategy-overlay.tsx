@@ -888,11 +888,36 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
 
       if (response.ok) {
         const data = await response.json();
-        displayReport(data);
+        console.log('Sales approach response:', data);
         
-        setTimeout(() => {
-          setShowCompletionChoice(true);
-        }, 1000);
+        // Ensure we have valid data structure
+        if (data && data.type && data.data) {
+          displayReport(data);
+          
+          setTimeout(() => {
+            setShowCompletionChoice(true);
+          }, 1000);
+        } else {
+          console.error('Invalid sales approach response structure:', data);
+          setMessages(prev => prev.filter(msg => !msg.isLoading));
+          const errorMessage: Message = {
+            id: Date.now().toString(),
+            content: "I encountered an issue generating your marketing context. Let me try a different approach.",
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, errorMessage]);
+        }
+      } else {
+        console.error('Sales approach API failed:', response.status);
+        setMessages(prev => prev.filter(msg => !msg.isLoading));
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          content: "I encountered an error generating your marketing context. Please try again.",
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
       }
     } catch (error) {
       console.error('Sales approach generation error:', error);

@@ -4094,12 +4094,17 @@ PHASE-SPECIFIC INSTRUCTIONS:
         console.log('Progressive strategy result object:', result);
 
       } else {
-        // Ensure proper message typing for OpenAI
-        const typedMessages: any[] = messages.map(msg => ({
-          role: msg.role as "system" | "user" | "assistant",
+        // Fix message typing and ensure OpenAI function calling works
+        const typedMessages = messages.map(msg => ({
+          role: msg.role,
           content: msg.content
         }));
+        
+        console.log('Calling OpenAI with messages:', typedMessages.length, 'messages');
+        console.log('User input for OpenAI:', userInput);
+        
         result = await queryOpenAI(typedMessages, productContext);
+        console.log('OpenAI result type:', result.type);
       }
       
       console.log('Strategy chat completed successfully, type:', result.type);
