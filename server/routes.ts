@@ -3949,6 +3949,111 @@ Focus on actionable insights that directly support their stated business goal an
     }
   });
 
+  // Offer Generation API Endpoints
+  app.post("/api/offers/generate-single", requireAuth, async (req, res) => {
+    try {
+      const { offerType, marketingContext, productContext } = req.body;
+      
+      if (!offerType || !marketingContext || !productContext) {
+        res.status(400).json({ message: "Missing required parameters: offerType, marketingContext, productContext" });
+        return;
+      }
+
+      console.log(`Generating single offer strategy: ${offerType}`);
+
+      // Import offer generation functions
+      const { getOfferConfig } = await import('./email-content-generation/offer-configs');
+      const { getOpenAIClient } = await import('./lib/api/openai-client');
+      
+      // Get offer configuration
+      const config = getOfferConfig(offerType);
+      if (!config) {
+        res.status(400).json({ message: `Unknown offer type: ${offerType}` });
+        return;
+      }
+
+      // Generate single offer using OpenAI
+      const offerPrompt = `
+Create a detailed offer strategy for ${productContext.productService} using the ${config.name} approach.
+
+PRODUCT CONTEXT:
+${productContext.productService}
+Customers say: ${productContext.customerFeedback}
+Website: ${productContext.website}
+
+MARKETING CONTEXT:
+${marketingContext.content}
+
+OFFER FRAMEWORK - ${config.name}:
+${config.framework}
+
+Create a comprehensive offer strategy (150-200 words) that:
+1. Applies this specific framework to the product/service
+2. Uses the marketing context for positioning
+3. Provides actionable guidance for email generation
+4. Makes the offer compelling and specific
+
+Format as practical, ready-to-use offer guidance.`;
+
+      const response = await getOpenAIClient().chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: "You are an expert offer strategist. Create detailed, actionable offer strategies that follow the provided framework exactly." },
+          { role: "user", content: offerPrompt }
+        ]
+      });
+      
+      const result = response.choices[0].message.content || '';
+
+      const offer = {
+        id: config.id,
+        name: config.name,
+        description: config.description,
+        content: result,
+        generated_at: new Date().toISOString()
+      };
+
+      console.log(`Single offer strategy generated successfully: ${config.name}`);
+      res.json({ offer });
+
+    } catch (error) {
+      console.error('Single offer generation error:', error);
+      res.status(500).json({ 
+        message: "Failed to generate offer strategy",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
+  app.post("/api/offers/generate-all", requireAuth, async (req, res) => {
+    try {
+      const { marketingContext, productContext } = req.body;
+      
+      if (!marketingContext || !productContext) {
+        res.status(400).json({ message: "Missing required parameters: marketingContext, productContext" });
+        return;
+      }
+
+      console.log('Generating all 6 offer strategies');
+
+      // Import offer generation function
+      const { generateOfferStrategiesSync } = await import('./lib/api/openai-client');
+      
+      // Generate all offers
+      const offers = await generateOfferStrategiesSync(marketingContext, productContext);
+
+      console.log(`All offer strategies generated successfully: ${offers.length} offers`);
+      res.json({ offers });
+
+    } catch (error) {
+      console.error('All offers generation error:', error);
+      res.status(500).json({ 
+        message: "Failed to generate offer strategies",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   // Three-Report Strategy Chat with OpenAI + Perplexity
   app.post("/api/onboarding/strategy-chat", async (req, res) => {
     try {
