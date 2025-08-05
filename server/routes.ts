@@ -12,6 +12,29 @@ import { extractContacts } from "./lib/perplexity";
 import { parseCompanyData } from "./lib/results-analysis/company-parser";
 import { queryPerplexity } from "./lib/api/perplexity-client";
 import { queryOpenAI, generateEmailStrategy, generateBoundary, generateBoundaryOptions, generateSprintPrompt, generateDailyQueries } from "./lib/api/openai-client";
+
+// Background offer generation function
+async function startBackgroundOfferGeneration(profileId: number, marketingContext: any, productContext: any) {
+  try {
+    console.log(`Starting background offer generation for profile ${profileId}`);
+    
+    // Import offer generation
+    const { generateOfferStrategiesSync } = await import('./lib/api/openai-client');
+    
+    // Generate 6 offers in background
+    const offers = await generateOfferStrategiesSync(marketingContext, productContext);
+    
+    // Save to database
+    await storage.updateStrategicProfile(profileId, {
+      productOfferStrategies: JSON.stringify(offers)
+    });
+    
+    console.log(`Background offer generation completed for profile ${profileId}: ${offers.length} offers saved`);
+    
+  } catch (error) {
+    console.error(`Background offer generation failed for profile ${profileId}:`, error);
+  }
+}
 import { searchContactDetails } from "./lib/api-interactions";
 import { google } from "googleapis";
 import { 
@@ -4071,7 +4094,12 @@ PHASE-SPECIFIC INSTRUCTIONS:
         console.log('Progressive strategy result object:', result);
 
       } else {
-        result = await queryOpenAI(messages, productContext);
+        // Ensure proper message typing for OpenAI
+        const typedMessages: any[] = messages.map(msg => ({
+          role: msg.role as "system" | "user" | "assistant",
+          content: msg.content
+        }));
+        result = await queryOpenAI(typedMessages, productContext);
       }
       
       console.log('Strategy chat completed successfully, type:', result.type);
@@ -4124,6 +4152,9 @@ PHASE-SPECIFIC INSTRUCTIONS:
               await storage.updateStrategicProfile(profileId, { 
                 reportSalesContextGuidance: JSON.stringify(result.data) 
               });
+              
+              // Start background offer generation for this profile
+              startBackgroundOfferGeneration(profileId, result.data, productContext);
             } else if (result.type === 'sales_approach_with_offers') {
               await storage.updateStrategicProfile(profileId, { 
                 reportSalesContextGuidance: JSON.stringify(result.data),
@@ -4652,6 +4683,33 @@ Respond in this exact JSON format:
       res.status(500).json({ 
         message: error instanceof Error ? error.message : 'Failed to delete profile' 
       });
+    }
+  });
+  
+  // Offers polling endpoint
+  app.get('/api/strategic-profiles/:id/offers-status', requireAuth, async (req, res) => {
+    try {
+      const userId = getUserId(req);
+      const profileId = parseInt(req.params.id);
+      
+      const profile = await storage.getStrategicProfile(profileId);
+      if (!profile || profile.userId !== userId) {
+        return res.status(404).json({ error: 'Profile not found' });
+      }
+      
+      const hasOffers = profile.productOfferStrategies ? true : false;
+      const offers = hasOffers ? JSON.parse(profile.productOfferStrategies) : [];
+      
+      res.json({
+        hasOffers,
+        offersCount: offers.length,
+        totalExpected: 6,
+        offers: offers,
+        completed: hasOffers
+      });
+    } catch (error) {
+      console.error('Error checking offers status:', error);
+      res.status(500).json({ error: 'Failed to check offers status' });
     }
   });
 

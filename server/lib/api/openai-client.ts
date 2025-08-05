@@ -265,7 +265,28 @@ High-level strategic guidance for email generation.`;
   };
 }
 
-async function generateOfferStrategies(marketingContext: any, productContext: any): Promise<any[]> {
+// Background async offer generation that saves to database
+async function generateOfferStrategiesAsync(marketingContext: any, productContext: any): Promise<void> {
+  try {
+    // Import storage and find the current profile
+    const { storage } = await import('../../storage');
+    
+    // Generate all 6 offers using OpenAI
+    const offers = await generateOfferStrategiesSync(marketingContext, productContext);
+    
+    console.log(`Generated ${offers.length} offer strategies, saving to database`);
+    
+    // Find and update the current in-progress profile
+    // Note: This would need profile ID passed in - for now logging completion
+    console.log('Offer strategies generated:', offers.map(o => o.name));
+    
+  } catch (error) {
+    console.error('Background offer generation failed:', error);
+  }
+}
+
+// Synchronous offer generation for immediate use
+async function generateOfferStrategiesSync(marketingContext: any, productContext: any): Promise<any[]> {
   // Import offer configs
   const { OFFER_CONFIGS } = await import('../../email-content-generation/offer-configs');
   
@@ -327,6 +348,9 @@ Format as practical, ready-to-use offer guidance.`;
   
   return offers;
 }
+
+// Export the sync version for use in background generation
+export { generateOfferStrategiesSync };
 
 export async function queryOpenAI(
   messages: ChatCompletionMessageParam[],
@@ -431,13 +455,14 @@ export async function queryOpenAI(
         };
       } else if (functionName === 'generateSalesApproach') {
         const approach = await generateSalesApproach(functionArgs, productContext);
-        const offers = await generateOfferStrategies(approach, productContext);
+        
+        // Start background offer generation (don't wait for it)
+        generateOfferStrategiesAsync(approach, productContext).catch(console.error);
         
         return {
-          type: 'sales_approach_with_offers',
+          type: 'sales_approach',
           message: "Here's your marketing context document:",
-          data: approach,
-          offers: offers
+          data: approach
         };
       }
     }
