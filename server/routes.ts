@@ -4075,10 +4075,15 @@ PHASE-SPECIFIC INSTRUCTIONS:
         console.log('Handling sales approach generation directly');
         
         try {
-          const { queryPerplexity } = await import('./lib/api/perplexity-client.js');
+          const { queryOpenAIText } = await import('./lib/api/openai-client.js');
           
-          const perplexityPrompt = `
+          const openAIPrompt = `
 Create a strategic email approach guide (max 200 words) for ${productContext.productService}.
+
+Product Context:
+- Product/Service: ${productContext.productService}
+- Customer Feedback: ${productContext.customerFeedback}
+- Website: ${productContext.website || 'Not provided'}
 
 Format exactly as:
 
@@ -4096,10 +4101,12 @@ Format exactly as:
 
 High-level strategic guidance for email generation.`;
 
-          const content = await queryPerplexity([
-            { role: "system", content: "You are a sales strategy expert. Create structured, high-level email approach guidance." },
-            { role: "user", content: perplexityPrompt }
-          ] as PerplexityMessage[]);
+          const marketingContextMessages = [
+            { role: "system", content: "You are a sales strategy expert. Create structured, high-level email approach guidance for specific products/services." },
+            { role: "user", content: openAIPrompt }
+          ];
+
+          const content = await queryOpenAIText(marketingContextMessages);
           
           result = {
             type: 'sales_approach',
@@ -4111,6 +4118,11 @@ High-level strategic guidance for email generation.`;
                 approaches: "4 relationship initiation methods",
                 subjectLines: "4 subject line formats"
               }
+            },
+            // Store conversation context for offer strategies continuation
+            conversationContext: {
+              messages: marketingContextMessages,
+              response: content
             }
           };
         } catch (error) {
@@ -4171,17 +4183,14 @@ High-level strategic guidance for email generation.`;
                 reportSalesTargetingGuidance: JSON.stringify(result.data)
               });
             } else if (result.type === 'sales_approach') {
-              // Handle new enhanced sales_approach response structure
-              if (result.data.marketingContext && result.data.productOfferStrategies) {
-                await storage.updateStrategicProfile(profileId, { 
-                  reportSalesContextGuidance: JSON.stringify(result.data.marketingContext),
-                  productOfferStrategies: JSON.stringify(result.data.productOfferStrategies)
-                });
-              } else {
-                // Fallback for old structure
-                await storage.updateStrategicProfile(profileId, { 
-                  reportSalesContextGuidance: JSON.stringify(result.data) 
-                });
+              // Save marketing context document to database
+              await storage.updateStrategicProfile(profileId, { 
+                reportSalesContextGuidance: JSON.stringify(result.data)
+              });
+              
+              // Store conversation context for offer strategies (excluding it from database)
+              if (result.conversationContext) {
+                console.log('Marketing context conversation stored for offer strategies continuation');
               }
             }
           }
@@ -4207,6 +4216,11 @@ High-level strategic guidance for email generation.`;
         response.initialTarget = result.initialTarget;
         response.refinedTarget = result.refinedTarget;
         response.needsProgressiveGeneration = result.needsProgressiveGeneration;
+      }
+      
+      // Include conversation context for offer strategies (if present)
+      if (result.conversationContext) {
+        response.conversationContext = result.conversationContext;
       }
       
       res.json(response);
@@ -4784,50 +4798,120 @@ Respond in this exact JSON format:
         return res.status(400).json({ error: 'Product context is required' });
       }
 
-      const { queryPerplexity } = await import('./lib/api/perplexity-client.js');
+      const { queryOpenAIText } = await import('./lib/api/openai-client.js');
       const { OFFER_CONFIGS } = await import('./email-content-generation/offer-configs.js');
+      const { marketingContext } = req.body;
       
-      console.log('Generating product offer strategies for:', productContext.productService);
+      console.log('Generating product offer strategies using OpenAI continuation for:', productContext.productService);
       
-      const offerStrategies = [];
-      const offerSequence = ['hormozi', 'oneOnOne', 'ifWeCant', 'shinyFree', 'caseStudy', 'coldEmailFormula'];
-      
-      for (const offerId of offerSequence) {
-        const offerConfig = OFFER_CONFIGS[offerId];
+      // Build conversation context for offer strategies generation
+      const conversationMessages = marketingContext ? [
+        { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
+        { role: "user", content: `Create a strategic email approach guide for ${productContext.productService}.
+
+Product Context:
+- Product/Service: ${productContext.productService}
+- Customer Feedback: ${productContext.customerFeedback}
+- Website: ${productContext.website || 'Not provided'}` },
+        { role: "assistant", content: marketingContext },
+        { role: "user", content: `Based on the marketing context document above, generate 6 compelling product-specific offer strategies. Each offer should be a separate, complete strategy that references the marketing context.
+
+Generate offers for these 6 frameworks:
+1. **Alex Hormozi Value Equation** (${OFFER_CONFIGS.hormozi.description})
+2. **One-on-One Discovery Call** (${OFFER_CONFIGS.oneOnOne.description})  
+3. **If We Can't Risk Reversal** (${OFFER_CONFIGS.ifWeCant.description})
+4. **Shiny Free Lead Magnet** (${OFFER_CONFIGS.shinyFree.description})
+5. **Case Study Social Proof** (${OFFER_CONFIGS.caseStudy.description})
+6. **Cold Email Formula** (${OFFER_CONFIGS.coldEmailFormula.description})
+
+For each offer strategy, provide:
+- Ultra-compelling strategy text (200-300 words)
+- Specific to ${productContext.productService}
+- Reference the marketing approaches from above
+- Make it immediately actionable
+
+Format as JSON array:
+[
+  {"id": "hormozi", "strategy": "detailed strategy text..."},
+  {"id": "oneOnOne", "strategy": "detailed strategy text..."},
+  {"id": "ifWeCant", "strategy": "detailed strategy text..."},
+  {"id": "shinyFree", "strategy": "detailed strategy text..."},
+  {"id": "caseStudy", "strategy": "detailed strategy text..."},
+  {"id": "coldEmailFormula", "strategy": "detailed strategy text..."}
+]` }
+      ] : [
+        { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
+        { role: "user", content: `Generate 6 compelling product-specific offer strategies for ${productContext.productService}.
+
+Product Context:
+- Product/Service: ${productContext.productService}
+- Customer Feedback: ${productContext.customerFeedback}
+- Website: ${productContext.website || 'Not provided'}
+
+Generate offers for these 6 frameworks:
+1. **Alex Hormozi Value Equation** (${OFFER_CONFIGS.hormozi.description})
+2. **One-on-One Discovery Call** (${OFFER_CONFIGS.oneOnOne.description})  
+3. **If We Can't Risk Reversal** (${OFFER_CONFIGS.ifWeCant.description})
+4. **Shiny Free Lead Magnet** (${OFFER_CONFIGS.shinyFree.description})
+5. **Case Study Social Proof** (${OFFER_CONFIGS.caseStudy.description})
+6. **Cold Email Formula** (${OFFER_CONFIGS.coldEmailFormula.description})
+
+Format as JSON array with detailed strategies (200-300 words each).` }
+      ];
+
+      try {
+        const offersResponse = await queryOpenAIText(conversationMessages);
         
-        const offerPrompt = `
-Product: ${productContext.productService}
-Customer Feedback: ${productContext.customerFeedback}
-
+        // Parse the JSON response
+        let offerStrategies = [];
+        try {
+          const jsonMatch = offersResponse.match(/\[[\s\S]*\]/);
+          const offersArray = JSON.parse(jsonMatch ? jsonMatch[0] : offersResponse);
+          
+          offerStrategies = offersArray.map((offer: any) => ({
+            id: offer.id,
+            name: OFFER_CONFIGS[offer.id]?.name || offer.id,
+            description: OFFER_CONFIGS[offer.id]?.description || 'Product-specific offer strategy',
+            strategy: offer.strategy,
+            generatedAt: new Date().toISOString()
+          }));
+          
+          console.log(`Generated ${offerStrategies.length} offer strategies via OpenAI continuation`);
+        } catch (parseError) {
+          console.error('Failed to parse offers JSON, using fallback approach:', parseError);
+          
+          // Fallback: Generate offers individually
+          const offerSequence = ['hormozi', 'oneOnOne', 'ifWeCant', 'shinyFree', 'caseStudy', 'coldEmailFormula'];
+          for (const offerId of offerSequence) {
+            const offerConfig = OFFER_CONFIGS[offerId];
+            const individualPrompt = `Based on the marketing context for ${productContext.productService}, create a ${offerConfig.name} offer strategy:
+            
 ${offerConfig.framework}
-
-Create an ultra-compelling ${offerConfig.name} offer strategy for ${productContext.productService}:
 ${offerConfig.actionableStructure}
 
-Make it highly specific, detailed, and immediately actionable for this exact product/service.`;
+Make it specific to ${productContext.productService} and highly actionable.`;
 
-        try {
-          const strategy = await queryPerplexity([
-            { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
-            { role: "user", content: offerPrompt }
-          ] as PerplexityMessage[]);
-          
-          // Only include offers with valid strategy content
-          if (strategy && strategy.trim().length > 0) {
-            offerStrategies.push({
-              id: offerConfig.id,
-              name: offerConfig.name,
-              description: offerConfig.description,
-              strategy: strategy,
-              generatedAt: new Date().toISOString()
-            });
-            
-            console.log(`Generated ${offerConfig.name} strategy: ${strategy.substring(0, 100)}...`);
+            try {
+              const strategy = await queryOpenAIText([
+                { role: "system", content: "Create a detailed offer strategy." },
+                { role: "user", content: individualPrompt }
+              ]);
+              
+              offerStrategies.push({
+                id: offerConfig.id,
+                name: offerConfig.name,
+                description: offerConfig.description,
+                strategy: strategy,
+                generatedAt: new Date().toISOString()
+              });
+            } catch (fallbackError) {
+              console.error(`Fallback generation failed for ${offerId}:`, fallbackError);
+            }
           }
-        } catch (offerError) {
-          console.error(`Error generating ${offerConfig.name} strategy:`, offerError);
-          // Continue with other strategies even if one fails
         }
+      } catch (apiError) {
+        console.error('OpenAI API error during offer strategies generation:', apiError);
+        throw apiError;
       }
       
       console.log(`Successfully generated ${offerStrategies.length} offer strategies`);

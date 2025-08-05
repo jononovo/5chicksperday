@@ -193,17 +193,17 @@ ${dailyQueries.join('\n')}`;
 
 // Parsing functions to extract structured components
 function extractBoundary(content: string): string {
-  const match = content.match(/## 1\. TARGET BOUNDARY\s*\n(.*?)(?=\n\n|\n##|$)/s);
+  const match = content.match(/## 1\. TARGET BOUNDARY\s*\n(.*?)(?=\n\n|\n##|$)/gs);
   return match ? match[1].trim() : '';
 }
 
 function extractSprintPrompt(content: string): string {
-  const match = content.match(/## 2\. SPRINT PROMPT\s*\n(.*?)(?=\n\n|\n##|$)/s);
+  const match = content.match(/## 2\. SPRINT PROMPT\s*\n(.*?)(?=\n\n|\n##|$)/gs);
   return match ? match[1].trim() : '';
 }
 
 function extractDailyQueries(content: string): string[] {
-  const match = content.match(/## 3\. DAILY QUERIES\s*\n(.*?)$/s);
+  const match = content.match(/## 3\. DAILY QUERIES\s*\n(.*?)$/gs);
   if (!match) return [];
   
   const queriesText = match[1].trim();
@@ -253,6 +253,25 @@ High-level strategic guidance for email generation.`;
       subjectLines: "4 subject line formats"
     }
   };
+}
+
+// Simple text-based OpenAI query without function calls
+export async function queryOpenAIText(
+  messages: ChatCompletionMessageParam[]
+): Promise<string> {
+  try {
+    const response = await getOpenAIClient().chat.completions.create({
+      model: "gpt-4o",
+      messages,
+      temperature: 0.1,
+      max_tokens: 2000
+    });
+
+    return response.choices[0].message.content || '';
+  } catch (error) {
+    console.error('OpenAI API error:', error);
+    throw error;
+  }
 }
 
 export async function queryOpenAI(

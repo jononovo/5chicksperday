@@ -692,7 +692,9 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
             productService: formData?.productService,
             customerFeedback: formData?.customerFeedback,
             website: formData?.website
-          }
+          },
+          // Pass marketing context for conversation continuity
+          marketingContext: getLastMarketingContext()
         })
       });
 
@@ -737,6 +739,22 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
     };
     
     setMessages(prev => [...prev, offerMessage]);
+  };
+
+  // Helper function to extract marketing context from recent messages
+  const getLastMarketingContext = () => {
+    // Find the most recent marketing context document in messages
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const message = messages[i];
+      if (message.sender === 'ai' && message.content && message.content.includes('RELATIONSHIP INITIATION APPROACHES')) {
+        // Extract the marketing context content
+        const contentDiv = document.createElement('div');
+        contentDiv.innerHTML = message.content;
+        const reportContent = contentDiv.querySelector('.report-content');
+        return reportContent?.textContent || reportContent?.innerText || null;
+      }
+    }
+    return null;
   };
 
 
