@@ -220,10 +220,14 @@ function extractDailyQueries(content: string): string[] {
 
 async function generateSalesApproach(params: any, productContext: any): Promise<any> {
   const { strategyContext } = params;
-  const productData = productContext;
   
-  const perplexityPrompt = `
+  const openaiPrompt = `
 Create a strategic email approach guide (max 200 words) for ${productContext.productService}.
+
+PRODUCT CONTEXT:
+Product/Service: ${productContext.productService}
+Customer Feedback: ${productContext.customerFeedback}
+Website: ${productContext.website}
 
 Format exactly as:
 
@@ -241,10 +245,15 @@ Format exactly as:
 
 High-level strategic guidance for email generation.`;
 
-  const result = await queryPerplexity([
-    { role: "system", content: "You are a sales strategy expert. Create structured, high-level email approach guidance." },
-    { role: "user", content: perplexityPrompt }
-  ]);
+  const response = await getOpenAIClient().chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      { role: "system", content: "You are a sales strategy expert. Create structured, high-level email approach guidance." },
+      { role: "user", content: openaiPrompt }
+    ]
+  });
+
+  const result = response.choices[0].message.content || '';
 
   return {
     title: "Sales Approach Strategy",
@@ -287,10 +296,15 @@ Create a comprehensive offer strategy (150-200 words) that:
 Format as practical, ready-to-use offer guidance.`;
 
     try {
-      const result = await queryPerplexity([
-        { role: "system", content: "You are an expert offer strategist. Create detailed, actionable offer strategies that follow the provided framework exactly." },
-        { role: "user", content: offerPrompt }
-      ]);
+      const response = await getOpenAIClient().chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { role: "system", content: "You are an expert offer strategist. Create detailed, actionable offer strategies that follow the provided framework exactly." },
+          { role: "user", content: offerPrompt }
+        ]
+      });
+      
+      const result = response.choices[0].message.content || '';
 
       offers.push({
         id: config.id,

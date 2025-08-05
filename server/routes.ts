@@ -4069,58 +4069,7 @@ PHASE-SPECIFIC INSTRUCTIONS:
         };
         
         console.log('Progressive strategy result object:', result);
-      } else if (userInput === 'Generate sales approach') {
-        // Handle sales approach generation specifically
-        console.log('Handling sales approach generation directly');
-        
-        try {
-          const { queryPerplexity } = await import('./lib/api/perplexity-client.js');
-          
-          const perplexityPrompt = `
-Create a strategic email approach guide (max 200 words) for ${productContext.productService}.
 
-Format exactly as:
-
-**RELATIONSHIP INITIATION APPROACHES:**
-• **Standard**: [Traditional approach]
-• **Innovation 1**: [Creative method]
-• **Innovation 2**: [Unique technique] 
-• **Innovation 3**: [Unconventional strategy]
-
-**SUBJECT LINE FORMATS:**
-• **Standard**: [Professional format]
-• **Innovation 1**: [Curiosity approach]
-• **Innovation 2**: [Value-focused technique]
-• **Innovation 3**: [Personalized format]
-
-High-level strategic guidance for email generation.`;
-
-          const content = await queryPerplexity([
-            { role: "system", content: "You are a sales strategy expert. Create structured, high-level email approach guidance." },
-            { role: "user", content: perplexityPrompt }
-          ]);
-          
-          const salesApproachData = {
-            title: "Sales Approach Strategy",
-            content: content,
-            sections: {
-              approaches: "4 relationship initiation methods",
-              subjectLines: "4 subject line formats"
-            }
-          };
-          
-          result = {
-            type: 'sales_approach',
-            message: "Here's your marketing context document:",
-            data: salesApproachData
-          };
-        } catch (error) {
-          console.error('Sales approach generation error:', error);
-          result = {
-            type: 'conversation',
-            message: "I encountered an issue generating your marketing context document. Let me try a different approach."
-          };
-        }
       } else {
         result = await queryOpenAI(messages, productContext);
       }
