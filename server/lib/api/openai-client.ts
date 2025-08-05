@@ -350,7 +350,7 @@ Format as practical, ready-to-use offer guidance.`;
 }
 
 // Export the sync version for use in background generation
-export { generateOfferStrategiesSync };
+export { generateOfferStrategiesSync, generateSalesApproach };
 
 export async function queryOpenAI(
   messages: any[],
