@@ -36,6 +36,22 @@ import { getEmailProvider } from "./services/emailService";
 import { registerEmailGenerationRoutes } from "./email-content-generation/routes";
 import { OFFER_CONFIGS } from "./email-content-generation/offer-configs";
 
+// Add OpenAI client import for offer strategies generation
+import OpenAI from 'openai';
+
+let openaiClientInstance: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openaiClientInstance) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables.');
+    }
+    openaiClientInstance = new OpenAI({ apiKey });
+  }
+  return openaiClientInstance;
+}
+
 // Global session storage for search results
 interface SearchSessionResult {
   sessionId: string;
@@ -3920,6 +3936,142 @@ Focus on actionable insights that directly support their stated business goal an
       res.status(500).json({
         message: "Failed to complete background research",
         error: error.message
+      });
+    }
+  });
+
+  // Generate Product Offer Strategies (integrated with Strategy Chat conversation)
+  app.post("/api/onboarding/generate-offer-strategies", requireAuth, async (req, res) => {
+    try {
+      const { productContext, conversationHistory } = req.body;
+
+      if (!productContext) {
+        res.status(400).json({ message: "Missing product context" });
+        return;
+      }
+
+      console.log('Generating offer strategies for product:', productContext.productService);
+
+      // Build conversation context from existing marketing conversation
+      const messages = [
+        {
+          role: "system",
+          content: `You are an expert at creating compelling product offer strategies. Based on the marketing context document already created for this product, generate 6 distinct offer frameworks that can be used for email campaigns.
+
+PRODUCT CONTEXT:
+- Product/Service: ${productContext.productService}
+- Customer Feedback: ${productContext.customerFeedback}
+- Website: ${productContext.website || 'Not provided'}
+
+INSTRUCTIONS:
+Generate exactly 6 offer strategies using these proven frameworks:
+1. Hormozi (Value stacking with guarantees)
+2. 1-on-1 (Personal consultation approach)
+3. Guarantee (Risk reversal with backup offer)
+4. Formula (Step-by-step system approach)
+5. Shiny (New/innovative technology angle)
+6. Study (Case study/proof-based approach)
+
+For each strategy, provide:
+- Title: The offer framework name
+- Description: A 2-3 sentence explanation of how this offer would work specifically for this product
+
+Respond with a JSON array of exactly 6 objects in this format:
+[
+  {
+    "title": "Hormozi Value Stack",
+    "description": "Instead of just [current pain], get [specific benefit 1] + [specific benefit 2] + [specific benefit 3] with a [concrete guarantee] - all delivered in [timeline]."
+  },
+  ...
+]
+
+Focus on making each offer strategy actionable and specific to the product context provided.`
+        }
+      ];
+
+      // Add conversation history for continuity with marketing context
+      if (conversationHistory && conversationHistory.length > 0) {
+        // Add only the marketing context document from conversation history
+        const marketingContext = conversationHistory.find(msg => 
+          msg.sender === 'ai' && 
+          msg.content && 
+          (msg.content.includes('marketing context') || msg.content.includes('Sales Approach Strategy'))
+        );
+        
+        if (marketingContext) {
+          messages.push({
+            role: "assistant",
+            content: `Previous marketing context document: ${marketingContext.content.substring(0, 1000)}...`
+          });
+        }
+      }
+
+      // Add user request
+      messages.push({
+        role: "user",
+        content: `Generate 6 compelling offer strategies for ${productContext.productService} based on the marketing context above.`
+      });
+
+      // Call OpenAI API
+      const response = await getOpenAIClient().chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: messages as any,
+        temperature: 0.7,
+        max_tokens: 1500,
+        response_format: { type: "json_object" }
+      });
+
+      const content = response.choices[0].message.content;
+      
+      let offerStrategies;
+      try {
+        const parsed = JSON.parse(content || '{}');
+        // Handle both array format and object format
+        offerStrategies = Array.isArray(parsed) ? parsed : (parsed.strategies || parsed.offers || []);
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response:', parseError);
+        // Fallback to structured offer strategies
+        offerStrategies = [
+          {
+            title: "Hormozi Value Stack",
+            description: `Instead of struggling with ${productContext.productService} challenges, get comprehensive solution + expert support + guaranteed results - all delivered with risk-free guarantee.`
+          },
+          {
+            title: "1-on-1 Personal Consultation", 
+            description: `15 minutes of personalized guidance + FREE setup tailored specifically to your ${productContext.productService} needs.`
+          },
+          {
+            title: "Guarantee & Risk Reversal",
+            description: `If we can't deliver measurable improvements to your ${productContext.productService} in 30 days, we'll provide full refund plus complimentary consultation hours.`
+          },
+          {
+            title: "Proven Formula System",
+            description: `Our step-by-step ${productContext.productService} formula: Analyze → Optimize → Implement → Monitor - with documented case studies and proven results.`
+          },
+          {
+            title: "Next-Gen Innovation",
+            description: `The latest advancement in ${productContext.productService} technology - now available with early-adopter benefits and exclusive access.`
+          },
+          {
+            title: "Case Study Proof",
+            description: `Real results from companies like yours: [specific metrics] improvement in ${productContext.productService} performance with detailed case study included.`
+          }
+        ];
+      }
+
+      console.log('Generated offer strategies:', offerStrategies);
+
+      res.json({
+        type: 'offer_strategies',
+        message: 'Product offer strategies generated',
+        content: offerStrategies,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Offer strategies generation error:', error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to generate offer strategies"
       });
     }
   });
