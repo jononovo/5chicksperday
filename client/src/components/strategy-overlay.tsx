@@ -566,7 +566,7 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
         const data = await response.json();
         console.log('Strategy chat response:', data);
         
-        if (data.type === 'product_summary' || data.type === 'email_strategy' || data.type === 'sales_approach') {
+        if (data.type === 'product_summary' || data.type === 'email_strategy' || data.type === 'sales_approach' || data.type === 'sales_approach_with_offers') {
           displayReport(data);
         } else if (data.type === 'progressive_strategy') {
           const aiMessage: Message = {
@@ -726,36 +726,117 @@ export function StrategyOverlay({ state, onStateChange }: StrategyOverlayProps) 
   const displayReport = (reportData: any) => {
     setMessages(prev => prev.filter(msg => !msg.isLoading));
     
-    const reportHtml = `
-      <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
-        <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
-        <div class="report-content text-gray-700">
-          ${renderMarkdown(reportData.data.content)}
-        </div>
-      </div>`;
-    
-    const reportMessage: Message = {
-      id: Date.now().toString(),
-      content: reportHtml,
+    if (reportData.type === 'sales_approach_with_offers') {
+      // Display marketing context first
+      const reportHtml = `
+        <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+          <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+          <div class="report-content text-gray-700">
+            ${renderMarkdown(reportData.data.content)}
+          </div>
+        </div>`;
+      
+      const reportMessage: Message = {
+        id: Date.now().toString(),
+        content: reportHtml,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true
+      };
+      
+      setMessages(prev => [...prev, reportMessage]);
+      
+      // Display offer strategies with rapid-fire approach
+      if (reportData.offers && reportData.offers.length > 0) {
+        setTimeout(() => {
+          displayOfferStrategies(reportData.offers);
+        }, 1000);
+      }
+    } else {
+      // Standard report display for other types
+      const reportHtml = `
+        <div class="report-container bg-blue-50 border border-blue-200 rounded-lg p-4 my-3">
+          <h3 class="font-bold text-lg text-blue-800 mb-2">${reportData.message}</h3>
+          <div class="report-content text-gray-700">
+            ${renderMarkdown(reportData.data.content)}
+          </div>
+        </div>`;
+      
+      const reportMessage: Message = {
+        id: Date.now().toString(),
+        content: reportHtml,
+        sender: 'ai',
+        timestamp: new Date(),
+        isHTML: true
+      };
+      
+      setMessages(prev => [...prev, reportMessage]);
+
+      if (reportData.type === 'product_summary') {
+        setTimeout(() => {
+          const followUpMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
+            sender: 'ai',
+            timestamp: new Date(),
+            isHTML: true
+          };
+          setMessages(prev => [...prev, followUpMessage]);
+        }, 1000);
+      }
+    }
+  };
+  
+  const displayOfferStrategies = (offers: any[]) => {
+    // Show offer strategies header
+    const headerMessage: Message = {
+      id: `offers-header-${Date.now()}`,
+      content: `
+        <div class="strategy-step mb-4 p-4 bg-purple-50 border-l-4 border-purple-400 rounded">
+          <h4 class="font-semibold text-purple-800 mb-2">✨ Offer Strategies</h4>
+          <p class="text-sm text-purple-600">Generating 6 specialized offer approaches for your product...</p>
+        </div>`,
       sender: 'ai',
       timestamp: new Date(),
       isHTML: true
     };
+    setMessages(prev => [...prev, headerMessage]);
     
-    setMessages(prev => [...prev, reportMessage]);
-
-    if (reportData.type === 'product_summary') {
+    // Rapid-fire display each offer strategy
+    offers.forEach((offer, index) => {
       setTimeout(() => {
-        const followUpMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: renderMarkdown("Oh, that's classy. 😉\nNow please give me **an example of a type of business you service** or sell to.\nLike this \"[type of business] in [city/niche]\"\n\nExamples:\n\n**Popular cafes** in Lower East Side, NYC\n\n**Real-estate insurance brokers** in Salt Lake City"),
+        const offerHtml = `
+          <div class="offer-strategy mb-3 p-3 bg-white border border-purple-200 rounded-lg shadow-sm">
+            <h5 class="font-medium text-gray-900 mb-2 flex items-center">
+              <span class="w-6 h-6 bg-purple-100 text-purple-800 rounded-full text-xs font-bold flex items-center justify-center mr-2">
+                ${index + 1}
+              </span>
+              ${offer.name} Approach
+            </h5>
+            <p class="text-xs text-gray-500 mb-2">${offer.description}</p>
+            <div class="text-sm text-gray-700 leading-relaxed">
+              ${renderMarkdown(offer.content)}
+            </div>
+          </div>`;
+        
+        const offerMessage: Message = {
+          id: `offer-${offer.id}-${Date.now()}`,
+          content: offerHtml,
           sender: 'ai',
           timestamp: new Date(),
           isHTML: true
         };
-        setMessages(prev => [...prev, followUpMessage]);
-      }, 1000);
-    }
+        
+        setMessages(prev => [...prev, offerMessage]);
+        
+        // Show completion choice after last offer
+        if (index === offers.length - 1) {
+          setTimeout(() => {
+            setShowCompletionChoice(true);
+          }, 1000);
+        }
+      }, (index + 1) * 800); // Stagger each offer by 800ms
+    });
   };
 
   const renderMarkdown = (markdown: string) => {

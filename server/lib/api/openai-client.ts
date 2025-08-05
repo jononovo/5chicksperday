@@ -17,9 +17,10 @@ function getOpenAIClient(): OpenAI {
 }
 
 interface FunctionCallResult {
-  type: 'conversation' | 'product_summary' | 'email_strategy' | 'sales_approach' | 'progressive_strategy';
+  type: 'conversation' | 'product_summary' | 'email_strategy' | 'sales_approach' | 'sales_approach_with_offers' | 'progressive_strategy';
   message: string;
   data?: any;
+  offers?: any[];
   initialTarget?: string;
   refinedTarget?: string;
   needsProgressiveGeneration?: boolean;
@@ -193,17 +194,17 @@ ${dailyQueries.join('\n')}`;
 
 // Parsing functions to extract structured components
 function extractBoundary(content: string): string {
-  const match = content.match(/## 1\. TARGET BOUNDARY\s*\n(.*?)(?=\n\n|\n##|$)/s);
+  const match = content.match(/## 1\. TARGET BOUNDARY\s*\n([\s\S]*?)(?=\n\n|\n##|$)/);
   return match ? match[1].trim() : '';
 }
 
 function extractSprintPrompt(content: string): string {
-  const match = content.match(/## 2\. SPRINT PROMPT\s*\n(.*?)(?=\n\n|\n##|$)/s);
+  const match = content.match(/## 2\. SPRINT PROMPT\s*\n([\s\S]*?)(?=\n\n|\n##|$)/);
   return match ? match[1].trim() : '';
 }
 
 function extractDailyQueries(content: string): string[] {
-  const match = content.match(/## 3\. DAILY QUERIES\s*\n(.*?)$/s);
+  const match = content.match(/## 3\. DAILY QUERIES\s*\n([\s\S]*?)$/);
   if (!match) return [];
   
   const queriesText = match[1].trim();
@@ -253,6 +254,64 @@ High-level strategic guidance for email generation.`;
       subjectLines: "4 subject line formats"
     }
   };
+}
+
+async function generateOfferStrategies(marketingContext: any, productContext: any): Promise<any[]> {
+  // Import offer configs
+  const { OFFER_CONFIGS } = await import('../../email-content-generation/offer-configs');
+  
+  const offers = [];
+  
+  // Rapid-fire generation for each of the 6 offers
+  for (const [offerId, config] of Object.entries(OFFER_CONFIGS)) {
+    const offerPrompt = `
+Create a detailed offer strategy for ${productContext.productService} using the ${config.name} approach.
+
+PRODUCT CONTEXT:
+${productContext.productService}
+Customers say: ${productContext.customerFeedback}
+Website: ${productContext.website}
+
+MARKETING CONTEXT:
+${marketingContext.content}
+
+OFFER FRAMEWORK - ${config.name}:
+${config.framework}
+
+Create a comprehensive offer strategy (150-200 words) that:
+1. Applies this specific framework to the product/service
+2. Uses the marketing context for positioning
+3. Provides actionable guidance for email generation
+4. Makes the offer compelling and specific
+
+Format as practical, ready-to-use offer guidance.`;
+
+    try {
+      const result = await queryPerplexity([
+        { role: "system", content: "You are an expert offer strategist. Create detailed, actionable offer strategies that follow the provided framework exactly." },
+        { role: "user", content: offerPrompt }
+      ]);
+
+      offers.push({
+        id: config.id,
+        name: config.name,
+        description: config.description,
+        content: result,
+        generated_at: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Error generating offer strategy for ${config.name}:`, error);
+      offers.push({
+        id: config.id,
+        name: config.name,
+        description: config.description,
+        content: `Error generating ${config.name} strategy. Please try again.`,
+        generated_at: new Date().toISOString()
+      });
+    }
+  }
+  
+  return offers;
 }
 
 export async function queryOpenAI(
@@ -358,10 +417,13 @@ export async function queryOpenAI(
         };
       } else if (functionName === 'generateSalesApproach') {
         const approach = await generateSalesApproach(functionArgs, productContext);
+        const offers = await generateOfferStrategies(approach, productContext);
+        
         return {
-          type: 'sales_approach',
-          message: "Here's your sales approach strategy:",
-          data: approach
+          type: 'sales_approach_with_offers',
+          message: "Here's your marketing context document:",
+          data: approach,
+          offers: offers
         };
       }
     }

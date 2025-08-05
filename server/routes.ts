@@ -4175,6 +4175,11 @@ High-level strategic guidance for email generation.`;
               await storage.updateStrategicProfile(profileId, { 
                 reportSalesContextGuidance: JSON.stringify(result.data) 
               });
+            } else if (result.type === 'sales_approach_with_offers') {
+              await storage.updateStrategicProfile(profileId, { 
+                reportSalesContextGuidance: JSON.stringify(result.data),
+                productOfferStrategies: JSON.stringify(result.offers)
+              });
             }
           }
         } catch (dbError) {
@@ -4192,6 +4197,11 @@ High-level strategic guidance for email generation.`;
       // Include data if present
       if (result.data) {
         response.data = result.data;
+      }
+      
+      // Include offers if present
+      if (result.offers) {
+        response.offers = result.offers;
       }
       
       // Include additional properties for progressive strategy

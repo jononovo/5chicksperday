@@ -350,6 +350,7 @@ export const strategicProfiles = pgTable("strategic_profiles", {
   reportSalesContextGuidance: text("report_sales_context_guidance"), // AI-generated context for cold email approach
   reportSalesTargetingGuidance: text("report_sales_targeting_guidance"), // AI-generated targeting recommendations
   dailySearchQueries: text("daily_search_queries"), // JSON array of 8 daily search queries from strategy
+  productOfferStrategies: text("product_offer_strategies"), // JSON array of 6 offer strategies
   strategicPlan: jsonb("strategic_plan").default({}),
   searchPrompts: text("search_prompts").array(),
   status: text("status").default("in_progress"), // "in_progress", "completed"
