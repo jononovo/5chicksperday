@@ -4099,7 +4099,7 @@ High-level strategic guidance for email generation.`;
           const content = await queryPerplexity([
             { role: "system", content: "You are a sales strategy expert. Create structured, high-level email approach guidance." },
             { role: "user", content: perplexityPrompt }
-          ]);
+          ] as PerplexityMessage[]);
           
           const salesApproachData = {
             title: "Sales Approach Strategy",
@@ -4135,7 +4135,7 @@ Make it highly specific, detailed, and immediately actionable for this exact pro
               const strategy = await queryPerplexity([
                 { role: "system", content: "You are a sales strategy expert. Create detailed, product-specific offer strategies using the provided framework." },
                 { role: "user", content: offerPrompt }
-              ]);
+              ] as PerplexityMessage[]);
               
               offerStrategies.push({
                 id: offerConfig.id,
