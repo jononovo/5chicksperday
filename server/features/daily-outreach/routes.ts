@@ -214,4 +214,97 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
       });
     }
   });
+
+  // Mark email as sent
+  app.post('/api/daily-outreach/mark-sent', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const { contactId, subject, content, emailAddress } = req.body;
+      
+      if (!contactId || !subject || !content || !emailAddress) {
+        res.status(400).json({ message: 'Missing required fields' });
+        return;
+      }
+      
+      await DailyOutreachService.markEmailSent(userId, contactId, {
+        subject,
+        content,
+        emailAddress
+      });
+      
+      res.json({ success: true, message: 'Email marked as sent' });
+    } catch (error) {
+      console.error('Error marking email as sent:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : 'Failed to mark email as sent' 
+      });
+    }
+  });
+
+  // Mark company as skipped
+  app.post('/api/daily-outreach/skip-company', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const { companyId, reason, notes } = req.body;
+      
+      if (!companyId || !reason) {
+        res.status(400).json({ message: 'Company ID and reason are required' });
+        return;
+      }
+      
+      await DailyOutreachService.markCompanyAsSkipped(userId, companyId, reason, notes);
+      
+      res.json({ success: true, message: 'Company marked as skipped' });
+    } catch (error) {
+      console.error('Error marking company as skipped:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : 'Failed to mark company as skipped' 
+      });
+    }
+  });
+
+  // Get contact pipeline status
+  app.get('/api/daily-outreach/pipeline', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const pipeline = await DailyOutreachService.getContactPipeline(userId);
+      
+      res.json(pipeline);
+    } catch (error) {
+      console.error('Error getting contact pipeline:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : 'Failed to get contact pipeline' 
+      });
+    }
+  });
+
+  // Check if more contacts are needed
+  app.get('/api/daily-outreach/check-availability', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const availability = await DailyOutreachService.checkContactAvailability(userId);
+      
+      res.json(availability);
+    } catch (error) {
+      console.error('Error checking contact availability:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : 'Failed to check contact availability' 
+      });
+    }
+  });
+
+  // Get companies ready for follow-up
+  app.get('/api/daily-outreach/follow-ups', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const companies = await DailyOutreachService.getFollowUpCompanies(userId);
+      
+      res.json({ companies });
+    } catch (error) {
+      console.error('Error getting follow-up companies:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : 'Failed to get follow-up companies' 
+      });
+    }
+  });
 }

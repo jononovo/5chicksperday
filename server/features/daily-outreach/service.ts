@@ -233,4 +233,131 @@ export class DailyOutreachService {
   static async getPreferences(userId: number) {
     return storage.getDailyOutreachPreferences(userId);
   }
+
+  // Enhanced Email Tracking Methods
+  static async markEmailSent(
+    userId: number,
+    contactId: number,
+    emailData: {
+      subject: string;
+      content: string;
+      emailAddress: string;
+    }
+  ): Promise<void> {
+    // Mark contact as clicked/sent
+    await storage.markContactAsClicked(userId, contactId, emailData);
+    
+    // Update company contacted count
+    const contact = await storage.getContact(contactId, userId);
+    if (contact) {
+      const companyStatus = await storage.getCompanyOutreachStatus(contact.companyId, userId);
+      
+      if (companyStatus) {
+        await storage.updateCompanyOutreachStatus(companyStatus.id, {
+          contactedCount: (companyStatus.contactedCount || 0) + 1,
+          lastContactedAt: new Date(),
+          status: "contacted"
+        });
+      } else {
+        await storage.createCompanyOutreachStatus({
+          userId,
+          companyId: contact.companyId,
+          status: "contacted",
+          contactedCount: 1
+        });
+      }
+    }
+  }
+
+  // Company Skip Management
+  static async markCompanyAsSkipped(
+    userId: number,
+    companyId: number,
+    reason: "not_fit" | "not_now",
+    notes?: string
+  ): Promise<void> {
+    const followUpDate = reason === "not_now" 
+      ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString() // 60 days from now
+      : undefined;
+    
+    await storage.markCompanyAsSkipped(userId, companyId, reason, notes, followUpDate);
+    
+    // Mark all contacts from this company as skipped
+    const contacts = await storage.listContactsByCompany(companyId, userId);
+    for (const contact of contacts) {
+      const existing = await storage.getContactOutreachStatus(contact.id, userId);
+      if (!existing || existing.status === "pending") {
+        await storage.createContactOutreachStatus({
+          userId,
+          contactId: contact.id,
+          status: "skipped",
+          skipReason: reason,
+          skippedAt: new Date().toISOString()
+        });
+      }
+    }
+  }
+
+  // Contact Pipeline Management
+  static async getContactPipeline(userId: number): Promise<{
+    available: Contact[];
+    emailed: Contact[];
+    skipped: Contact[];
+    total: number;
+  }> {
+    const [available, emailed, skipped] = await Promise.all([
+      storage.getUncontactedContacts(userId, 100),
+      storage.getContactsByStatus(userId, "clicked"),
+      storage.getContactsByStatus(userId, "skipped")
+    ]);
+
+    return {
+      available,
+      emailed,
+      skipped,
+      total: available.length + emailed.length + skipped.length
+    };
+  }
+
+  // Check if more contacts are needed
+  static async checkContactAvailability(userId: number): Promise<{
+    needsMoreContacts: boolean;
+    availableCount: number;
+    suggestedPrompts?: string[];
+  }> {
+    const preferences = await storage.getDailyOutreachPreferences(userId);
+    const minContactsNeeded = (preferences?.contactsPerDay || 5) * 3; // 3 days worth
+    
+    const availableContacts = await storage.getUncontactedContacts(userId, 1000);
+    const needsMoreContacts = availableContacts.length < minContactsNeeded;
+    
+    if (needsMoreContacts) {
+      // Generate suggested search prompts based on user's business
+      const profiles = await storage.getStrategicProfiles(userId);
+      const latestProfile = profiles?.[0];
+      
+      const suggestedPrompts = latestProfile?.searchPrompts?.slice(0, 3) || [
+        "Find B2B companies in my target market",
+        "Search for decision makers at mid-size companies",
+        "Discover potential clients in my industry"
+      ];
+      
+      return {
+        needsMoreContacts: true,
+        availableCount: availableContacts.length,
+        suggestedPrompts
+      };
+    }
+    
+    return {
+      needsMoreContacts: false,
+      availableCount: availableContacts.length
+    };
+  }
+
+  // Get companies ready for follow-up
+  static async getFollowUpCompanies(userId: number): Promise<Company[]> {
+    const today = new Date().toISOString();
+    return await storage.getCompaniesWithFollowUp(userId, today);
+  }
 }
