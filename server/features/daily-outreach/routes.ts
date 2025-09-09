@@ -22,7 +22,12 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
         const db = new Database();
         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
         const tokenKey = `daily_outreach_token_${userId}_${today}`;
-        const existingToken = await db.get(tokenKey);
+        const tokenResult = await db.get(tokenKey);
+        
+        // Check if we have a valid token (not an error object)
+        const existingToken = tokenResult && 
+                              typeof tokenResult === 'string' ? tokenResult : 
+                              (tokenResult && typeof tokenResult === 'object' && !(tokenResult as any).error) ? String(tokenResult) : null;
         
         if (!existingToken) {
           // No token exists for today, generate one
@@ -62,22 +67,12 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
           }
         } else {
           // Token exists, include it in the response
-          console.log(`[Daily Outreach] Found existing token for user ${userId}:`, existingToken);
-          
-          // Ensure we extract the string value from the database result
-          let tokenString: string;
-          if (typeof existingToken === 'object' && existingToken !== null) {
-            // If it's an object, try to extract the token value
-            tokenString = (existingToken as any).value || (existingToken as any).token || String(existingToken);
-            console.log(`[Daily Outreach] Extracted token from object:`, tokenString);
-          } else {
-            tokenString = String(existingToken);
-          }
+          console.log(`[Daily Outreach] Found existing token for user ${userId}: ${existingToken}`);
           
           const result = await DailyOutreachService.checkDailyOutreach(userId);
           return res.json({
             ...result,
-            todaysToken: tokenString
+            todaysToken: existingToken
           });
         }
       }
