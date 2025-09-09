@@ -18,7 +18,7 @@ import { StrategySetupForm } from "@/components/strategy-setup-form";
 import { 
   Flame, TrendingUp, Users, Building2, Mail, Clock, Calendar as CalendarIcon,
   Pause, Play, ExternalLink, RefreshCw, AlertCircle, Trophy, Target, Zap,
-  Settings, Send, Eye, Edit3, CheckCircle2, XCircle, Sparkles
+  Settings, Send, Eye, Edit3, CheckCircle2, XCircle, Sparkles, Package, Plus, ArrowRight
 } from "lucide-react";
 
 interface StreakData {
@@ -117,6 +117,11 @@ export default function Streak() {
   // Check if user has strategic profile
   const { data: hasStrategy, isLoading: strategyLoading } = useQuery<{ hasProfile: boolean; profileCount: number }>({
     queryKey: ['/api/strategic-profiles/check'],
+  });
+
+  // Fetch user's products (strategic profiles)
+  const { data: products = [], isLoading: productsLoading } = useQuery<any[]>({
+    queryKey: ['/api/outreach/products'],
   });
 
   // Update preferences mutation
@@ -250,6 +255,92 @@ export default function Streak() {
           </AlertDescription>
         </Alert>
       )}
+
+      {/* My Products Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Package className="h-5 w-5 text-purple-600" />
+              My Products
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowStrategySetup(true)}
+              className="h-8"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add New
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {productsLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-6">
+              <Package className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground mb-3">
+                No products added yet
+              </p>
+              <Button
+                onClick={() => setShowStrategySetup(true)}
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Add Your First Product
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm truncate">
+                      {product.productService || product.businessDescription || 'Product'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {product.businessType === 'service' ? 'Service' : 'Product'} • 
+                      {product.website ? (() => {
+                        try {
+                          return new URL(product.website).hostname;
+                        } catch {
+                          return 'No website';
+                        }
+                      })() : 'No website'}
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="ml-2">
+                    {product.status === 'completed' ? 'Active' : 'Draft'}
+                  </Badge>
+                </div>
+              ))}
+              {products.length >= 3 && (
+                <div className="pt-2 border-t">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs text-muted-foreground hover:text-foreground"
+                    onClick={() => window.location.href = '/strategy'}
+                  >
+                    View all products
+                    <ArrowRight className="h-3 w-3 ml-1" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

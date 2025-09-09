@@ -15,13 +15,13 @@ router.get('/api/outreach/streak', requireAuth, async (req: Request, res: Respon
     
     // Get all email activities for the user to calculate streak
     const activities = await db.select({
-      date: sql<string>`${emailActivities.createdAt}::date`,
+      date: sql<string>`DATE(${emailActivities.createdAt})`,
       count: sql<number>`COUNT(*)`,
     })
     .from(emailActivities)
     .where(eq(emailActivities.userId, userId))
-    .groupBy(sql`${emailActivities.createdAt}::date`)
-    .orderBy(sql`${emailActivities.createdAt}::date DESC`);
+    .groupBy(sql`DATE(${emailActivities.createdAt})`)
+    .orderBy(sql`DATE(${emailActivities.createdAt}) DESC`);
 
     // Calculate current streak
     let currentStreak = 0;
@@ -111,8 +111,8 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
     .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
     .where(and(
       eq(emailActivities.userId, userId),
-      sql`${emailActivities.createdAt} >= ${weekStart}`,
-      sql`${emailActivities.createdAt} <= ${weekEnd}`
+      sql`${emailActivities.createdAt} >= ${weekStart}::timestamp`,
+      sql`${emailActivities.createdAt} <= ${weekEnd}::timestamp`
     ));
 
     // Get this month's stats
@@ -125,8 +125,8 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
     .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
     .where(and(
       eq(emailActivities.userId, userId),
-      sql`${emailActivities.createdAt} >= ${monthStart}`,
-      sql`${emailActivities.createdAt} <= ${monthEnd}`
+      sql`${emailActivities.createdAt} >= ${monthStart}::timestamp`,
+      sql`${emailActivities.createdAt} <= ${monthEnd}::timestamp`
     ));
 
     // Get all time stats
@@ -261,8 +261,8 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     .from(dailyOutreachBatches)
     .where(and(
       eq(dailyOutreachBatches.userId, userId),
-      sql`${dailyOutreachBatches.createdAt} >= ${today}`,
-      sql`${dailyOutreachBatches.createdAt} < ${tomorrow}`
+      sql`${dailyOutreachBatches.createdAt} >= ${today}::timestamp`,
+      sql`${dailyOutreachBatches.createdAt} < ${tomorrow}::timestamp`
     ))
     .orderBy(sql`${dailyOutreachBatches.createdAt} DESC`)
     .limit(1);
