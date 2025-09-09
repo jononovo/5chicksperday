@@ -43,11 +43,18 @@ export const companies = pgTable("companies", {
   differentiation: jsonb("differentiation").default('[]'),
   totalScore: integer("total_score"),
   snapshot: jsonb("snapshot"),
+  // Company tracking fields
+  companyStatus: text("company_status").default('uncontacted'), // 'uncontacted' | 'contacted' | 'skipped'
+  skipReason: text("skip_reason"), // 'not_fit' | 'not_now' 
+  skipUntilDate: timestamp("skip_until_date", { withTimezone: true }), // When to reconsider if skipped temporarily
+  lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
+  skippedAt: timestamp("skipped_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
 }, (table) => [
   index('idx_companies_user_id').on(table.userId),
   index('idx_companies_list_id').on(table.listId),
   index('idx_companies_name').on(table.name),
+  index('idx_companies_status').on(table.companyStatus),
 ]);
 
 export const contacts = pgTable("contacts", {
@@ -70,12 +77,18 @@ export const contacts = pgTable("contacts", {
   userFeedbackScore: integer("user_feedback_score"), 
   feedbackCount: integer("feedback_count").default(0), 
   lastValidated: timestamp("last_validated", { withTimezone: true }), 
+  // Contact tracking fields
+  contactStatus: text("contact_status").default('uncontacted'), // 'uncontacted' | 'emailed' | 'skipped'
+  lastEmailedAt: timestamp("last_emailed_at", { withTimezone: true }),
+  emailCount: integer("email_count").default(0),
+  skippedAt: timestamp("skipped_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   completedSearches: jsonb("completed_searches").$type<string[]>().default([])
 }, (table) => [
   index('idx_contacts_company_id').on(table.companyId),
   index('idx_contacts_user_id').on(table.userId),
   index('idx_contacts_email').on(table.email),
+  index('idx_contacts_status').on(table.contactStatus),
 ]);
 
 /* 
@@ -131,6 +144,63 @@ export const userEmailPreferences = pgTable("user_email_preferences", {
   updatedAt: timestamp("updated_at").defaultNow()
 });
 
+// Email activity tracking - stores record of every email sent to contacts
+export const emailActivities = pgTable("email_activities", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  contactId: integer("contact_id").notNull().references(() => contacts.id),
+  companyId: integer("company_id").notNull().references(() => companies.id),
+  subject: text("subject").notNull(),
+  content: text("content").notNull(),
+  senderEmail: text("sender_email").notNull(), // Which email address was used to send
+  recipientEmail: text("recipient_email").notNull(),
+  emailType: text("email_type").default('manual'), // 'manual' | 'campaign' | 'daily_outreach'
+  sentAt: timestamp("sent_at", { withTimezone: true }).defaultNow(),
+  openedAt: timestamp("opened_at", { withTimezone: true }),
+  clickedAt: timestamp("clicked_at", { withTimezone: true }),
+  repliedAt: timestamp("replied_at", { withTimezone: true })
+}, (table) => [
+  index('idx_email_activities_user_id').on(table.userId),
+  index('idx_email_activities_contact_id').on(table.contactId),
+  index('idx_email_activities_company_id').on(table.companyId),
+]);
+
+// Daily outreach batches - stores batches of contacts for daily email outreach
+export const dailyOutreachBatches = pgTable("daily_outreach_batches", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  token: text("token").notNull().unique(), // Secure token for public access
+  contacts: jsonb("contacts").$type<number[]>().default([]), // Array of contact IDs
+  emails: jsonb("emails").$type<any[]>().default([]), // Generated email content for each contact
+  status: text("status").default('pending'), // 'pending' | 'partial' | 'completed' | 'expired'
+  contactsEmailed: jsonb("contacts_emailed").$type<number[]>().default([]), // Tracks which contacts were emailed
+  contactsSkipped: jsonb("contacts_skipped").$type<number[]>().default([]), // Tracks which contacts were skipped
+  scheduledFor: timestamp("scheduled_for", { withTimezone: true }).notNull(),
+  sentAt: timestamp("sent_at", { withTimezone: true }), // When notification email was sent
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
+}, (table) => [
+  index('idx_daily_batches_user_id').on(table.userId),
+  index('idx_daily_batches_token').on(table.token),
+  index('idx_daily_batches_status').on(table.status),
+]);
+
+// User outreach preferences - controls daily outreach settings
+export const userOutreachPreferences = pgTable("user_outreach_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  enabled: boolean("enabled").default(true),
+  schedule: jsonb("schedule").$type<{days: string[], time: string}>().default({days: ['mon','tue','wed'], time: '09:00'}),
+  timezone: text("timezone").default('America/New_York'),
+  emailsPerBatch: integer("emails_per_batch").default(5),
+  includeSearchPrompts: boolean("include_search_prompts").default(true), // Include suggested search prompts in urgent emails
+  sendUrgentReminders: boolean("send_urgent_reminders").default(true), // Send urgent emails when low on contacts
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
+}, (table) => [
+  index('idx_outreach_prefs_user_id').on(table.userId),
+]);
+
 
 
 // N8N Workflow tables have been removed
@@ -159,7 +229,13 @@ const companySchema = z.object({
   validationPoints: z.array(z.string()).nullable(),
   differentiation: z.array(z.string()).nullable(),
   totalScore: z.number().nullable(),
-  snapshot: z.record(z.unknown()).nullable()
+  snapshot: z.record(z.unknown()).nullable(),
+  // Company tracking fields
+  companyStatus: z.enum(['uncontacted', 'contacted', 'skipped']).default('uncontacted'),
+  skipReason: z.enum(['not_fit', 'not_now']).nullable(),
+  skipUntilDate: z.string().nullable(), // ISO date string
+  lastContactedAt: z.string().nullable(),
+  skippedAt: z.string().nullable()
 });
 
 const contactSchema = z.object({
@@ -178,7 +254,12 @@ const contactSchema = z.object({
   userFeedbackScore: z.number().min(0).max(100).nullable(),
   feedbackCount: z.number().min(0).nullable(),
   alternativeEmails: z.array(z.string()).optional(),
-  completedSearches: z.array(z.string()).optional()
+  completedSearches: z.array(z.string()).optional(),
+  // Contact tracking fields
+  contactStatus: z.enum(['uncontacted', 'emailed', 'skipped']).default('uncontacted'),
+  lastEmailedAt: z.string().nullable(),
+  emailCount: z.number().default(0),
+  skippedAt: z.string().nullable()
 });
 
 /* INACTIVE FEATURE SCHEMA - CONTACT FEEDBACK
@@ -215,6 +296,47 @@ const userEmailPreferencesSchema = z.object({
   lastUsedMethod: z.string().optional()
 });
 
+// Email activity schema
+const emailActivitySchema = z.object({
+  contactId: z.number(),
+  companyId: z.number(),
+  subject: z.string().min(1, "Subject is required"),
+  content: z.string().min(1, "Content is required"),
+  senderEmail: z.string().email("Invalid sender email"),
+  recipientEmail: z.string().email("Invalid recipient email"),
+  emailType: z.enum(['manual', 'campaign', 'daily_outreach']).default('manual'),
+  sentAt: z.string().optional(),
+  openedAt: z.string().nullable(),
+  clickedAt: z.string().nullable(),
+  repliedAt: z.string().nullable()
+});
+
+// Daily outreach batch schema
+const dailyOutreachBatchSchema = z.object({
+  token: z.string().min(32, "Token must be secure"),
+  contacts: z.array(z.number()).default([]),
+  emails: z.array(z.any()).default([]),
+  status: z.enum(['pending', 'partial', 'completed', 'expired']).default('pending'),
+  contactsEmailed: z.array(z.number()).default([]),
+  contactsSkipped: z.array(z.number()).default([]),
+  scheduledFor: z.string(), // ISO date string
+  sentAt: z.string().nullable(),
+  expiresAt: z.string() // ISO date string
+});
+
+// User outreach preferences schema
+const userOutreachPreferencesSchema = z.object({
+  enabled: z.boolean().default(true),
+  schedule: z.object({
+    days: z.array(z.string()),
+    time: z.string()
+  }).default({days: ['mon','tue','wed'], time: '09:00'}),
+  timezone: z.string().default('America/New_York'),
+  emailsPerBatch: z.number().min(1).max(20).default(5),
+  includeSearchPrompts: z.boolean().default(true),
+  sendUrgentReminders: z.boolean().default(true)
+});
+
 
 
 // N8N Workflow schemas have been removed
@@ -232,6 +354,18 @@ export const insertUserEmailPreferencesSchema = userEmailPreferencesSchema.exten
   userId: z.number()
 });
 
+export const insertEmailActivitySchema = emailActivitySchema.extend({
+  userId: z.number()
+});
+
+export const insertDailyOutreachBatchSchema = dailyOutreachBatchSchema.extend({
+  userId: z.number()
+});
+
+export const insertUserOutreachPreferencesSchema = userOutreachPreferencesSchema.extend({
+  userId: z.number()
+});
+
 export type List = typeof lists.$inferSelect;
 export type InsertList = z.infer<typeof insertListSchema>;
 export type Company = typeof companies.$inferSelect;
@@ -244,6 +378,15 @@ export type UserPreferences = typeof userPreferences.$inferSelect;
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 export type UserEmailPreferences = typeof userEmailPreferences.$inferSelect;
 export type InsertUserEmailPreferences = z.infer<typeof insertUserEmailPreferencesSchema>;
+
+export type EmailActivity = typeof emailActivities.$inferSelect;
+export type InsertEmailActivity = z.infer<typeof insertEmailActivitySchema>;
+
+export type DailyOutreachBatch = typeof dailyOutreachBatches.$inferSelect;
+export type InsertDailyOutreachBatch = z.infer<typeof insertDailyOutreachBatchSchema>;
+
+export type UserOutreachPreferences = typeof userOutreachPreferences.$inferSelect;
+export type InsertUserOutreachPreferences = z.infer<typeof insertUserOutreachPreferencesSchema>;
 
 // N8N workflow types have been removed
 
