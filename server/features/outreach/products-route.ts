@@ -22,7 +22,8 @@ router.get('/api/outreach/products', requireAuth, async (req: Request, res: Resp
         customerFeedback: strategicProfiles.customerFeedback,
         website: strategicProfiles.website,
         createdAt: strategicProfiles.createdAt,
-        status: strategicProfiles.status
+        status: strategicProfiles.status,
+        isActive: strategicProfiles.isActive
       })
       .from(strategicProfiles)
       .where(eq(strategicProfiles.userId, userId))

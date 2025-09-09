@@ -458,6 +458,7 @@ router.post('/outreach/:token/send', async (req: Request, res: Response) => {
 import { registerStreakRoutes } from './streak-routes';
 import { registerStrategyCheckRoutes } from './strategy-check-route';
 import { registerProductsRoutes } from './products-route';
+import { registerActiveProductRoutes } from './active-product-route';
 
 export function registerOutreachRoutes(app: any) {
   app.use(router);
@@ -470,4 +471,7 @@ export function registerOutreachRoutes(app: any) {
   
   // Also register products routes
   registerProductsRoutes(app);
+  
+  // Also register active product routes
+  registerActiveProductRoutes(app);
 }

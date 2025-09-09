@@ -124,6 +124,37 @@ export default function Streak() {
     queryKey: ['/api/outreach/products'],
   });
 
+  // Mutation to activate a product
+  const activateProduct = useMutation({
+    mutationFn: async (productId: number) => {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/outreach/products/${productId}/activate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+      });
+      if (!response.ok) throw new Error('Failed to activate product');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/outreach/products'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/outreach/products/active'] });
+      toast({
+        title: "Product Activated",
+        description: "This product will be used for your email campaigns.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Activation Failed",
+        description: "Failed to activate product. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Update preferences mutation
   const updatePreferences = useMutation({
     mutationFn: async (updates: Partial<UserPreferences>) => {
@@ -276,6 +307,9 @@ export default function Streak() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="text-xs text-muted-foreground mb-3">
+            Select which product to use for your email campaigns
+          </div>
           {productsLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
@@ -302,11 +336,23 @@ export default function Streak() {
               {products.map((product) => (
                 <div
                   key={product.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  className={`flex items-center justify-between p-3 rounded-lg transition-all cursor-pointer ${
+                    product.isActive 
+                      ? 'bg-purple-50 border-2 border-purple-300 hover:bg-purple-100' 
+                      : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100 hover:border-gray-200'
+                  }`}
+                  onClick={() => !product.isActive && activateProduct.mutate(product.id)}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm truncate">
-                      {product.productService || product.businessDescription || 'Product'}
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium text-sm truncate">
+                        {product.productService || product.businessDescription || 'Product'}
+                      </div>
+                      {product.isActive && (
+                        <Badge className="bg-purple-600 text-white text-xs">
+                          Active
+                        </Badge>
+                      )}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {product.businessType === 'service' ? 'Service' : 'Product'} • 
@@ -319,9 +365,24 @@ export default function Streak() {
                       })() : 'No website'}
                     </div>
                   </div>
-                  <Badge variant="outline" className="ml-2">
-                    {product.status === 'completed' ? 'Active' : 'Draft'}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    {!product.isActive && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          activateProduct.mutate(product.id);
+                        }}
+                      >
+                        Select
+                      </Button>
+                    )}
+                    {product.isActive && (
+                      <CheckCircle2 className="h-5 w-5 text-purple-600" />
+                    )}
+                  </div>
                 </div>
               ))}
               {products.length >= 3 && (
