@@ -360,4 +360,67 @@ export class DailyOutreachService {
     const today = new Date().toISOString();
     return await storage.getCompaniesWithFollowUp(userId, today);
   }
+
+  // Get comprehensive pipeline stats for Streak dashboard
+  static async getPipelineStats(userId: number): Promise<{
+    availableCompanies: number;
+    availableContacts: number;
+    sentThisWeek: { companies: number; contacts: number };
+    sentThisMonth: { companies: number; contacts: number };
+    sentAllTime: { companies: number; contacts: number };
+  }> {
+    // Get available companies and contacts
+    const [availableContacts, allCompanies] = await Promise.all([
+      storage.getUncontactedContacts(userId, 1000),
+      storage.listCompanies(userId)
+    ]);
+    
+    // Get unique company IDs from available contacts
+    const availableCompanyIds = new Set(availableContacts.map(c => c.companyId));
+    const availableCompanies = availableCompanyIds.size;
+    
+    // Get all contacted contacts
+    const contactedContacts = await storage.getContactsByStatus(userId, "clicked");
+    
+    // Calculate date ranges
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    // Get contacted stats
+    const sentThisWeek = {
+      contacts: contactedContacts.filter(c => {
+        const sentDate = c.createdAt ? new Date(c.createdAt) : null;
+        return sentDate && sentDate >= weekAgo;
+      }).length,
+      companies: new Set(contactedContacts.filter(c => {
+        const sentDate = c.createdAt ? new Date(c.createdAt) : null;
+        return sentDate && sentDate >= weekAgo;
+      }).map(c => c.companyId)).size
+    };
+    
+    const sentThisMonth = {
+      contacts: contactedContacts.filter(c => {
+        const sentDate = c.createdAt ? new Date(c.createdAt) : null;
+        return sentDate && sentDate >= monthAgo;
+      }).length,
+      companies: new Set(contactedContacts.filter(c => {
+        const sentDate = c.createdAt ? new Date(c.createdAt) : null;
+        return sentDate && sentDate >= monthAgo;
+      }).map(c => c.companyId)).size
+    };
+    
+    const sentAllTime = {
+      contacts: contactedContacts.length,
+      companies: new Set(contactedContacts.map(c => c.companyId)).size
+    };
+    
+    return {
+      availableCompanies,
+      availableContacts: availableContacts.length,
+      sentThisWeek,
+      sentThisMonth,
+      sentAllTime
+    };
+  }
 }

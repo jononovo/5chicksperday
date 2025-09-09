@@ -263,13 +263,13 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
     }
   });
 
-  // Get contact pipeline status
+  // Get contact pipeline status  
   app.get('/api/daily-outreach/pipeline', requireAuth, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user.id;
-      const pipeline = await DailyOutreachService.getContactPipeline(userId);
+      const stats = await DailyOutreachService.getPipelineStats(userId);
       
-      res.json(pipeline);
+      res.json(stats);
     } catch (error) {
       console.error('Error getting contact pipeline:', error);
       res.status(500).json({ 
