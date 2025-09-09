@@ -304,11 +304,12 @@ export default function Streak() {
     
     try {
       const response = await apiRequest('/api/daily-outreach/generate-preview-token', 'POST', {});
+      const data = await response.json();
       
-      if (response && response.success && response.url) {
-        window.open(response.url, '_blank');
+      if (data && data.success && data.url) {
+        window.open(data.url, '_blank');
       } else {
-        throw new Error(response?.message || 'Failed to generate preview token');
+        throw new Error(data?.message || 'Failed to generate preview token');
       }
     } catch (error) {
       toast({
