@@ -457,4 +457,8 @@ router.post('/outreach/:token/send', async (req: Request, res: Response) => {
 
 export function registerOutreachRoutes(app: any) {
   app.use(router);
+  
+  // Also register streak routes
+  const { registerStreakRoutes } = require('./streak-routes');
+  registerStreakRoutes(app);
 }

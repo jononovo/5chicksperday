@@ -28,6 +28,7 @@ const Home = lazy(() => import("@/pages/home"));
 const Account = lazy(() => import("@/pages/account"));
 // Lists functionality moved to drawer in Home page
 const Outreach = lazy(() => import("@/pages/outreach"));
+const Streak = lazy(() => import("@/pages/Streak"));
 const Replies = lazy(() => import("@/pages/replies"));
 const CompanyDetails = lazy(() => import("@/pages/company-details"));
 const ContactDetails = lazy(() => import("@/pages/contact-details"));
@@ -169,6 +170,11 @@ function Router() {
                 <ProtectedRoute path="/outreach" component={() => 
                   <Suspense fallback={<LoadingScreen />}>
                     <Outreach />
+                  </Suspense>
+                } />
+                <ProtectedRoute path="/streak" component={() => 
+                  <Suspense fallback={<LoadingScreen />}>
+                    <Streak />
                   </Suspense>
                 } />
                 <ProtectedRoute path="/replies" component={() => 
