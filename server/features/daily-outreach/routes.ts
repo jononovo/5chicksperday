@@ -323,6 +323,64 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
     }
   });
 
+  // Get test email HTML for preview (used by Preview Today's Email button)
+  app.get('/api/daily-outreach/test-email', async (req: Request, res: Response) => {
+    try {
+      const { EmailTemplateService } = await import('./email-template');
+      const testEmail = EmailTemplateService.generateTestEmail();
+      
+      res.json({
+        success: true,
+        data: {
+          html: testEmail.html,
+          subject: testEmail.subject,
+          text: testEmail.text
+        }
+      });
+    } catch (error) {
+      console.error('[Daily Outreach] Test email generation error:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to generate test email'
+      });
+    }
+  });
+  
+  // Generate preview token (bypass scheduling restrictions)
+  app.post('/api/daily-outreach/generate-preview-token', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      
+      // Get some contacts for preview
+      const { storage } = await import('../../storage');
+      const contacts = await storage.getUncontactedContacts(userId, 5);
+      
+      if (contacts.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No contacts available. Please search for contacts first.'
+        });
+      }
+      
+      const contactIds = contacts.map(c => c.id);
+      const token = await DailyOutreachService.createOutreachToken(userId, contactIds);
+      const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+      const outreachUrl = `${baseUrl}/outreach/${token}`;
+      
+      res.json({
+        success: true,
+        token,
+        url: outreachUrl
+      });
+    } catch (error) {
+      console.error('Error generating preview token:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to generate preview token'
+      });
+    }
+  });
+
   // Test endpoint to send a test email via SendGrid
   app.post('/api/daily-outreach/test-sendgrid', requireAuth, async (req: Request, res: Response) => {
     try {
