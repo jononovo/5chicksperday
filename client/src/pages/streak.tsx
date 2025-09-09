@@ -10,6 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { format, addDays, isBefore, isAfter } from "date-fns";
@@ -28,7 +32,9 @@ import {
   AlertCircle,
   Target,
   Trophy,
-  RefreshCw
+  RefreshCw,
+  Rocket,
+  Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +79,16 @@ interface OutreachStatus {
 
 export default function Streak() {
   const { toast } = useToast();
+  
+  // State for setup dialog
+  const [showSetupDialog, setShowSetupDialog] = useState(false);
+  const [setupStep, setSetupStep] = useState(1);
+  const [productInfo, setProductInfo] = useState({
+    type: "product" as "product" | "service",
+    oneLiner: "",
+    benefits: "",
+    url: ""
+  });
   
   // State for preferences
   const [preferences, setPreferences] = useState<OutreachPreferences>({
@@ -251,6 +267,16 @@ export default function Streak() {
   };
   
   const previewTodaysEmail = async () => {
+    // Check if there are any contacts available
+    if (!outreachStatus?.hasContacts || pipelineStats?.availableContacts === 0) {
+      toast({
+        title: "No contacts available",
+        description: "You need to search for contacts first. Use the Search tab to find prospects.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       const result = await generateTestEmailMutation.mutateAsync();
       
@@ -263,7 +289,7 @@ export default function Streak() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate preview email.",
+        description: "Failed to generate preview email. Make sure you have contacts with email addresses.",
         variant: "destructive"
       });
     }
@@ -274,6 +300,53 @@ export default function Streak() {
     if (!userEmail) return;
     
     await sendTestEmailMutation.mutateAsync(userEmail);
+  };
+  
+  // Save product info mutation
+  const saveProductInfoMutation = useMutation({
+    mutationFn: async (info: typeof productInfo) => {
+      // Save to strategic profile or preferences
+      return apiRequest("/api/strategic-profiles", "POST", {
+        productService: info.type,
+        businessName: info.oneLiner,
+        productDescription: info.benefits,
+        website: info.url
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Setup complete!",
+        description: "Your daily outreach is now configured."
+      });
+      setShowSetupDialog(false);
+      setSetupStep(1);
+      
+      // Enable daily outreach
+      const newPreferences = { ...preferences, enabled: true };
+      setPreferences(newPreferences);
+      savePreferencesMutation.mutate(newPreferences);
+      
+      // Refresh data
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-outreach/check"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-outreach/pipeline"] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to save product information. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  const handleSetupSubmit = () => {
+    if (setupStep === 1 && productInfo.oneLiner) {
+      setSetupStep(2);
+    } else if (setupStep === 2 && productInfo.benefits) {
+      setSetupStep(3);
+    } else if (setupStep === 3) {
+      saveProductInfoMutation.mutate(productInfo);
+    }
   };
   
   const isLowOnContacts = pipelineStats && pipelineStats.availableContacts < 15;
@@ -303,6 +376,16 @@ export default function Streak() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
+            {!preferences.enabled && (
+              <Button 
+                onClick={() => setShowSetupDialog(true)}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+              >
+                <Rocket className="h-4 w-4" />
+                Start Daily Outreach
+              </Button>
+            )}
+            
             <Button 
               onClick={openTodaysOutreach}
               disabled={!outreachStatus?.todaysToken}
@@ -570,6 +653,105 @@ export default function Streak() {
           </Tabs>
         </CardContent>
       </Card>
+      
+      {/* Setup Dialog */}
+      <Dialog open={showSetupDialog} onOpenChange={setShowSetupDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Rocket className="h-5 w-5" />
+              Start Daily Outreach - Step {setupStep} of 3
+            </DialogTitle>
+            <DialogDescription>
+              {setupStep === 1 && "Tell us about what you're selling"}
+              {setupStep === 2 && "What makes your offer special?"}
+              {setupStep === 3 && "Where can people learn more?"}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4 space-y-4">
+            {setupStep === 1 && (
+              <>
+                <div className="space-y-3">
+                  <Label>Is this a product or service?</Label>
+                  <RadioGroup value={productInfo.type} onValueChange={(value: "product" | "service") => 
+                    setProductInfo({ ...productInfo, type: value })
+                  }>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="product" id="product" />
+                      <Label htmlFor="product" className="cursor-pointer font-normal">Product</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="service" id="service" />
+                      <Label htmlFor="service" className="cursor-pointer font-normal">Service</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="oneliner">Describe your {productInfo.type} in one sentence</Label>
+                  <Input
+                    id="oneliner"
+                    placeholder="e.g., We help small businesses automate their sales outreach"
+                    value={productInfo.oneLiner}
+                    onChange={(e) => setProductInfo({ ...productInfo, oneLiner: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
+            
+            {setupStep === 2 && (
+              <div className="space-y-2">
+                <Label htmlFor="benefits">What do people love about your {productInfo.type}?</Label>
+                <Textarea
+                    id="benefits"
+                    placeholder="e.g., Saves 10 hours per week, increases sales by 30%, easy to use interface"
+                    value={productInfo.benefits}
+                    onChange={(e) => setProductInfo({ ...productInfo, benefits: e.target.value })}
+                    rows={4}
+                />
+                <p className="text-sm text-muted-foreground">
+                  List 2-3 key benefits or results your customers experience
+                </p>
+              </div>
+            )}
+            
+            {setupStep === 3 && (
+              <div className="space-y-2">
+                <Label htmlFor="url">Website or landing page (optional)</Label>
+                <Input
+                    id="url"
+                    type="url"
+                    placeholder="https://example.com"
+                    value={productInfo.url}
+                    onChange={(e) => setProductInfo({ ...productInfo, url: e.target.value })}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Where should interested prospects go to learn more?
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter className="mt-6">
+            {setupStep > 1 && (
+              <Button variant="outline" onClick={() => setSetupStep(setupStep - 1)}>
+                Back
+              </Button>
+            )}
+            <Button 
+              onClick={handleSetupSubmit}
+              disabled={
+                (setupStep === 1 && !productInfo.oneLiner) ||
+                (setupStep === 2 && !productInfo.benefits) ||
+                saveProductInfoMutation.isPending
+              }
+            >
+              {setupStep < 3 ? "Next" : "Start Outreach"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
