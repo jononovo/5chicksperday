@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +35,10 @@ import {
   Trophy,
   RefreshCw,
   Rocket,
-  Info
+  Info,
+  Package,
+  Plus,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +56,17 @@ interface OutreachPreferences {
     endDate?: string;
   };
   hasProductSetup?: boolean;
+}
+
+interface StrategicProfile {
+  id: number;
+  productService?: string;
+  customerFeedback?: string;
+  website?: string;
+  businessType?: string;
+  businessDescription?: string;
+  createdAt?: string;
+  status?: string;
 }
 
 interface PipelineStats {
@@ -81,6 +96,7 @@ interface OutreachStatus {
 
 export default function Streak() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   
   // State for setup dialog
   const [showSetupDialog, setShowSetupDialog] = useState(false);
@@ -127,6 +143,12 @@ export default function Streak() {
   const { data: outreachStatus, isLoading: statusLoading } = useQuery<OutreachStatus>({
     queryKey: ["/api/daily-outreach/check"],
     refetchInterval: 30000
+  });
+  
+  // Fetch user's products (strategic profiles)
+  const { data: products = [] } = useQuery<StrategicProfile[]>({
+    queryKey: ["/api/products"],
+    enabled: true
   });
   
   // Update preferences when fetched
@@ -430,6 +452,81 @@ export default function Streak() {
             <Badge variant="secondary" className="mt-3">
               ✓ Today's emails have been sent
             </Badge>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* My Products Card */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            My Products
+          </CardTitle>
+          <CardDescription>
+            Your products and services for outreach campaigns
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {products.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-muted-foreground mb-3">No products configured yet</p>
+              <Button onClick={() => setShowSetupDialog(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Your First Product
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3">
+                {products.slice(0, 3).map((product) => (
+                  <div key={product.id} className="flex items-start justify-between p-3 border rounded-lg">
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">
+                        {product.productService || product.businessDescription || "Unnamed Product"}
+                      </h4>
+                      {product.customerFeedback && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          {product.customerFeedback}
+                        </p>
+                      )}
+                      {product.website && (
+                        <a 
+                          href={product.website.startsWith('http') ? product.website : `https://${product.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-500 hover:underline mt-1 inline-block"
+                        >
+                          {product.website}
+                        </a>
+                      )}
+                    </div>
+                    <Badge variant="outline" className="ml-2">
+                      {product.businessType || "Product"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setLocation("/strategy")}
+                  className="text-xs"
+                >
+                  View All <ChevronRight className="h-3 w-3 ml-1" />
+                </Button>
+                <Button 
+                  onClick={() => setShowSetupDialog(true)} 
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add New
+                </Button>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
