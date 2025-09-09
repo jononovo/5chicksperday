@@ -386,6 +386,7 @@ export const dailyOutreachPreferences = pgTable("daily_outreach_preferences", {
   }>().default({ days: ["Monday", "Tuesday", "Wednesday"], time: "09:00" }),
   contactsPerDay: integer("contacts_per_day").default(5),
   timezone: text("timezone").default("America/New_York"),
+  activeProductId: integer("active_product_id").references(() => strategicProfiles.id),
   lastSentAt: timestamp("last_sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()

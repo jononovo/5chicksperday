@@ -104,12 +104,23 @@ export class DailyOutreachService {
         return null;
       }
       
+      // Get active product if set
+      const preferences = await storage.getDailyOutreachPreferences(tokenData.userId);
+      let activeProduct;
+      if (preferences?.activeProductId) {
+        activeProduct = await storage.getStrategicProfile(preferences.activeProductId);
+      }
+      
       // Generate or get queued email
       let emailContent;
       if (queueItem?.generatedEmail) {
         emailContent = queueItem.generatedEmail as { subject: string; content: string };
       } else {
-        const emailData = await generateOutreachEmail({ ...contact, company: company || undefined });
+        const emailData = await generateOutreachEmail(
+          { ...contact, company: company || undefined },
+          undefined,
+          activeProduct || undefined
+        );
         emailContent = {
           subject: emailData.subject,
           content: emailData.content
