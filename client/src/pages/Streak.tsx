@@ -144,10 +144,12 @@ export default function Streak() {
   // Generate batch mutation
   const generateBatch = useMutation({
     mutationFn: async () => {
+      const token = localStorage.getItem('authToken');
       const response = await fetch('/api/outreach/generate-batch', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
       });
       if (!response.ok) throw new Error('Failed to generate batch');
