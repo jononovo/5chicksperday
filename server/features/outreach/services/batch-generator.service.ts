@@ -13,11 +13,14 @@ export class BatchGeneratorService {
     userId: number,
     contactIds: number[]
   ): Promise<GeneratedEmail[]> {
-    // Get user's strategic profile for context
+    // Get user's active strategic profile (or most recent if none active)
     const [profile] = await db.select()
       .from(strategicProfiles)
       .where(eq(strategicProfiles.userId, userId))
-      .orderBy(desc(strategicProfiles.createdAt))
+      .orderBy(
+        desc(strategicProfiles.isActive),
+        desc(strategicProfiles.createdAt)
+      )
       .limit(1);
 
     const emails: GeneratedEmail[] = [];
