@@ -74,3 +74,6 @@ export interface SearchCacheEntry {
   timestamp: number;
   ttl: number;
 }
+
+// Alias for backward compatibility
+export type SearchCache = SearchCacheEntry;

@@ -7,7 +7,18 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   email: text("email").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-  isGuest: boolean("is_guest").default(false)
+  isGuest: boolean("is_guest").default(false),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  isClaimed: boolean("is_claimed").default(false),
+  ttlExpiresAt: timestamp("ttl_expires_at", { withTimezone: true }),
+  claimedAt: timestamp("claimed_at", { withTimezone: true }),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  subscriptionStatus: text("subscription_status"),
+  currentPlan: text("current_plan"),
+  subscriptionStartDate: timestamp("subscription_start_date", { withTimezone: true }),
+  gmailAccessToken: text("gmail_access_token"),
+  gmailRefreshToken: text("gmail_refresh_token")
 });
 
 export const lists = pgTable("lists", {
@@ -71,7 +82,8 @@ export const contacts = pgTable("contacts", {
   feedbackCount: integer("feedback_count").default(0), 
   lastValidated: timestamp("last_validated", { withTimezone: true }), 
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  completedSearches: jsonb("completed_searches").$type<string[]>().default([])
+  completedSearches: jsonb("completed_searches").$type<string[]>().default([]),
+  comprehensiveSearchStatus: text("comprehensive_search_status")
 }, (table) => [
   index('idx_contacts_company_id').on(table.companyId),
   index('idx_contacts_user_id').on(table.userId),
@@ -222,8 +234,12 @@ const userEmailPreferencesSchema = z.object({
 export const insertListSchema = listSchema.extend({
   userId: z.number()
 });
-export const insertCompanySchema = companySchema;
-export const insertContactSchema = contactSchema;
+export const insertCompanySchema = companySchema.extend({
+  userId: z.number()
+});
+export const insertContactSchema = contactSchema.extend({
+  userId: z.number()
+});
 export const insertEmailTemplateSchema = emailTemplateSchema.extend({
   userId: z.number()
 });
