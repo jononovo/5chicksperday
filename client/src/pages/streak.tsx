@@ -291,6 +291,34 @@ export default function Streak() {
     }
   };
   
+  const openTestOutreach = async () => {
+    // Check if there are any contacts available
+    if (!outreachStatus?.hasContacts || pipelineStats?.availableContacts === 0) {
+      toast({
+        title: "No contacts available",
+        description: "You need to search for contacts first. Use the Search tab to find prospects.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      const response = await apiRequest('/api/daily-outreach/generate-preview-token', 'POST', {});
+      
+      if (response && response.success && response.url) {
+        window.open(response.url, '_blank');
+      } else {
+        throw new Error(response?.message || 'Failed to generate preview token');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to generate test outreach page.",
+        variant: "destructive"
+      });
+    }
+  };
+  
   const previewTodaysEmail = async () => {
     // Check if there are any contacts available
     if (!outreachStatus?.hasContacts || pipelineStats?.availableContacts === 0) {
@@ -441,6 +469,16 @@ export default function Streak() {
             >
               <ExternalLink className="h-4 w-4" />
               Today's Outreach
+            </Button>
+            
+            <Button 
+              variant="secondary"
+              onClick={openTestOutreach}
+              className="flex items-center gap-2"
+              disabled={!outreachStatus?.hasContacts || pipelineStats?.availableContacts === 0}
+            >
+              <ExternalLink className="h-4 w-4" />
+              Test Outreach Now
             </Button>
             
             <Button 
