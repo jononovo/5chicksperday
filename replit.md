@@ -24,6 +24,15 @@ The application features a **React SPA frontend** built with TypeScript, Vite, T
 - **Email Content Handling:** Preserves paragraph spacing from AI responses in generated emails.
 - **Product Offers Generation:** Complete 6-strategy offer generation system with proper routing fix (Aug 2025) that bypasses boundary API for "Generate product offers" input. Includes clean UX flow that hides generation button after successful completion.
 - **Product Offers Display:** Product offers now display in the Implementation tab of strategy detail pages, positioned below Daily Search Queries with matching design patterns and copy functionality (Aug 2025).
+- **Daily Outreach Engine:** Comprehensive automated outreach system (Sep 2025) that sends daily emails with 5 qualified leads Mon-Wed at 9 AM. Features include:
+  - Email activity tracking with full content logging
+  - Contact status management (uncontacted, emailed, skipped)
+  - Company skip tracking with temporary (2 months) and permanent options
+  - Secure token-based public pages for email editing/sending (no login required)
+  - SendGrid integration for notification emails
+  - User preferences for schedule, timezone, and batch size
+  - Urgent reminders when running low on contacts
+  - Personalized email generation based on strategic profiles
 - **Search State Persistence:** Enhanced search input field synchronization to properly maintain query consistency between typed input and executed searches across page refreshes, ensuring displayed results always match the shown query (Sep 2025).
 - **Lists Management Module:** Extracted lists functionality into self-contained module (Sep 2025), reducing 198 lines from main routes.ts. Module handles list CRUD operations, company associations, and demo list visibility for unauthenticated users.
 - **Email Templates Module:** Extracted email templates functionality into self-contained module (Sep 2025), reducing 122 lines from main routes.ts. Module handles template CRUD operations, default template inheritance (userId=1 templates visible to all users), and integrates with QuickTemplates component and Outreach page.
