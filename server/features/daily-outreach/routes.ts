@@ -201,15 +201,8 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
       const userId = (req as any).user.id;
       const preferences = await DailyOutreachService.getPreferences(userId);
       
-      // Check if user has completed product setup (has strategic profile)
-      const storage = require('../../storage').default;
-      let hasProductSetup = false;
-      try {
-        const profiles = await storage.listStrategicProfiles(userId);
-        hasProductSetup = profiles && profiles.length > 0;
-      } catch (err) {
-        console.log('Error checking strategic profiles:', err);
-      }
+      // For now, assume no product setup if preferences are not enabled
+      const hasProductSetup = preferences?.enabled || false;
       
       res.json({
         ...(preferences || {
