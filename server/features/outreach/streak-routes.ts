@@ -15,13 +15,13 @@ router.get('/api/outreach/streak', requireAuth, async (req: Request, res: Respon
     
     // Get all email activities for the user to calculate streak
     const activities = await db.select({
-      date: sql<string>`DATE(${emailActivities.createdAt})`,
+      date: sql<string>`${emailActivities.createdAt}::date`,
       count: sql<number>`COUNT(*)`,
     })
     .from(emailActivities)
     .where(eq(emailActivities.userId, userId))
-    .groupBy(sql`DATE(${emailActivities.createdAt})`)
-    .orderBy(sql`DATE(${emailActivities.createdAt}) DESC`);
+    .groupBy(sql`${emailActivities.createdAt}::date`)
+    .orderBy(sql`${emailActivities.createdAt}::date DESC`);
 
     // Calculate current streak
     let currentStreak = 0;
@@ -111,8 +111,8 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
     .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
     .where(and(
       eq(emailActivities.userId, userId),
-      gte(emailActivities.createdAt, weekStart),
-      lte(emailActivities.createdAt, weekEnd)
+      sql`${emailActivities.createdAt} >= ${weekStart}`,
+      sql`${emailActivities.createdAt} <= ${weekEnd}`
     ));
 
     // Get this month's stats
@@ -125,8 +125,8 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
     .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
     .where(and(
       eq(emailActivities.userId, userId),
-      gte(emailActivities.createdAt, monthStart),
-      lte(emailActivities.createdAt, monthEnd)
+      sql`${emailActivities.createdAt} >= ${monthStart}`,
+      sql`${emailActivities.createdAt} <= ${monthEnd}`
     ));
 
     // Get all time stats
@@ -257,18 +257,12 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     
-    const batch = await db.select({
-      id: dailyOutreachBatches.id,
-      token: dailyOutreachBatches.token,
-      createdAt: dailyOutreachBatches.createdAt,
-      contactIds: dailyOutreachBatches.contactIds,
-      status: dailyOutreachBatches.status,
-    })
+    const batch = await db.select()
     .from(dailyOutreachBatches)
     .where(and(
       eq(dailyOutreachBatches.userId, userId),
-      gte(dailyOutreachBatches.createdAt, today),
-      lte(dailyOutreachBatches.createdAt, tomorrow)
+      sql`${dailyOutreachBatches.createdAt} >= ${today}`,
+      sql`${dailyOutreachBatches.createdAt} < ${tomorrow}`
     ))
     .orderBy(sql`${dailyOutreachBatches.createdAt} DESC`)
     .limit(1);
@@ -302,7 +296,7 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     const companyMap = new Map(companyNames.map(c => [c.id, c.name]));
     
     const contactsWithCompanies = contactDetails.map(contact => ({
-      id: contact.id,
+      id: String(contact.id),
       name: contact.name || 'Unknown',
       role: contact.role || '',
       email: contact.email || '',

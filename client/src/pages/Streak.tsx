@@ -14,10 +14,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { StrategySetupForm } from "@/components/strategy-setup-form";
 import { 
   Flame, TrendingUp, Users, Building2, Mail, Clock, Calendar as CalendarIcon,
   Pause, Play, ExternalLink, RefreshCw, AlertCircle, Trophy, Target, Zap,
-  Settings, Send, Eye, Edit3, CheckCircle2, XCircle
+  Settings, Send, Eye, Edit3, CheckCircle2, XCircle, Sparkles
 } from "lucide-react";
 
 interface StreakData {
@@ -91,6 +92,7 @@ export default function Streak() {
     from: undefined,
     to: undefined
   });
+  const [showStrategySetup, setShowStrategySetup] = useState(false);
 
   // Fetch streak data
   const { data: streakData, isLoading: streakLoading } = useQuery<StreakData>({
@@ -110,6 +112,11 @@ export default function Streak() {
   // Fetch today's batch
   const { data: todaysBatch, isLoading: batchLoading } = useQuery<TodaysBatch>({
     queryKey: ['/api/outreach/today'],
+  });
+
+  // Check if user has strategic profile
+  const { data: hasStrategy, isLoading: strategyLoading } = useQuery<{ hasProfile: boolean; profileCount: number }>({
+    queryKey: ['/api/strategic-profiles/check'],
   });
 
   // Update preferences mutation
@@ -381,15 +388,27 @@ export default function Streak() {
                   <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <div className="text-lg font-medium mb-2">No batch generated today</div>
                   <div className="text-sm text-muted-foreground mb-4">
-                    Generate a batch to start reaching out to your leads
+                    {!hasStrategy?.hasProfile 
+                      ? "Set up your email strategy to start generating personalized outreach"
+                      : "Generate a batch to start reaching out to your leads"}
                   </div>
-                  <Button 
-                    onClick={() => generateBatch.mutate()}
-                    disabled={generateBatch.isPending || !stats?.available?.contacts}
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    Generate Today's Batch
-                  </Button>
+                  {!hasStrategy?.hasProfile ? (
+                    <Button 
+                      onClick={() => setShowStrategySetup(true)}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Start Email Strategy
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => generateBatch.mutate()}
+                      disabled={generateBatch.isPending || !stats?.available?.contacts}
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Generate Today's Batch
+                    </Button>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -569,6 +588,21 @@ export default function Streak() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Strategy Setup Form */}
+      <StrategySetupForm
+        open={showStrategySetup}
+        onClose={() => setShowStrategySetup(false)}
+        onSuccess={() => {
+          setShowStrategySetup(false);
+          queryClient.invalidateQueries({ queryKey: ['/api/strategic-profiles/check'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/outreach/today'] });
+          // Automatically generate first batch after strategy setup
+          setTimeout(() => {
+            generateBatch.mutate();
+          }, 1000);
+        }}
+      />
     </div>
   );
 }

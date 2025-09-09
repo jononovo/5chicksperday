@@ -456,10 +456,14 @@ router.post('/outreach/:token/send', async (req: Request, res: Response) => {
 });
 
 import { registerStreakRoutes } from './streak-routes';
+import { registerStrategyCheckRoutes } from './strategy-check-route';
 
 export function registerOutreachRoutes(app: any) {
   app.use(router);
   
   // Also register streak routes
   registerStreakRoutes(app);
+  
+  // Also register strategy check routes
+  registerStrategyCheckRoutes(app);
 }
