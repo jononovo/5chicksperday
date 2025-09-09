@@ -309,6 +309,66 @@ export const webhookLogs = pgTable("webhook_logs", {
 });
 */
 
+// Daily Outreach tables
+export const contactOutreachStatus = pgTable("contact_outreach_status", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  contactId: integer("contact_id").notNull().references(() => contacts.id),
+  status: text("status").notNull(), // "sent", "skipped", "pending"
+  emailSubject: text("email_subject"),
+  emailContent: text("email_content"),
+  sentAt: timestamp("sent_at", { withTimezone: true }),
+  skippedAt: timestamp("skipped_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
+}, (table) => [
+  index('idx_outreach_user_contact').on(table.userId, table.contactId),
+  index('idx_outreach_status').on(table.status)
+]);
+
+export const outreachTokens = pgTable("outreach_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  token: text("token").notNull().unique(),
+  contactIds: jsonb("contact_ids").$type<number[]>().notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
+}, (table) => [
+  index('idx_outreach_token').on(table.token),
+  index('idx_outreach_token_user').on(table.userId)
+]);
+
+export const dailyOutreachPreferences = pgTable("daily_outreach_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  enabled: boolean("enabled").default(true),
+  schedule: jsonb("schedule").$type<{
+    days: string[], // ["Monday", "Tuesday", "Wednesday"]
+    time: string // "09:00"
+  }>().default({ days: ["Monday", "Tuesday", "Wednesday"], time: "09:00" }),
+  contactsPerDay: integer("contacts_per_day").default(5),
+  timezone: text("timezone").default("America/New_York"),
+  lastSentAt: timestamp("last_sent_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
+});
+
+export const outreachQueue = pgTable("outreach_queue", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  contactId: integer("contact_id").notNull().references(() => contacts.id),
+  priority: integer("priority").default(0), // Higher number = higher priority
+  generatedEmail: jsonb("generated_email").$type<{
+    subject: string,
+    content: string
+  }>(),
+  scheduledFor: timestamp("scheduled_for", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
+}, (table) => [
+  index('idx_queue_user_scheduled').on(table.userId, table.scheduledFor),
+  index('idx_queue_priority').on(table.priority)
+]);
+
 // Strategic onboarding tables
 export const strategicProfiles = pgTable("strategic_profiles", {
   id: serial("id").primaryKey(),
@@ -412,6 +472,40 @@ export const insertEmailMessageSchema = emailMessageSchema;
 
 export const insertWebhookLogSchema = webhookLogSchema;
 
+// Daily Outreach schemas
+export const contactOutreachStatusSchema = z.object({
+  contactId: z.number(),
+  status: z.enum(["sent", "skipped", "pending"]),
+  emailSubject: z.string().optional(),
+  emailContent: z.string().optional()
+});
+
+export const outreachTokenSchema = z.object({
+  token: z.string().min(32),
+  contactIds: z.array(z.number()).min(1).max(10),
+  expiresAt: z.string() // ISO date string
+});
+
+export const dailyOutreachPreferencesSchema = z.object({
+  enabled: z.boolean().default(true),
+  schedule: z.object({
+    days: z.array(z.string()),
+    time: z.string()
+  }).default({ days: ["Monday", "Tuesday", "Wednesday"], time: "09:00" }),
+  contactsPerDay: z.number().min(1).max(10).default(5),
+  timezone: z.string().default("America/New_York")
+});
+
+export const outreachQueueSchema = z.object({
+  contactId: z.number(),
+  priority: z.number().default(0),
+  generatedEmail: z.object({
+    subject: z.string(),
+    content: z.string()
+  }).optional(),
+  scheduledFor: z.string().optional() // ISO date string
+});
+
 // Strategic onboarding schemas
 export const strategicProfileSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -467,6 +561,22 @@ export const insertProspectDeliverySchema = prospectDeliverySchema.extend({
 });
 */
 
+export const insertContactOutreachStatusSchema = contactOutreachStatusSchema.extend({
+  userId: z.number()
+});
+
+export const insertOutreachTokenSchema = outreachTokenSchema.extend({
+  userId: z.number()
+});
+
+export const insertDailyOutreachPreferencesSchema = dailyOutreachPreferencesSchema.extend({
+  userId: z.number()
+});
+
+export const insertOutreachQueueSchema = outreachQueueSchema.extend({
+  userId: z.number()
+});
+
 export const insertStrategicProfileSchema = strategicProfileSchema.extend({
   userId: z.number()
 });
@@ -485,6 +595,16 @@ export type InsertWebhookLog = z.infer<typeof insertWebhookLogSchema>;
 export type ProspectDelivery = typeof prospectDeliveries.$inferSelect;
 export type InsertProspectDelivery = z.infer<typeof insertProspectDeliverySchema>;
 */
+
+// Daily Outreach types
+export type ContactOutreachStatus = typeof contactOutreachStatus.$inferSelect;
+export type InsertContactOutreachStatus = z.infer<typeof insertContactOutreachStatusSchema>;
+export type OutreachToken = typeof outreachTokens.$inferSelect;
+export type InsertOutreachToken = z.infer<typeof insertOutreachTokenSchema>;
+export type DailyOutreachPreferences = typeof dailyOutreachPreferences.$inferSelect;
+export type InsertDailyOutreachPreferences = z.infer<typeof insertDailyOutreachPreferencesSchema>;
+export type OutreachQueue = typeof outreachQueue.$inferSelect;
+export type InsertOutreachQueue = z.infer<typeof insertOutreachQueueSchema>;
 
 // Strategic onboarding types
 export type StrategicProfile = typeof strategicProfiles.$inferSelect;

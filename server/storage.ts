@@ -1,6 +1,7 @@
 import { 
   userPreferences, lists, companies, contacts, emailTemplates, users,
   strategicProfiles, userEmailPreferences,
+  contactOutreachStatus, outreachTokens, dailyOutreachPreferences, outreachQueue,
   type UserPreferences, type InsertUserPreferences,
   type UserEmailPreferences, type InsertUserEmailPreferences,
   type List, type InsertList,
@@ -8,7 +9,11 @@ import {
   type Contact, type InsertContact,
   type EmailTemplate, type InsertEmailTemplate,
   type User, type InsertUser,
-  type StrategicProfile, type InsertStrategicProfile
+  type StrategicProfile, type InsertStrategicProfile,
+  type ContactOutreachStatus, type InsertContactOutreachStatus,
+  type OutreachToken, type InsertOutreachToken,
+  type DailyOutreachPreferences, type InsertDailyOutreachPreferences,
+  type OutreachQueue, type InsertOutreachQueue
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, sql, desc } from "drizzle-orm";
@@ -75,6 +80,28 @@ export interface IStorage {
   createStrategicProfile(data: InsertStrategicProfile): Promise<StrategicProfile>;
   updateStrategicProfile(id: number, data: Partial<StrategicProfile>): Promise<StrategicProfile>;
   deleteStrategicProfile(id: number): Promise<void>;
+
+  // Daily Outreach
+  getContactOutreachStatus(contactId: number, userId: number): Promise<ContactOutreachStatus | undefined>;
+  createContactOutreachStatus(data: InsertContactOutreachStatus): Promise<ContactOutreachStatus>;
+  updateContactOutreachStatus(id: number, data: Partial<ContactOutreachStatus>): Promise<ContactOutreachStatus>;
+  getUncontactedContacts(userId: number, limit: number): Promise<Contact[]>;
+  
+  // Outreach Tokens
+  createOutreachToken(data: InsertOutreachToken): Promise<OutreachToken>;
+  getOutreachToken(token: string): Promise<OutreachToken | undefined>;
+  markTokenUsed(token: string): Promise<void>;
+  
+  // Daily Outreach Preferences
+  getDailyOutreachPreferences(userId: number): Promise<DailyOutreachPreferences | undefined>;
+  createDailyOutreachPreferences(data: InsertDailyOutreachPreferences): Promise<DailyOutreachPreferences>;
+  updateDailyOutreachPreferences(userId: number, data: Partial<DailyOutreachPreferences>): Promise<DailyOutreachPreferences>;
+  
+  // Outreach Queue
+  getOutreachQueue(userId: number, limit: number): Promise<OutreachQueue[]>;
+  addToOutreachQueue(data: InsertOutreachQueue): Promise<OutreachQueue>;
+  removeFromOutreachQueue(id: number): Promise<void>;
+  getQueuedContact(userId: number, contactId: number): Promise<OutreachQueue | undefined>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -463,6 +490,159 @@ class DatabaseStorage implements IStorage {
     await db
       .delete(strategicProfiles)
       .where(eq(strategicProfiles.id, id));
+  }
+
+  // Daily Outreach methods
+  async getContactOutreachStatus(contactId: number, userId: number): Promise<ContactOutreachStatus | undefined> {
+    const [status] = await db
+      .select()
+      .from(contactOutreachStatus)
+      .where(and(
+        eq(contactOutreachStatus.contactId, contactId),
+        eq(contactOutreachStatus.userId, userId)
+      ));
+    return status;
+  }
+
+  async createContactOutreachStatus(data: InsertContactOutreachStatus): Promise<ContactOutreachStatus> {
+    const [status] = await db
+      .insert(contactOutreachStatus)
+      .values(data)
+      .returning();
+    return status;
+  }
+
+  async updateContactOutreachStatus(id: number, data: Partial<ContactOutreachStatus>): Promise<ContactOutreachStatus> {
+    const [status] = await db
+      .update(contactOutreachStatus)
+      .set(data)
+      .where(eq(contactOutreachStatus.id, id))
+      .returning();
+    return status;
+  }
+
+  async getUncontactedContacts(userId: number, limit: number): Promise<Contact[]> {
+    // Get contacts with emails that haven't been contacted yet
+    const contactedIds = await db
+      .select({ contactId: contactOutreachStatus.contactId })
+      .from(contactOutreachStatus)
+      .where(and(
+        eq(contactOutreachStatus.userId, userId),
+        or(
+          eq(contactOutreachStatus.status, 'sent'),
+          eq(contactOutreachStatus.status, 'skipped')
+        )
+      ));
+    
+    const contactedIdList = contactedIds.map(c => c.contactId);
+    
+    if (contactedIdList.length > 0) {
+      return await db
+        .select()
+        .from(contacts)
+        .where(and(
+          eq(contacts.userId, userId),
+          sql`${contacts.email} IS NOT NULL`,
+          sql`${contacts.id} NOT IN (${sql.join(contactedIdList.map(id => sql`${id}`), sql`, `)})`
+        ))
+        .orderBy(desc(contacts.probability))
+        .limit(limit);
+    }
+    
+    return await db
+      .select()
+      .from(contacts)
+      .where(and(
+        eq(contacts.userId, userId),
+        sql`${contacts.email} IS NOT NULL`
+      ))
+      .orderBy(desc(contacts.probability))
+      .limit(limit);
+  }
+
+  // Outreach Token methods
+  async createOutreachToken(data: InsertOutreachToken): Promise<OutreachToken> {
+    const [token] = await db
+      .insert(outreachTokens)
+      .values(data)
+      .returning();
+    return token;
+  }
+
+  async getOutreachToken(token: string): Promise<OutreachToken | undefined> {
+    const [outreachToken] = await db
+      .select()
+      .from(outreachTokens)
+      .where(eq(outreachTokens.token, token));
+    return outreachToken;
+  }
+
+  async markTokenUsed(token: string): Promise<void> {
+    await db
+      .update(outreachTokens)
+      .set({ usedAt: new Date() })
+      .where(eq(outreachTokens.token, token));
+  }
+
+  // Daily Outreach Preferences methods
+  async getDailyOutreachPreferences(userId: number): Promise<DailyOutreachPreferences | undefined> {
+    const [prefs] = await db
+      .select()
+      .from(dailyOutreachPreferences)
+      .where(eq(dailyOutreachPreferences.userId, userId));
+    return prefs;
+  }
+
+  async createDailyOutreachPreferences(data: InsertDailyOutreachPreferences): Promise<DailyOutreachPreferences> {
+    const [prefs] = await db
+      .insert(dailyOutreachPreferences)
+      .values(data)
+      .returning();
+    return prefs;
+  }
+
+  async updateDailyOutreachPreferences(userId: number, data: Partial<DailyOutreachPreferences>): Promise<DailyOutreachPreferences> {
+    const [prefs] = await db
+      .update(dailyOutreachPreferences)
+      .set(data)
+      .where(eq(dailyOutreachPreferences.userId, userId))
+      .returning();
+    return prefs;
+  }
+
+  // Outreach Queue methods
+  async getOutreachQueue(userId: number, limit: number): Promise<OutreachQueue[]> {
+    return await db
+      .select()
+      .from(outreachQueue)
+      .where(eq(outreachQueue.userId, userId))
+      .orderBy(desc(outreachQueue.priority))
+      .limit(limit);
+  }
+
+  async addToOutreachQueue(data: InsertOutreachQueue): Promise<OutreachQueue> {
+    const [item] = await db
+      .insert(outreachQueue)
+      .values(data)
+      .returning();
+    return item;
+  }
+
+  async removeFromOutreachQueue(id: number): Promise<void> {
+    await db
+      .delete(outreachQueue)
+      .where(eq(outreachQueue.id, id));
+  }
+
+  async getQueuedContact(userId: number, contactId: number): Promise<OutreachQueue | undefined> {
+    const [item] = await db
+      .select()
+      .from(outreachQueue)
+      .where(and(
+        eq(outreachQueue.userId, userId),
+        eq(outreachQueue.contactId, contactId)
+      ));
+    return item;
   }
 }
 
