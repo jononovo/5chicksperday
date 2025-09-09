@@ -12,14 +12,14 @@ router.get('/api/strategic-profiles/check', requireAuth, async (req: Request, re
   try {
     const userId = (req as any).user.id;
     
-    // Count active strategic profiles for the user
+    // Count completed strategic profiles for the user
     const result = await db.select({
       count: sql<number>`COUNT(*)`,
     })
     .from(strategicProfiles)
     .where(and(
       eq(strategicProfiles.userId, userId),
-      eq(strategicProfiles.isActive, true)
+      eq(strategicProfiles.status, 'completed')
     ));
     
     const profileCount = result[0]?.count || 0;

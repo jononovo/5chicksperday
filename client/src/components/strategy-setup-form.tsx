@@ -76,19 +76,24 @@ export function StrategySetupForm({ open, onClose, onSuccess }: StrategySetupFor
     setIsSubmitting(true);
     
     try {
-      // Create strategic profile
-      const response = await fetch('/api/strategic-profiles', {
+      // Get auth token for API request
+      const token = localStorage.getItem('authToken');
+      
+      // Create strategic profile using the existing endpoint structure
+      const response = await fetch('/api/strategic-profiles/save-from-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          companyDescription: formData.description,
-          targetAudience: `Businesses looking for ${formData.businessType === 'product' ? 'products' : 'services'} that ${formData.uniqueValue}`,
-          valueProposition: formData.uniqueValue,
-          websiteUrl: formData.websiteUrl,
           businessType: formData.businessType,
-          isActive: true
+          businessDescription: formData.description,
+          productService: formData.description, // What they sell
+          customerFeedback: formData.uniqueValue, // What customers say
+          website: formData.websiteUrl,
+          targetCustomers: `Businesses looking for ${formData.businessType === 'product' ? 'products' : 'services'} that ${formData.uniqueValue}`,
+          status: 'completed'
         }),
       });
 
