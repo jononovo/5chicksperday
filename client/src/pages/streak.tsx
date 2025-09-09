@@ -51,6 +51,7 @@ interface OutreachPreferences {
     startDate?: string;
     endDate?: string;
   };
+  hasProductSetup?: boolean;
 }
 
 interface PipelineStats {
@@ -72,6 +73,7 @@ interface PipelineStats {
 
 interface OutreachStatus {
   hasEnoughContacts: boolean;
+  hasContacts?: boolean;
   nextOutreachDate: string | null;
   todaysSent: boolean;
   todaysToken?: string;
@@ -376,7 +378,7 @@ export default function Streak() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            {!preferences.enabled && (
+            {savedPreferences?.hasProductSetup === false ? (
               <Button 
                 onClick={() => setShowSetupDialog(true)}
                 className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
@@ -384,16 +386,16 @@ export default function Streak() {
                 <Rocket className="h-4 w-4" />
                 Start Daily Outreach
               </Button>
+            ) : (
+              <Button 
+                onClick={openTodaysOutreach}
+                disabled={!outreachStatus?.todaysToken}
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Today's Outreach
+              </Button>
             )}
-            
-            <Button 
-              onClick={openTodaysOutreach}
-              disabled={!outreachStatus?.todaysToken}
-              className="flex items-center gap-2"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Today's Outreach
-            </Button>
             
             <Button 
               variant="outline"
