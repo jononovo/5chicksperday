@@ -1,18 +1,56 @@
-import type { Contact, Company, EmailTemplate } from "@shared/schema";
+import type { Contact, Company, EmailTemplate, StrategicProfile } from "@shared/schema";
 import type { DailyOutreachEmail } from "./types";
 
 export async function generateOutreachEmail(
   contact: Contact & { company?: Company },
-  template?: EmailTemplate
+  template?: EmailTemplate,
+  activeProduct?: StrategicProfile
 ): Promise<Omit<DailyOutreachEmail, 'priority'>> {
   const companyName = contact.company?.name || 'your company';
   const contactName = contact.name;
   const role = contact.role || 'there';
   
-  // Default template if none provided
-  const subject = template?.subject || `Quick question for ${companyName}`;
+  // Build product context for the email
+  let productContext = '';
+  if (activeProduct) {
+    if (activeProduct.productService) {
+      productContext = `Our ${activeProduct.businessType || 'solution'} is ${activeProduct.productService}. `;
+    }
+    if (activeProduct.customerFeedback) {
+      productContext += `${activeProduct.customerFeedback}. `;
+    }
+  }
   
-  const content = template?.content || `Hi ${contactName},
+  // Default template if none provided  
+  let subject = template?.subject;
+  let content = template?.content;
+  
+  if (!subject) {
+    if (activeProduct?.productService) {
+      subject = `${activeProduct.productService} for ${companyName}`;
+    } else {
+      subject = `Quick question for ${companyName}`;
+    }
+  }
+  
+  if (!content) {
+    if (activeProduct) {
+      // Product-focused email
+      content = `Hi ${contactName},
+
+I noticed that ${companyName} is ${contact.company?.description || 'doing great work'}.
+
+${productContext}
+
+I believe we could help ${companyName} ${activeProduct.customerFeedback ? 'achieve similar results' : 'grow and succeed'}.
+
+Would you be open to a brief 15-minute call next week to explore how we could work together?
+
+Best regards,
+{senderName}`;
+    } else {
+      // Generic email
+      content = `Hi ${contactName},
 
 I noticed that ${companyName} is ${contact.company?.description || 'doing great work'}.
 
@@ -22,6 +60,8 @@ Would you be open to a brief 15-minute call next week to discuss how we could he
 
 Best regards,
 {senderName}`;
+    }
+  }
 
   return {
     contactId: contact.id,

@@ -56,6 +56,7 @@ interface OutreachPreferences {
     endDate?: string;
   };
   hasProductSetup?: boolean;
+  activeProductId?: number;
 }
 
 interface StrategicProfile {
@@ -326,6 +327,21 @@ export default function Streak() {
     await sendTestEmailMutation.mutateAsync(userEmail);
   };
   
+  const handleSetActiveProduct = async (productId: number) => {
+    const newPreferences = {
+      ...preferences,
+      activeProductId: productId
+    };
+    
+    setPreferences(newPreferences);
+    savePreferencesMutation.mutate(newPreferences);
+    
+    toast({
+      title: "Active product updated",
+      description: "Your daily outreach emails will now use this product."
+    });
+  };
+  
   // Save product info mutation - integrate with existing strategic profiles system
   const saveProductInfoMutation = useMutation({
     mutationFn: async (info: typeof productInfo) => {
@@ -464,7 +480,7 @@ export default function Streak() {
             My Products
           </CardTitle>
           <CardDescription>
-            Your products and services for outreach campaigns
+            Your products and services for outreach campaigns. Click to set as active.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -479,33 +495,51 @@ export default function Streak() {
           ) : (
             <>
               <div className="space-y-3">
-                {products.slice(0, 3).map((product) => (
-                  <div key={product.id} className="flex items-start justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">
-                        {product.productService || product.businessDescription || "Unnamed Product"}
-                      </h4>
-                      {product.customerFeedback && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          {product.customerFeedback}
-                        </p>
+                {products.slice(0, 3).map((product) => {
+                  const isActive = savedPreferences?.activeProductId === product.id;
+                  return (
+                    <div 
+                      key={product.id} 
+                      className={cn(
+                        "flex items-start justify-between p-3 border rounded-lg cursor-pointer transition-colors",
+                        isActive ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20" : "hover:bg-gray-50 dark:hover:bg-gray-900"
                       )}
-                      {product.website && (
-                        <a 
-                          href={product.website.startsWith('http') ? product.website : `https://${product.website}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-blue-500 hover:underline mt-1 inline-block"
-                        >
-                          {product.website}
-                        </a>
-                      )}
+                      onClick={() => handleSetActiveProduct(product.id)}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-sm">
+                            {product.productService || product.businessDescription || "Unnamed Product"}
+                          </h4>
+                          {isActive && (
+                            <Badge className="text-xs" variant="default">
+                              Active
+                            </Badge>
+                          )}
+                        </div>
+                        {product.customerFeedback && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {product.customerFeedback}
+                          </p>
+                        )}
+                        {product.website && (
+                          <a 
+                            href={product.website.startsWith('http') ? product.website : `https://${product.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-500 hover:underline mt-1 inline-block"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {product.website}
+                          </a>
+                        )}
+                      </div>
+                      <Badge variant="outline" className="ml-2">
+                        {product.businessType || "Product"}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="ml-2">
-                      {product.businessType || "Product"}
-                    </Badge>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               
               <div className="flex items-center justify-between mt-4 pt-4 border-t">
