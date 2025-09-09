@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { requireAuth } from '../../middleware/auth';
 import { db } from '../../db';
 import { sql } from 'drizzle-orm';
-import { email_activities, contacts, companies, outreach_batches, strategic_profiles } from '../../../shared/schema';
+import { emailActivities, contacts, companies, dailyOutreachBatches, strategicProfiles } from '../../../shared/schema';
 import { and, eq, gte, lte, not, isNull, inArray } from 'drizzle-orm';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, differenceInDays, format } from 'date-fns';
 
@@ -15,13 +15,13 @@ router.get('/api/outreach/streak', requireAuth, async (req: Request, res: Respon
     
     // Get all email activities for the user to calculate streak
     const activities = await db.select({
-      date: sql<string>`DATE(${email_activities.createdAt})`,
+      date: sql<string>`DATE(${emailActivities.createdAt})`,
       count: sql<number>`COUNT(*)`,
     })
-    .from(email_activities)
-    .where(eq(email_activities.userId, userId))
-    .groupBy(sql`DATE(${email_activities.createdAt})`)
-    .orderBy(sql`DATE(${email_activities.createdAt}) DESC`);
+    .from(emailActivities)
+    .where(eq(emailActivities.userId, userId))
+    .groupBy(sql`DATE(${emailActivities.createdAt})`)
+    .orderBy(sql`DATE(${emailActivities.createdAt}) DESC`);
 
     // Calculate current streak
     let currentStreak = 0;
@@ -91,7 +91,6 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
       .from(contacts)
       .where(and(
         eq(contacts.userId, userId),
-        eq(contacts.status, 'uncontacted'),
         not(isNull(contacts.email))
       ));
 
@@ -99,47 +98,46 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
       .from(contacts)
       .where(and(
         eq(contacts.userId, userId),
-        eq(contacts.status, 'uncontacted'),
         not(isNull(contacts.email))
       ));
 
     // Get this week's stats
     const weekStats = await db.select({
-      contactsEmailed: sql<number>`COUNT(DISTINCT ${email_activities.contactId})`,
+      contactsEmailed: sql<number>`COUNT(DISTINCT ${emailActivities.contactId})`,
       companiesReached: sql<number>`COUNT(DISTINCT ${contacts.companyId})`,
       emailsSent: sql<number>`COUNT(*)`,
     })
-    .from(email_activities)
-    .leftJoin(contacts, eq(email_activities.contactId, contacts.id))
+    .from(emailActivities)
+    .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
     .where(and(
-      eq(email_activities.userId, userId),
-      gte(email_activities.createdAt, weekStart),
-      lte(email_activities.createdAt, weekEnd)
+      eq(emailActivities.userId, userId),
+      gte(emailActivities.createdAt, weekStart),
+      lte(emailActivities.createdAt, weekEnd)
     ));
 
     // Get this month's stats
     const monthStats = await db.select({
-      contactsEmailed: sql<number>`COUNT(DISTINCT ${email_activities.contactId})`,
+      contactsEmailed: sql<number>`COUNT(DISTINCT ${emailActivities.contactId})`,
       companiesReached: sql<number>`COUNT(DISTINCT ${contacts.companyId})`,
       emailsSent: sql<number>`COUNT(*)`,
     })
-    .from(email_activities)
-    .leftJoin(contacts, eq(email_activities.contactId, contacts.id))
+    .from(emailActivities)
+    .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
     .where(and(
-      eq(email_activities.userId, userId),
-      gte(email_activities.createdAt, monthStart),
-      lte(email_activities.createdAt, monthEnd)
+      eq(emailActivities.userId, userId),
+      gte(emailActivities.createdAt, monthStart),
+      lte(emailActivities.createdAt, monthEnd)
     ));
 
     // Get all time stats
     const allTimeStats = await db.select({
-      contactsEmailed: sql<number>`COUNT(DISTINCT ${email_activities.contactId})`,
+      contactsEmailed: sql<number>`COUNT(DISTINCT ${emailActivities.contactId})`,
       companiesReached: sql<number>`COUNT(DISTINCT ${contacts.companyId})`,
       emailsSent: sql<number>`COUNT(*)`,
     })
-    .from(email_activities)
-    .leftJoin(contacts, eq(email_activities.contactId, contacts.id))
-    .where(eq(email_activities.userId, userId));
+    .from(emailActivities)
+    .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
+    .where(eq(emailActivities.userId, userId));
 
     const contactCount = availableContacts[0]?.count || 0;
     const companyCount = availableCompanies[0]?.count || 0;
@@ -260,19 +258,19 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     tomorrow.setDate(tomorrow.getDate() + 1);
     
     const batch = await db.select({
-      id: outreach_batches.id,
-      token: outreach_batches.token,
-      createdAt: outreach_batches.createdAt,
-      contactIds: outreach_batches.contactIds,
-      status: outreach_batches.status,
+      id: dailyOutreachBatches.id,
+      token: dailyOutreachBatches.token,
+      createdAt: dailyOutreachBatches.createdAt,
+      contactIds: dailyOutreachBatches.contactIds,
+      status: dailyOutreachBatches.status,
     })
-    .from(outreach_batches)
+    .from(dailyOutreachBatches)
     .where(and(
-      eq(outreach_batches.userId, userId),
-      gte(outreach_batches.createdAt, today),
-      lte(outreach_batches.createdAt, tomorrow)
+      eq(dailyOutreachBatches.userId, userId),
+      gte(dailyOutreachBatches.createdAt, today),
+      lte(dailyOutreachBatches.createdAt, tomorrow)
     ))
-    .orderBy(sql`${outreach_batches.createdAt} DESC`)
+    .orderBy(sql`${dailyOutreachBatches.createdAt} DESC`)
     .limit(1);
     
     if (!batch[0]) {
@@ -281,7 +279,7 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     }
     
     // Get contact details
-    const contactIds = batch[0].contactIds as string[];
+    const contactIds = batch[0].contactIds as number[];
     const contactDetails = await db.select({
       id: contacts.id,
       name: contacts.name,
@@ -293,7 +291,7 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     .where(inArray(contacts.id, contactIds));
     
     // Get company names
-    const companyIds = [...new Set(contactDetails.map(c => c.companyId))];
+    const companyIds = Array.from(new Set(contactDetails.map(c => c.companyId)));
     const companyNames = await db.select({
       id: companies.id,
       name: companies.name,
@@ -326,14 +324,14 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
 });
 
 // Preview HTML email endpoint
-router.get('/api/outreach/:token/preview', async (req: Request, res: Response) => {
+router.get('/outreach/:token/preview', async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
     
     // Get batch by token
     const batch = await db.select()
-      .from(outreach_batches)
-      .where(eq(outreach_batches.token, token))
+      .from(dailyOutreachBatches)
+      .where(eq(dailyOutreachBatches.token, token))
       .limit(1);
     
     if (!batch[0]) {
