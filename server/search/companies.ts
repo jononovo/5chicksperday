@@ -11,7 +11,7 @@ import { CreditService } from "../features/billing/credits/service";
 import { SearchType } from "../features/billing/credits/types";
 import { SessionManager } from "./sessions";
 import { getUserId } from "../utils/auth";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 import type { 
   QuickSearchRequest, 
   CompanySearchRequest,
