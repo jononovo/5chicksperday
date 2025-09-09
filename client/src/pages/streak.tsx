@@ -94,19 +94,19 @@ export default function Streak() {
   }>({ from: undefined, to: undefined });
   
   // Fetch current preferences
-  const { data: savedPreferences, isLoading: preferencesLoading } = useQuery({
+  const { data: savedPreferences, isLoading: preferencesLoading } = useQuery<OutreachPreferences>({
     queryKey: ["/api/daily-outreach/preferences"],
     enabled: true
   });
   
   // Fetch pipeline stats
-  const { data: pipelineStats, isLoading: statsLoading } = useQuery({
+  const { data: pipelineStats, isLoading: statsLoading } = useQuery<PipelineStats>({
     queryKey: ["/api/daily-outreach/pipeline"],
     refetchInterval: 30000 // Refresh every 30 seconds
   });
   
   // Fetch outreach status
-  const { data: outreachStatus, isLoading: statusLoading } = useQuery({
+  const { data: outreachStatus, isLoading: statusLoading } = useQuery<OutreachStatus>({
     queryKey: ["/api/daily-outreach/check"],
     refetchInterval: 30000
   });
@@ -127,10 +127,7 @@ export default function Streak() {
   // Save preferences mutation
   const savePreferencesMutation = useMutation({
     mutationFn: async (newPreferences: OutreachPreferences) => {
-      return apiRequest("/api/daily-outreach/preferences", {
-        method: "POST",
-        body: JSON.stringify(newPreferences)
-      });
+      return apiRequest("/api/daily-outreach/preferences", "POST", newPreferences);
     },
     onSuccess: () => {
       toast({
@@ -160,10 +157,7 @@ export default function Streak() {
   // Send test email mutation
   const sendTestEmailMutation = useMutation({
     mutationFn: async (recipientEmail: string) => {
-      return apiRequest("/api/daily-outreach/test-sendgrid", {
-        method: "POST",
-        body: JSON.stringify({ recipientEmail })
-      });
+      return apiRequest("/api/daily-outreach/test-sendgrid", "POST", { recipientEmail });
     },
     onSuccess: () => {
       toast({
