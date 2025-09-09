@@ -1,11 +1,76 @@
 import { Router, type Request, type Response } from "express";
 import { DailyOutreachService } from "./service";
+import { storage } from "../../storage";
 
 export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
   // Check if user has enough contacts for daily outreach
   app.get('/api/daily-outreach/check', requireAuth, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user.id;
+      
+      // Check if today is a scheduled day and auto-generate token if needed
+      const now = new Date();
+      const day = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const hour = now.getHours();
+      
+      // Check if it's a scheduled day (Mon=1, Tue=2, Wed=3)
+      const isScheduledDay = [1, 2, 3].includes(day);
+      
+      if (isScheduledDay) {
+        // Check if token already exists for today
+        const Database = (await import('@replit/database')).default;
+        const db = new Database();
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const tokenKey = `daily_outreach_token_${userId}_${today}`;
+        const existingToken = await db.get(tokenKey);
+        
+        if (!existingToken) {
+          // No token exists for today, generate one
+          console.log(`[Daily Outreach] Auto-generating token for user ${userId} on ${today}`);
+          
+          // Get user preferences to check if enabled
+          const preferences = await DailyOutreachService.getPreferences(userId);
+          
+          if (preferences?.enabled) {
+            // Get uncontacted contacts
+            const contacts = await storage.getUncontactedContacts(userId, 5);
+            
+            if (contacts.length > 0) {
+              // Generate token
+              const contactIds = contacts.map((c: any) => c.id);
+              const token = await DailyOutreachService.createOutreachToken(userId, contactIds);
+              
+              // Store the token for today
+              await db.set(tokenKey, token);
+              
+              // Also store in the list for quick access
+              const listKey = `daily_outreach_tokens_${today}`;
+              const existingList = await db.get(listKey);
+              const tokens = existingList ? JSON.parse(String(existingList)) : [];
+              tokens.push({ userId, token });
+              await db.set(listKey, JSON.stringify(tokens));
+              
+              console.log(`[Daily Outreach] Token generated for user ${userId}: ${token}`);
+              
+              // Add the token to the result
+              const result = await DailyOutreachService.checkDailyOutreach(userId);
+              return res.json({
+                ...result,
+                todaysToken: token
+              });
+            }
+          }
+        } else {
+          // Token exists, include it in the response
+          const result = await DailyOutreachService.checkDailyOutreach(userId);
+          return res.json({
+            ...result,
+            todaysToken: String(existingToken)
+          });
+        }
+      }
+      
+      // Not a scheduled day or token generation failed, return normal check
       const result = await DailyOutreachService.checkDailyOutreach(userId);
       res.json(result);
     } catch (error) {

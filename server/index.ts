@@ -79,6 +79,11 @@ app.get('/api/health', (_req, res) => {
     // Database already initialized through Drizzle
     
     // Storage initialization handled by individual storage implementations
+    
+    // Start the daily outreach scheduler
+    const { DailyOutreachScheduler } = await import('./features/daily-outreach/scheduler');
+    DailyOutreachScheduler.start();
+    console.log('[Server] Daily outreach scheduler started');
 
     const server = registerRoutes(app);
 

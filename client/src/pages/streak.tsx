@@ -303,7 +303,7 @@ export default function Streak() {
     }
     
     try {
-      const response = await apiRequest('/api/daily-outreach/generate-preview-token', 'POST', {});
+      const response = await apiRequest('POST', '/api/daily-outreach/generate-preview-token', {});
       const data = await response.json();
       
       if (data && data.success && data.url) {
