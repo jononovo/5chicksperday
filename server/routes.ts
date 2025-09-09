@@ -44,6 +44,7 @@ import { registerHtmlStaticChatRoutes } from "./user-chatbox/html-static";
 import { registerReactChatRoutes } from "./user-chatbox/react";
 import { registerStrategicProfilesRoutes } from "./user-chatbox/strategic-profiles";
 import { registerUserAccountSettingsRoutes } from "./user-account-settings";
+import { registerDailyOutreachRoutes } from "./features/daily-outreach";
 
 
 // Import centralized auth utilities
@@ -121,6 +122,9 @@ export function registerRoutes(app: Express) {
   
   // Register modular Gmail integration routes
   registerGmailRoutes(app, requireAuth);
+  
+  // Register daily outreach routes
+  registerDailyOutreachRoutes(app, requireAuth);
   
   // Register modular health monitoring routes
   registerHealthMonitoringRoutes(app);

@@ -564,7 +564,10 @@ class DatabaseStorage implements IStorage {
   async createOutreachToken(data: InsertOutreachToken): Promise<OutreachToken> {
     const [token] = await db
       .insert(outreachTokens)
-      .values(data)
+      .values({
+        ...data,
+        expiresAt: new Date(data.expiresAt) // Convert string to Date
+      })
       .returning();
     return token;
   }
@@ -623,7 +626,10 @@ class DatabaseStorage implements IStorage {
   async addToOutreachQueue(data: InsertOutreachQueue): Promise<OutreachQueue> {
     const [item] = await db
       .insert(outreachQueue)
-      .values(data)
+      .values({
+        ...data,
+        scheduledFor: data.scheduledFor ? new Date(data.scheduledFor) : undefined
+      })
       .returning();
     return item;
   }

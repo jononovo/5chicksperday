@@ -58,7 +58,7 @@ export class DailyOutreachService {
       userId,
       token,
       contactIds,
-      expiresAt
+      expiresAt: expiresAt.toISOString()
     });
     
     return token;
@@ -204,9 +204,13 @@ export class DailyOutreachService {
     if (existing) {
       await storage.updateDailyOutreachPreferences(userId, preferences);
     } else {
+      // Provide default values for required fields when creating new preferences
       await storage.createDailyOutreachPreferences({
         userId,
-        ...preferences
+        enabled: preferences.enabled ?? true,
+        schedule: preferences.schedule ?? { days: ["Monday", "Tuesday", "Wednesday"], time: "09:00" },
+        contactsPerDay: preferences.contactsPerDay ?? 5,
+        timezone: preferences.timezone ?? "America/New_York"
       });
     }
   }

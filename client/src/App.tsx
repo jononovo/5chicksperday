@@ -28,6 +28,7 @@ const Home = lazy(() => import("@/pages/home"));
 const Account = lazy(() => import("@/pages/account"));
 // Lists functionality moved to drawer in Home page
 const Outreach = lazy(() => import("@/pages/outreach"));
+const DailyOutreachPage = lazy(() => import("@/pages/outreach/OutreachPage"));
 const Replies = lazy(() => import("@/pages/replies"));
 const CompanyDetails = lazy(() => import("@/pages/company-details"));
 const ContactDetails = lazy(() => import("@/pages/contact-details"));
@@ -64,6 +65,13 @@ function Router() {
         
         {/* Strategic Planning Page (no nav) */}
         <Route path="/planning" component={Planning} />
+        
+        {/* Daily Outreach Page (token-based, no auth required) */}
+        <Route path="/outreach/:token">
+          <Suspense fallback={<LoadingScreen />}>
+            <DailyOutreachPage />
+          </Suspense>
+        </Route>
         
         {/* Marketing pages with full footer */}
         <Route path="/terms">
