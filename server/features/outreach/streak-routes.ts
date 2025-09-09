@@ -15,11 +15,11 @@ router.get('/api/outreach/streak', requireAuth, async (req: Request, res: Respon
     
     // Get all email activities for the user to calculate streak
     const activities = await db.execute<{ date: string; count: number }>(sql`
-      SELECT DATE(created_at) as date, COUNT(*) as count
+      SELECT DATE(sent_at) as date, COUNT(*) as count
       FROM email_activities
       WHERE user_id = ${userId}
-      GROUP BY DATE(created_at)
-      ORDER BY DATE(created_at) DESC
+      GROUP BY DATE(sent_at)
+      ORDER BY DATE(sent_at) DESC
     `);
 
     // Calculate current streak
@@ -109,8 +109,8 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
       FROM email_activities ea
       LEFT JOIN contacts c ON ea.contact_id = c.id
       WHERE ea.user_id = ${userId}
-        AND ea.created_at >= ${weekStart}
-        AND ea.created_at <= ${weekEnd}
+        AND ea.sent_at >= ${weekStart}
+        AND ea.sent_at <= ${weekEnd}
     `);
 
     // Get this month's stats
@@ -122,19 +122,20 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
       FROM email_activities ea
       LEFT JOIN contacts c ON ea.contact_id = c.id
       WHERE ea.user_id = ${userId}
-        AND ea.created_at >= ${monthStart}
-        AND ea.created_at <= ${monthEnd}
+        AND ea.sent_at >= ${monthStart}
+        AND ea.sent_at <= ${monthEnd}
     `);
 
     // Get all time stats
-    const allTimeStats = await db.select({
-      contactsEmailed: sql<number>`COUNT(DISTINCT ${emailActivities.contactId})`,
-      companiesReached: sql<number>`COUNT(DISTINCT ${contacts.companyId})`,
-      emailsSent: sql<number>`COUNT(*)`,
-    })
-    .from(emailActivities)
-    .leftJoin(contacts, eq(emailActivities.contactId, contacts.id))
-    .where(eq(emailActivities.userId, userId));
+    const allTimeStats = await db.execute<{ contactsEmailed: number; companiesReached: number; emailsSent: number }>(sql`
+      SELECT 
+        COUNT(DISTINCT ea.contact_id) as "contactsEmailed",
+        COUNT(DISTINCT c.company_id) as "companiesReached",
+        COUNT(*) as "emailsSent"
+      FROM email_activities ea
+      LEFT JOIN contacts c ON ea.contact_id = c.id
+      WHERE ea.user_id = ${userId}
+    `);
 
     const contactCount = availableContacts[0]?.count || 0;
     const companyCount = availableCompanies[0]?.count || 0;
@@ -158,9 +159,9 @@ router.get('/api/outreach/stats', requireAuth, async (req: Request, res: Respons
         responses: 0, // Placeholder for now
       },
       allTime: {
-        companiesReached: allTimeStats[0]?.companiesReached || 0,
-        contactsEmailed: allTimeStats[0]?.contactsEmailed || 0,
-        emailsSent: allTimeStats[0]?.emailsSent || 0,
+        companiesReached: allTimeStats.rows[0]?.companiesReached || 0,
+        contactsEmailed: allTimeStats.rows[0]?.contactsEmailed || 0,
+        emailsSent: allTimeStats.rows[0]?.emailsSent || 0,
         responses: 0, // Placeholder for now
       },
     });
@@ -257,9 +258,9 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     const batch = await db.execute<any>(sql`
       SELECT * FROM daily_outreach_batches
       WHERE user_id = ${userId}
-        AND created_at >= ${today}
-        AND created_at < ${tomorrow}
-      ORDER BY created_at DESC
+        AND scheduled_for >= ${today}
+        AND scheduled_for < ${tomorrow}
+      ORDER BY scheduled_for DESC
       LIMIT 1
     `);
     
@@ -302,7 +303,7 @@ router.get('/api/outreach/today', requireAuth, async (req: Request, res: Respons
     res.json({
       batchId: batch.rows[0].id,
       token: batch.rows[0].token,
-      createdAt: batch.rows[0].created_at,
+      createdAt: batch.rows[0].scheduled_for,
       contacts: contactsWithCompanies,
       emailsSent: batch.rows[0].status === 'sent' ? contactsWithCompanies.length : 0,
       status: batch.rows[0].status,
