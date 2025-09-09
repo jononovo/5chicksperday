@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth } from '@/server/middleware/auth';
+import { requireAuth } from '../../middleware/auth';
 import { outreachService } from './services/outreach.service';
 import { batchGeneratorService } from './services/batch-generator.service';
 import { 

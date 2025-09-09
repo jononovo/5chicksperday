@@ -1,8 +1,8 @@
-import { db } from '@/server/db';
-import { users, strategicProfiles } from '@shared/schema';
+import { db } from '../../../db';
+import { users, strategicProfiles, contacts, companies } from '@shared/schema';
 import { eq, desc } from 'drizzle-orm';
 import { outreachService } from './outreach.service';
-import { sendGridService } from '@/server/services/sendgrid.service';
+import { sendGridService } from '../../../services/sendgrid.service';
 import type { GeneratedEmail, OutreachBatchData } from '../types';
 
 export class BatchGeneratorService {
@@ -24,18 +24,23 @@ export class BatchGeneratorService {
 
     for (const contactId of contactIds) {
       // Get contact and company details
-      const contactData = await db.query.contacts.findFirst({
-        where: (contacts, { eq }) => eq(contacts.id, contactId),
-        with: {
-          company: true
-        }
-      });
+      const [contactData] = await db.select({
+        contact: contacts,
+        company: companies
+      })
+      .from(contacts)
+      .leftJoin(companies, eq(contacts.companyId, companies.id))
+      .where(eq(contacts.id, contactId))
+      .limit(1);
 
-      if (!contactData || !contactData.email) continue;
+      if (!contactData || !contactData.contact.email) continue;
 
       // Generate personalized email based on profile and contact
       const email = this.generatePersonalizedEmail(
-        contactData,
+        {
+          ...contactData.contact,
+          company: contactData.company
+        },
         profile
       );
 

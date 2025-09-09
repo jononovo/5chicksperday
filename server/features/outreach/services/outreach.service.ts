@@ -1,4 +1,4 @@
-import { db } from '@/server/db';
+import { db } from '../../../db';
 import { 
   contacts, 
   companies, 
@@ -156,7 +156,7 @@ export class OutreachService {
     .where(and(
       eq(contacts.userId, userId),
       eq(contacts.contactStatus, 'uncontacted'),
-      ne(contacts.email, null),
+      sql`${contacts.email} IS NOT NULL AND ${contacts.email} != ''`,
       or(
         ne(companies.companyStatus, 'skipped'),
         and(
