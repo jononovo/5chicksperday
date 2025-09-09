@@ -314,15 +314,53 @@ export const contactOutreachStatus = pgTable("contact_outreach_status", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
   contactId: integer("contact_id").notNull().references(() => contacts.id),
-  status: text("status").notNull(), // "sent", "skipped", "pending"
+  status: text("status").notNull(), // "sent", "skipped", "pending", "clicked"
   emailSubject: text("email_subject"),
   emailContent: text("email_content"),
+  emailAddressUsed: text("email_address_used"), // Track which email was used
   sentAt: timestamp("sent_at", { withTimezone: true }),
   skippedAt: timestamp("skipped_at", { withTimezone: true }),
+  clickedAt: timestamp("clicked_at", { withTimezone: true }), // When "Send" was clicked
+  skipReason: text("skip_reason"), // "not_fit", "not_now", etc.
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow()
 }, (table) => [
   index('idx_outreach_user_contact').on(table.userId, table.contactId),
   index('idx_outreach_status').on(table.status)
+]);
+
+// Company outreach tracking
+export const companyOutreachStatus = pgTable("company_outreach_status", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  companyId: integer("company_id").notNull().references(() => companies.id),
+  status: text("status").notNull(), // "contacted", "skipped", "pending"
+  skipReason: text("skip_reason"), // "not_fit", "not_now"
+  skipNotes: text("skip_notes"), // User's notes about why skipped
+  followUpDate: timestamp("follow_up_date", { withTimezone: true }), // When to reconsider
+  contactedCount: integer("contacted_count").default(0), // Number of contacts emailed
+  lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow()
+}, (table) => [
+  index('idx_company_outreach_user').on(table.userId),
+  index('idx_company_outreach_status').on(table.status),
+  index('idx_company_follow_up').on(table.followUpDate)
+]);
+
+// Urgent reminder tracking
+export const urgentReminders = pgTable("urgent_reminders", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  type: text("type").notNull(), // "low_contacts", "no_activity", etc.
+  emailSubject: text("email_subject").notNull(),
+  emailContent: text("email_content").notNull(),
+  suggestedPrompts: jsonb("suggested_prompts").$type<string[]>(),
+  sentAt: timestamp("sent_at", { withTimezone: true }).defaultNow(),
+  acknowledged: boolean("acknowledged").default(false),
+  acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true })
+}, (table) => [
+  index('idx_urgent_reminders_user').on(table.userId),
+  index('idx_urgent_reminders_type').on(table.type)
 ]);
 
 export const outreachTokens = pgTable("outreach_tokens", {
@@ -475,9 +513,14 @@ export const insertWebhookLogSchema = webhookLogSchema;
 // Daily Outreach schemas
 export const contactOutreachStatusSchema = z.object({
   contactId: z.number(),
-  status: z.enum(["sent", "skipped", "pending"]),
+  status: z.enum(["sent", "skipped", "pending", "clicked"]),
   emailSubject: z.string().optional(),
-  emailContent: z.string().optional()
+  emailContent: z.string().optional(),
+  emailAddressUsed: z.string().optional(),
+  sentAt: z.string().optional(), // ISO string
+  skippedAt: z.string().optional(), // ISO string  
+  clickedAt: z.string().optional(), // ISO string
+  skipReason: z.string().optional()
 });
 
 export const outreachTokenSchema = z.object({
@@ -565,6 +608,30 @@ export const insertContactOutreachStatusSchema = contactOutreachStatusSchema.ext
   userId: z.number()
 });
 
+export const companyOutreachStatusSchema = z.object({
+  status: z.enum(["contacted", "skipped", "pending"]).default("pending"),
+  skipReason: z.enum(["not_fit", "not_now"]).optional(),
+  skipNotes: z.string().optional(),
+  followUpDate: z.string().optional(), // ISO string
+  contactedCount: z.number().default(0)
+});
+
+export const insertCompanyOutreachStatusSchema = companyOutreachStatusSchema.extend({
+  userId: z.number(),
+  companyId: z.number()
+});
+
+export const urgentReminderSchema = z.object({
+  type: z.enum(["low_contacts", "no_activity", "follow_up_due"]),
+  emailSubject: z.string().min(1),
+  emailContent: z.string().min(1),
+  suggestedPrompts: z.array(z.string()).optional()
+});
+
+export const insertUrgentReminderSchema = urgentReminderSchema.extend({
+  userId: z.number()
+});
+
 export const insertOutreachTokenSchema = outreachTokenSchema.extend({
   userId: z.number()
 });
@@ -599,6 +666,10 @@ export type InsertProspectDelivery = z.infer<typeof insertProspectDeliverySchema
 // Daily Outreach types
 export type ContactOutreachStatus = typeof contactOutreachStatus.$inferSelect;
 export type InsertContactOutreachStatus = z.infer<typeof insertContactOutreachStatusSchema>;
+export type CompanyOutreachStatus = typeof companyOutreachStatus.$inferSelect;
+export type InsertCompanyOutreachStatus = z.infer<typeof insertCompanyOutreachStatusSchema>;
+export type UrgentReminder = typeof urgentReminders.$inferSelect;
+export type InsertUrgentReminder = z.infer<typeof insertUrgentReminderSchema>;
 export type OutreachToken = typeof outreachTokens.$inferSelect;
 export type InsertOutreachToken = z.infer<typeof insertOutreachTokenSchema>;
 export type DailyOutreachPreferences = typeof dailyOutreachPreferences.$inferSelect;

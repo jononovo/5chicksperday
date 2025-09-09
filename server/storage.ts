@@ -2,6 +2,7 @@ import {
   userPreferences, lists, companies, contacts, emailTemplates, users,
   strategicProfiles, userEmailPreferences,
   contactOutreachStatus, outreachTokens, dailyOutreachPreferences, outreachQueue,
+  companyOutreachStatus, urgentReminders,
   type UserPreferences, type InsertUserPreferences,
   type UserEmailPreferences, type InsertUserEmailPreferences,
   type List, type InsertList,
@@ -11,12 +12,14 @@ import {
   type User, type InsertUser,
   type StrategicProfile, type InsertStrategicProfile,
   type ContactOutreachStatus, type InsertContactOutreachStatus,
+  type CompanyOutreachStatus, type InsertCompanyOutreachStatus,
+  type UrgentReminder, type InsertUrgentReminder,
   type OutreachToken, type InsertOutreachToken,
   type DailyOutreachPreferences, type InsertDailyOutreachPreferences,
   type OutreachQueue, type InsertOutreachQueue
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, or, sql, desc } from "drizzle-orm";
+import { eq, and, or, sql, desc, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User Auth
@@ -102,6 +105,22 @@ export interface IStorage {
   addToOutreachQueue(data: InsertOutreachQueue): Promise<OutreachQueue>;
   removeFromOutreachQueue(id: number): Promise<void>;
   getQueuedContact(userId: number, contactId: number): Promise<OutreachQueue | undefined>;
+  
+  // Enhanced Contact Tracking
+  markContactAsClicked(userId: number, contactId: number, emailData: { subject: string; content: string; emailAddress: string; }): Promise<ContactOutreachStatus>;
+  getContactsByStatus(userId: number, status: string): Promise<Contact[]>;
+  
+  // Company Outreach Tracking
+  getCompanyOutreachStatus(companyId: number, userId: number): Promise<CompanyOutreachStatus | undefined>;
+  createCompanyOutreachStatus(data: InsertCompanyOutreachStatus): Promise<CompanyOutreachStatus>;
+  updateCompanyOutreachStatus(id: number, data: Partial<CompanyOutreachStatus>): Promise<CompanyOutreachStatus>;
+  markCompanyAsSkipped(userId: number, companyId: number, reason: "not_fit" | "not_now", notes?: string, followUpDate?: string): Promise<CompanyOutreachStatus>;
+  getCompaniesWithFollowUp(userId: number, beforeDate?: string): Promise<Company[]>;
+  
+  // Urgent Reminders
+  createUrgentReminder(data: InsertUrgentReminder): Promise<UrgentReminder>;
+  getUrgentReminders(userId: number, acknowledged?: boolean): Promise<UrgentReminder[]>;
+  acknowledgeReminder(reminderId: number): Promise<void>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -507,7 +526,12 @@ class DatabaseStorage implements IStorage {
   async createContactOutreachStatus(data: InsertContactOutreachStatus): Promise<ContactOutreachStatus> {
     const [status] = await db
       .insert(contactOutreachStatus)
-      .values(data)
+      .values({
+        ...data,
+        sentAt: data.sentAt ? new Date(data.sentAt) : undefined,
+        skippedAt: data.skippedAt ? new Date(data.skippedAt) : undefined,
+        clickedAt: data.clickedAt ? new Date(data.clickedAt) : undefined
+      })
       .returning();
     return status;
   }
@@ -649,6 +673,179 @@ class DatabaseStorage implements IStorage {
         eq(outreachQueue.contactId, contactId)
       ));
     return item;
+  }
+
+  // Enhanced Contact Tracking
+  async markContactAsClicked(
+    userId: number,
+    contactId: number,
+    emailData: { subject: string; content: string; emailAddress: string; }
+  ): Promise<ContactOutreachStatus> {
+    const existing = await this.getContactOutreachStatus(contactId, userId);
+    
+    if (existing) {
+      return await this.updateContactOutreachStatus(existing.id, {
+        status: "clicked",
+        emailSubject: emailData.subject,
+        emailContent: emailData.content,
+        emailAddressUsed: emailData.emailAddress,
+        clickedAt: new Date()
+      });
+    } else {
+      return await this.createContactOutreachStatus({
+        userId,
+        contactId,
+        status: "clicked",
+        emailSubject: emailData.subject,
+        emailContent: emailData.content,
+        emailAddressUsed: emailData.emailAddress,
+        clickedAt: new Date().toISOString()
+      });
+    }
+  }
+
+  async getContactsByStatus(userId: number, status: string): Promise<Contact[]> {
+    const statuses = await db
+      .select({ contactId: contactOutreachStatus.contactId })
+      .from(contactOutreachStatus)
+      .where(
+        and(
+          eq(contactOutreachStatus.userId, userId),
+          eq(contactOutreachStatus.status, status)
+        )
+      );
+    
+    if (statuses.length === 0) return [];
+    
+    return await db
+      .select()
+      .from(contacts)
+      .where(
+        inArray(contacts.id, statuses.map(s => s.contactId))
+      );
+  }
+
+  // Company Outreach Tracking
+  async getCompanyOutreachStatus(companyId: number, userId: number): Promise<CompanyOutreachStatus | undefined> {
+    const [status] = await db
+      .select()
+      .from(companyOutreachStatus)
+      .where(and(
+        eq(companyOutreachStatus.companyId, companyId),
+        eq(companyOutreachStatus.userId, userId)
+      ));
+    return status;
+  }
+
+  async createCompanyOutreachStatus(data: InsertCompanyOutreachStatus): Promise<CompanyOutreachStatus> {
+    const [status] = await db
+      .insert(companyOutreachStatus)
+      .values({
+        ...data,
+        followUpDate: data.followUpDate ? new Date(data.followUpDate) : undefined
+      })
+      .returning();
+    return status;
+  }
+
+  async updateCompanyOutreachStatus(id: number, data: Partial<CompanyOutreachStatus>): Promise<CompanyOutreachStatus> {
+    const [status] = await db
+      .update(companyOutreachStatus)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(companyOutreachStatus.id, id))
+      .returning();
+    return status;
+  }
+
+  async markCompanyAsSkipped(
+    userId: number,
+    companyId: number,
+    reason: "not_fit" | "not_now",
+    notes?: string,
+    followUpDate?: string
+  ): Promise<CompanyOutreachStatus> {
+    const existing = await this.getCompanyOutreachStatus(companyId, userId);
+    
+    if (existing) {
+      return await this.updateCompanyOutreachStatus(existing.id, {
+        status: "skipped",
+        skipReason: reason,
+        skipNotes: notes,
+        followUpDate: followUpDate ? new Date(followUpDate) : undefined
+      });
+    } else {
+      return await this.createCompanyOutreachStatus({
+        userId,
+        companyId,
+        status: "skipped",
+        skipReason: reason,
+        skipNotes: notes,
+        followUpDate: followUpDate,
+        contactedCount: 0
+      });
+    }
+  }
+
+  async getCompaniesWithFollowUp(userId: number, beforeDate?: string): Promise<Company[]> {
+    const conditions = [
+      eq(companyOutreachStatus.userId, userId),
+      eq(companyOutreachStatus.skipReason, "not_now"),
+      sql`${companyOutreachStatus.followUpDate} IS NOT NULL`
+    ];
+    
+    if (beforeDate) {
+      conditions.push(sql`${companyOutreachStatus.followUpDate} <= ${new Date(beforeDate)}`);
+    }
+    
+    const statuses = await db
+      .select({ companyId: companyOutreachStatus.companyId })
+      .from(companyOutreachStatus)
+      .where(and(...conditions));
+    
+    if (statuses.length === 0) return [];
+    
+    return await db
+      .select()
+      .from(companies)
+      .where(
+        inArray(companies.id, statuses.map(s => s.companyId))
+      );
+  }
+
+  // Urgent Reminders
+  async createUrgentReminder(data: InsertUrgentReminder): Promise<UrgentReminder> {
+    const [reminder] = await db
+      .insert(urgentReminders)
+      .values(data)
+      .returning();
+    return reminder;
+  }
+
+  async getUrgentReminders(userId: number, acknowledged?: boolean): Promise<UrgentReminder[]> {
+    const conditions = [eq(urgentReminders.userId, userId)];
+    
+    if (acknowledged !== undefined) {
+      conditions.push(eq(urgentReminders.acknowledged, acknowledged));
+    }
+    
+    return await db
+      .select()
+      .from(urgentReminders)
+      .where(and(...conditions))
+      .orderBy(desc(urgentReminders.sentAt));
+  }
+
+  async acknowledgeReminder(reminderId: number): Promise<void> {
+    await db
+      .update(urgentReminders)
+      .set({
+        acknowledged: true,
+        acknowledgedAt: new Date()
+      })
+      .where(eq(urgentReminders.id, reminderId));
   }
 }
 
