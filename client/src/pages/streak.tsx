@@ -307,13 +307,18 @@ export default function Streak() {
   // Save product info mutation
   const saveProductInfoMutation = useMutation({
     mutationFn: async (info: typeof productInfo) => {
-      // Save to strategic profile or preferences
-      return apiRequest("/api/strategic-profiles", "POST", {
-        productService: info.type,
-        businessName: info.oneLiner,
-        productDescription: info.benefits,
-        website: info.url
-      });
+      // Save product info to preferences
+      const updatedPreferences = {
+        ...preferences,
+        enabled: true,
+        productInfo: {
+          type: info.type,
+          oneLiner: info.oneLiner,
+          benefits: info.benefits,
+          url: info.url
+        }
+      };
+      return apiRequest("/api/daily-outreach/preferences", "POST", updatedPreferences);
     },
     onSuccess: () => {
       toast({
@@ -323,12 +328,8 @@ export default function Streak() {
       setShowSetupDialog(false);
       setSetupStep(1);
       
-      // Enable daily outreach
-      const newPreferences = { ...preferences, enabled: true };
-      setPreferences(newPreferences);
-      savePreferencesMutation.mutate(newPreferences);
-      
-      // Refresh data
+      // Refresh data including preferences to update hasProductSetup flag
+      queryClient.invalidateQueries({ queryKey: ["/api/daily-outreach/preferences"] });
       queryClient.invalidateQueries({ queryKey: ["/api/daily-outreach/check"] });
       queryClient.invalidateQueries({ queryKey: ["/api/daily-outreach/pipeline"] });
     },
