@@ -320,6 +320,38 @@ export default function Streak() {
     }
   };
   
+  const forceGenerateToday = async () => {
+    try {
+      const response = await apiRequest('POST', '/api/daily-outreach/force-generate-today', {});
+      const data = await response.json();
+      
+      if (data && data.success) {
+        toast({
+          title: "Success!",
+          description: "Today's outreach has been generated. Refresh the page to see the active button.",
+        });
+        
+        // Refetch the outreach status to update the button
+        queryClient.invalidateQueries({ queryKey: ['/api/daily-outreach/check'] });
+        
+        // Optionally open the outreach page
+        if (data.url) {
+          setTimeout(() => {
+            window.open(data.url, '_blank');
+          }, 1500);
+        }
+      } else {
+        throw new Error(data?.error || data?.message || 'Failed to generate today\'s token');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to generate today's outreach.",
+        variant: "destructive"
+      });
+    }
+  };
+  
   const previewTodaysEmail = async () => {
     // Check if there are any contacts available
     if (!outreachStatus?.hasContacts || pipelineStats?.availableContacts === 0) {
@@ -471,6 +503,18 @@ export default function Streak() {
               <ExternalLink className="h-4 w-4" />
               Today's Outreach
             </Button>
+            
+            {/* Show Generate Today button if it's a scheduled day but no token */}
+            {!outreachStatus?.todaysToken && [1, 2, 3].includes(new Date().getDay()) && (
+              <Button 
+                variant="outline"
+                onClick={forceGenerateToday}
+                className="flex items-center gap-2"
+              >
+                <Rocket className="h-4 w-4" />
+                Generate Today's Outreach
+              </Button>
+            )}
             
             <Button 
               variant="secondary"

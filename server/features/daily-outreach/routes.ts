@@ -62,10 +62,22 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
           }
         } else {
           // Token exists, include it in the response
+          console.log(`[Daily Outreach] Found existing token for user ${userId}:`, existingToken);
+          
+          // Ensure we extract the string value from the database result
+          let tokenString: string;
+          if (typeof existingToken === 'object' && existingToken !== null) {
+            // If it's an object, try to extract the token value
+            tokenString = (existingToken as any).value || (existingToken as any).token || String(existingToken);
+            console.log(`[Daily Outreach] Extracted token from object:`, tokenString);
+          } else {
+            tokenString = String(existingToken);
+          }
+          
           const result = await DailyOutreachService.checkDailyOutreach(userId);
           return res.json({
             ...result,
-            todaysToken: String(existingToken)
+            todaysToken: tokenString
           });
         }
       }
@@ -407,6 +419,61 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : 'Failed to generate test email'
+      });
+    }
+  });
+  
+  // Force-generate today's token (for testing/recovery)
+  app.post('/api/daily-outreach/force-generate-today', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      console.log(`[Daily Outreach] Force generating token for user ${userId} on ${today}`);
+      
+      // Get uncontacted contacts
+      const contacts = await storage.getUncontactedContacts(userId, 5);
+      
+      if (contacts.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No contacts available. Please search for contacts first.'
+        });
+      }
+      
+      // Generate token
+      const contactIds = contacts.map((c: any) => c.id);
+      const token = await DailyOutreachService.createOutreachToken(userId, contactIds);
+      
+      // Store the token for today
+      const Database = (await import('@replit/database')).default;
+      const db = new Database();
+      const tokenKey = `daily_outreach_token_${userId}_${today}`;
+      await db.set(tokenKey, token);
+      
+      // Also store in the list for quick access
+      const listKey = `daily_outreach_tokens_${today}`;
+      const existingList = await db.get(listKey);
+      const tokens = existingList ? JSON.parse(String(existingList)) : [];
+      tokens.push({ userId, token });
+      await db.set(listKey, JSON.stringify(tokens));
+      
+      console.log(`[Daily Outreach] Force generated token for user ${userId}: ${token}`);
+      
+      const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get('host')}`;
+      const outreachUrl = `${baseUrl}/outreach/${token}`;
+      
+      res.json({
+        success: true,
+        token,
+        url: outreachUrl,
+        message: 'Today\'s outreach token has been generated successfully'
+      });
+    } catch (error) {
+      console.error('Error force generating today\'s token:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to generate today\'s token'
       });
     }
   });
