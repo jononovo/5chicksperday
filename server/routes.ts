@@ -44,6 +44,7 @@ import { registerHtmlStaticChatRoutes } from "./user-chatbox/html-static";
 import { registerReactChatRoutes } from "./user-chatbox/react";
 import { registerStrategicProfilesRoutes } from "./user-chatbox/strategic-profiles";
 import { registerUserAccountSettingsRoutes } from "./user-account-settings";
+import { registerOutreachRoutes } from "./features/outreach/routes";
 
 
 // Import centralized auth utilities
@@ -242,6 +243,9 @@ Respond in this exact JSON format:
 
   // Register all billing-related routes (credits, Stripe, gamification)
   registerBillingRoutes(app);
+
+  // Register outreach routes
+  registerOutreachRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
