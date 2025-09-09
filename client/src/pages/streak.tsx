@@ -304,21 +304,28 @@ export default function Streak() {
     await sendTestEmailMutation.mutateAsync(userEmail);
   };
   
-  // Save product info mutation
+  // Save product info mutation - integrate with existing strategic profiles system
   const saveProductInfoMutation = useMutation({
     mutationFn: async (info: typeof productInfo) => {
-      // Save product info to preferences
+      // Save to strategic profiles (same place as existing chat flow)
+      const profileData = {
+        productService: info.oneLiner, // The one-liner IS the product/service description
+        customerFeedback: info.benefits, // Benefits are what customers like
+        website: info.url || '',
+        businessType: info.type, // 'product' or 'service'
+        businessDescription: info.oneLiner
+      };
+      
+      // Save to strategic profiles endpoint (existing system)
+      await apiRequest("POST", "/api/strategic-profiles/save-from-chat", profileData);
+      
+      // Then enable daily outreach in preferences
       const updatedPreferences = {
         ...preferences,
         enabled: true,
-        productInfo: {
-          type: info.type,
-          oneLiner: info.oneLiner,
-          benefits: info.benefits,
-          url: info.url
-        }
+        hasProductSetup: true
       };
-      return apiRequest("/api/daily-outreach/preferences", "POST", updatedPreferences);
+      return apiRequest("POST", "/api/daily-outreach/preferences", updatedPreferences);
     },
     onSuccess: () => {
       toast({
