@@ -307,4 +307,66 @@ export function registerDailyOutreachRoutes(app: Router, requireAuth: any) {
       });
     }
   });
+
+  // Test endpoint to send a test email via SendGrid
+  app.post('/api/daily-outreach/test-sendgrid', requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { recipientEmail } = req.body;
+      
+      if (!recipientEmail) {
+        return res.status(400).json({
+          success: false,
+          error: 'Recipient email is required'
+        });
+      }
+      
+      // Import modules
+      const { EmailTemplateService } = await import('./email-template');
+      const sgMail = await import('@sendgrid/mail');
+      
+      // Check if API key exists
+      if (!process.env.SENDGRID_API_KEY) {
+        return res.status(500).json({
+          success: false,
+          error: 'SendGrid API key not configured'
+        });
+      }
+      
+      // Generate test email content
+      const testEmail = EmailTemplateService.generateTestEmail();
+      
+      sgMail.default.setApiKey(process.env.SENDGRID_API_KEY);
+      
+      const msg = {
+        to: recipientEmail,
+        from: 'test@5ducks.com', // You'll need to verify this email in SendGrid
+        subject: testEmail.subject,
+        text: testEmail.text,
+        html: testEmail.html
+      };
+      
+      await sgMail.default.send(msg);
+      
+      res.json({
+        success: true,
+        message: `Test email sent successfully to ${recipientEmail}`
+      });
+    } catch (error: any) {
+      console.error('[Daily Outreach] SendGrid test error:', error);
+      
+      // Handle specific SendGrid errors
+      if (error.response && error.response.body) {
+        return res.status(500).json({
+          success: false,
+          error: 'SendGrid error',
+          details: error.response.body.errors
+        });
+      }
+      
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to send test email'
+      });
+    }
+  });
 }
