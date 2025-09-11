@@ -588,88 +588,215 @@ export default function StreakPage() {
         </Card>
       </div>
 
-      {/* Product Selector */}
-      <Card className="mb-8">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Package className="h-4 w-4" />
-            Active Product
-          </CardTitle>
-          <CardDescription className="text-sm">
-            Select which product to promote in daily outreach
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {productsLoading ? (
-            <div className="text-sm text-muted-foreground">Loading products...</div>
-          ) : products && products.length > 0 ? (
-            <div className="space-y-2">
-              {products
-                .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
-                .slice(0, 3)
-                .map((product) => (
-                <div
-                  key={product.id}
-                  className={cn(
-                    "p-3 rounded-lg border cursor-pointer transition-all",
-                    selectedProductId === product.id
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
-                  )}
-                  onClick={() => handleProductChange(product.id)}
+      {/* Fluffy Welcome Banner */}
+      <div className="mb-8 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950/20 dark:to-yellow-950/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800">
+        <div className="flex items-start gap-6">
+          <div className="shrink-0">
+            <div className="w-20 h-20 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+              <span className="text-4xl">🐥</span>
+            </div>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold mb-2">Welcome to my nest!</h2>
+            <p className="text-muted-foreground">
+              For you to catch the worm, I need you to fill in three things below.
+              {preferences?.enabled && " Once your campaign is active, I'll deliver fresh leads to your inbox daily!"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Campaign Configuration Row */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        {/* 1. My Company */}
+        <Card className="relative">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">My Company</CardTitle>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-6 w-6"
+                onClick={() => {
+                  // TODO: Add company profile modal
+                  toast({
+                    title: "Coming soon",
+                    description: "Company profile management will be available soon"
+                  });
+                }}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+            <CardDescription className="text-xs">Who you are</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="min-h-[100px] flex items-center justify-center">
+              <div className="text-center">
+                <Plus className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                <p className="text-xs text-muted-foreground">Add your company info</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 2. My Product - Refactored Active Product */}
+        <Card className="relative">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">My Product</CardTitle>
+              </div>
+              {products && products.length > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6"
+                  onClick={() => setShowOnboarding(true)}
+                  data-testid="button-add-product"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-sm truncate">{product.title}</h4>
+                  <Plus className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+            <CardDescription className="text-xs">What you're selling</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {productsLoading ? (
+              <div className="min-h-[100px] flex items-center justify-center">
+                <p className="text-xs text-muted-foreground">Loading...</p>
+              </div>
+            ) : products && products.length > 0 ? (
+              <div className="space-y-2">
+                {products
+                  .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+                  .slice(0, 3)
+                  .map((product) => (
+                    <div
+                      key={product.id}
+                      className={cn(
+                        "p-2 rounded-md border cursor-pointer transition-all text-xs",
+                        selectedProductId === product.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50 bg-card"
+                      )}
+                      onClick={() => handleProductChange(product.id)}
+                      data-testid={`card-product-${product.id}`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate">{product.title}</div>
+                          <div className="text-muted-foreground truncate mt-0.5">
+                            {product.productService.slice(0, 30)}{product.productService.length > 30 ? '...' : ''}
+                          </div>
+                        </div>
                         {selectedProductId === product.id && (
-                          <span className="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded shrink-0">Active</span>
+                          <span className="shrink-0 w-1.5 h-1.5 bg-green-500 rounded-full mt-1" />
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                        {product.productService}
-                      </p>
                     </div>
-                    <span className={cn(
-                      "text-xs px-1.5 py-0.5 rounded shrink-0",
-                      product.businessType === 'product' 
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-green-100 text-green-700"
-                    )}>
-                      {product.businessType}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              {products.length > 3 && (
-                <p className="text-xs text-muted-foreground text-center pt-1">
-                  Showing 3 most recent products
-                </p>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full mt-2"
-                onClick={() => setShowOnboarding(true)}
+                  ))}
+              </div>
+            ) : (
+              <div className="min-h-[100px] flex items-center justify-center">
+                <button
+                  onClick={() => setShowOnboarding(true)}
+                  className="text-center hover:scale-105 transition-transform"
+                  data-testid="button-add-first-product"
+                >
+                  <Plus className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                  <p className="text-xs text-muted-foreground">Add your product</p>
+                </button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* 3. Ideal Customer */}
+        <Card className="relative">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Ideal Customer</CardTitle>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-6 w-6"
+                onClick={() => {
+                  // TODO: Add ideal customer profile modal
+                  toast({
+                    title: "Coming soon",
+                    description: "Customer profile management will be available soon"
+                  });
+                }}
               >
-                <Plus className="h-3 w-3 mr-1" />
-                Add New Product
+                <Plus className="h-3 w-3" />
               </Button>
             </div>
-          ) : (
-            <div className="text-center py-4">
-              <Package className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
-              <p className="text-sm text-muted-foreground mb-3">
-                No products configured yet
-              </p>
-              <Button size="sm" onClick={() => setShowOnboarding(true)}>
-                <Plus className="h-3 w-3 mr-1" />
-                Add Your First Product
-              </Button>
+            <CardDescription className="text-xs">Who you're connecting with</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="min-h-[100px] flex items-center justify-center">
+              <div className="text-center">
+                <Plus className="h-8 w-8 mx-auto text-muted-foreground/30 mb-2" />
+                <p className="text-xs text-muted-foreground">Define your audience</p>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        {/* 4. Campaign Control */}
+        <Card className="relative">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-center">Campaign Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="min-h-[100px] flex items-center justify-center">
+              {preferences?.enabled ? (
+                <button
+                  onClick={() => {
+                    updatePreferences.mutate({ enabled: false });
+                  }}
+                  className="group"
+                  data-testid="button-pause-campaign"
+                >
+                  <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Pause className="h-8 w-8 text-red-600 dark:text-red-400" />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Pause Campaign</p>
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (products && products.length > 0) {
+                      updatePreferences.mutate({ enabled: true });
+                    } else {
+                      toast({
+                        title: "Setup required",
+                        description: "Please add at least one product first",
+                        variant: "destructive"
+                      });
+                    }
+                  }}
+                  className="group"
+                  data-testid="button-start-campaign"
+                >
+                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Play className="h-8 w-8 text-green-600 dark:text-green-400" />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">Start Campaign</p>
+                </button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Product Onboarding Form */}
       <ProductOnboardingForm

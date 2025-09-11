@@ -1,0 +1,27 @@
+# Fluffy Header Banner in Streak:  And Campaign Setup/Management “Row”.  ——  I'm thinking it would be nice to have some sort of an intro tour banner that is above this row of components that is below it.  A. The intro tour banner could have a pretty big picture of fluffy and you know some text like:   Welcome to my nest.  For you to catch the worm, I need you to fill in three things:  And once the campaign has been actively enabled than the original intro tour type of banner disappears. And perhaps is replaced with a status or other type of engagement, banner or interactive dashboard.
+ ——  Then below that would be the row of configuring the campaign with the following four components as little cards all in a row.  I know it's unusual to have four components in a row, but I think it's important to be able to show them and each of them will just be sort of a interactive component for the input that the AI agent needs in order to generate the emails, (and even the searches for new contacts ) to enable the campaign.  4 Components: 1. Me (or My Company)  Who am I? Really?
+
+
+2. My Product What are you selling?   3. Ideal Custom Who are you connecting with?
+  4. Large “Play” button to start the campaign.  —  And then below that we would have the rest of the existing statistics sections other cards, and components.   ===========   # How the components look and work
+
+All right, I just wanna focus on the four components row and in particular first three that require information.
+
+Actually containers that hold multiple components with them and each component is a response to a form being filled out.
+
+Meaning that if I had three profiles to the first box/section there will be three small subcomponents with.
+
+There is a Header: Icon + name (subtitle below)
+Then there is the primary sub component section
+
+State Empty: When Empty: Has that big plus and a CTA.
+
+State Not Empty: contains sub-components in rows.
+
+Can show up to 3 "sub-components".
+
+When not empty, a "+" icon appears in the upper right to "Add New [Profile or whatever]"
+
+Does that make sense?
+
+
