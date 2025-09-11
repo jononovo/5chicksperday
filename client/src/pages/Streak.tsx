@@ -691,7 +691,7 @@ export default function StreakPage() {
                         <div className="flex-1 min-w-0">
                           <div className="font-medium truncate">{product.title}</div>
                           <div className="text-muted-foreground truncate mt-0.5">
-                            {product.productService.slice(0, 30)}{product.productService.length > 30 ? '...' : ''}
+                            {product.productService ? `${product.productService.slice(0, 30)}${product.productService.length > 30 ? '...' : ''}` : 'No description'}
                           </div>
                         </div>
                         {selectedProductId === product.id && (
