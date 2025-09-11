@@ -87,7 +87,7 @@ export default function StreakPage() {
   });
 
   // Fetch user's products
-  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
+  const { data: products, isLoading: productsLoading, refetch: refetchProducts } = useQuery<Product[]>({
     queryKey: ['/api/products'],
     enabled: !!user
   });
@@ -803,8 +803,12 @@ export default function StreakPage() {
         open={showOnboarding}
         onClose={() => setShowOnboarding(false)}
         onComplete={() => {
+          // Invalidate and refetch products to show the new one
+          queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+          refetchProducts();
           refetchPreferences();
           refetchStats();
+          setShowOnboarding(false);
         }}
       />
     </div>
