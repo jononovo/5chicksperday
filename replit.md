@@ -87,27 +87,28 @@ The `strategy-chat` module serves as the reference implementation for symmetric 
 This application supports Replit AI agent browser testing through an authentication bypass mechanism.
 
 **How It Works:**
-- When `ENABLE_AI_TEST_MODE=true` is set, all authentication is bypassed
+- When `REPLIT_DEPLOYMENT !== "1"` (development environment), all authentication is bypassed
 - The AI agent operates as demo user (ID: 1)
 - All pages and API endpoints are accessible without login
 - Database operations use the demo user account
 
-**Current Status:** ❌ DISABLED
-- Environment: Development
-- Test User ID: N/A (disabled)
-- Email: N/A (disabled)
+**Current Status:** ✅ ENABLED
+- Environment: Development (automatic detection via REPLIT_DEPLOYMENT)
+- Test User ID: 1 (demo@5ducks.ai)
+- Email: demo@5ducks.ai
 
 **For AI Testing Agents:**
 1. No authentication required - proceed directly to any page
 2. All API calls automatically authenticated
 3. Use the application as a logged-in user
 4. Data operations safe (demo user sandbox)
+5. Look for `X-Auth-Bypass: 1` header to confirm bypass is active
 
 **Security:**
-- Only works in development environment
-- Cannot be enabled in production
+- Automatically enabled in Replit development environment
+- Automatically disabled in production (REPLIT_DEPLOYMENT="1")
 - Logs all test mode access for audit
-- To disable: Set `ENABLE_AI_TEST_MODE=false` or remove it
+- No manual configuration needed
 
 ## External Dependencies
 - **Perplexity API**: Company research and contact discovery.
