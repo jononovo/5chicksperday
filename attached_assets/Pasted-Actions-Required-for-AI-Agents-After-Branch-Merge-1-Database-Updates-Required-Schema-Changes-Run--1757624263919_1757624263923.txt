@@ -1,0 +1,90 @@
+Actions Required for AI Agents After Branch Merge
+1. Database Updates Required
+Schema Changes - Run These Commands:
+npm run db:push
+If you get data-loss warnings, use:
+
+npm run db:push --force
+This will create/update the following tables:
+
+campaigns - Campaign management
+sender_profiles - User professional identity
+target_customer_profiles - Target audience definitions
+user_outreach_preferences - Daily outreach settings
+daily_outreach_batches - Batch tracking
+daily_outreach_items - Individual outreach items
+daily_outreach_jobs - Scheduled job tracking
+daily_outreach_job_logs - Execution history
+CRM Communications History (if included):
+If the CRM communications tracking is part of this merge, also create:
+
+communication_history table - Track all outreach
+Additional columns on contacts table for status tracking
+Link columns on daily_outreach_items
+2. Environment Variables to Configure
+Ensure these are set in your environment:
+
+Core Email Services:
+SENDGRID_API_KEY - For daily nudge emails
+SENDGRID_FROM_EMAIL - Sender email (default: quack@5ducks.ai)
+SENDGRID_FROM_NAME - Sender name (default: 5Ducks Daily)
+APP_URL - Base URL for email links
+Gmail Integration:
+GMAIL_CLIENT_ID - For Gmail OAuth
+GMAIL_CLIENT_SECRET - Gmail OAuth secret
+AI Services:
+OPENAI_API_KEY - Email content generation
+PERPLEXITY_API_KEY - Company research
+Payment Processing:
+STRIPE_SECRET_KEY - Stripe API
+STRIPE_WEBHOOK_SECRET - Webhook security
+STRIPE_PRICE_ID - Subscription price ID
+3. Package Dependencies
+All necessary packages are already installed based on the package.json. No new installations needed.
+
+4. Workflow Updates
+The "Start application" workflow should automatically restart after the merge. It runs:
+
+npm run dev
+This starts both the Express backend and Vite frontend on the same port.
+
+5. Feature Testing Checklist
+After the merge, verify these key features work:
+
+Campaign Setup:
+ Create sender profiles (Me component)
+ Create strategic profiles/products (My Product component)
+ Create customer profiles (Ideal Customer component)
+ Activate campaign with Play button
+Daily Outreach:
+ Check batch generation (5 contacts per day)
+ Verify email personalization
+ Test SendGrid email delivery
+ Confirm streak tracking updates
+UI Components:
+ Adaptive banner (intro vs metrics view)
+ Toggle selection behavior on all components
+ Progress indicators and checkmarks
+ Weekly goal progress visualization
+6. Data Migration Notes
+Demo user (ID: 1) should have pre-seeded sample data
+Existing users will need to set up their campaign components
+Historical outreach data may need migration to communication_history table (if CRM is included)
+7. API Endpoints to Verify
+New endpoints that should be available:
+
+/api/sender-profiles (GET, POST, PUT, DELETE)
+/api/customer-profiles (GET, POST, PUT, DELETE)
+/api/products (GET - maps to strategic profiles)
+/api/strategic-profiles/* endpoints
+/api/daily-outreach/preferences (GET, PUT)
+/api/daily-outreach/streak-stats (GET)
+/api/daily-outreach/vacation (PUT)
+8. Key Configuration Notes
+Rate limiting remains at 10 searches/hour for demo users
+Authentication via Firebase continues as before
+Session-based storage for demo user data
+30-second refresh interval for streak statistics
+Default schedule: Mon/Tue/Wed at 9:00 AM ET
+The system is designed to be modular and self-contained, so once the database schema is updated and environment variables are configured, the application should function with the new campaign management features immediately.
+
