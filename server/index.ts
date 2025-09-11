@@ -77,6 +77,79 @@ app.get('/api/health', (_req, res) => {
     // Setup authentication before registering routes
     setupAuth(app);
     
+    // Auth bypass for development environment (AI agent testing)
+    const BYPASS_AUTH = process.env.REPLIT_DEPLOYMENT !== "1";
+    
+    if (BYPASS_AUTH) {
+      console.log("🔓 AUTH BYPASS ENABLED - Development Mode");
+      console.log("All requests will use demo user (ID: 1)");
+      
+      // Cache demo user to avoid repeated DB lookups
+      let cachedDemoUser: any = null;
+      
+      const getOrCreateDemoUser = async () => {
+        if (cachedDemoUser) return cachedDemoUser;
+        
+        try {
+          // Try to get user with ID 1 (existing demo/guest user)
+          let demoUser = await storage.getUserById(1);
+          
+          if (!demoUser) {
+            console.log("Demo user (ID: 1) not found, attempting to find by email...");
+            // Try to find by email
+            demoUser = await storage.getUserByEmail('demo@5ducks.test');
+            
+            if (!demoUser) {
+              console.log("Creating new demo user...");
+              // Create demo user if doesn't exist
+              demoUser = await storage.createUser({
+                email: 'demo@5ducks.test',
+                username: 'Demo User',
+                password: '' // Empty for Firebase compatibility
+              });
+              console.log(`Created demo user with ID: ${demoUser.id}`);
+              
+              if (demoUser.id !== 1) {
+                console.warn(`WARNING: Demo user created with ID ${demoUser.id} instead of expected ID 1`);
+              }
+            }
+          }
+          
+          cachedDemoUser = demoUser;
+          console.log(`Using demo user for auth bypass - ID: ${demoUser.id}, Email: ${demoUser.email}`);
+          return demoUser;
+        } catch (error) {
+          console.error("Error getting/creating demo user:", error);
+          // Return a minimal user object as fallback
+          return {
+            id: 1,
+            email: 'demo@5ducks.test',
+            username: 'Demo User',
+            password: ''
+          };
+        }
+      }
+      
+      // Add bypass middleware after auth setup
+      app.use(async (req: any, res, next) => {
+        const demoUser = await getOrCreateDemoUser();
+        
+        // Inject demo user into request
+        req.user = demoUser;
+        req.firebaseUser = demoUser;
+        
+        // Override isAuthenticated to always return true
+        req.isAuthenticated = () => true;
+        
+        // Add header for debugging
+        res.setHeader('X-Auth-Bypass', '1');
+        
+        next();
+      });
+      
+      console.log("Auth bypass middleware installed - all routes accessible without authentication");
+    }
+    
     // Database already initialized through Drizzle
     
     // Storage initialization handled by individual storage implementations
