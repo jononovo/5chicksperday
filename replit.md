@@ -82,47 +82,39 @@ The `strategy-chat` module serves as the reference implementation for symmetric 
 - Better code reusability via custom hooks
 - Consistent module pattern for future features
 
-## AI Testing Configuration
+## Development Authentication Configuration
 
-### Automated Browser Testing
-This application supports Replit AI agent browser testing through an authentication bypass mechanism.
+### Authentication Bypass for Development Domains
+This application supports authentication bypass for specific development domains through a configurable mechanism.
 
 **How It Works:**
-- When `ENABLE_AI_TEST_MODE=true` is set, all authentication is bypassed
-- The AI agent operates as demo user (ID: 1)
-- All pages and API endpoints are accessible without login
+- Domains listed in `AUTH_EXEMPT_DOMAINS` secret bypass authentication
+- Bypassed requests automatically use demo user (ID: 1)
+- All pages and API endpoints are accessible without login on these domains
 - Database operations use the demo user account
 
 **Secret Configuration:**
-- The `ENABLE_AI_TEST_MODE` secret is stored in **Replit Account Secrets**
-- This secret is shared across all Replit instances linked to your account
-- **IMPORTANT FOR AI AGENTS:** When working on a clone of this project, you must:
-  1. Open the Secrets tab (🔒 icon) in your Replit workspace
-  2. Go to "Account Secrets" tab
-  3. Find `ENABLE_AI_TEST_MODE` and click the checkbox to link it to your app
-  4. Or add it as a new app-specific secret with value `true` or `false`
+- The `AUTH_EXEMPT_DOMAINS` secret should be set in **Replit Secrets**
+- Value format: Comma-separated list of domains
+- Wildcards supported with `*` prefix (e.g., `*.replit.dev`)
+- Example: `*.replit.dev,dev.5ducks.ai,staging.example.com`
 
-**To Toggle Test Mode:**
-- **Enable:** Set `ENABLE_AI_TEST_MODE` to `true` in Secrets vault
-- **Disable:** Set `ENABLE_AI_TEST_MODE` to `false` in Secrets vault
-- The app will automatically restart when secrets are updated
+**Current Configuration:**
+- Development domains: `*.replit.dev`
+- Demo User ID: 1
+- Demo Email: demo@5ducks.ai
 
-**Current Status:** ✅ ENABLED
-- Environment: Development
-- Test User ID: 1
-- Email: demo@5ducks.ai
-
-**For AI Testing Agents:**
-1. No authentication required - proceed directly to any page
-2. All API calls automatically authenticated
-3. Use the application as a logged-in user
+**For Development and Testing:**
+1. No authentication required on exempt domains
+2. All API calls automatically authenticated as demo user
+3. Production domains require full authentication
 4. Data operations safe (demo user sandbox)
 
 **Security:**
-- Only works in development environment
-- Cannot be enabled in production
-- Logs all test mode access for audit
-- To disable: Set `ENABLE_AI_TEST_MODE=false` or remove it
+- Only specified domains can bypass authentication
+- Production domains always require proper authentication
+- Logs all bypass access for audit
+- Domain list stored securely in environment secrets
 
 ## Critical Development Notes for AI Agents
 
@@ -133,7 +125,7 @@ This application supports Replit AI agent browser testing through an authenticat
 - Force push if data loss warning: `npm run db:push --force`
 
 ### Required Secrets (Must be in Secrets vault)
-- `ENABLE_AI_TEST_MODE`: Authentication bypass (true/false)
+- `AUTH_EXEMPT_DOMAINS`: Development domains that bypass auth (e.g., `*.replit.dev`)
 - API keys needed for full functionality:
   - `OPENAI_API_KEY`: Email generation, company research
   - `PERPLEXITY_API_KEY`: Company/contact discovery
@@ -144,9 +136,8 @@ This application supports Replit AI agent browser testing through an authenticat
 
 ### Key Endpoints & Testing
 - `/outreach`: Main app page - test email generation/search here
-- `/api/test-mode-status`: Verify AI test mode is active
-- `/api/user`: Should return demo user when test mode enabled
-- `/api/credits`: Check demo user credits (2980 initial balance)
+- `/api/user`: Returns authenticated user info
+- `/api/credits`: Check user credits (demo user starts with 2980 balance)
 
 ### Common Gotchas
 - Workflows auto-restart after package installation

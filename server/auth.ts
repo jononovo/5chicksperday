@@ -399,30 +399,7 @@ export function setupAuth(app: Express) {
     });
   });
 
-  // Endpoint to check if AI test mode is enabled
-  app.get("/api/test-mode-status", (req, res) => {
-    res.json({
-      enabled: process.env.ENABLE_AI_TEST_MODE === 'true',
-      user: process.env.ENABLE_AI_TEST_MODE === 'true' ? {
-        id: 1,
-        email: 'demo@5ducks.ai',
-        username: 'Guest User'
-      } : null
-    });
-  });
-
   app.get("/api/user", (req, res) => {
-    // In AI test mode, always return guest user
-    const isAITestMode = process.env.ENABLE_AI_TEST_MODE === 'true';
-    if (isAITestMode) {
-      return res.json({
-        id: 1,
-        email: 'demo@5ducks.ai',
-        username: 'Guest User',
-        createdAt: new Date()
-      });
-    }
-    
     if (!req.isAuthenticated()) {
       return res.status(401).json({ error: "Not authenticated" });
     }
