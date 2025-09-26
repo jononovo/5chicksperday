@@ -2748,24 +2748,23 @@ export default function Home() {
       {/* Email Drawer - Overlay on mobile, push-aside on desktop */}
       <div 
         ref={drawerRef}
-        className={`email-drawer-transition relative ${
+        className={`${!isResizing ? 'email-drawer-transition' : ''} relative ${
           emailDrawerOpen 
             ? 'fixed md:relative top-[2.5rem] md:top-0 right-0 h-[calc(100vh-2.5rem)] md:h-full w-[90%] sm:w-[400px] md:w-auto z-50 md:z-auto' 
             : 'md:relative w-0'
         } overflow-hidden border-l border-t rounded-tl-lg bg-background shadow-xl md:shadow-none`}
         style={{ 
-          ...(emailDrawerOpen && window.innerWidth >= 768 ? { width: `${drawerWidth}px` } : {})
+          ...(emailDrawerOpen && window.innerWidth >= 768 ? { width: `${drawerWidth}px` } : {}),
+          ...(isResizing ? { transition: 'none' } : {})
         }}
       >
         {/* Resize Handle - Only show on desktop */}
         {emailDrawerOpen && (
           <div
             onMouseDown={handleMouseDown}
-            className="hidden md:block absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500 transition-colors z-10 group"
+            className="hidden md:block absolute left-0 top-0 bottom-0 w-2 cursor-col-resize z-10 group"
           >
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-10 bg-muted rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <div className="w-0.5 h-6 bg-muted-foreground/40 rounded-full" />
-            </div>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-8 bg-muted-foreground/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         )}
         
