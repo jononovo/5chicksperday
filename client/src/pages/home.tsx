@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -133,6 +133,11 @@ export default function Home() {
   const [selectedCompanyContacts, setSelectedCompanyContacts] = useState<Contact[]>([]);
   const [searchSectionCollapsed, setSearchSectionCollapsed] = useState(false);
   
+  // State for drawer resizing
+  const [drawerWidth, setDrawerWidth] = useState(450);
+  const [isResizing, setIsResizing] = useState(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -161,6 +166,47 @@ export default function Home() {
   const handleEmailContactChange = (newContact: Contact) => {
     setSelectedEmailContact(newContact);
   };
+  
+  // Resize handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizing) return;
+    
+    const newWidth = window.innerWidth - e.clientX;
+    const minWidth = 320;
+    const maxWidth = 600;
+    
+    if (newWidth >= minWidth && newWidth <= maxWidth) {
+      setDrawerWidth(newWidth);
+    }
+  }, [isResizing]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   // Auto-collapse search section when email drawer opens
   useEffect(() => {
@@ -2700,11 +2746,29 @@ export default function Home() {
       </div>
       
       {/* Email Drawer - Overlay on mobile, push-aside on desktop */}
-      <div className={`email-drawer-transition ${
-        emailDrawerOpen 
-          ? 'fixed md:relative top-[2.5rem] md:top-0 right-0 h-[calc(100vh-2.5rem)] md:h-full w-[90%] sm:w-[400px] md:w-[400px] lg:w-[450px] xl:w-[500px] z-50 md:z-auto' 
-          : 'md:relative w-0'
-      } overflow-hidden border-l border-t rounded-tl-lg bg-background shadow-xl md:shadow-none`}>
+      <div 
+        ref={drawerRef}
+        className={`email-drawer-transition relative ${
+          emailDrawerOpen 
+            ? 'fixed md:relative top-[2.5rem] md:top-0 right-0 h-[calc(100vh-2.5rem)] md:h-full w-[90%] sm:w-[400px] md:w-auto z-50 md:z-auto' 
+            : 'md:relative w-0'
+        } overflow-hidden border-l border-t rounded-tl-lg bg-background shadow-xl md:shadow-none`}
+        style={{ 
+          ...(emailDrawerOpen && window.innerWidth >= 768 ? { width: `${drawerWidth}px` } : {})
+        }}
+      >
+        {/* Resize Handle - Only show on desktop */}
+        {emailDrawerOpen && (
+          <div
+            onMouseDown={handleMouseDown}
+            className="hidden md:block absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500 transition-colors z-10 group"
+          >
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-10 bg-muted rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="w-0.5 h-6 bg-muted-foreground/40 rounded-full" />
+            </div>
+          </div>
+        )}
+        
         <div className="h-full overflow-y-auto" style={{ minWidth: emailDrawerOpen ? '320px' : '0' }}>
           {/* Header */}
           <div className="sticky top-0 bg-background px-4 py-1.5 flex items-center justify-between z-10">
