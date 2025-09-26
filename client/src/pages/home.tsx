@@ -2764,7 +2764,7 @@ export default function Home() {
             onMouseDown={handleMouseDown}
             className="hidden md:block absolute -left-1.5 top-0 bottom-0 w-3 cursor-col-resize z-10 group"
           >
-            <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-muted-foreground/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute left-0.5 top-1/2 -translate-y-1/2 w-1.5 h-12 bg-muted-foreground/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         )}
         
