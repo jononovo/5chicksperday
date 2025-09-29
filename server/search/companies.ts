@@ -136,13 +136,24 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
         console.log(`[Quick Search] Session ${sessionId} created with job ${jobId}`);
       }
       
+      // Execute immediately for quick search - eliminates 5 second polling delay
+      console.log(`[Quick Search] Executing job ${jobId} immediately for fast results`);
+      setTimeout(async () => {
+        try {
+          await SearchJobService.executeJob(jobId);
+        } catch (error) {
+          console.error(`[Quick Search] Error executing job ${jobId}:`, error);
+          // Job will be retried by processor if available
+        }
+      }, 0); // Non-blocking execution
+      
       // Return job information for frontend to poll
       res.json({
         jobId,
         sessionId,
         query,
         searchType: searchType || 'companies',
-        message: "Search job created and processing"
+        message: "Search job created and processing immediately"
       });
       
     } catch (error) {
@@ -226,13 +237,24 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
         console.log(`[Full Search] Session ${sessionId} created with job ${jobId}`);
       }
       
+      // Execute immediately for full search - eliminates 5 second polling delay
+      console.log(`[Full Search] Executing job ${jobId} immediately for fast results`);
+      setTimeout(async () => {
+        try {
+          await SearchJobService.executeJob(jobId);
+        } catch (error) {
+          console.error(`[Full Search] Error executing job ${jobId}:`, error);
+          // Job will be retried by processor if available
+        }
+      }, 0); // Non-blocking execution
+      
       // Return job information for frontend to poll
       res.json({
         jobId,
         sessionId,
         query,
         searchType: jobSearchType,
-        message: "Search job created and processing"
+        message: "Search job created and processing immediately"
       });
       
     } catch (error) {
