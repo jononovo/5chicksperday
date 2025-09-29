@@ -1,0 +1,50 @@
+API Request: POST /api/lists 
+Object {hasData: true, timestamp: "2025-09-29T19:35:14.125Z"}
+Saving search state: 
+Object {query: "fintech in washington dc", resultsCount: 7, listId: null, companies: Array(7)}
+API Request: GET /api/search-jobs/bdfd3daa-f655-41e1-b995-d0d1610bcc32 
+Object {hasData: false, timestamp: "2025-09-29T19:35:15.116Z"}
+=== PARENT COMPONENT: handleSearchResults called ===
+Received query: fintech in washington dc
+Received results count: 7
+Current component state - query: fintech in washington dc
+Current component state - results count: 7
+Complete results received with contacts: 7
+Companies reordered by contact count: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+=== PARENT COMPONENT: State updated ===
+New state - query: fintech in washington dc
+New state - results count: 7
+handleSearchResults completed
+Companies with contacts: 0 of 7
+Progressive update: 7 companies, 0 contacts
+API Request: POST /api/lists 
+Object {hasData: true, timestamp: "2025-09-29T19:35:17.117Z"}
+Saving search state: 
+Object {query: "fintech in washington dc", resultsCount: 7, listId: 1069, companies: Array(7)}
+API Request: GET /api/search-jobs/bdfd3daa-f655-41e1-b995-d0d1610bcc32 
+Object {hasData: false, timestamp: "2025-09-29T19:35:18.117Z"}
+=== PARENT COMPONENT: handleSearchResults called ===
+Received query: fintech in washington dc
+Received results count: 7
+Current component state - query: fintech in washington dc
+Current component state - results count: 7
+Complete results received with contacts: 7
+Companies reordered by contact count: 
+(7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+=== PARENT COMPONENT: State updated ===
+New state - query: fintech in washington dc
+New state - results count: 7
+handleSearchResults completed
+Companies with contacts: 0 of 7
+Progressive update: 7 companies, 0 contacts
+API Request: POST /api/lists 
+Object {hasData: true, timestamp: "2025-09-29T19:35:20.117Z"}
+Saving search state: 
+Object {query: "fintech in washington dc", resultsCount: 7, listId: 1070, companies: Array(7)}
+API Request: GET /api/search-jobs/bdfd3daa-f655-41e1-b995-d0d1610bcc32 
+Object {hasData: false, timestamp: "2025-09-29T19:35:21.117Z"}
+=== PARENT COMPONENT: handleSearchResults called ===
+Received query: fintech in washington dc
+Received results count: 7
+Current component state - query: fintech in washington dc

@@ -1,5 +1,5 @@
 import { storage } from "../../storage";
-import { searchCompanies } from "../perplexity/company-search";
+import { searchCompanies, discoverCompanies, enrichCompanyDetails } from "../perplexity/company-search";
 import { findKeyDecisionMakers } from "../contacts/finder";
 import { CreditService } from "../../features/billing/credits/service";
 import type { InsertSearchJob, SearchJob } from "@shared/schema";
@@ -106,30 +106,31 @@ export class SearchJobService {
         return;
       }
       
-      // Regular flow: Search companies first
-      // Phase 1: Search for companies
-      const totalPhases = job.searchType === 'emails' ? 6 : 5;
+      // Regular flow: Fast company discovery with parallel enrichment
+      // Phase 1: Fast company discovery (just names & websites)
+      const totalPhases = job.searchType === 'emails' ? 7 : 6;
       await this.updateJobProgress(job.id, {
         phase: 'Finding companies',
         completed: 1,
         total: totalPhases,
-        message: 'Searching for matching companies'
+        message: 'Discovering matching companies'
       });
 
-      const companies = await searchCompanies(job.query);
-      console.log(`[SearchJobService] Found ${companies.length} companies for job ${jobId}`);
+      const discoveredCompanies = await discoverCompanies(job.query);
+      console.log(`[SearchJobService] Discovered ${discoveredCompanies.length} companies for job ${jobId}`);
 
-      // Phase 2: Save companies to database
+      // Phase 2: Save companies immediately for fast display
       await this.updateJobProgress(job.id, {
         phase: 'Saving companies',
         completed: 2,
         total: totalPhases,
-        message: `Processing ${companies.length} companies`
+        message: `Processing ${discoveredCompanies.length} companies`
       });
 
-      for (const company of companies) {
+      for (const company of discoveredCompanies) {
         const companyData: any = {
           ...company,
+          description: null, // Will be enriched later
           userId: job.userId,
           listId: (job.metadata as any)?.listId || null
         };
@@ -137,24 +138,48 @@ export class SearchJobService {
         savedCompanies.push(savedCompany);
       }
       
-      // Phase 3: Find contacts if requested
+      // Save companies to job results immediately (5-7 seconds from start)
+      const companiesOnlyResults = {
+        companies: savedCompanies.map(company => ({ ...company, contacts: [] })),
+        contacts: [],
+        totalCompanies: savedCompanies.length,
+        totalContacts: 0
+      };
+      
+      await storage.updateSearchJob(job.id, {
+        results: companiesOnlyResults
+      });
+      
+      console.log(`[SearchJobService] Saved ${savedCompanies.length} companies for immediate display`);
+      
+      // Phase 3: Parallel enrichment and contact discovery
       if (job.searchType === 'contacts' || job.searchType === 'emails') {
         await this.updateJobProgress(job.id, {
-          phase: 'Finding contacts',
+          phase: 'Enriching data',
           completed: 3,
           total: totalPhases,
-          message: 'Discovering key decision makers'
+          message: 'Enriching companies and finding contacts in parallel'
         });
 
-        // Use the new ContactSearchService
-        const { ContactSearchService } = await import('./contact-search-service');
+        // Prepare parallel tasks
+        const parallelTasks: Promise<any>[] = [];
         
-        const contactResults = await ContactSearchService.searchContacts({
+        // Task 1: Enrich company descriptions
+        const enrichmentTask = enrichCompanyDetails(discoveredCompanies).catch(error => {
+          console.error(`[SearchJobService] Company enrichment failed:`, error);
+          return []; // Return empty array on failure
+        });
+        parallelTasks.push(enrichmentTask);
+        
+        // Task 2: Find contacts
+        const { ContactSearchService } = await import('./contact-search-service');
+        const contactTask = ContactSearchService.searchContacts({
           companies: savedCompanies,
           userId: job.userId,
           searchConfig: job.contactSearchConfig as ContactSearchConfig || ContactSearchService.getDefaultConfig(),
           jobId: job.jobId,
           onProgress: async (message: string) => {
+            // Update progress to show contact search status
             await this.updateJobProgress(job.id, {
               phase: 'Finding contacts',
               completed: 3,
@@ -162,27 +187,78 @@ export class SearchJobService {
               message
             });
           }
+        }).catch(error => {
+          console.error(`[SearchJobService] Contact search failed:`, error);
+          return []; // Return empty array on failure
         });
-
-        // Flatten all contacts from results
-        for (const result of contactResults) {
-          contacts.push(...result.contacts.map(contact => ({
-            ...contact,
-            companyName: result.companyName
-          })));
-        }
-
-        console.log(`[SearchJobService] Found ${contacts.length} contacts for job ${jobId}`);
+        parallelTasks.push(contactTask);
         
-        // Phase 3.5: Find emails for contacts if searchType is 'emails'
+        // Execute both tasks in parallel
+        console.log(`[SearchJobService] Starting parallel enrichment and contact search`);
+        const [enrichedDescriptions, contactResults] = await Promise.all(parallelTasks);
+        
+        // Update companies with enriched descriptions
+        if (enrichedDescriptions && enrichedDescriptions.length > 0) {
+          for (const enrichedCompany of enrichedDescriptions) {
+            const savedCompany = savedCompanies.find(c => c.name === enrichedCompany.name);
+            if (savedCompany && enrichedCompany.description) {
+              savedCompany.description = enrichedCompany.description;
+              // Update in database
+              await storage.updateCompany(savedCompany.id, { description: enrichedCompany.description });
+            }
+          }
+          console.log(`[SearchJobService] Enriched ${enrichedDescriptions.length} company descriptions`);
+        }
+        
+        // Process contact results
+        if (contactResults && contactResults.length > 0) {
+          for (const result of contactResults) {
+            contacts.push(...result.contacts.map((contact: any) => ({
+              ...contact,
+              companyId: result.companyId,  // CRITICAL: Include companyId for filtering
+              companyName: result.companyName
+            })));
+          }
+          console.log(`[SearchJobService] Found ${contacts.length} contacts`);
+        }
+        
+        // Update results with enriched companies and contacts
+        const companiesWithContactsResults = {
+          companies: savedCompanies.map(company => {
+            const companyContacts = contacts.filter((contact: any) => 
+              contact.companyId === company.id
+            );
+            return {
+              ...company,
+              contacts: companyContacts
+            };
+          }),
+          contacts: contacts,
+          totalCompanies: savedCompanies.length,
+          totalContacts: contacts.length
+        };
+        
+        await storage.updateSearchJob(job.id, {
+          results: companiesWithContactsResults
+        });
+        
+        console.log(`[SearchJobService] Updated job with enriched data and ${contacts.length} contacts`);
+        
+        // Phase 4: Find emails for contacts if searchType is 'emails'
         if (job.searchType === 'emails' && contacts.length > 0) {
+          await this.updateJobProgress(job.id, {
+            phase: 'Finding emails',
+            completed: 4,
+            total: totalPhases,
+            message: `Discovering email addresses for ${contacts.length} contacts`
+          });
           console.log(`[SearchJobService] Starting email enrichment for ${contacts.length} contacts`);
           await this.enrichContactsWithEmails(job, contacts, savedCompanies, totalPhases);
         }
       }
 
-      // Phase 4: Deduct credits if applicable
-      const creditPhase = job.searchType === 'emails' ? 5 : 4;
+      // Phase 5: Deduct credits if applicable
+      const creditPhase = job.searchType === 'emails' ? 6 : 5;
       if (job.source !== 'cron' && savedCompanies.length > 0) {
         await this.updateJobProgress(job.id, {
           phase: 'Processing credits',
@@ -202,8 +278,8 @@ export class SearchJobService {
         );
       }
 
-      // Phase 5: Mark job as completed
-      const completedPhase = job.searchType === 'emails' ? 6 : 5;
+      // Phase 6: Mark job as completed
+      const completedPhase = job.searchType === 'emails' ? 7 : 6;
       await this.updateJobProgress(job.id, {
         phase: 'Completed',
         completed: completedPhase,
@@ -773,6 +849,26 @@ export class SearchJobService {
           completed: 4,
           total: totalPhases,
           message: `Finding emails: ${companiesProcessed}/${totalCompanies} companies processed (${totalEmailsFound} emails found)`
+        });
+        
+        // Update job results with current email data for progressive display
+        const companiesWithCurrentEmails = companies.map(company => {
+          const companyContacts = contacts.filter((contact: any) => 
+            contact.companyId === company.id
+          );
+          return {
+            ...company,
+            contacts: companyContacts
+          };
+        });
+        
+        await storage.updateSearchJob(job.id, {
+          results: {
+            companies: companiesWithCurrentEmails,
+            contacts: contacts,
+            totalCompanies: companies.length,
+            totalContacts: contacts.length
+          }
         });
         
         console.log(`[SearchJobService] Batch ${batchIndex + 1} complete in ${Date.now() - batchStartTime}ms - ${companiesProcessed}/${totalCompanies} companies processed`);

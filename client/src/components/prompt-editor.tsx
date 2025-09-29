@@ -576,27 +576,44 @@ export default function PromptEditor({
           if (response.ok) {
             const jobData = await response.json();
             
+            // Display partial results even when processing
+            if ((jobData.status === 'processing' || jobData.status === 'completed') && jobData.results) {
+              const companies = jobData.results?.companies || [];
+              const totalContacts = companies.reduce((sum: number, company: any) => 
+                sum + (company.contacts?.length || 0), 0);
+              
+              // Update UI with current results (progressive display)
+              if (companies.length > 0) {
+                if (currentSessionId) {
+                  if (searchType === 'companies') {
+                    SearchSessionManager.updateWithQuickResults(currentSessionId, companies);
+                    onCompaniesReceived(value, companies);
+                  } else {
+                    SearchSessionManager.updateWithFullResults(currentSessionId, companies);
+                    onSearchResults(value, companies);
+                  }
+                }
+                
+                console.log(`Progressive update: ${companies.length} companies, ${totalContacts} contacts`);
+              }
+            }
+            
             if (jobData.status === 'completed') {
               console.log(`Job ${data.jobId} completed`);
               isPollingRef.current = false;
               setIsPolling(false);
               
-              // Process results based on search type
+              // Process final results
               const companies = jobData.results?.companies || [];
               const totalContacts = companies.reduce((sum: number, company: any) => 
                 sum + (company.contacts?.length || 0), 0);
               
-              console.log(`Found ${companies.length} companies with ${totalContacts} contacts`);
+              console.log(`Final results: ${companies.length} companies with ${totalContacts} contacts`);
               
-              // Update session with results
+              // Final update to session
               if (currentSessionId) {
                 if (searchType === 'companies') {
-                  SearchSessionManager.updateWithQuickResults(currentSessionId, companies);
                   SearchSessionManager.markQuickResultsComplete(currentSessionId);
-                  onCompaniesReceived(value, companies);
-                } else {
-                  SearchSessionManager.updateWithFullResults(currentSessionId, companies);
-                  onSearchResults(value, companies);
                 }
               }
               

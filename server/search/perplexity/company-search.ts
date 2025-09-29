@@ -6,6 +6,148 @@ import { findKeyDecisionMakers } from "../contacts/finder";
 import { cleanPerplexityResponse } from "../../lib/utils";
 
 // Core search functions
+
+// Fast discovery - just get names and websites for immediate display (5-7 seconds)
+export async function discoverCompanies(query: string): Promise<Array<{name: string, website: string | null}>> {
+  console.log(`[PERPLEXITY API CALL] discoverCompanies called with query: "${query}"`);
+  console.log(`[PERPLEXITY API CALL] Timestamp: ${new Date().toISOString()}`);
+  
+  const messages: PerplexityMessage[] = [
+    {
+      role: "system",
+      content: "Be precise and concise. Return results immediately. Website: Only include the official domain." 
+    },
+    {
+      role: "user",
+      content: `List 7 companies matching: ${query}
+Return ONLY company names and websites. Be concise.
+Format: JSON array with "name" and "website" fields.`
+    }
+  ];
+
+  const startTime = Date.now();
+  let response = '';
+  
+  try {
+    console.log(`[PERPLEXITY API CALL] Making fast discovery request to Perplexity`);
+    response = await queryPerplexity(messages);
+    const elapsed = Date.now() - startTime;
+    console.log(`[PERPLEXITY API CALL] Discovery completed in ${elapsed}ms`);
+    console.log('Raw Perplexity discovery response:', response);
+    
+    const cleanedResponse = cleanPerplexityResponse(response);
+    const jsonMatch = cleanedResponse.match(/(\[\s*\{[\s\S]*?\}\s*\])/);
+    const jsonString = jsonMatch ? jsonMatch[1] : cleanedResponse;
+    
+    try {
+      const parsed = JSON.parse(jsonString);
+      const companiesArray = Array.isArray(parsed) ? parsed : 
+                          (parsed.companies && Array.isArray(parsed.companies) ? parsed.companies : null);
+      
+      if (companiesArray) {
+        const companies = companiesArray.slice(0, 7).map((company: {name: string, website?: string}) => ({
+          name: company.name,
+          website: company.website || null
+        }));
+        console.log(`Successfully discovered ${companies.length} companies in ${elapsed}ms`);
+        return companies;
+      }
+    } catch (jsonError) {
+      console.error('JSON parsing failed in discovery:', jsonError);
+    }
+    
+    // Fallback parsing for just names and websites
+    const nameMatches = cleanedResponse.match(/"name":\s*"([^"]*)"/g) || [];
+    const websiteMatches = cleanedResponse.match(/"website":\s*"([^"]*)"/g) || [];
+    
+    const companies = [];
+    for (let i = 0; i < nameMatches.length && companies.length < 7; i++) {
+      const nameMatch = nameMatches[i].match(/"name":\s*"([^"]*)"/);
+      if (nameMatch && nameMatch[1]) {
+        let website = null;
+        if (i < websiteMatches.length) {
+          const websiteMatch = websiteMatches[i].match(/"website":\s*"([^"]*)"/);
+          website = websiteMatch && websiteMatch[1] ? websiteMatch[1].trim() : null;
+        }
+        companies.push({
+          name: nameMatch[1].trim(),
+          website: website
+        });
+      }
+    }
+    
+    if (companies.length > 0) {
+      console.log(`Extracted ${companies.length} companies using fallback in ${elapsed}ms`);
+      return companies;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Error in company discovery:', error);
+    return [];
+  }
+}
+
+// Enrichment - get descriptions (can run in parallel with contact search)
+export async function enrichCompanyDetails(companies: Array<{name: string, website: string | null}>): Promise<Array<{name: string, description: string | null}>> {
+  if (!companies.length) {
+    return [];
+  }
+  
+  console.log(`[PERPLEXITY API CALL] enrichCompanyDetails called for ${companies.length} companies`);
+  
+  const companyList = companies.map(c => `${c.name}${c.website ? ` (${c.website})` : ''}`).join(', ');
+  
+  const messages: PerplexityMessage[] = [
+    {
+      role: "system",
+      content: "Provide concise 1-2 sentence descriptions of what each company does." 
+    },
+    {
+      role: "user",
+      content: `For these companies: ${companyList}
+Provide a brief description (1-2 sentences) for each.
+Format: JSON array with "name" and "description" fields.`
+    }
+  ];
+
+  const startTime = Date.now();
+  
+  try {
+    console.log(`[PERPLEXITY API CALL] Making enrichment request to Perplexity`);
+    const response = await queryPerplexity(messages);
+    const elapsed = Date.now() - startTime;
+    console.log(`[PERPLEXITY API CALL] Enrichment completed in ${elapsed}ms`);
+    
+    const cleanedResponse = cleanPerplexityResponse(response);
+    const jsonMatch = cleanedResponse.match(/(\[\s*\{[\s\S]*?\}\s*\])/);
+    const jsonString = jsonMatch ? jsonMatch[1] : cleanedResponse;
+    
+    try {
+      const parsed = JSON.parse(jsonString);
+      const enrichedArray = Array.isArray(parsed) ? parsed : 
+                          (parsed.companies && Array.isArray(parsed.companies) ? parsed.companies : []);
+      
+      const enrichedData = enrichedArray.map((item: {name: string, description?: string}) => ({
+        name: item.name,
+        description: item.description || null
+      }));
+      
+      console.log(`Successfully enriched ${enrichedData.length} companies in ${elapsed}ms`);
+      return enrichedData;
+    } catch (jsonError) {
+      console.error('Failed to parse enrichment response:', jsonError);
+      // Return empty descriptions on failure
+      return companies.map(c => ({ name: c.name, description: null }));
+    }
+  } catch (error) {
+    console.error('Error enriching company details:', error);
+    // Return empty descriptions on failure
+    return companies.map(c => ({ name: c.name, description: null }));
+  }
+}
+
+// Legacy function - kept for backward compatibility
 export async function searchCompanies(query: string): Promise<Array<{name: string, website: string | null, description: string | null}>> {
   console.log(`[PERPLEXITY API CALL] searchCompanies called with query: "${query}"`);
   console.log(`[PERPLEXITY API CALL] Timestamp: ${new Date().toISOString()}`);

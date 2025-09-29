@@ -41,25 +41,33 @@ export class ContactSearchService {
   ): Promise<Contact[]> {
     const savedContacts: Contact[] = [];
     
+    // Fetch all existing contacts for the company once (batch optimization)
+    const existingContacts = await storage.listContactsByCompany(company.id, userId);
+    
+    // Create lookup maps for faster deduplication
+    const existingByEmail = new Map(
+      existingContacts
+        .filter(c => c.email)
+        .map(c => [c.email!.toLowerCase(), c])
+    );
+    const existingByName = new Map(
+      existingContacts
+        .filter(c => c.name)
+        .map(c => [c.name.toLowerCase(), c])
+    );
+    
     for (const contactData of contacts) {
       try {
-        // Check if contact already exists (by email or name+company)
-        const existingContacts = await storage.listContactsByCompany(company.id, userId);
-        
         let existingContact = null;
         
-        // First check by email if available
+        // First check by email if available (now using Map lookup - O(1) instead of O(n))
         if (contactData.email) {
-          existingContact = existingContacts.find(c => 
-            c.email?.toLowerCase() === contactData.email?.toLowerCase()
-          );
+          existingContact = existingByEmail.get(contactData.email.toLowerCase());
         }
         
         // If no email match, check by name (case-insensitive)
         if (!existingContact && contactData.name) {
-          existingContact = existingContacts.find(c => 
-            c.name?.toLowerCase() === contactData.name?.toLowerCase()
-          );
+          existingContact = existingByName.get(contactData.name.toLowerCase());
         }
         
         if (existingContact) {
