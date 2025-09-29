@@ -5,6 +5,8 @@
 
 import { Express, Request, Response } from "express";
 import { storage } from "../storage";
+import { searchCompanies } from "./perplexity/company-search";
+import { findKeyDecisionMakers } from "./contacts/finder";
 import { CreditService } from "../features/billing/credits/service";
 import { SearchType } from "../features/billing/credits/types";
 import { SessionManager } from "./sessions";
@@ -12,9 +14,14 @@ import { getUserId } from "../utils/auth";
 import rateLimit from "express-rate-limit";
 import type { 
   QuickSearchRequest, 
-  CompanySearchRequest
+  CompanySearchRequest,
+  SearchCache 
 } from "./types";
 
+// Ensure global searchCache exists
+if (!global.searchCache) {
+  global.searchCache = new Map<string, SearchCache>();
+}
 
 // Create session-based rate limiter for demo searches
 const demoSearchLimiter = rateLimit({
@@ -34,6 +41,20 @@ const demoSearchLimiter = rateLimit({
     });
   }
 });
+
+
+/**
+ * Process items in batches for rate limiting
+ */
+async function processBatch<T, R>(items: T[], processor: (item: T) => Promise<R>, batchSize: number = 4): Promise<R[]> {
+  const results: R[] = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    const batchResults = await Promise.all(batch.map(processor));
+    results.push(...batchResults);
+  }
+  return results;
+}
 
 /**
  * Map frontend search type to backend search type for billing
@@ -68,7 +89,7 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
     }
   });
 
-  // Quick company search endpoint - creates a job and returns immediately
+  // Quick company search endpoint - returns companies immediately without waiting for contacts
   app.post("/api/companies/quick-search", (req: Request, res: Response, next) => {
     // Apply rate limiting to demo users (userId = 1) and unauthenticated users
     const userId = (req as any).user?.id;
@@ -90,8 +111,9 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
     }
     
     try {
-      console.log(`[Quick Search] Creating job for query: ${query}`);
-      console.log(`[Quick Search] Search type: ${searchType || 'companies'}`);
+      console.log(`[Quick Search] Processing query: ${query}`);
+      console.log(`[Quick Search] Using strategy ID: ${strategyId || 'default'}`);
+      console.log(`[Quick Search] Search type: ${searchType || 'emails'}`);
       
       // Credit blocking check: Prevent searches if user has negative balance
       if ((req as any).isAuthenticated() && (req as any).user) {
@@ -104,45 +126,84 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
         }
       }
       
-      // Import SearchJobService
-      const { SearchJobService } = await import("./services/search-job-service");
+      // First, get the company search results quickly
+      const companyResults = await searchCompanies(query);
       
-      // Create a job instead of processing directly
-      const jobId = await SearchJobService.createJob({
-        userId,
-        query,
-        searchType: (searchType || 'companies') as 'companies' | 'contacts' | 'emails',
-        contactSearchConfig,
-        source: 'frontend',
-        metadata: {
-          sessionId,
-          strategyId,
-          isQuickSearch: true
-        },
-        priority: 1 // Higher priority for quick search
+      if (!companyResults || companyResults.length === 0) {
+        return res.json({
+          companies: [],
+          query
+        });
+      }
+      
+      // Prepare companies with minimal processing for quick display
+      const companies = await Promise.all(
+        companyResults.slice(0, 7).map(async (company) => {
+          // Extract company name, website and description (if available)
+          const companyName = typeof company === 'string' ? company : company.name;
+          const companyWebsite = typeof company === 'string' ? null : (company.website || null);
+          const companyDescription = typeof company === 'string' ? null : (company.description || null);
+          
+          // Create the company record with basic info
+          const createdCompany = await storage.createCompany({
+            name: companyName,
+            website: companyWebsite,
+            description: companyDescription,
+            userId
+          });
+          
+          return createdCompany;
+        })
+      );
+
+      // Cache both API results and created company records for full search reuse
+      const cacheKey = `search_${Buffer.from(query).toString('base64')}_companies`;
+      global.searchCache.set(cacheKey, {
+        apiResults: companyResults,
+        companyRecords: companies,
+        timestamp: Date.now(),
+        ttl: 5 * 60 * 1000 // 5 minutes
       });
       
-      console.log(`[Quick Search] Created job ${jobId} for user ${userId}`);
+      console.log(`[Quick Search] Cached ${companyResults.length} company API results and ${companies.length} database records for reuse`);
+      console.log(`[Quick Search] Cache key: ${cacheKey}`);
       
       // Store session if sessionId provided
       if (sessionId) {
         SessionManager.createOrUpdateSession(sessionId, {
           query,
-          status: 'pending',
-          jobId,
+          status: 'companies_found',
+          quickResults: companies,
           timestamp: Date.now(),
           ttl: 30 * 60 * 1000 // 30 minutes
         });
-        console.log(`[Quick Search] Session ${sessionId} created with job ${jobId}`);
+        console.log(`[Quick Search] Session ${sessionId} updated with companies`);
       }
       
-      // Return job information for frontend to poll
+      // Pre-response billing: Deduct credits based on actual search type selected
+      if ((req as any).isAuthenticated() && (req as any).user && companies.length > 0) {
+        try {
+          const creditSearchType = mapSearchTypeToCredits(searchType || 'companies');
+          
+          await CreditService.deductCredits(
+            (req as any).user.id,
+            creditSearchType,
+            true
+          );
+          console.log(`Credits deducted for user ${(req as any).user.id}: ${creditSearchType} (frontend type: ${searchType})`);
+        } catch (creditError) {
+          console.error('Credit deduction error:', creditError);
+          // Don't fail the search if credit deduction fails
+        }
+      }
+
+      // Return the quick company data
       res.json({
-        jobId,
-        sessionId,
+        companies,
         query,
-        searchType: searchType || 'companies',
-        message: "Search job created and processing"
+        strategyId: strategyId || null,
+        sessionId,
+        searchType: searchType || 'emails'
       });
       
     } catch (error) {
@@ -153,7 +214,7 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
     }
   });
 
-  // Full company search endpoint with contacts - creates a job
+  // Full company search endpoint with contacts
   app.post("/api/companies/search", (req: Request, res: Response, next) => {
     // Apply rate limiting to demo users (userId = 1) and unauthenticated users
     const userId = (req as any).user?.id;
@@ -165,7 +226,17 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
     next();
   }, async (req: Request, res: Response) => {
     const userId = (req as any).isAuthenticated() && (req as any).user ? (req as any).user.id : 1;
-    const { query, strategyId, includeContacts = true, contactSearchConfig, sessionId, searchType }: CompanySearchRequest = req.body;
+    const { query, strategyId, includeContacts = true, contactSearchConfig, sessionId }: CompanySearchRequest = req.body;
+
+    // Debug: Log contact search configuration at batch level
+    console.log(`[BATCH CONFIG] Contact search configuration:`, {
+      enableCoreLeadership: contactSearchConfig?.enableCoreLeadership,
+      enableDepartmentHeads: contactSearchConfig?.enableDepartmentHeads, 
+      enableMiddleManagement: contactSearchConfig?.enableMiddleManagement,
+      enableCustomSearch: contactSearchConfig?.enableCustomSearch,
+      customSearchTarget: contactSearchConfig?.customSearchTarget,
+      query: query
+    });
 
     if (!query || typeof query !== 'string') {
       res.status(400).json({
@@ -173,70 +244,261 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
       });
       return;
     }
-    
+
     try {
-      console.log(`[Full Search] Creating job for query: ${query}`);
-      console.log(`[Full Search] Search type: ${searchType || (includeContacts ? 'contacts' : 'companies')}`);
-      console.log(`[Full Search] Contact search config:`, contactSearchConfig);
+      // Check cache first to avoid duplicate API calls
+      const cacheKey = `search_${Buffer.from(query).toString('base64')}_companies`;
       
-      // Credit blocking check: Prevent searches if user has negative balance
-      if ((req as any).isAuthenticated() && (req as any).user) {
-        const credits = await CreditService.getUserCredits((req as any).user.id);
-        if (credits.currentBalance < 0) {
-          return res.status(402).json({
-            message: "Account blocked due to insufficient credits",
-            currentBalance: credits.currentBalance
-          });
+      let companyResults;
+      let cachedCompanies = null;
+      const cached = global.searchCache.get(cacheKey);
+      
+      console.log(`[Full Search] Cache key: ${cacheKey}`);
+      console.log(`[Full Search] Cache has ${global.searchCache.size} entries`);
+      console.log(`[Full Search] Cache entry exists: ${!!cached}`);
+      
+      if (cached && (Date.now() - cached.timestamp) < cached.ttl) {
+        console.log(`[Full Search] Using cached company data for query: ${query}`);
+        companyResults = cached.apiResults;
+        cachedCompanies = cached.companyRecords;
+      } else {
+        if (cached) {
+          console.log(`[Full Search] Cache expired - age: ${Date.now() - cached.timestamp}ms, TTL: ${cached.ttl}ms`);
         }
+        console.log(`[Full Search] Cache miss - fetching fresh company results for query: ${query}`);
+        companyResults = await searchCompanies(query);
       }
-      
-      // Import SearchJobService
-      const { SearchJobService } = await import("./services/search-job-service");
-      
-      // Determine search type from request params
-      const jobSearchType = searchType || (includeContacts ? 'contacts' : 'companies');
-      
-      // Create a job instead of processing directly
-      const jobId = await SearchJobService.createJob({
-        userId,
-        query,
-        searchType: jobSearchType as 'companies' | 'contacts' | 'emails',
-        contactSearchConfig,
-        source: 'frontend',
-        metadata: {
-          sessionId,
-          strategyId,
-          isFullSearch: true,
-          includeContacts
-        },
-        priority: 0 // Normal priority for full search
-      });
-      
-      console.log(`[Full Search] Created job ${jobId} for user ${userId}`);
-      
-      // Store session if sessionId provided
-      if (sessionId) {
-        SessionManager.createOrUpdateSession(sessionId, {
+
+      // If we have cached companies, reuse them and enrich with contacts
+      if (cachedCompanies) {
+        console.log(`[Full Search] Reusing ${cachedCompanies.length} cached company records - enriching with contacts`);
+        
+        // Enrich existing companies with contacts using parallel batch processing
+        const enrichedCompanies = await processBatch(
+          cachedCompanies,
+          async (existingCompany) => {
+            const companyName = existingCompany.name;
+            const companyWebsite = existingCompany.website;
+            const companyDescription = existingCompany.description;
+            
+            console.log(`Processing contacts for existing company: ${companyName}`);
+            
+            // Skip company update - use existing company data
+            const updatedCompany = existingCompany;
+
+            // Determine industry from company name and description
+            let industry: string | undefined = undefined;
+            
+            // Simple industry detection using company name and description
+            const companyText = `${companyName} ${companyDescription || ''}`.toLowerCase();
+            const industryKeywords: Record<string, string> = {
+              'software': 'technology',
+              'tech': 'technology',
+              'development': 'technology',
+              'it': 'technology',
+              'programming': 'technology',
+              'cloud': 'technology',
+              'healthcare': 'healthcare',
+              'medical': 'healthcare',
+              'hospital': 'healthcare',
+              'doctor': 'healthcare',
+              'finance': 'financial',
+              'banking': 'financial',
+              'investment': 'financial',
+              'construction': 'construction',
+              'building': 'construction',
+              'real estate': 'construction',
+              'legal': 'legal',
+              'law': 'legal',
+              'attorney': 'legal',
+              'retail': 'retail',
+              'shop': 'retail',
+              'store': 'retail',
+              'education': 'education',
+              'school': 'education',
+              'university': 'education',
+              'manufacturing': 'manufacturing',
+              'factory': 'manufacturing',
+              'production': 'manufacturing',
+              'consulting': 'consulting',
+              'advisor': 'consulting'
+            };
+            
+            for (const [keyword, industryValue] of Object.entries(industryKeywords)) {
+              if (companyText.includes(keyword)) {
+                industry = industryValue;
+                break;
+              }
+            }
+            
+            if (!industry && companyName) {
+              const nameLower = companyName.toLowerCase();
+              if (nameLower.includes('tech') || nameLower.includes('software')) {
+                industry = 'technology';
+              } else if (nameLower.includes('health') || nameLower.includes('medical')) {
+                industry = 'healthcare';
+              } else if (nameLower.includes('financ') || nameLower.includes('bank')) {
+                industry = 'financial';
+              } else if (nameLower.includes('consult')) {
+                industry = 'consulting';
+              }
+            }
+            
+            console.log(`Detected industry for ${companyName}: ${industry || 'unknown'}`);
+            
+            // Debug: Log company-level configuration before enhanced contact finder
+            console.log(`[COMPANY CONFIG] ${companyName} - Search config:`, {
+              enableCoreLeadership: contactSearchConfig?.enableCoreLeadership,
+              enableDepartmentHeads: contactSearchConfig?.enableDepartmentHeads,
+              enableMiddleManagement: contactSearchConfig?.enableMiddleManagement,
+              enableCustomSearch: contactSearchConfig?.enableCustomSearch,
+              customSearchTarget: contactSearchConfig?.customSearchTarget
+            });
+            
+            // Use enhanced contact finder with user configuration
+            const contacts = await findKeyDecisionMakers(companyName, {
+              industry: industry,
+              minimumConfidence: 30,
+              maxContacts: 20,
+              includeMiddleManagement: true,
+              prioritizeLeadership: true,
+              useMultipleQueries: true,
+              // Use frontend-configured search phases
+              enableCoreLeadership: contactSearchConfig?.enableCoreLeadership,
+              enableDepartmentHeads: contactSearchConfig?.enableDepartmentHeads,
+              enableMiddleManagement: contactSearchConfig?.enableMiddleManagement,
+              enableCustomSearch: contactSearchConfig?.enableCustomSearch ?? false,
+              customSearchTarget: contactSearchConfig?.customSearchTarget ?? "",
+              enableCustomSearch2: contactSearchConfig?.enableCustomSearch2 ?? false,
+              customSearchTarget2: contactSearchConfig?.customSearchTarget2 ?? ""
+            });
+            
+            console.log(`Found ${contacts.length} contacts using enhanced contact finder`);
+
+            // Create contact records
+            const createdContacts = await Promise.all(
+              contacts.map(contact =>
+                storage.createContact({
+                  companyId: existingCompany.id,
+                  name: contact.name!,
+                  role: contact.role ?? null,
+                  email: contact.email ?? null,
+                  probability: contact.probability ?? null,
+                  linkedinUrl: null,
+                  twitterHandle: null,
+                  phoneNumber: null,
+                  department: null,
+                  location: null,
+                  verificationSource: 'Decision-maker Analysis',
+                  nameConfidenceScore: contact.nameConfidenceScore ?? null,
+                  userFeedbackScore: null,
+                  feedbackCount: 0,
+                  userId: userId
+                })
+              )
+            );
+
+            return { ...updatedCompany || existingCompany, contacts: createdContacts };
+          },
+          4 // batch size
+        );
+        
+        // Store complete session results if sessionId provided
+        if (sessionId) {
+          SessionManager.markContactsComplete(sessionId, enrichedCompanies);
+        }
+        
+        // Return enriched companies using existing records
+        res.json({
+          companies: enrichedCompanies,
           query,
-          status: 'pending',
-          jobId,
-          timestamp: Date.now(),
-          ttl: 30 * 60 * 1000 // 30 minutes
+          strategyId: null,
+          strategyName: "Direct Search Flow",
+          sessionId
         });
-        console.log(`[Full Search] Session ${sessionId} created with job ${jobId}`);
+        
+        return; // Early return to skip the new company creation logic
       }
-      
-      // Return job information for frontend to poll
+
+      // If no cached companies, create new ones (fallback logic)
+      const companies = await Promise.all(
+        companyResults.slice(0, 7).map(async (company: any) => {
+          // Extract company name, website and description (if available)
+          const companyName = typeof company === 'string' ? company : company.name;
+          const companyWebsite = typeof company === 'string' ? null : (company.website || null);
+          const companyDescription = typeof company === 'string' ? null : (company.description || null);
+          
+          console.log(`Processing company: ${companyName}, Website: ${companyWebsite || 'Not available'}`);
+          
+          // Skip broken analysis and use direct contact search
+          console.log(`Processing contacts for new company: ${companyName}`);
+
+          // Create the company record with minimal data
+          const createdCompany = await storage.createCompany({
+            name: companyName,
+            website: companyWebsite,
+            description: companyDescription,
+            userId
+          });
+
+          // Use direct contact search without broken strategy dependencies
+          const contacts = await findKeyDecisionMakers(companyName, {
+            industry: 'unknown',
+            minimumConfidence: 30,
+            maxContacts: 15,
+            includeMiddleManagement: true,
+            prioritizeLeadership: true,
+            useMultipleQueries: true,
+          });
+          
+          console.log(`Found ${contacts.length} contacts for ${companyName}`);
+
+          // Create contact records
+          const createdContacts = await Promise.all(
+            contacts.map(contact =>
+              storage.createContact({
+                companyId: createdCompany.id,
+                name: contact.name!,
+                role: contact.role ?? null,
+                email: contact.email ?? null,
+                probability: contact.probability ?? null,
+                linkedinUrl: null,
+                twitterHandle: null,
+                phoneNumber: null,
+                department: null,
+                location: null,
+                verificationSource: 'Contact Search',
+                nameConfidenceScore: contact.nameConfidenceScore ?? null,
+                userFeedbackScore: null,
+                feedbackCount: 0,
+                userId
+              })
+            )
+          );
+
+          return { ...createdCompany, contacts: createdContacts };
+        })
+      );
+
+      // Store complete session results if sessionId provided
+      if (sessionId) {
+        SessionManager.markContactsComplete(sessionId, companies);
+      }
+
+      // Return results immediately to complete the search
       res.json({
-        jobId,
-        sessionId,
-        query,
-        searchType: jobSearchType,
-        message: "Search job created and processing"
+        companies: companies,
+        query: query,
+        strategyId: null,
+        strategyName: "Direct Search Flow",
+        sessionId
       });
-      
+
+      // Contact discovery complete - return results immediately
+      console.log(`Search completed successfully with ${companies.length} companies`);
+
     } catch (error) {
-      console.error('Full search error:', error);
+      console.error('Company search error:', error);
       res.status(500).json({
         message: error instanceof Error ? error.message : "An unexpected error occurred during company search"
       });
