@@ -15,7 +15,7 @@ import {
   type SearchJob, type InsertSearchJob
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, or, sql, desc } from "drizzle-orm";
+import { eq, and, or, sql, desc, lt } from "drizzle-orm";
 
 export interface IStorage {
   // User Auth
@@ -592,6 +592,15 @@ class DatabaseStorage implements IStorage {
       .where(eq(searchJobs.status, 'pending'))
       .orderBy(desc(searchJobs.priority), searchJobs.createdAt)
       .limit(limit);
+  }
+
+  async getStuckProcessingJobs(cutoffTime: Date): Promise<SearchJob[]> {
+    return db.select()
+      .from(searchJobs)
+      .where(and(
+        eq(searchJobs.status, 'processing'),
+        lt(searchJobs.startedAt, cutoffTime)
+      ));
   }
 
   async getFailedJobsForRetry(): Promise<SearchJob[]> {

@@ -554,56 +554,129 @@ export default function PromptEditor({
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
+      // Now we get a jobId instead of companies directly
+      console.log(`Job created with ID: ${data.jobId}`);
       
-      // Pass companies immediately to the parent component
-      console.log("Processing company results...");
-      console.log(`Found ${data.companies.length} companies matching your search`);
-      
-      // Reset input changed state since we have initial results
+      // Reset input changed state since job is created
       setInputHasChanged(false);
       
-      // Update session with quick results and start polling for completion
+      // Update session with job ID and start polling for completion
       if (currentSessionId) {
-        SearchSessionManager.updateWithQuickResults(currentSessionId, data.companies);
-        // Mark quick results as restorable immediately
-        SearchSessionManager.markQuickResultsComplete(currentSessionId);
+        SearchSessionManager.updateSessionWithJob(currentSessionId, data.jobId);
         setIsPolling(true);
-        console.log(`Started polling for session ${currentSessionId} completion`);
+        console.log(`Started polling for job ${data.jobId} completion`);
       }
       
-      onCompaniesReceived(value, data.companies);
-      
-      // Handle search completion based on selected search type
-      if (searchType === 'companies') {
-        toast({
-          title: "Search Complete",
-          description: `Found ${data.companies.length} companies.`,
-        });
+      // Start polling the job status
+      const pollJobStatus = async () => {
+        if (!isPollingRef.current) return;
         
-        setSearchProgress(prev => ({ ...prev, phase: "Search Complete", completed: 5, total: 5 }));
-        
-        // Refresh credits display for authenticated users
-        if (user) {
-          queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+        try {
+          const response = await apiRequest("GET", `/api/search-jobs/${data.jobId}`);
+          if (response.ok) {
+            const jobData = await response.json();
+            
+            if (jobData.status === 'completed') {
+              console.log(`Job ${data.jobId} completed`);
+              isPollingRef.current = false;
+              setIsPolling(false);
+              
+              // Process results based on search type
+              const companies = jobData.results?.companies || [];
+              const totalContacts = companies.reduce((sum: number, company: any) => 
+                sum + (company.contacts?.length || 0), 0);
+              
+              console.log(`Found ${companies.length} companies with ${totalContacts} contacts`);
+              
+              // Update session with results
+              if (currentSessionId) {
+                if (searchType === 'companies') {
+                  SearchSessionManager.updateWithQuickResults(currentSessionId, companies);
+                  SearchSessionManager.markQuickResultsComplete(currentSessionId);
+                  onCompaniesReceived(value, companies);
+                } else {
+                  SearchSessionManager.updateWithFullResults(currentSessionId, companies);
+                  onSearchResults(value, companies);
+                }
+              }
+              
+              // Handle completion
+              if (searchType === 'companies') {
+                toast({
+                  title: "Search Complete",
+                  description: `Found ${companies.length} companies.`,
+                });
+                setSearchProgress(prev => ({ ...prev, phase: "Search Complete", completed: 5, total: 5 }));
+              } else {
+                const searchDuration = Math.round((Date.now() - searchMetrics.startTime) / 1000);
+                setSearchMetrics(prev => ({
+                  ...prev,
+                  totalCompanies: companies.length,
+                  totalContacts: totalContacts,
+                  searchDuration: searchDuration,
+                  companies: companies
+                }));
+                
+                // Show summary
+                setTimeout(() => {
+                  setSummaryVisible(true);
+                  setTimeout(() => {
+                    setSummaryVisible(false);
+                  }, 8000);
+                }, 1000);
+                
+                // Trigger confetti
+                triggerConfetti();
+              }
+              
+              // Refresh credits display
+              if (user) {
+                queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
+              }
+              
+              onComplete();
+            } else if (jobData.status === 'failed') {
+              console.error(`Job ${data.jobId} failed:`, jobData.error);
+              isPollingRef.current = false;
+              setIsPolling(false);
+              
+              toast({
+                title: "Search Failed",
+                description: jobData.error || "An error occurred during search",
+                variant: "destructive",
+              });
+              
+              onComplete();
+            } else {
+              // Job still processing, continue polling
+              if (jobData.progress) {
+                setSearchProgress(prev => ({ 
+                  ...prev, 
+                  phase: jobData.progress.phase || "Processing",
+                  completed: jobData.progress.completed || 0,
+                  total: jobData.progress.total || 5
+                }));
+              }
+              
+              setTimeout(pollJobStatus, 2000);
+            }
+          }
+        } catch (error) {
+          console.error("Polling error:", error);
+          if (isPollingRef.current) {
+            setTimeout(pollJobStatus, 2000);
+          }
         }
-        
-        // Complete the search for companies-only mode
-        onComplete();
-        return;
-      }
+      };
       
-      toast({
-        title: "Companies Found",
-        description: `Found ${data.companies.length} companies. Loading contacts...`,
-      });
+      // Start polling immediately
+      isPollingRef.current = true;
+      pollJobStatus();
       
-      setSearchProgress(prev => ({ ...prev, phase: "Companies Found", completed: 1 }));
+      // Show initial progress
+      setSearchProgress(prev => ({ ...prev, phase: "Starting Search", completed: 1 }));
       
-      // Start the full search with contacts
-      fullContactSearchMutation.mutate(data.query);
-      
-      // Update progress to analyzing companies phase
+      // Update progress indicators
       setTimeout(() => {
         setSearchProgress(prev => ({ ...prev, phase: "Analyzing Companies", completed: 2 }));
       }, 2000);
@@ -689,89 +762,26 @@ export default function PromptEditor({
     },
   });
   
-  // Full search mutation - gets contacts after companies are displayed
+  // Full search mutation - now creates a job like quick search
   const fullContactSearchMutation = useMutation({
     mutationFn: async (searchQuery: string) => {
-      console.log("Starting contact discovery process...");
-      console.log("Searching for key decision makers and contacts...");
-      
-      // Ensure proper typing for the full search request with contacts
-      console.log("Sending comprehensive search request to API...");
-      console.log("This process may take a moment while we find the most relevant contacts...");
+      console.log("Starting full search with contacts...");
+      console.log("Creating job for comprehensive search...");
       
       const res = await apiRequest("POST", "/api/companies/search", { 
         query: searchQuery,
         strategyId: undefined,
         includeContacts: true,
         contactSearchConfig: contactSearchConfig,
-        sessionId: currentSessionId
+        sessionId: currentSessionId,
+        searchType: searchType
       });
       return res.json();
     },
     onSuccess: (data) => {
-      // Calculate total contacts found
-      const totalContacts = data.companies.reduce((sum: number, company: any) => 
-        sum + (company.contacts?.length || 0), 0);
-      
-      console.log("Contact discovery completed successfully");
-      console.log(`Found ${totalContacts} contacts across ${data.companies.length} companies`);
-      
-      console.log("Processing and organizing results...");
-      
-      // Reset input changed state since search is complete
-      setInputHasChanged(false);
-      
-      // Update session with complete results and stop polling
-      if (currentSessionId) {
-        SearchSessionManager.updateWithFullResults(currentSessionId, data.companies);
-        setIsPolling(false);
-        console.log(`Session ${currentSessionId} completed with full results`);
-      }
-      
-      // Force fresh database queries by invalidating React Query cache
-      // This replicates the outreach page behavior that works perfectly
-      console.log("[Database Sync] Invalidating cache to force fresh queries...");
-      
-      // Invalidate all company and contact queries to force database refresh
-      queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
-      data.companies.forEach((company: any) => {
-        queryClient.invalidateQueries({ queryKey: [`/api/companies/${company.id}/contacts`] });
-      });
-      
-      // Small delay to ensure cache invalidation completes before UI update
-      setTimeout(() => {
-        console.log("[Database Sync] Cache invalidated, sending results to UI...");
-        onSearchResults(value, data.companies);
-      }, 100);
-      
-      // Calculate search duration and show summary
-      const searchDuration = Math.round((Date.now() - searchMetrics.startTime) / 1000);
-      setSearchMetrics(prev => ({
-        ...prev,
-        totalCompanies: data.companies.length,
-        totalContacts: totalContacts,
-        searchDuration: searchDuration,
-        companies: data.companies
-      }));
-      
-      // Show summary after a brief delay
-      setTimeout(() => {
-        setSummaryVisible(true);
-        // Auto-hide summary after 8 seconds
-        setTimeout(() => {
-          setSummaryVisible(false);
-        }, 8000);
-      }, 1000);
-      
-      console.log("Search process completed!");
-      
-      // Refresh credits display for authenticated users
-      if (user) {
-        queryClient.invalidateQueries({ queryKey: ['/api/credits'] });
-      }
-      
-      // Trigger confetti animation on successful search
-      triggerConfetti();
+      // Job created, polling handled by quickSearchMutation
+      console.log(`Full search job created with ID: ${data.jobId}`);
+      // The quickSearchMutation already handles all polling
       // Call the onSearchSuccess callback to highlight the email button (if provided)
       if (onSearchSuccess) {
         onSearchSuccess();

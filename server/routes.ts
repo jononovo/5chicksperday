@@ -95,9 +95,36 @@ export function registerRoutes(app: Express) {
   // Register search job routes for persistent search execution
   registerSearchJobRoutes(app);
   
-  // Start the background job processor
-  jobProcessor.startProcessing();
-  console.log("[Server] Background job processor started");
+  // Start the background job processor with error handling
+  try {
+    jobProcessor.startProcessing();
+    console.log("[Server] Background job processor started successfully");
+    
+    // Set up a monitor to ensure it keeps running
+    setInterval(() => {
+      if (!jobProcessor.isRunning()) {
+        console.warn("[Server] Job processor stopped unexpectedly, restarting...");
+        try {
+          jobProcessor.startProcessing();
+          console.log("[Server] Job processor restarted successfully");
+        } catch (error) {
+          console.error("[Server] Failed to restart job processor:", error);
+        }
+      }
+    }, 30000); // Check every 30 seconds
+  } catch (error) {
+    console.error("[Server] Failed to start job processor:", error);
+    // Try to recover after a delay
+    setTimeout(() => {
+      console.log("[Server] Attempting to start job processor again...");
+      try {
+        jobProcessor.startProcessing();
+        console.log("[Server] Job processor started on retry");
+      } catch (retryError) {
+        console.error("[Server] Job processor startup failed permanently:", retryError);
+      }
+    }, 5000);
+  }
   
   // Register campaigns module (includes sender profiles, customer profiles, and products)
   registerCampaignsRoutes(app, requireAuth);

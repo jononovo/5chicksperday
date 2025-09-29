@@ -561,15 +561,9 @@ export async function findKeyDecisionMakers(
         Date.now() - coreStartTime
       );
       
-      // Only add rate limiting delay if more phases will run
-      const willContinue = SmartFallbackManager.shouldContinueSearching(allContacts, 'department heads');
-      const hasMorePhases = mergedOptions.enableDepartmentHeads || mergedOptions.enableMiddleManagement || mergedOptions.enableCustomSearch;
-      
-      if (willContinue && hasMorePhases) {
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
-      
       // Check if we should continue searching
+      const willContinue = SmartFallbackManager.shouldContinueSearching(allContacts, 'department heads');
+      
       if (!willContinue) {
         console.log(`Early termination: Sufficient contacts found after core leadership search`);
       }
@@ -601,13 +595,6 @@ export async function findKeyDecisionMakers(
         Date.now() - deptStartTime
       );
       
-      // Only add rate limiting delay if more phases will run
-      const willContinueToMiddle = SmartFallbackManager.shouldContinueSearching(allContacts, 'middle management');
-      const hasMorePhasesAfterDept = mergedOptions.enableMiddleManagement || mergedOptions.enableCustomSearch;
-      
-      if (willContinueToMiddle && hasMorePhasesAfterDept) {
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
     } else if (mergedOptions.enableDepartmentHeads) {
       SearchPerformanceLogger.logSearchPhase(
         sessionId, 
@@ -646,13 +633,6 @@ export async function findKeyDecisionMakers(
         Date.now() - middleStartTime
       );
       
-      // Only add rate limiting delay if custom search will run
-      const willContinueToCustom = SmartFallbackManager.shouldContinueSearching(allContacts, 'custom search');
-      const hasCustomSearch = mergedOptions.enableCustomSearch || mergedOptions.enableCustomSearch2;
-      
-      if (willContinueToCustom && hasCustomSearch) {
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
     } else if (mergedOptions.enableMiddleManagement) {
       SearchPerformanceLogger.logSearchPhase(
         sessionId, 

@@ -86,9 +86,6 @@ export class SmartFallbackManager {
     for (const fallback of fallbacks) {
       console.log(`Executing smart fallback search: ${fallback} for ${companyName}`);
       
-      // Add rate limiting delay between fallback searches
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
       try {
         switch (fallback) {
           case 'enableCoreLeadership':

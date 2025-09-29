@@ -1,0 +1,35 @@
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:10.422Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:12.473Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:14.539Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:16.596Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:18.651Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:20.706Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:22.762Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:24.827Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:26.880Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:28.937Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:30.991Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:33.048Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:35.109Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:37.163Z"}
+API Request: GET /api/search-jobs/34917e7c-ca9a-4494-b6d4-dafab938b320 
+Object {hasData: false, timestamp: "2025-09-29T14:55:39.223Z"}
+Backend orchestration completed: 
+Object {contacts: Array(38), metadata: {…}, companies: Array(7), searchType: "bulk-email"}
+Backend orchestration completed: undefined
+Backend email orchestration error: 
+TypeError {}

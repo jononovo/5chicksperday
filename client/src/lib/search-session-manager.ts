@@ -12,6 +12,7 @@ export interface SearchSession {
   contactSearchConfig?: any;
   emailSearchStatus?: 'none' | 'running' | 'completed';
   emailSearchCompleted?: number; // timestamp when email search finished
+  jobId?: string; // ID of the search job in the backend
 }
 
 export class SearchSessionManager {
@@ -43,6 +44,19 @@ export class SearchSessionManager {
     );
     
     return session;
+  }
+  
+  /**
+   * Update session with job ID
+   */
+  static updateSessionWithJob(sessionId: string, jobId: string): void {
+    const session = this.getSession(sessionId);
+    if (session) {
+      session.jobId = jobId;
+      session.lastChecked = Date.now();
+      this.saveSession(session);
+      console.log('Updated session with job ID:', sessionId, jobId);
+    }
   }
   
   /**

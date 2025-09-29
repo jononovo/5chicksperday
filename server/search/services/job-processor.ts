@@ -23,6 +23,9 @@ export class JobProcessor {
     this.isProcessing = true;
 
     try {
+      // First, check for stuck jobs (processing for > 5 minutes)
+      await this.recoverStuckJobs();
+      
       // Get next pending job (highest priority first)
       const pendingJobs = await SearchJobService.getPendingJobs(1);
       
@@ -43,11 +46,20 @@ export class JobProcessor {
       this.processingJobs.add(job.jobId);
 
       try {
-        // Execute the job
-        await SearchJobService.executeJob(job.jobId);
+        // Execute the job with timeout
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Job execution timeout')), 120000) // 2 minute timeout
+        );
+        
+        await Promise.race([
+          SearchJobService.executeJob(job.jobId),
+          timeoutPromise
+        ]);
+        
         console.log(`[JobProcessor] Successfully completed job ${job.jobId}`);
       } catch (error) {
         console.error(`[JobProcessor] Failed to process job ${job.jobId}:`, error);
+        // Job will be retried based on retry logic in SearchJobService
       } finally {
         this.processingJobs.delete(job.jobId);
       }
@@ -55,6 +67,21 @@ export class JobProcessor {
       console.error("[JobProcessor] Error in processNextJob:", error);
     } finally {
       this.isProcessing = false;
+    }
+  }
+
+  /**
+   * Recover jobs stuck in processing state
+   */
+  async recoverStuckJobs(): Promise<void> {
+    try {
+      const stuckJobs = await SearchJobService.getStuckProcessingJobs();
+      for (const job of stuckJobs) {
+        console.warn(`[JobProcessor] Recovering stuck job ${job.jobId} (processing for > 5 minutes)`);
+        await SearchJobService.resetJobToPending(job.jobId);
+      }
+    } catch (error) {
+      console.error("[JobProcessor] Error recovering stuck jobs:", error);
     }
   }
 
