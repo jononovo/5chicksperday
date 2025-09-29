@@ -421,6 +421,7 @@ export class SearchJobService {
   /**
    * Execute bulk email search for existing companies and contacts
    * Used by "Find Key Emails" button to enrich existing contacts with emails
+   * Now uses tiered approach for better performance
    */
   private static async executeBulkEmailSearch(job: SearchJob, jobId: string): Promise<void> {
     try {
@@ -457,7 +458,10 @@ export class SearchJobService {
         message: `Loading top contacts for ${validCompanies.length} companies`
       });
       
-      const allContacts: any[] = [];
+      // Build company-to-contacts map for tiered processing
+      const companyContactsMap = new Map<number, any[]>();
+      let totalContactsToSearch = 0;
+      
       for (const company of validCompanies) {
         const contacts = await storage.listContactsByCompany(company.id, job.userId);
         
@@ -466,21 +470,64 @@ export class SearchJobService {
           .sort((a, b) => (b.probability || 0) - (a.probability || 0))
           .slice(0, 3);
         
+        if (topContacts.length > 0) {
+          companyContactsMap.set(company.id, topContacts);
+          totalContactsToSearch += topContacts.length;
+        }
+        
         console.log(`[SearchJobService] Company ${company.name}: ${contacts.length} total contacts, taking top ${topContacts.length}`);
-        allContacts.push(...topContacts);
       }
       
-      console.log(`[SearchJobService] Selected ${allContacts.length} top contacts to enrich (from ${validCompanies.length} companies)`);
+      console.log(`[SearchJobService] Selected ${totalContactsToSearch} top contacts to enrich (from ${validCompanies.length} companies)`);
       
-      // Phase 3: Enrich contacts with emails
+      // Phase 3: Enrich contacts with emails using tiered approach with true parallel processing
       await this.updateJobProgress(job.id, {
         phase: 'Finding emails',
         completed: 3,
         total: 5,
-        message: `Enriching ${allContacts.length} contacts with emails`
+        message: `Enriching ${totalContactsToSearch} contacts with emails using parallel tiered approach`
       });
       
-      await this.enrichContactsWithEmails(job, allContacts, validCompanies, 5);
+      // Prepare companies with their contacts for batch processing
+      const companiesWithContacts = validCompanies
+        .map(company => ({
+          company,
+          contacts: companyContactsMap.get(company.id) || []
+        }))
+        .filter(item => item.contacts.length > 0);
+      
+      // Import the batch processing utility
+      const { processTieredBatch } = await import('../utils/batch-processing');
+      
+      // Process all companies concurrently using the tiered batch processor
+      // Increased batch size to 10 for better parallelism (was 5)
+      const batchResults = await processTieredBatch(
+        companiesWithContacts,
+        (contacts, company) => this.tieredEmailSearch(contacts, company, job.userId),
+        {
+          batchSize: 10,  // Process 10 companies simultaneously for better performance
+          onProgress: async (completed, total, emailsFound) => {
+            await this.updateJobProgress(job.id, {
+              phase: 'Finding emails',
+              completed: 3,
+              total: 5,
+              message: `Processed ${completed}/${total} companies (${emailsFound} emails found)`
+            });
+          }
+        }
+      );
+      
+      const totalEmailsFound = batchResults.totalEmailsFound;
+      const companiesProcessed = batchResults.companiesProcessed;
+      
+      if (batchResults.errors.length > 0) {
+        console.warn(`[SearchJobService] ${batchResults.errors.length} companies had errors during email search`);
+        batchResults.errors.forEach(err => 
+          console.warn(`[SearchJobService] Company ${err.companyId} error:`, err.error)
+        );
+      }
+      
+      console.log(`[SearchJobService] Email enrichment complete: ${totalEmailsFound}/${totalContactsToSearch} emails found`);
       
       // Phase 4: Deduct credits
       await this.updateJobProgress(job.id, {
@@ -516,7 +563,7 @@ export class SearchJobService {
         searchType: 'bulk-email',
         metadata: {
           companiesSearched: validCompanies.length,
-          contactsEnriched: allContacts.length,  // Number we actually searched
+          contactsEnriched: totalContactsToSearch,  // Number we actually searched
           totalContacts: allContactsForDisplay.length,  // Total contacts in companies
           emailsFound: allContactsForDisplay.filter(c => c.email).length
         }
@@ -526,7 +573,7 @@ export class SearchJobService {
         status: 'completed',
         completedAt: new Date(),
         results: results,
-        resultCount: allContacts.filter(c => c.email).length
+        resultCount: totalEmailsFound
       });
       
       console.log(`[SearchJobService] Completed bulk email search job ${jobId}: ${results.metadata.emailsFound} emails found`);
@@ -697,8 +744,9 @@ export class SearchJobService {
   }
 
   /**
-   * Enrich contacts with emails using waterfall approach
-   * This uses the exact same logic as the frontend "Find Key Emails" button
+   * Enrich contacts with emails using tiered approach
+   * Groups contacts by company and processes them using the tiered search
+   * This replaces the old waterfall approach for better performance
    */
   private static async enrichContactsWithEmails(
     job: SearchJob, 
@@ -706,54 +754,63 @@ export class SearchJobService {
     companies: any[],
     totalPhases: number
   ): Promise<void> {
-    const { processBatchWithProgress } = await import('../utils/batch-processing');
+    console.log(`[SearchJobService] Starting email enrichment for ${contacts.length} contacts using tiered approach`);
     
-    let emailsFoundCount = 0;
-    let totalProcessed = 0;
+    // Group contacts by company for tiered processing
+    const contactsByCompany = new Map<number, any[]>();
+    contacts.forEach(contact => {
+      const companyContacts = contactsByCompany.get(contact.companyId) || [];
+      companyContacts.push(contact);
+      contactsByCompany.set(contact.companyId, companyContacts);
+    });
     
-    console.log(`[SearchJobService] Starting email enrichment for ${contacts.length} contacts`);
-    
-    // Process contacts in batches of 5 for efficiency
-    const results = await processBatchWithProgress(
-      contacts,
-      async (contact, index) => {
-        const company = companies.find(c => c.id === contact.companyId);
+    // Prepare companies with their contacts
+    const companiesWithContacts = Array.from(contactsByCompany.entries())
+      .map(([companyId, companyContacts]) => {
+        const company = companies.find(c => c.id === companyId);
         if (!company) {
-          console.warn(`[SearchJobService] Company not found for contact ${contact.name}`);
-          return false;
+          console.warn(`[SearchJobService] Company ${companyId} not found`);
+          return null;
         }
-        
-        const emailFound = await this.waterfallEmailSearch(contact, company, job.userId);
-        if (emailFound) {
-          emailsFoundCount++;
-          // Update the contact object in place so results include emails
-          const updatedContact = await storage.getContact(contact.id, job.userId);
-          if (updatedContact && updatedContact.email) {
-            contact.email = updatedContact.email;
-          }
-        }
-        return emailFound;
-      },
+        return { company, contacts: companyContacts };
+      })
+      .filter(item => item !== null) as Array<{ company: any, contacts: any[] }>;
+    
+    // Import batch processing utility
+    const { processTieredBatch } = await import('../utils/batch-processing');
+    
+    // Process all companies with their contacts using tiered batch processing
+    const batchResults = await processTieredBatch(
+      companiesWithContacts,
+      (contactsToSearch, company) => this.tieredEmailSearch(contactsToSearch, company, job.userId),
       {
-        batchSize: 5,
-        onProgress: async (completed, total) => {
-          totalProcessed = completed;
+        batchSize: 10,  // Process 10 companies concurrently
+        onProgress: async (completed, total, emailsFound) => {
           await this.updateJobProgress(job.id, {
             phase: 'Finding emails',
             completed: 4,
             total: totalPhases,
-            message: `Finding emails: ${completed}/${total} contacts (${emailsFoundCount} emails found)`
+            message: `Processed ${completed}/${total} companies (${emailsFound} emails found)`
           });
         }
       }
     );
     
-    console.log(`[SearchJobService] Email enrichment complete: ${emailsFoundCount}/${contacts.length} emails found`);
+    // Update contact objects in place with found emails
+    for (const contact of contacts) {
+      const updatedContact = await storage.getContact(contact.id, job.userId);
+      if (updatedContact && updatedContact.email) {
+        contact.email = updatedContact.email;
+      }
+    }
+    
+    console.log(`[SearchJobService] Email enrichment complete: ${batchResults.totalEmailsFound}/${contacts.length} emails found`);
   }
 
   /**
    * Try to find email for a single contact using waterfall approach
    * Apollo -> Perplexity -> Hunter (exact same as frontend)
+   * DEPRECATED: Use tieredEmailSearch for better performance
    */
   private static async waterfallEmailSearch(
     contact: any, 
@@ -846,6 +903,199 @@ export class SearchJobService {
     }
     
     return emailFound;
+  }
+
+  /**
+   * Tiered concurrent email search for top 3 contacts
+   * Tier 1: Apollo searches all 3 contacts simultaneously
+   * Tier 2: Perplexity (contacts #1, #3) + Hunter (contacts #1, #2) run concurrently
+   * @returns Map of contact ID to success status
+   */
+  private static async tieredEmailSearch(
+    contacts: any[],
+    company: any,
+    userId: number
+  ): Promise<Map<number, boolean>> {
+    const results = new Map<number, boolean>();
+    const startTime = Date.now();
+    
+    // Take only top 3 contacts
+    const topContacts = contacts.slice(0, 3);
+    console.log(`[SearchJobService] Starting tiered email search for ${topContacts.length} contacts from ${company.name}`);
+    
+    // Skip contacts that already have emails
+    const contactsToSearch = topContacts.filter(contact => {
+      if (contact.email && contact.email.includes('@')) {
+        console.log(`[SearchJobService] Contact ${contact.name} already has email: ${contact.email}`);
+        results.set(contact.id, false);
+        return false;
+      }
+      return true;
+    });
+    
+    if (contactsToSearch.length === 0) {
+      console.log(`[SearchJobService] All contacts already have emails`);
+      return results;
+    }
+    
+    // TIER 1: Apollo for all contacts simultaneously
+    const apolloApiKey = process.env.APOLLO_API_KEY;
+    const tier1Results = new Map<number, any>();
+    
+    if (apolloApiKey) {
+      console.log(`[SearchJobService] TIER 1: Launching Apollo search for ${contactsToSearch.length} contacts`);
+      const apolloPromises = contactsToSearch.map(async (contact) => {
+        try {
+          const { searchApolloDirect } = await import('../providers/apollo');
+          const result = await searchApolloDirect(contact, company, apolloApiKey);
+          if (result.success && result.contact.email) {
+            console.log(`[SearchJobService] Apollo found email for ${contact.name}: ${result.contact.email}`);
+            return { contactId: contact.id, result, source: 'apollo' };
+          }
+        } catch (error) {
+          console.log(`[SearchJobService] Apollo failed for ${contact.name}:`, error);
+        }
+        return { contactId: contact.id, result: null };
+      });
+      
+      const apolloResults = await Promise.allSettled(apolloPromises);
+      
+      // Process Apollo results and update contacts
+      for (const settledResult of apolloResults) {
+        if (settledResult.status === 'fulfilled' && settledResult.value.result) {
+          const { contactId, result } = settledResult.value;
+          const contact = contactsToSearch.find(c => c.id === contactId);
+          if (contact && result.contact.email) {
+            await storage.updateContact(contactId, {
+              email: result.contact.email,
+              role: result.contact.role || contact.role,
+              completedSearches: [...(contact.completedSearches || []), 'apollo_search'],
+              lastValidated: new Date()
+            });
+            tier1Results.set(contactId, result.contact.email);
+            results.set(contactId, true);
+          }
+        }
+      }
+      
+      console.log(`[SearchJobService] TIER 1 complete: ${tier1Results.size} emails found via Apollo`);
+    }
+    
+    // Determine which contacts still need Tier 2
+    const needsTier2 = contactsToSearch.filter(c => !tier1Results.has(c.id));
+    
+    if (needsTier2.length === 0) {
+      console.log(`[SearchJobService] All contacts found in Tier 1, skipping Tier 2`);
+      const elapsed = Date.now() - startTime;
+      console.log(`[SearchJobService] Tiered search completed in ${elapsed}ms`);
+      return results;
+    }
+    
+    // TIER 2: Perplexity + Hunter running concurrently
+    console.log(`[SearchJobService] TIER 2: Starting for ${needsTier2.length} remaining contacts`);
+    const tier2Promises = [];
+    
+    // Perplexity: Search contacts #1 and #3 (indices 0 and 2)
+    const perplexityContacts = needsTier2.filter((_, index) => {
+      const originalIndex = topContacts.findIndex(tc => tc.id === needsTier2[index].id);
+      return originalIndex === 0 || originalIndex === 2;
+    });
+    
+    if (perplexityContacts.length > 0) {
+      console.log(`[SearchJobService] TIER 2: Perplexity searching for contacts at positions #1 and #3`);
+      const perplexityPromises = perplexityContacts.map(async (contact) => {
+        try {
+          const { searchContactDetails } = await import('../enrichment/contact-details');
+          const details = await searchContactDetails(contact.name, company.name);
+          if (details.email) {
+            console.log(`[SearchJobService] Perplexity found email for ${contact.name}: ${details.email}`);
+            return { contactId: contact.id, email: details.email, source: 'perplexity', role: undefined };
+          }
+        } catch (error) {
+          console.log(`[SearchJobService] Perplexity failed for ${contact.name}:`, error);
+        }
+        return { contactId: contact.id, email: null, role: undefined };
+      });
+      tier2Promises.push(...perplexityPromises);
+    }
+    
+    // Hunter: Search contacts #1 and #2 (indices 0 and 1)
+    const hunterApiKey = process.env.HUNTER_API_KEY;
+    const hunterContacts = needsTier2.filter((_, index) => {
+      const originalIndex = topContacts.findIndex(tc => tc.id === needsTier2[index].id);
+      return originalIndex === 0 || originalIndex === 1;
+    });
+    
+    if (hunterApiKey && hunterContacts.length > 0) {
+      console.log(`[SearchJobService] TIER 2: Hunter searching for contacts at positions #1 and #2`);
+      const hunterPromises = hunterContacts.map(async (contact) => {
+        try {
+          const { searchHunterDirect } = await import('../providers/hunter');
+          const result = await searchHunterDirect(contact, company, hunterApiKey);
+          if (result.success && result.contact.email) {
+            console.log(`[SearchJobService] Hunter found email for ${contact.name}: ${result.contact.email}`);
+            return { contactId: contact.id, email: result.contact.email, source: 'hunter', role: result.contact.role };
+          }
+        } catch (error) {
+          console.log(`[SearchJobService] Hunter failed for ${contact.name}:`, error);
+        }
+        return { contactId: contact.id, email: null, role: undefined };
+      });
+      tier2Promises.push(...hunterPromises);
+    }
+    
+    // Execute all Tier 2 searches concurrently
+    const tier2Results = await Promise.allSettled(tier2Promises);
+    
+    // Process Tier 2 results, preferring Perplexity over Hunter if both find an email
+    const contactEmailMap = new Map<number, { email: string, source: string, role?: string }>();
+    
+    for (const settledResult of tier2Results) {
+      if (settledResult.status === 'fulfilled' && settledResult.value.email) {
+        const { contactId, email, source, role } = settledResult.value;
+        const existing = contactEmailMap.get(contactId);
+        
+        // Prefer Perplexity results over Hunter
+        if (!existing || (existing.source === 'hunter' && source === 'perplexity')) {
+          contactEmailMap.set(contactId, { email, source, role: role || undefined });
+        }
+      }
+    }
+    
+    // Update contacts with Tier 2 results
+    const contactEmailEntries = Array.from(contactEmailMap.entries());
+    for (const [contactId, emailData] of contactEmailEntries) {
+      const contact = needsTier2.find(c => c.id === contactId);
+      if (contact) {
+        await storage.updateContact(contactId, {
+          email: emailData.email,
+          role: emailData.role || contact.role,
+          completedSearches: [...(contact.completedSearches || []), `${emailData.source}_search`],
+          lastValidated: new Date()
+        });
+        results.set(contactId, true);
+      }
+    }
+    
+    console.log(`[SearchJobService] TIER 2 complete: ${contactEmailMap.size} additional emails found`);
+    
+    // Mark contacts without emails as comprehensively searched
+    for (const contact of needsTier2) {
+      if (!results.has(contact.id) || !results.get(contact.id)) {
+        await storage.updateContact(contact.id, {
+          completedSearches: [...(contact.completedSearches || []), 'comprehensive_search'],
+          lastValidated: new Date()
+        });
+        results.set(contact.id, false);
+        console.log(`[SearchJobService] No email found for ${contact.name} after all tiers`);
+      }
+    }
+    
+    const elapsed = Date.now() - startTime;
+    const totalFound = Array.from(results.values()).filter(v => v).length;
+    console.log(`[SearchJobService] Tiered search completed in ${elapsed}ms: ${totalFound}/${topContacts.length} emails found`);
+    
+    return results;
   }
 
   /**
