@@ -10,7 +10,6 @@ import { findKeyDecisionMakers } from "../contacts/finder";
 import { storage } from "../../storage";
 import type { Contact, Company } from "@shared/schema";
 import type { ContactSearchConfig } from "../types";
-import { processBatch } from "../utils/batch-processing";
 
 export interface ContactSearchParams {
   companies: Company[];
@@ -30,185 +29,129 @@ export interface ContactSearchResult {
 
 export class ContactSearchService {
   /**
-   * Save contacts for a company with deduplication
-   * Extracted method to simplify the main search logic
-   */
-  private static async saveContactsForCompany(
-    company: Company,
-    contacts: any[],
-    userId: number,
-    jobId?: string
-  ): Promise<Contact[]> {
-    const savedContacts: Contact[] = [];
-    
-    for (const contactData of contacts) {
-      try {
-        // Check if contact already exists (by email or name+company)
-        const existingContacts = await storage.listContactsByCompany(company.id, userId);
-        
-        let existingContact = null;
-        
-        // First check by email if available
-        if (contactData.email) {
-          existingContact = existingContacts.find(c => 
-            c.email?.toLowerCase() === contactData.email?.toLowerCase()
-          );
-        }
-        
-        // If no email match, check by name (case-insensitive)
-        if (!existingContact && contactData.name) {
-          existingContact = existingContacts.find(c => 
-            c.name?.toLowerCase() === contactData.name?.toLowerCase()
-          );
-        }
-        
-        if (existingContact) {
-          // Update existing contact instead of creating duplicate
-          console.log(`[ContactSearchService] Updating existing contact: ${existingContact.name}`);
-          
-          // Merge new data with existing (prefer new data if available)
-          const updateData: any = {
-            ...contactData,
-            // Preserve existing data if new data is null/undefined
-            email: contactData.email || existingContact.email,
-            role: contactData.role || existingContact.role,
-            linkedinUrl: contactData.linkedinUrl || existingContact.linkedinUrl,
-            phoneNumber: contactData.phoneNumber || existingContact.phoneNumber,
-            lastValidated: new Date()
-          };
-          
-          // Add jobId to completedSearches if not already present
-          if (jobId) {
-            const completedSearches = existingContact.completedSearches || [];
-            if (!completedSearches.includes(jobId)) {
-              completedSearches.push(jobId);
-              updateData.completedSearches = completedSearches;
-            }
-          }
-          
-          const updatedContact = await storage.updateContact(existingContact.id, updateData);
-          savedContacts.push(updatedContact);
-          
-        } else {
-          // Create new contact
-          console.log(`[ContactSearchService] Creating new contact: ${contactData.name}`);
-          
-          const contact = await storage.createContact({
-            ...contactData,
-            companyId: company.id,
-            userId: userId,
-            // Add job tracking metadata
-            completedSearches: jobId ? [jobId] : [],
-            lastValidated: new Date()
-          } as any);
-          
-          savedContacts.push(contact);
-        }
-      } catch (error) {
-        console.error(`[ContactSearchService] Error saving/updating contact:`, error);
-      }
-    }
-    
-    return savedContacts;
-  }
-
-  /**
-   * Process a single company for contact search
-   * Extracted method for batch processing
-   */
-  private static async processCompanyForContacts(
-    company: Company,
-    params: {
-      userId: number;
-      searchConfig: ContactSearchConfig;
-      jobId?: string;
-      onProgress?: (message: string, phase: string) => Promise<void>;
-    }
-  ): Promise<ContactSearchResult> {
-    const { userId, searchConfig, jobId } = params;
-    
-    try {
-      // Search for contacts using the centralized finder
-      const searchQuery = `${company.name} ${company.website || ''}`.trim();
-      const contacts = await findKeyDecisionMakers(searchQuery, searchConfig);
-      
-      console.log(`[ContactSearchService] Found ${contacts.length} contacts for ${company.name}`);
-      
-      // Save contacts with deduplication
-      const savedContacts = await this.saveContactsForCompany(
-        company, 
-        contacts, 
-        userId, 
-        jobId
-      );
-      
-      return {
-        companyId: company.id,
-        companyName: company.name,
-        contacts: savedContacts,
-        searchedAt: new Date(),
-        config: searchConfig
-      };
-      
-    } catch (error) {
-      console.error(`[ContactSearchService] Error searching contacts for ${company.name}:`, error);
-      
-      // Return empty result on error
-      return {
-        companyId: company.id,
-        companyName: company.name,
-        contacts: [],
-        searchedAt: new Date(),
-        config: searchConfig
-      };
-    }
-  }
-
-  /**
    * Search for contacts across multiple companies
    * This is the single entry point for all contact searches
-   * Now using batch parallelization for better performance
    */
   static async searchContacts(params: ContactSearchParams): Promise<ContactSearchResult[]> {
     const { companies, userId, searchConfig, jobId, onProgress } = params;
+    const results: ContactSearchResult[] = [];
 
-    console.log(`[ContactSearchService] Starting batch contact search for ${companies.length} companies`);
+    console.log(`[ContactSearchService] Starting contact search for ${companies.length} companies`);
     console.log(`[ContactSearchService] Config:`, searchConfig);
-    console.log(`[ContactSearchService] Processing in batches of 5 companies concurrently`);
 
-    // Report initial progress
-    if (onProgress) {
-      await onProgress(
-        `Starting batch search for ${companies.length} companies`,
-        'contact_discovery'
-      );
+    // Process each company
+    for (let i = 0; i < companies.length; i++) {
+      const company = companies[i];
+      
+      // Report progress
+      if (onProgress) {
+        await onProgress(
+          `Searching contacts for ${company.name} (${i + 1}/${companies.length})`,
+          'contact_discovery'
+        );
+      }
+
+      try {
+        // Search for contacts using the centralized finder
+        const searchQuery = `${company.name} ${company.website || ''}`.trim();
+        const contacts = await findKeyDecisionMakers(searchQuery, searchConfig);
+        
+        console.log(`[ContactSearchService] Found ${contacts.length} contacts for ${company.name}`);
+
+        // Save contacts to database with deduplication
+        const savedContacts: Contact[] = [];
+        for (const contactData of contacts) {
+          try {
+            // Check if contact already exists (by email or name+company)
+            const existingContacts = await storage.listContactsByCompany(company.id, userId);
+            
+            let existingContact = null;
+            
+            // First check by email if available
+            if (contactData.email) {
+              existingContact = existingContacts.find(c => 
+                c.email?.toLowerCase() === contactData.email?.toLowerCase()
+              );
+            }
+            
+            // If no email match, check by name (case-insensitive)
+            if (!existingContact && contactData.name) {
+              existingContact = existingContacts.find(c => 
+                c.name?.toLowerCase() === contactData.name?.toLowerCase()
+              );
+            }
+            
+            if (existingContact) {
+              // Update existing contact instead of creating duplicate
+              console.log(`[ContactSearchService] Updating existing contact: ${existingContact.name}`);
+              
+              // Merge new data with existing (prefer new data if available)
+              const updateData: any = {
+                ...contactData,
+                // Preserve existing data if new data is null/undefined
+                email: contactData.email || existingContact.email,
+                role: contactData.role || existingContact.role,
+                linkedinUrl: contactData.linkedinUrl || existingContact.linkedinUrl,
+                phoneNumber: contactData.phoneNumber || existingContact.phoneNumber,
+                lastValidated: new Date()
+              };
+              
+              // Add jobId to completedSearches if not already present
+              if (jobId) {
+                const completedSearches = existingContact.completedSearches || [];
+                if (!completedSearches.includes(jobId)) {
+                  completedSearches.push(jobId);
+                  updateData.completedSearches = completedSearches;
+                }
+              }
+              
+              const updatedContact = await storage.updateContact(existingContact.id, updateData);
+              savedContacts.push(updatedContact);
+              
+            } else {
+              // Create new contact
+              console.log(`[ContactSearchService] Creating new contact: ${contactData.name}`);
+              
+              const contact = await storage.createContact({
+                ...contactData,
+                companyId: company.id,
+                userId: userId,
+                // Add job tracking metadata
+                completedSearches: jobId ? [jobId] : [],
+                lastValidated: new Date()
+              } as any);
+              
+              savedContacts.push(contact);
+            }
+          } catch (error) {
+            console.error(`[ContactSearchService] Error saving/updating contact:`, error);
+          }
+        }
+
+        // Add to results
+        results.push({
+          companyId: company.id,
+          companyName: company.name,
+          contacts: savedContacts,
+          searchedAt: new Date(),
+          config: searchConfig
+        });
+
+      } catch (error) {
+        console.error(`[ContactSearchService] Error searching contacts for ${company.name}:`, error);
+        
+        // Still add empty result so we know we tried
+        results.push({
+          companyId: company.id,
+          companyName: company.name,
+          contacts: [],
+          searchedAt: new Date(),
+          config: searchConfig
+        });
+      }
     }
 
-    // Process companies in parallel batches of 5
-    const results = await processBatch(
-      companies,
-      async (company) => {
-        const result = await this.processCompanyForContacts(company, {
-          userId,
-          searchConfig,
-          jobId,
-          onProgress
-        });
-        
-        // Report progress for each company
-        if (onProgress) {
-          await onProgress(
-            `Processed ${company.name} - Found ${result.contacts.length} contacts`,
-            'contact_discovery'
-          );
-        }
-        
-        return result;
-      },
-      5 // Process 5 companies concurrently
-    );
-
-    console.log(`[ContactSearchService] Completed batch search: ${results.length} companies processed`);
+    console.log(`[ContactSearchService] Completed search: ${results.length} companies processed`);
     return results;
   }
 

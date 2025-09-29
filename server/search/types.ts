@@ -16,7 +16,6 @@ export interface SearchSessionResult {
   ttl: number;
   emailSearchStatus?: 'none' | 'running' | 'completed';
   emailSearchCompleted?: number;
-  jobId?: string;  // Added for job-based search
 }
 
 // Contact search configuration from frontend

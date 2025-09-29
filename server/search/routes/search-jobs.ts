@@ -1,6 +1,5 @@
 import { Express, Request, Response } from "express";
 import { SearchJobService } from "../services/search-job-service";
-import { jobProcessor } from "../services/job-processor";
 import { getUserId } from "../../utils/auth";
 
 /**
@@ -90,43 +89,20 @@ export function registerSearchJobRoutes(app: Express) {
 
       console.log(`[SearchJobRoutes] Created job ${jobId} for user ${userId}`);
 
-      // Execute immediately if requested (for testing/urgent needs)
+      // Option to execute immediately (synchronous) or let processor handle it (async)
       if (executeImmediately) {
-        console.log(`[SearchJobRoutes] Executing job ${jobId} immediately as requested`);
-        // Use setTimeout to avoid blocking the HTTP response
-        setTimeout(async () => {
-          try {
-            await SearchJobService.executeJob(jobId);
-          } catch (error) {
-            console.error(`[SearchJobRoutes] Error executing job ${jobId}:`, error);
-            // Job will be retried by processor if available
-          }
-        }, 0);
-      } else {
-        // Ensure job processor is running
-        if (!jobProcessor.isRunning()) {
-          console.warn('[SearchJobRoutes] Job processor not running, attempting to start it');
-          try {
-            jobProcessor.startProcessing();
-            console.log('[SearchJobRoutes] Job processor started successfully');
-          } catch (error) {
-            console.error('[SearchJobRoutes] Failed to start job processor:', error);
-            // Fallback: execute in background to avoid blocking
-            setTimeout(async () => {
-              try {
-                console.log(`[SearchJobRoutes] Fallback: executing job ${jobId} in background`);
-                await SearchJobService.executeJob(jobId);
-              } catch (err) {
-                console.error(`[SearchJobRoutes] Fallback execution failed for ${jobId}:`, err);
-              }
-            }, 100);
-          }
+        console.log(`[SearchJobRoutes] Executing job ${jobId} immediately`);
+        try {
+          await SearchJobService.executeJob(jobId);
+        } catch (error) {
+          console.error(`[SearchJobRoutes] Error executing job ${jobId}:`, error);
+          // Job will be retried by processor if it failed
         }
       }
 
       res.json({ 
         jobId,
-        message: executeImmediately ? "Job created and will process shortly" : "Job created and queued for processing"
+        message: executeImmediately ? "Job created and processing" : "Job created and queued for processing"
       });
 
     } catch (error) {
@@ -358,56 +334,6 @@ export function registerSearchJobRoutes(app: Express) {
       console.error("[SearchJobRoutes] Error creating programmatic search job:", error);
       res.status(500).json({
         error: error instanceof Error ? error.message : "Failed to create programmatic search job"
-      });
-    }
-  });
-
-  /**
-   * Health check endpoint for job processor status
-   */
-  app.get("/api/search-jobs/health/status", async (req: Request, res: Response) => {
-    try {
-      const isProduction = process.env.NODE_ENV === 'production' || process.env.APP_ENV === 'production';
-      
-      // Check if job processor is running
-      const processorRunning = jobProcessor.isRunning();
-      const processingJobs = jobProcessor.getProcessingJobs();
-      
-      // Get pending jobs count
-      const pendingJobs = await SearchJobService.getPendingJobs(10);
-      
-      // Get recent job stats
-      const userId = getUserId(req);
-      const recentJobs = await SearchJobService.listJobs(userId, 5);
-      
-      res.json({
-        status: processorRunning ? 'healthy' : 'unhealthy',
-        environment: isProduction ? 'production' : 'development',
-        processor: {
-          running: processorRunning,
-          currentlyProcessing: processingJobs,
-          processingCount: processingJobs.length
-        },
-        jobs: {
-          pending: pendingJobs.length,
-          recentCount: recentJobs.length,
-          recentStatuses: recentJobs.map(j => ({ 
-            jobId: j.jobId,
-            status: j.status,
-            createdAt: j.createdAt 
-          }))
-        },
-        workaround: {
-          forceImmediateExecution: isProduction,
-          reason: isProduction ? 'Production mode - executing jobs immediately' : 'Development mode - using job queue'
-        },
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error("[SearchJobRoutes] Health check error:", error);
-      res.status(500).json({
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Health check failed'
       });
     }
   });
