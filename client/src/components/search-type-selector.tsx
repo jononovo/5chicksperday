@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Building2, Users, Mail, ChevronDown } from "lucide-react";
+import { Building2, Users, Mail, ChevronDown, UserSearch } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export type SearchType = "companies" | "contacts" | "emails";
+export type SearchType = "companies" | "contacts" | "emails" | "individual";
 
 export interface SearchTypeConfig {
   type: SearchType;
@@ -47,6 +47,12 @@ const searchTypeConfigs: SearchTypeConfig[] = [
       <Mail key="emails" className="h-3 w-3 md:h-[14px] md:w-[14px] lg:h-[18px] lg:w-[18px]" />
     ],
     estimatedTime: "22 seconds"
+  },
+  {
+    type: "individual",
+    label: "Find Individual",
+    icons: [<UserSearch key="individual" className="h-3 w-3 md:h-[14px] md:w-[14px] lg:h-[18px] lg:w-[18px]" />],
+    estimatedTime: "15 seconds"
   }
 ];
 

@@ -112,7 +112,7 @@ export function registerCompanyRoutes(app: Express, requireAuth: any) {
       const jobId = await SearchJobService.createJob({
         userId,
         query,
-        searchType: (searchType || 'companies') as 'companies' | 'contacts' | 'emails',
+        searchType: (searchType || 'companies') as 'companies' | 'contacts' | 'emails' | 'individual',
         contactSearchConfig,
         source: 'frontend',
         metadata: {

@@ -234,7 +234,7 @@ export const searchJobs = pgTable("search_jobs", {
   userId: integer("user_id").notNull().references(() => users.id),
   jobId: uuid("job_id").notNull().unique().defaultRandom(),
   query: text("query").notNull(),
-  searchType: text("search_type").notNull().default('companies'), // 'companies', 'contacts', 'emails', 'contact-only', 'email-single'
+  searchType: text("search_type").notNull().default('companies'), // 'companies', 'contacts', 'emails', 'contact-only', 'email-single', 'individual'
   contactSearchConfig: jsonb("contact_search_config").default('{}'),
   status: text("status").notNull().default('pending'), // 'pending', 'processing', 'completed', 'failed'
   progress: jsonb("progress").default('{}'), // {phase, completed, total, message}
@@ -344,7 +344,7 @@ const userEmailPreferencesSchema = z.object({
 
 const searchJobSchema = z.object({
   query: z.string().min(1, "Search query is required"),
-  searchType: z.enum(['companies', 'contacts', 'emails', 'email-single']).default('companies'),
+  searchType: z.enum(['companies', 'contacts', 'emails', 'email-single', 'individual']).default('companies'),
   contactSearchConfig: z.record(z.any()).optional(),
   source: z.enum(['frontend', 'api', 'cron']).default('frontend'),
   metadata: z.record(z.any()).optional(),

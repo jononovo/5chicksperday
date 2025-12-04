@@ -51,7 +51,8 @@ export type SearchType =
   | 'full_search'
   | 'company_and_contacts'
   | 'company_contacts_emails'
-  | 'individual_email';
+  | 'individual_email'
+  | 'individual_search';
 
 export const CREDIT_COSTS: Record<SearchType, number> = {
   'company_search': 10,
@@ -60,7 +61,8 @@ export const CREDIT_COSTS: Record<SearchType, number> = {
   'full_search': 250,
   'company_and_contacts': 70,   // 10 + 60
   'company_contacts_emails': 240, // 10 + 60 + 170
-  'individual_email': 20
+  'individual_email': 20,
+  'individual_search': 180  // Person discovery + company + email enrichment
 } as const;
 
 export const MONTHLY_CREDIT_ALLOWANCE = 250;
